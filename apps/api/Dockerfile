@@ -1,12 +1,14 @@
-# Backend Dockerfile
+# Backend Dockerfile for Monorepo
 FROM node:18-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
 WORKDIR /app
 
-# Copy package files
+# Copy root package files
 COPY package.json yarn.lock* ./
+
+# Copy API package.json
 COPY apps/api/package.json ./apps/api/
 
 # Install dependencies
@@ -16,13 +18,13 @@ RUN yarn install --frozen-lockfile
 FROM base AS builder
 WORKDIR /app
 
-# Copy dependencies
+# Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
 
 # Copy source code
 COPY apps/api ./apps/api
-COPY tsconfig.json ./
+COPY tsconfig.json ./tsconfig.json
 
 # Build TypeScript
 WORKDIR /app/apps/api
@@ -40,11 +42,14 @@ RUN adduser --system --uid 1001 apiuser
 
 # Copy built application
 COPY --from=builder --chown=apiuser:nodejs /app/apps/api/dist ./dist
-COPY --from=builder --chown=apiuser:nodejs /app/apps/api/package.json ./
+COPY --from=builder --chown=apiuser:nodejs /app/apps/api/package.json ./package.json
 COPY --from=deps --chown=apiuser:nodejs /app/apps/api/node_modules ./node_modules
 
 USER apiuser
 
 EXPOSE 5000
 
+ENV PORT=5000
+
 CMD ["node", "dist/index.js"]
+

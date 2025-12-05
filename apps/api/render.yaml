@@ -1,0 +1,12 @@
+# Render Build Configuration
+# This file tells Render how to build and run your API
+
+# Build Command (run from repository root)
+# yarn install && cd apps/api && yarn build
+
+# Start Command (run from repository root)
+# cd apps/api && yarn start
+
+# Or if you want to use the monorepo structure:
+# Build: yarn workspace api build
+# Start: yarn workspace api start
