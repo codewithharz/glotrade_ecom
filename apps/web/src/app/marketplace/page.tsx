@@ -1,0 +1,144 @@
+// import Link from "next/link";
+import ProductCard from "./ProductCard";
+import type { ProductCardData } from "@/types/product";
+import { apiGet } from "@/utils/api";
+import MobileCategoryBrowser from "./MobileCategoryBrowser";
+import DesktopCategoryTree from "./DesktopCategoryTree";
+import ProductFilters from "@/components/filters/ProductFilters";
+import MobileQuickChips from "./MobileQuickChips";
+import DesktopQuickChips from "./DesktopQuickChips";
+
+type Product = {
+  _id: string;
+  title: string;
+  price: number;
+  currency: string;
+  images?: string[];
+  likes?: number;
+  featured?: boolean;
+  brand?: string;
+  discount?: number;
+  rating?: number;
+  shippingOptions?: { method: string; cost: number; estimatedDays: number }[];
+  seller?: { username?: string; reputation?: number; isVerified?: boolean };
+};
+
+// kept for potential future use on a "Featured" section
+// type FeaturedResponse = {
+//   status: string;
+//   data: Product[];
+// };
+type Category = { _id: string; name: string; slug: string; parentId?: string };
+type CategoriesResponse = { status: string; data: Category[] };
+type SearchResponse = {
+  status: string;
+  data: { products: Product[]; total: number; page: number; totalPages: number };
+};
+
+// withParams helper now lives inside reusable components; remove here.
+
+export default async function MarketplacePage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string>>;
+}) {
+  const params = await searchParams;
+  const selectedCategory = params?.category;
+  const minPrice = params?.minPrice;
+  const maxPrice = params?.maxPrice;
+  const condition = params?.condition;
+  const sort = params?.sort;
+  const ratingMin = params?.ratingMin;
+  const verifiedSeller = params?.verifiedSeller;
+  const freeShipping = params?.freeShipping;
+  const etaMaxDays = params?.etaMaxDays;
+  const discountMin = params?.discountMin;
+
+  // Collect attribute filters (attr_*)
+  const attributeEntries = Object.entries(params || {}).filter(([k, v]) => k.startsWith("attr_") && v !== "");
+  const attributeQuery: Record<string, string> = Object.fromEntries(attributeEntries as [string, string][]);
+
+  const [searchRes, categoriesRes] = await Promise.all([
+    apiGet<SearchResponse>("/api/v1/market/products", {
+      query: {
+        query: params?.q,
+        category: selectedCategory,
+        minPrice,
+        maxPrice,
+        condition,
+        sort,
+        ratingMin,
+        verifiedSeller,
+        freeShipping,
+        etaMaxDays,
+        discountMin,
+        ...attributeQuery,
+        limit: 30,
+      },
+    }).catch(
+      () =>
+        ({ status: "success", data: { products: [], total: 0, page: 1, totalPages: 1 } } as SearchResponse)
+    ),
+    apiGet<CategoriesResponse>("/api/v1/market/categories").catch(
+      () => ({ status: "success", data: [] } as CategoriesResponse)
+    ),
+  ]);
+  const products: Product[] = searchRes.data?.products || [];
+  const categories: Category[] = categoriesRes.data || [];
+
+  // Build child map for mobile quick leaves
+  // remove unused desktop helpers (handled in DesktopCategoryTree)
+
+  return (
+    <div className="w-full max-w-none mx-auto px-2 md:px-8 py-6">
+      <h1 className="text-2xl font-semibold mb-6">Marketplace</h1>
+      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
+        <aside className="hidden lg:block">
+          <div className="sticky top-20 space-y-6">
+            <DesktopCategoryTree categories={categories} params={params} selectedCategoryName={selectedCategory} basePath="/marketplace" />
+            
+            <ProductFilters
+              basePath="/marketplace"
+              params={params}
+              selectedCategory={selectedCategory}
+              minPrice={minPrice}
+              maxPrice={maxPrice}
+              condition={condition}
+              sort={sort}
+              variant="desktop"
+            />
+          </div>
+        </aside>
+
+        <main>
+          <DesktopQuickChips params={params} basePath="/marketplace" />
+          {/* Mobile filters toolbar */}
+          <div className="lg:hidden mb-4 space-y-3 sticky top-16 z-20 bg-white dark:bg-neutral-950 py-2">
+            <MobileCategoryBrowser categories={categories} params={params} selectedCategoryName={selectedCategory} basePath="/marketplace" />
+            <MobileQuickChips params={params} basePath="/marketplace" />
+            <ProductFilters
+              basePath="/marketplace"
+              params={params}
+              selectedCategory={selectedCategory}
+              minPrice={minPrice}
+              maxPrice={maxPrice}
+              condition={condition}
+              sort={sort}
+              variant="mobile"
+            />
+          </div>
+          {products.length === 0 ? (
+            <div className="text-sm text-neutral-500">No products match your filters.</div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+              {products.map((p) => (
+                <ProductCard key={p._id} product={p as unknown as ProductCardData} />
+              ))}
+            </div>
+          )}
+        </main>
+      </div>
+    </div>
+  );
+}
+

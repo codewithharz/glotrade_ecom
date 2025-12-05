@@ -1,0 +1,1608 @@
+"use client";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Check,
+  ShieldCheck,
+  Truck,
+  Gift,
+  Edit3,
+  Leaf,
+  Ticket,
+  ChevronRight,
+  CreditCard,
+  Apple,
+  Building2,
+  X,
+  Tag,
+} from "lucide-react";
+import { API_BASE_URL, apiGet } from "@/utils/api";
+import { initiatePayment, createOrder } from "./initiate";
+import { RequireAuth } from "@/components/auth/Guards";
+import AddressModal from "@/components/cart/AddressModal";
+import VoucherInput from "@/components/checkout/VoucherInput";
+import InsufficientBalanceModal from "@/components/wallet/InsufficientBalanceModal";
+import { AppliedVoucher } from "@/utils/voucherApi";
+import { getUserId } from "@/utils/auth";
+import { apiPost } from "@/utils/api";
+
+type ApiProduct = {
+  _id: string;
+  title: string;
+  price: number;
+  currency: string;
+  images?: string[];
+  discount?: number;
+  category?: string;
+  condition?: string;
+  rating?: number;
+  brand?: string;
+  featured?: boolean;
+  minOrderQuantity?: number;
+  shippingOptions?: { method: string; cost: number; estimatedDays: number }[];
+  seller?: { username?: string; reputation?: number; isVerified?: boolean };
+};
+type ProductResponse = { status: string; data: ApiProduct };
+
+function readCart(): Record<string, number> {
+  try {
+    const arr: string[] = JSON.parse(localStorage.getItem("cart") || "[]");
+    const map: Record<string, number> = {};
+    arr.forEach((id) => (map[id] = (map[id] || 0) + 1));
+    return map;
+  } catch {
+    return {};
+  }
+}
+
+// Custom Address Card Component
+function AddressCard({
+  address,
+  onEdit,
+}: {
+  address: any;
+  onEdit: () => void;
+}) {
+  console.log("AddressCard: Received address prop:", address);
+  console.log("AddressCard: displayName value:", address?.displayName);
+
+  if (!address) {
+    return <div className="text-sm text-neutral-500">No address saved.</div>;
+  }
+
+  return (
+    <div className="relative rounded-r">
+      {/* Custom left border with red and blue dashed lines */}
+      <div className="absolute left-0 top-0 top-0 bottom-0 w-1">
+        <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-orange-500 border-l border-dashed border-orange-500"></div>
+      </div>
+
+      {/* Main content with 2px borders on top, right, and bottom */}
+      <div className="pl-5 py-4 pr-4 border-2 border-neutral-200 dark:border-neutral-800 border-l-0 rounded-r">
+        <div className="bg-red flex items-center text-base font-semibold text-neutral-800 dark:text-neutral-100">
+          <div className="flex items-center">
+            <span className="mr-2">{address.displayName || "User"}</span>
+            <span className="text-neutral-500 dark:text-neutral-400 ml-3 font-normal mr-2">
+              +{address.phone}
+            </span>
+          </div>
+          <div className="w-full flex items-center justify-end">
+            <button
+              onClick={onEdit}
+              className="p-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+              aria-label="Edit address"
+            >
+              <Edit3
+                size={18}
+                className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200"
+              />
+            </button>
+          </div>
+        </div>
+        <div className="text-base text-orange-500 font-semibold mt-2">
+          {address.address}
+        </div>
+        <div className="text-base text-grey-700 dark:text-neutral-300 font-semibold mt-1">
+          {address.city}, {address.state}, {address.country}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function CheckoutPage() {
+  const [idToQty, setIdToQty] = useState<Record<string, number>>({});
+  const [products, setProducts] = useState<ApiProduct[]>([]);
+  const [address, setAddress] = useState<any>(null);
+  const [shippingMethod, setShippingMethod] = useState<"standard" | "pickup">(
+    "standard"
+  );
+  const [paymentMethod, setPaymentMethod] = useState("wallet"); // default to wallet
+  const [donateTree, setDonateTree] = useState(false);
+  const [showItemsModal, setShowItemsModal] = useState(false);
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [showInsufficientBalanceModal, setShowInsufficientBalanceModal] =
+    useState(false);
+  const [insufficientBalanceData, setInsufficientBalanceData] = useState<{
+    requiredAmount: number;
+    availableAmount: number;
+    currency: string;
+  } | null>(null);
+  const [addressUpdateTrigger, setAddressUpdateTrigger] = useState(0); // Force re-render after address updates
+  const [poNumber, setPoNumber] = useState("");
+  const [walletBalance, setWalletBalance] = useState<{ available: number, creditLimit: number, creditUsed: number } | null>(null);
+
+
+  // Function to update localStorage user data when address is updated
+  const updateLocalUserData = (updatedUserData: any) => {
+    console.log("Checkout: updateLocalUserData called with:", updatedUserData);
+    try {
+      const raw = localStorage.getItem("afritrade:user");
+      console.log("Checkout: Current localStorage user data:", raw);
+      if (raw) {
+        const currentUser = JSON.parse(raw);
+        console.log("Checkout: Parsed current user:", currentUser);
+        const updatedUser = {
+          ...currentUser,
+          firstName: updatedUserData.firstName,
+          lastName: updatedUserData.lastName,
+        };
+        console.log("Checkout: New updated user object:", updatedUser);
+        localStorage.setItem("afritrade:user", JSON.stringify(updatedUser));
+        console.log("Checkout: Successfully updated localStorage user data");
+
+        // Force re-render by updating the address state
+        if (address) {
+          const updatedAddress = {
+            ...address,
+            displayName: `${updatedUser.firstName || updatedUser.username || "User"
+              } ${updatedUser.lastName || ""}`.trim(),
+          };
+          setAddress(updatedAddress);
+          console.log(
+            "Checkout: Updated address state with new displayName:",
+            updatedAddress.displayName
+          );
+
+          // Also update localStorage shippingAddress to keep it in sync
+          try {
+            const currentShippingAddress =
+              localStorage.getItem("shippingAddress");
+            if (currentShippingAddress) {
+              const parsed = JSON.parse(currentShippingAddress);
+              const updatedShippingAddress = {
+                ...parsed,
+                displayName: updatedAddress.displayName,
+              };
+              localStorage.setItem(
+                "shippingAddress",
+                JSON.stringify(updatedShippingAddress)
+              );
+              console.log(
+                "Checkout: Updated localStorage shippingAddress with new displayName"
+              );
+            }
+          } catch (error) {
+            console.error(
+              "Failed to update localStorage shippingAddress:",
+              error
+            );
+          }
+        }
+
+        // Force re-render to trigger validation logic update
+        setAddressUpdateTrigger((prev) => prev + 1);
+        console.log("Checkout: Triggered address validation re-render");
+      }
+    } catch (error) {
+      console.error("Failed to update localStorage user data:", error);
+    }
+  };
+
+  // Configuration object for dynamic values
+  const [config, setConfig] = useState({
+    coupon: {
+      discount: 25, // Can be fetched from API or made configurable
+      minDiscountThreshold: 20, // Minimum discount % to show badge
+    },
+    shipping: {
+      standard: {
+        deliveryRange: "Aug 23-Sep 5",
+        creditAmount: 1600,
+        couriers: ["Speedaf", "Sharp Courier", "etc."],
+      },
+      pickup: {
+        available: true,
+      },
+    },
+    donation: {
+      treeAmount: 542,
+      minRating: 4.5,
+    },
+    layout: {
+      gridCols: { mobile: 1, tablet: 2, desktop: 2 },
+      imageDimensions: { width: 200, height: 200 },
+    },
+  });
+
+  // Configuration is set with default values - no need to fetch from API
+  // const fetchConfig = async () => {
+  //     try {
+  //         const response = await fetch(`${API_BASE_URL}/api/v1/config/checkout`);
+  //         const configData = await response.json();
+  //         if (configData.status === 'success') {
+  //             setConfig(prevConfig => ({ ...prevConfig, ...configData.data }));
+  //         }
+  //     } catch (error) {
+  //         console.log('Using default config:', error);
+  //     }
+  // };
+
+  // Real voucher system
+  const [appliedVouchers, setAppliedVouchers] = useState<AppliedVoucher[]>([]);
+
+  const totalVoucherDiscount = appliedVouchers.reduce(
+    (sum, voucher) => sum + voucher.discountAmount,
+    0
+  );
+
+  // Voucher management functions
+  const handleVoucherApplied = (voucher: AppliedVoucher) => {
+    setAppliedVouchers((prev) => [...prev, voucher]);
+  };
+
+  const handleVoucherRemoved = (voucherId: string) => {
+    setAppliedVouchers((prev) => prev.filter((v) => v.id !== voucherId));
+  };
+
+  useEffect(() => {
+    let aborted = false;
+    async function run() {
+      // Configuration is already set with default values
+
+      const map = readCart();
+      const ids = Object.keys(map);
+      console.log("Cart data:", { map, ids, count: ids.length });
+
+      try {
+        const results = await Promise.all(
+          ids.map(async (id) => {
+            console.log("Fetching product:", id);
+            const res = await fetch(
+              new URL(`/api/v1/market/products/${id}`, API_BASE_URL).toString(),
+              { cache: "no-store" }
+            );
+            const json: ProductResponse = await res.json();
+            console.log("Product response:", json);
+            return json.data;
+          })
+        );
+        if (!aborted) {
+          console.log("Setting products:", results);
+          setIdToQty(map);
+          setProducts(results);
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+      try {
+        // First try to get address from user's database if logged in
+        let userAddress = null;
+        try {
+          const raw = localStorage.getItem("afritrade:user");
+          console.log(
+            "Checkout: User data from localStorage:",
+            raw ? "exists" : "missing"
+          );
+
+          if (raw) {
+            const user = JSON.parse(raw);
+            console.log("Checkout: Parsed user:", {
+              id: user?.id,
+              _id: user?._id,
+              username: user?.username,
+            });
+
+            if (user?.id || user?._id) {
+              // Get the actual JWT token from localStorage
+              const authToken = localStorage.getItem("afritrade:auth");
+              console.log("Checkout: Auth token exists:", !!authToken);
+
+              let freshUser = user; // Default to localStorage user
+
+              if (authToken) {
+                // Fetch fresh user data from database using JWT token
+                console.log(
+                  "Checkout: Fetching fresh user data from database..."
+                );
+                const userRes = await fetch(
+                  new URL(`/api/v1/users/me`, API_BASE_URL).toString(),
+                  {
+                    headers: { Authorization: `Bearer ${authToken}` },
+                    cache: "no-store",
+                  }
+                );
+
+                if (userRes.ok) {
+                  const userData = await userRes.json();
+                  freshUser = userData.data;
+                  console.log("Checkout: Fresh user data received:", freshUser);
+
+                  // Update localStorage with fresh user data
+                  try {
+                    const updatedUser = {
+                      ...user,
+                      firstName: freshUser.firstName,
+                      lastName: freshUser.lastName,
+                    };
+                    localStorage.setItem(
+                      "afritrade:user",
+                      JSON.stringify(updatedUser)
+                    );
+                    console.log(
+                      "Checkout: Updated localStorage with fresh user data:",
+                      updatedUser
+                    );
+                  } catch (error) {
+                    console.error(
+                      "Failed to update localStorage user data:",
+                      error
+                    );
+                  }
+                } else {
+                  console.log(
+                    "Checkout: Failed to fetch fresh user data, status:",
+                    userRes.status
+                  );
+                }
+              } else {
+                console.log(
+                  "Checkout: No auth token found - authentication issue detected"
+                );
+                console.log(
+                  "Checkout: User appears to be logged in but missing auth token"
+                );
+                console.log(
+                  "Checkout: This suggests a login/authentication flow issue"
+                );
+
+                // Check if we can find any auth-related tokens
+                const allKeys = Object.keys(localStorage);
+                const authKeys = allKeys.filter(
+                  (key) => key.includes("auth") || key.includes("token")
+                );
+                console.log("Checkout: Available auth-related keys:", authKeys);
+
+                // For now, use the existing localStorage user data
+                // The real fix is to ensure proper authentication during login
+                console.log(
+                  "Checkout: Using existing localStorage user data as fallback"
+                );
+              }
+
+              // Fetch user's addresses from database using JWT token
+              console.log("Checkout: Fetching addresses from database...");
+              const addressRes = await fetch(
+                new URL(`/api/v1/users/me/addresses`, API_BASE_URL).toString(),
+                {
+                  headers: {
+                    Authorization: `Bearer ${authToken || user.id || user._id}`,
+                  },
+                  cache: "no-store",
+                }
+              );
+
+              console.log(
+                "Checkout: Address API response status:",
+                addressRes.status
+              );
+
+              if (addressRes.ok) {
+                const addressData = await addressRes.json();
+                console.log("Checkout: Address data received:", addressData);
+
+                if (addressData.data && addressData.data.length > 0) {
+                  // Use first address or default address
+                  const defaultAddr =
+                    addressData.data.find((a: any) => a.isDefault) ||
+                    addressData.data[0];
+
+                  // Map database fields to expected format
+                  userAddress = {
+                    ...defaultAddr,
+                    address: defaultAddr.street, // Map street to address
+                    // Use fresh user's firstName/lastName, fallback to username
+                    displayName: `${freshUser?.firstName || freshUser?.username || "User"
+                      } ${freshUser?.lastName || ""}`.trim(),
+                  };
+
+                  console.log("Checkout: User data from localStorage:", {
+                    id: user?.id,
+                    username: user?.username,
+                    firstName: user?.firstName,
+                    lastName: user?.lastName,
+                    hasFirstName: !!user?.firstName,
+                    hasLastName: !!user?.lastName,
+                  });
+                  console.log("Checkout: Fresh user data:", {
+                    id: freshUser?.id,
+                    username: freshUser?.username,
+                    firstName: freshUser?.firstName,
+                    lastName: freshUser?.lastName,
+                    hasFirstName: !!freshUser?.firstName,
+                    hasLastName: !!freshUser?.lastName,
+                  });
+                  console.log(
+                    "Checkout: Constructed displayName:",
+                    userAddress.displayName
+                  );
+                  console.log("Checkout: Using address:", userAddress);
+                }
+              } else if (addressRes.status === 401) {
+                // Token expired or invalid, clear user data
+                console.log("Authentication failed, clearing user data");
+                localStorage.removeItem("afritrade:user");
+                localStorage.removeItem("shippingAddress");
+                window.dispatchEvent(new CustomEvent("auth:logout"));
+              }
+            }
+          }
+        } catch (error) {
+          console.log("Could not fetch user address from database:", error);
+        }
+
+        // If no database address, fall back to localStorage
+        if (!userAddress) {
+          const raw = localStorage.getItem("shippingAddress");
+          if (raw) {
+            userAddress = JSON.parse(raw);
+          }
+        }
+
+        if (!aborted) {
+          console.log("Address resolution result:", {
+            userAddress,
+            hasLocalStorage: !!localStorage.getItem("shippingAddress"),
+            localStorageAddress: localStorage.getItem("shippingAddress"),
+          });
+
+          if (userAddress) {
+            console.log(
+              "Checkout: About to set address state with:",
+              userAddress
+            );
+            setAddress(userAddress);
+            // Always sync localStorage with database address to keep it fresh
+            localStorage.setItem(
+              "shippingAddress",
+              JSON.stringify(userAddress)
+            );
+            console.log(
+              "Checkout: Synced address to localStorage:",
+              userAddress
+            );
+          } else {
+            // No address found anywhere, clear any stale localStorage data
+            setAddress(null);
+            localStorage.removeItem("shippingAddress");
+          }
+        }
+      } catch (error) {
+        console.error("Error loading address:", error);
+      }
+    }
+    run();
+    return () => {
+      aborted = true;
+    };
+    run();
+    return () => {
+      aborted = true;
+    };
+  }, []);
+
+  // Fetch wallet balance
+  useEffect(() => {
+    const fetchWallet = async () => {
+      try {
+        const userId = getUserId();
+        if (userId) {
+          const res = await apiGet(`/api/v1/wallets/summary?userId=${userId}`) as any;
+          if (res.data?.ngnWallet) {
+            setWalletBalance({
+              available: res.data.ngnWallet.available,
+              creditLimit: res.data.ngnWallet.creditLimit || 0,
+              creditUsed: res.data.ngnWallet.creditUsed || 0
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching wallet:", error);
+      }
+    };
+    fetchWallet();
+  }, []);
+
+  // Helpers for modal close with ESC
+  useEffect(() => {
+    if (!showItemsModal) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowItemsModal(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [showItemsModal]);
+
+
+
+  const MAX_QTY = 5;
+  function setQty(productId: string, qty: number, minQty: number = 1) {
+    setIdToQty((prev) => ({
+      ...prev,
+      [productId]: Math.max(minQty, Math.min(MAX_QTY, qty)),
+    }));
+  }
+
+  const summary = useMemo(() => {
+    let subtotal = 0,
+      discount = 0,
+      items = 0;
+    products.forEach((p) => {
+      const q = idToQty[p._id] || 0;
+      items += q;
+      // Use the exact same logic as ProductCard
+      const originalPrice = p.price;
+      const discounted =
+        typeof p.discount === "number" && p.discount > 0
+          ? Math.max(0, Math.round((originalPrice * (100 - p.discount)) / 100))
+          : undefined;
+
+      // Calculate totals using real prices
+      subtotal += originalPrice * q; // Original price × quantity
+      if (discounted !== undefined) {
+        discount += (originalPrice - discounted) * q; // Actual amount saved
+      }
+    });
+    const voucherDiscount = totalVoucherDiscount; // Requested voucher amount
+    const finalSubtotal = Math.max(0, subtotal - discount);
+    const voucherApplied = Math.min(voucherDiscount, finalSubtotal);
+    const finalAfterVouchers = finalSubtotal - voucherApplied;
+    const finalTotal = Math.max(0, finalAfterVouchers);
+    return {
+      items,
+      subtotal,
+      discount,
+      voucherDiscount,
+      voucherApplied,
+      finalSubtotal,
+      finalAfterVouchers,
+      finalTotal,
+    };
+  }, [products, idToQty, totalVoucherDiscount]);
+
+  // Show loading state while products are being fetched
+  if (products.length === 0 && Object.keys(idToQty).length > 0) {
+    return (
+      <RequireAuth cancelRedirect="/cart" message="Please sign in to checkout.">
+        <main className="mx-auto md:w-[95%] w-full px-2 md:px-6 py-5">
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-neutral-600 dark:text-neutral-400">
+                Loading checkout...
+              </p>
+            </div>
+          </div>
+        </main>
+      </RequireAuth>
+    );
+  }
+
+  return (
+    <RequireAuth cancelRedirect="/cart" message="Please sign in to checkout.">
+      <main className="mx-auto md:w-[95%] w-full px-2 md:px-6 py-5">
+        {/* Breadcrumb */}
+        <nav className="mb-3 text-sm text-neutral-500">
+          <Link href="/" className="text-neutral-500 dark:text-neutral-400">
+            Home
+          </Link>
+          <span className="mx-2">›</span>
+          <span className="text-neutral-500 dark:text-neutral-400">
+            Checkout
+          </span>
+        </nav>
+
+        {/* Free Shipping Banner */}
+        <div className="rounded border border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/30 p-3 text-sm flex items-center justify-between mb-4 max-w-full lg:max-w-[calc(100%-400px-1.5rem)]">
+          <div className="inline-flex items-center gap-2 text-emerald-700 dark:text-emerald-200 text-[10px] sm:text-sm">
+            <Check size={16} className="text-emerald-600" />
+            Free shipping special for you
+          </div>
+          <div className="text-neutral-500">Limited-time offer</div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-4 lg:gap-0">
+          {/* Left Column */}
+          <section className="space-y-4 lg:space-y-0">
+            {/* Shipping Address & Methods Combined */}
+            <div className="w-full flex flex-col lg:flex-row justify-between gap-4 rounded-xs border border-neutral-200 dark:border-neutral-800 p-5 bg-white dark:bg-neutral-900">
+              {/* Shipping Address */}
+              <div className="mb-6 lg:mb-0 w-full lg:w-[40%] ">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">
+                    Shipping address
+                  </h3>
+                  <Link
+                    href="/cart"
+                    className="text-grey-600 dark:text-neutral-400 hover:underline text-sm"
+                  >
+                    Change address ›
+                  </Link>
+                </div>
+                <AddressCard
+                  address={address}
+                  onEdit={() => setShowAddressModal(true)}
+                />
+
+                {(!address ||
+                  !address.address ||
+                  !address.city ||
+                  !address.country) && (
+                    <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-lg">
+                      <div className="text-sm text-amber-800 dark:text-amber-200 font-medium mb-2">
+                        ⚠️ Shipping address required
+                      </div>
+                      <div className="text-xs text-amber-700 dark:text-amber-300 mb-3">
+                        Please add a complete shipping address to proceed with
+                        checkout.
+                      </div>
+                      <Link
+                        href="/cart"
+                        className="inline-flex items-center gap-2 text-xs bg-amber-600 text-white px-3 py-1.5 rounded-full hover:bg-amber-700 transition-colors"
+                      >
+                        Add Address
+                      </Link>
+                    </div>
+                  )}
+
+                {/* Debug info for address validation */}
+                {/* {process.env.NODE_ENV === 'development' && (
+                                <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+                                    Debug: address={!!address}, address.address={!!address?.address}, city={!!address?.city}, country={!!address?.country}, trigger={addressUpdateTrigger}
+                                </div>
+                            )} */}
+              </div>
+
+              {/* Shipping Methods */}
+              <div className="w-full lg:w-[40%]">
+                <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100 mb-4">
+                  Shipping methods
+                </h3>
+                <div className="space-y-0">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      name="shipping"
+                      type="radio"
+                      checked={shippingMethod === "standard"}
+                      onChange={() => setShippingMethod("standard")}
+                      className="w-5 h-5 text-orange-500 mt-0.5"
+                    />
+                    <div className="flex-1">
+                      <div className="text-base font-semibold text-emerald-700">
+                        Standard: FREE
+                      </div>
+                      <div className="text-sm font-semibold text-grey-500 dark:text-neutral-400 mt-1">
+                        Delivery: {config.shipping.standard.deliveryRange} ›
+                      </div>
+                      <div className="text-sm text-neutral-500 dark:text-neutral-400">
+                        Get a{" "}
+                        {config.shipping.standard.creditAmount.toLocaleString()}{" "}
+                        {products[0]?.currency || "NGN"} Credit for late
+                        delivery?
+                      </div>
+                      <div className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                        Courier company:{" "}
+                        {config.shipping.standard.couriers.join(", ")} ›
+                      </div>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      name="shipping"
+                      type="radio"
+                      checked={shippingMethod === "pickup"}
+                      onChange={() => setShippingMethod("pickup")}
+                      className="w-5 h-5 text-orange-500 mt-0.5"
+                    />
+                    <div className="flex items-center gap-2">
+                      <span className="text-base font-semibold text-emerald-700">
+                        Pickup: FREE
+                      </span>
+                      <Truck size={16} className="text-green-600" />
+                    </div>
+                  </label>
+                </div>
+                {totalVoucherDiscount > 0 && (
+                  <div className="flex items-center justify-end mt-4 font-semibold text-sm text-green-600">
+                    {totalVoucherDiscount.toLocaleString()}{" "}
+                    {products[0]?.currency || "NGN"} OFF applied
+                    <ChevronRight size={14} className="text-neutral-500" />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Vouchers */}
+            <div className="rounded-xs border border-neutral-200 dark:border-neutral-800 p-5 bg-white dark:bg-neutral-900">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-9 h-6 bg-orange-100 dark:bg-orange-900/30 rounded flex items-center justify-center">
+                  <span className="text-orange-600 dark:text-orange-300 text-sm font-bold">
+                    {products[0]?.currency || "NGN"}
+                  </span>
+                </div>
+                <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">
+                  Vouchers & Discounts
+                </h3>
+              </div>
+
+              <VoucherInput
+                onVoucherApplied={handleVoucherApplied}
+                onVoucherRemoved={handleVoucherRemoved}
+                appliedVouchers={appliedVouchers}
+                orderAmount={summary?.subtotal || 0}
+                productIds={products.map((p) => p._id)}
+              />
+            </div>
+
+            {/* PO Number Input */}
+            <div className="rounded-xs border border-neutral-200 dark:border-neutral-800 p-5 bg-white dark:bg-neutral-900">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-9 h-6 bg-blue-100 dark:bg-blue-900/30 rounded flex items-center justify-center">
+                  <span className="text-blue-600 dark:text-blue-300 text-sm font-bold">#</span>
+                </div>
+                <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">
+                  Purchase Order (Optional)
+                </h3>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm text-neutral-600 dark:text-neutral-400">
+                  Enter PO Number for your records
+                </label>
+                <input
+                  type="text"
+                  value={poNumber}
+                  onChange={(e) => setPoNumber(e.target.value)}
+                  placeholder="e.g., PO-2025-001"
+                  className="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2.5 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-500"
+                />
+              </div>
+            </div>
+
+            {/* Item Details */}
+            <div className="rounded-xs border border-neutral-200 dark:border-neutral-800 p-5 bg-white dark:bg-neutral-900">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base font-semibold text-grey-800">
+                  Item details (
+                  <span className="text-orange-500">{summary?.items || 0}</span>
+                  )
+                </h3>
+                <button
+                  onClick={() => setShowItemsModal(true)}
+                  className="hidden sm:flex items-center gap-1 text-grey-600 hover:underline text-sm font-semibold"
+                >
+                  <span>View all</span>
+                  <ChevronRight size={14} className="text-neutral-500" />
+                </button>
+              </div>
+              <button
+                onClick={() => setShowItemsModal(true)}
+                className="sm:hidden w-full text-left text-blue-600 underline text-sm font-medium mb-2"
+              >
+                View all
+              </button>
+
+              {/* Debug Info */}
+              {products.length === 0 && (
+                <div className="text-sm text-neutral-500 mb-4">
+                  No products found. Cart items: {Object.keys(idToQty).length}
+                </div>
+              )}
+
+              {/* products cart list */}
+              <div className="grid gap-4 grid-cols-2 sm:grid-cols-5">
+                {products.map((p, index) => {
+                  const q = idToQty[p._id] || 0;
+                  // Use the exact same logic as ProductCard
+                  const discounted =
+                    typeof p.discount === "number" && p.discount > 0
+                      ? Math.max(
+                        0,
+                        Math.round((p.price * (100 - p.discount)) / 100)
+                      )
+                      : undefined;
+
+                  return (
+                    <div
+                      key={p._id}
+                      onClick={() => setShowItemsModal(true)}
+                      className="group rounded-lg border border-neutral-200 dark:border-neutral-800 p-2 sm:p-3 hover:shadow-sm transition-shadow h-full flex flex-col cursor-pointer"
+                    >
+                      <div className="aspect-square rounded-md bg-neutral-100 dark:bg-neutral-900 mb-2 sm:mb-3 overflow-hidden relative">
+                        {p.featured ? (
+                          <span className="absolute left-1 sm:left-2 top-1 sm:top-2 z-10 rounded bg-amber-500 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 flex items-center gap-0.5 sm:gap-1 shadow-sm">
+                            <span className="hidden sm:inline">Featured</span>
+                            <span className="sm:hidden">★</span>
+                          </span>
+                        ) : null}
+                        {typeof p.discount === "number" && p.discount > 0 ? (
+                          <span className="absolute right-1 sm:right-2 top-1 sm:top-2 z-10 rounded bg-rose-500 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 shadow-sm">
+                            -{p.discount}%
+                          </span>
+                        ) : null}
+                        <img
+                          src={
+                            p.images?.[0] ||
+                            `https://placehold.co/160x160?text=${encodeURIComponent(
+                              p.title
+                            )}`
+                          }
+                          alt={p.title}
+                          className="relative z-0 w-full h-full object-cover group-hover:scale-[1.02] transition-transform"
+                        />
+                      </div>
+                      {p.brand && (
+                        <div className="text-[10px] sm:text-[11px] uppercase tracking-wide text-neutral-500 mb-0.5 sm:mb-1">
+                          {p.brand}
+                        </div>
+                      )}
+                      <div className="text-xs sm:text-sm font-medium line-clamp-2 leading-tight">
+                        {p.title}
+                      </div>
+
+                      {/* Price Section - Current and Original price on same level */}
+                      <div className="mt-1.5 sm:mt-2 flex items-center justify-between gap-2 sm:gap-3">
+                        <div className="flex items-center gap-1.5 sm:gap-3">
+                          <div className="inline-flex items-baseline bg-orange-500 text-white rounded px-1.5 sm:px-2 py-0.5">
+                            <span className="text-base sm:text-lg font-extrabold leading-none">
+                              {discounted ?? p.price}
+                            </span>
+                            <span className="text-[8px] sm:text-[10px] font-semibold ml-0.5 sm:ml-1 leading-none">
+                              {p.currency}
+                            </span>
+                            {q > 1 && (
+                              <span className="text-[8px] sm:text-[10px] ml-1">
+                                x{q}
+                              </span>
+                            )}
+                          </div>
+                          {discounted !== undefined && (
+                            <div className="text-xs sm:text-sm text-neutral-500">
+                              <span className="line-through hidden sm:inline">
+                                {p.price}{" "}
+                                <span className="text-[8px] sm:text-[10px]">
+                                  {p.currency}
+                                </span>
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {products.length > 0 && (
+                <div className="mt-4 flex items-center gap-2 text-base text-grey-700">
+                  <Gift size={16} />
+                  Add a free gift message card ›
+                </div>
+              )}
+            </div>
+
+            {/* Payment Methods */}
+            {/* <div className="rounded-xs border border-neutral-200 dark:border-neutral-800 p-5 bg-white dark:bg-neutral-900">
+              <h3 className="text-lg font-semibold text-neutral-500 dark:text-neutral-300 mb-4">
+                Payment methods
+              </h3>
+              <div className="space-y-4">
+                {[
+                  { id: "wallet", name: walletBalance ? `Wallet (Avail: ₦${((walletBalance.available + (walletBalance.creditLimit || 0) - (walletBalance.creditUsed || 0))).toLocaleString()})` : "Wallet", logo: "💰" },
+                  // { id: "apple", name: "Apple Pay", logo: "🍎" },
+                  // { id: "card", name: "Card", logo: "💳" },
+                  // { id: "google", name: "Google Pay", logo: "G" },
+                  // { id: "bank", name: "Bank transfer", logo: "🏦" },
+                  // { id: "flutterwave", name: "Flutterwave", logo: "F" },
+                  // { id: "paystack", name: "Paystack", logo: "P" },
+                  // { id: "orange_money", name: "Orange Money", logo: "🍊" },
+                ].map((method) => (
+                  <label
+                    key={method.id}
+                    className="flex items-center gap-3 cursor-pointer"
+                  >
+                    <input
+                      name="payment"
+                      type="radio"
+                      value={method.id}
+                      checked={paymentMethod === method.id}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                      className="w-5 h-5 text-orange-500"
+                    />
+                    <div className="flex-1">
+                      <span className="text-base text-neutral-800 dark:text-neutral-400">
+                        {method.name}
+                      </span>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div> */}
+          </section>
+
+          {/* Right Column */}
+          <aside className="mt-4 lg:mt-0 lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto no-scrollbar h-max space-y-4 lg:space-y-0 pr-0 lg:pr-2">
+            {/* Order Summary */}
+            <div className="rounded-xs border border-neutral-200 dark:border-neutral-800 p-4 bg-white dark:bg-neutral-900">
+              <h3 className="text-base font-semibold text-neutral-800 dark:text-neutral-100 mb-3">
+                Order summary
+              </h3>
+
+              {/* Product Breakdown */}
+              <div className="mb-4 space-y-2">
+                {products.map((p) => {
+                  const q = idToQty[p._id] || 0;
+                  // Use the exact same logic as ProductCard
+                  const discounted =
+                    typeof p.discount === "number" && p.discount > 0
+                      ? Math.max(
+                        0,
+                        Math.round((p.price * (100 - p.discount)) / 100)
+                      )
+                      : undefined;
+                  const itemTotal = (discounted ?? p.price) * q;
+                  const originalItemTotal = p.price * q;
+                  const itemDiscount =
+                    discounted !== undefined ? (p.price - discounted) * q : 0;
+
+                  return (
+                    <div
+                      key={p._id}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-neutral-800 dark:text-neutral-100 truncate">
+                          {p.title}
+                        </div>
+                        <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                          Qty: {q} × {(discounted ?? p.price).toLocaleString()}{" "}
+                          {p.currency}
+                          {discounted !== undefined && (
+                            <span className="ml-2 text-rose-600">
+                              (was {p.price.toLocaleString()} {p.currency})
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right ml-2">
+                        <div className="font-medium text-neutral-800 dark:text-neutral-100">
+                          {itemTotal.toLocaleString()} {p.currency}
+                        </div>
+                        {itemDiscount > 0 && (
+                          <div className="text-xs text-rose-600">
+                            Saved: {itemDiscount.toLocaleString()} {p.currency}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="border-t border-neutral-200 dark:border-neutral-800 my-3 pt-2">
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-neutral-600 dark:text-neutral-400">
+                      Item(s) total:
+                    </span>
+                    <span className="line-through text-neutral-500 dark:text-neutral-400">
+                      {summary.subtotal.toLocaleString()}{" "}
+                      {products[0]?.currency || "NGN"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-neutral-600 dark:text-neutral-400">
+                      Item(s) discount:
+                    </span>
+                    <span className="text-rose-600">
+                      -{summary.discount.toLocaleString()}{" "}
+                      {products[0]?.currency || "NGN"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between font-medium text-neutral-800 dark:text-neutral-100">
+                    <span>Subtotal:</span>
+                    <span>
+                      {summary?.finalSubtotal?.toLocaleString() || "0"}{" "}
+                      {products[0]?.currency || "NGN"}
+                    </span>
+                  </div>
+                  {totalVoucherDiscount > 0 && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-neutral-600 dark:text-neutral-400">
+                        Voucher discount:
+                      </span>
+                      <span className="text-rose-600">
+                        -{summary?.voucherApplied?.toLocaleString() || "0"}{" "}
+                        {products[0]?.currency || "NGN"}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between font-medium text-neutral-800 dark:text-neutral-100">
+                    <span>Subtotal after vouchers:</span>
+                    <span>
+                      {summary?.finalAfterVouchers?.toLocaleString() || "0"}{" "}
+                      {products[0]?.currency || "NGN"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-neutral-600 dark:text-neutral-400">
+                      Shipping:
+                    </span>
+                    <span className="text-emerald-600 font-medium">FREE</span>
+                  </div>
+                </div>
+              </div>
+              {/* Payment Methods */}
+              <div className="border-t border-neutral-200 dark:border-neutral-800 my-3 pt-2">
+                <h3 className="text-base font-semibold text-neutral-800 dark:text-neutral-100 mb-3">
+                  Payment methods
+                </h3>
+                <div className="space-y-3 mb-4">
+                  {[
+                    { id: "wallet", name: walletBalance ? `Wallet (Avail: ₦${((walletBalance.available + (walletBalance.creditLimit || 0) - (walletBalance.creditUsed || 0))).toLocaleString()})` : "Wallet", logo: "💰" },
+                    // { id: "apple", name: "Apple Pay", logo: "🍎" },
+                    // { id: "card", name: "Card", logo: "💳" },
+                    // { id: "google", name: "Google Pay", logo: "G" },
+                    // { id: "bank", name: "Bank transfer", logo: "🏦" },
+                    // { id: "flutterwave", name: "Flutterwave", logo: "F" },
+                    // { id: "paystack", name: "Paystack", logo: "P" },
+                    // { id: "orange_money", name: "Orange Money", logo: "🍊" },
+                  ].map((method) => (
+                    <label
+                      key={method.id}
+                      className="flex items-center gap-3 cursor-pointer"
+                    >
+                      <input
+                        name="payment"
+                        type="radio"
+                        value={method.id}
+                        checked={paymentMethod === method.id}
+                        onChange={(e) => setPaymentMethod(e.target.value)}
+                        className="w-4 h-4 text-orange-500"
+                      />
+                      <div className="flex-1">
+                        <span className="text-sm text-neutral-800 dark:text-neutral-400">
+                          {method.name}
+                        </span>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="border-t border-neutral-200 dark:border-neutral-800 my-3 pt-2">
+                <div className="flex items-center justify-between text-base font-semibold text-neutral-800 dark:text-neutral-100">
+                  <span>Order total:</span>
+                  <span>
+                    {summary?.finalTotal?.toLocaleString() || "0"}{" "}
+                    {products[0]?.currency || "NGN"}
+                  </span>
+                </div>
+              </div>
+
+              <button
+                onClick={async () => {
+                  try {
+                    if (summary?.finalTotal <= 0) {
+                      console.warn(
+                        "Order total must be greater than 0 to proceed to payment."
+                      );
+                      return;
+                    }
+
+                    // Validate shipping address exists
+                    if (
+                      !address ||
+                      !address.address ||
+                      !address.city ||
+                      !address.country
+                    ) {
+                      alert(
+                        "Please add a complete shipping address before proceeding with checkout."
+                      );
+                      return;
+                    }
+
+                    // Build minimal order snapshot for metadata
+                    const items = products.map((p) => {
+                      // Calculate discounted price (same logic as summary)
+                      const discountedPrice = typeof p.discount === "number" && p.discount > 0
+                        ? Math.max(0, Math.round((p.price * (100 - p.discount)) / 100))
+                        : p.price;
+
+                      return {
+                        productId: p._id,
+                        vendorId: p.seller as any,
+                        qty: idToQty[p._id] || 1,
+                        unitPrice: discountedPrice,
+                        currency: p.currency,
+                      };
+                    });
+                    console.log("Order items being sent:", items);
+
+                    // Try to attach buyer id if logged in
+                    let buyerId: string | undefined = undefined;
+                    try {
+                      const raw = localStorage.getItem("afritrade:user");
+                      if (raw) {
+                        const obj = JSON.parse(raw);
+                        buyerId = obj?.id || obj?._id;
+                      }
+                    } catch { }
+
+
+
+                    // Handle other payment methods (existing logic)
+                    const provider =
+                      paymentMethod === "flutterwave"
+                        ? "flutterwave"
+                        : "paystack";
+
+                    const orderRes = await createOrder({
+                      buyerId,
+                      lineItems: items,
+                      currency: "NGN",
+                      shippingDetails: address || {},
+                    });
+                    const orderId = orderRes?.data?.orderId;
+
+                    if (paymentMethod === "wallet") {
+                      // Handle wallet payment
+                      const availableFunds = (walletBalance?.available || 0) + (walletBalance?.creditLimit || 0) - (walletBalance?.creditUsed || 0);
+                      const orderAmount = Math.round((summary?.finalTotal || 0)); // Wallet balance is already in Naira, not kobo
+
+                      if (availableFunds < orderAmount) {
+                        setInsufficientBalanceData({
+                          requiredAmount: orderAmount,
+                          availableAmount: availableFunds,
+                          currency: "NGN"
+                        });
+                        setShowInsufficientBalanceModal(true);
+                        return;
+                      }
+
+                      await apiPost("/api/v1/wallets/pay-order", {
+                        orderId,
+                        amount: orderAmount * 100, // Convert to kobo for API
+                        currency: "NGN"
+                      });
+
+                      // Redirect to success page
+                      window.location.href = `/checkout/success?orderId=${orderId}`;
+                      return;
+                    }
+
+                    const payload = {
+                      orderId,
+                      provider,
+                      amount: Math.max(
+                        0,
+                        Math.round((summary?.finalTotal || 0) * 100)
+                      ),
+                      currency: "NGN",
+                      customer: { email: "test@example.com" },
+                      returnUrl: `${window.location.origin}/checkout/callback?provider=${provider}&orderId=${orderId}`,
+                      metadata: { items },
+                    };
+                    const res = await initiatePayment(payload);
+                    const url = res?.data?.url;
+                    if (url) window.location.href = url;
+                  } catch (e) {
+                    console.error("init payment error", e);
+                    alert("Payment failed. Please try again. Error: " + (e as Error).message);
+                  }
+                }}
+                disabled={
+                  (summary?.finalTotal || 0) <= 0 ||
+                  !address ||
+                  !address.address ||
+                  !address.city ||
+                  !address.country
+                }
+                aria-disabled={
+                  (summary?.finalTotal || 0) <= 0 ||
+                  !address ||
+                  !address.address ||
+                  !address.city ||
+                  !address.country
+                }
+                className={`w-full font-semibold py-3 px-4 rounded-full transition-colors ${(summary?.finalTotal || 0) <= 0 ||
+                  !address ||
+                  !address.address ||
+                  !address.city ||
+                  !address.country
+                  ? "bg-neutral-300 text-neutral-500 cursor-not-allowed"
+                  : "bg-orange-500 text-white hover:bg-orange-600"
+                  }`}
+              >
+                Submit order ({summary?.items || 0})
+              </button>
+              {(summary?.finalTotal || 0) <= 0 && (
+                <div className="mt-2 text-xs text-rose-600 text-center">
+                  Order total must be greater than 0 after discounts and
+                  vouchers.
+                </div>
+              )}
+
+              {(!address ||
+                !address.address ||
+                !address.city ||
+                !address.country) && (
+                  <div className="mt-2 text-xs text-rose-600 text-center">
+                    Please add a complete shipping address to proceed with
+                    checkout.
+                  </div>
+                )}
+
+              <div className="mt-4 text-xs text-neutral-500 text-center">
+                By submitting your order, you agree to our{" "}
+                <Link href="#" className="text-blue-600 underline">
+                  Terms of Use
+                </Link>{" "}
+                and acknowledge that you have read our{" "}
+                <Link href="#" className="text-blue-600 underline">
+                  Privacy Policy
+                </Link>
+                .
+              </div>
+            </div>
+
+            {/* Donate with Marketplace */}
+            <div className="rounded-xs border border-neutral-200 dark:border-neutral-800 p-4 bg-white dark:bg-neutral-900">
+              <h3 className="text-base font-semibold text-neutral-800 dark:text-neutral-100 mb-3">
+                Donate with Marketplace
+              </h3>
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={donateTree}
+                  onChange={(e) => setDonateTree(e.target.checked)}
+                  className="w-4 h-4 text-orange-500 mt-0.5"
+                />
+                <span className="text-sm text-neutral-700 dark:text-neutral-300">
+                  We invite you to donate{" "}
+                  {config.donation.treeAmount.toLocaleString()}{" "}
+                  {products[0]?.currency || "NGN"} to fund a tree?
+                </span>
+              </label>
+            </div>
+
+            {/* Tree Planting Program */}
+            <div className="rounded-xs border border-neutral-200 dark:border-neutral-800 p-4 bg-white dark:bg-neutral-900">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="inline-flex items-center bg-green-600 text-white text-[10px] px-2 py-0.5 rounded-full">
+                  Plant
+                </span>
+                <Leaf size={16} className="text-green-600" />
+                <h3 className="text-base font-semibold text-green-700">
+                  Plant Marketplace's Tree Planting Program
+                </h3>
+              </div>
+              <p className="text-sm text-neutral-700 dark:text-neutral-300 mb-3">
+                Marketplace and its users have donated funds to Trees for the
+                Future to plant trees across sub-Saharan Africa.
+              </p>
+              <div className="w-20 h-12 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 rounded flex items-center justify-center mx-auto">
+                <span className="text-green-700 text-[11px] font-semibold text-center leading-tight">
+                  TREES FOR
+                  <br />
+                  THE FUTURE
+                </span>
+              </div>
+            </div>
+
+            {/* Delivery Guarantee */}
+            <div className="rounded-xs border border-neutral-200 dark:border-neutral-800 p-4 bg-white dark:bg-neutral-900">
+              <div className="flex items-center gap-2 mb-3">
+                <ShieldCheck size={16} className="text-green-600" />
+                <h3 className="text-base font-semibold text-green-700">
+                  Delivery guarantee
+                </h3>
+              </div>
+              <ul className="space-y-1 text-sm text-neutral-700 dark:text-neutral-300">
+                <li className="flex items-center gap-2">
+                  <Check size={14} className="text-green-600" />
+                  {config.shipping.standard.creditAmount.toLocaleString()}{" "}
+                  {products[0]?.currency || "NGN"} Credit for delay
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check size={14} className="text-green-600" />
+                  Return if item damaged
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check size={14} className="text-green-600" />
+                  15-day no update refund
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check size={14} className="text-green-600" />
+                  60-day no delivery refund
+                </li>
+              </ul>
+              <Link
+                href="#"
+                className="text-green-700 text-sm hover:underline mt-2 inline-block"
+              >
+                Learn more ›
+              </Link>
+            </div>
+
+            {/* Card Protection */}
+            <div className="rounded-xs border border-neutral-200 dark:border-neutral-800 p-4 bg-white dark:bg-neutral-900">
+              <div className="flex items-center gap-2 mb-3">
+                <ShieldCheck size={16} className="text-green-600" />
+                <h3 className="text-base font-semibold text-green-700">
+                  Marketplace protects your card information
+                </h3>
+              </div>
+              <ul className="space-y-1 text-sm text-neutral-700 dark:text-neutral-300">
+                <li className="flex items-center gap-2">
+                  <Check size={14} className="text-green-600" />
+                  Marketplace follows the Payment Card Industry Data Security
+                  Standard (PCI DSS) when handling card data
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check size={14} className="text-green-600" />
+                  Card information is secure and uncompromised
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check size={14} className="text-green-600" />
+                  All data is safeguarded
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check size={14} className="text-green-600" />
+                  Marketplace never sells your card information
+                </li>
+              </ul>
+              <div className="flex flex-wrap gap-2 mt-3">
+                {[
+                  "PCI DSS",
+                  "VISA",
+                  "ID Check",
+                  "SafeKey",
+                  "ProtectBuy",
+                  "JCB",
+                  "J/Secure",
+                  "APWG",
+                ].map((logo) => (
+                  <div
+                    key={logo}
+                    className="text-xs bg-neutral-100 text-neutral-600 px-2 py-1 rounded"
+                  >
+                    {logo}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Secure privacy */}
+            <div className="rounded-xs border border-neutral-200 dark:border-neutral-800 p-4 bg-white dark:bg-neutral-900">
+              <div className="flex items-center gap-2 mb-2">
+                <ShieldCheck size={16} className="text-green-600" />
+                <h3 className="text-base font-semibold text-green-700">
+                  Secure privacy
+                </h3>
+              </div>
+              <p className="text-sm text-neutral-700 dark:text-neutral-300">
+                Protecting your privacy is important to us. Please be assured
+                that your information will be kept secured and uncompromised. We
+                do not sell your personal information for money and will only
+                use your information in accordance with our privacy and cookie
+                policy to provide and improve our services to you.
+              </p>
+              <Link
+                href="#"
+                className="text-green-700 text-sm hover:underline mt-2 inline-block"
+              >
+                Learn more ›
+              </Link>
+            </div>
+
+            {/* Marketplace purchase protection */}
+            <div className="rounded-xs border border-neutral-200 dark:border-neutral-800 p-4 bg-white dark:bg-neutral-900">
+              <div className="flex items-center gap-2 mb-2">
+                <ShieldCheck size={16} className="text-green-600" />
+                <h3 className="text-base font-semibold text-green-700">
+                  Marketplace purchase protection
+                </h3>
+              </div>
+              <p className="text-sm text-neutral-700 dark:text-neutral-300">
+                Shop confidently on Marketplace knowing that if something goes
+                wrong, we've always got your back.
+              </p>
+              <Link
+                href="#"
+                className="text-green-700 text-sm hover:underline mt-2 inline-block"
+              >
+                Learn more ›
+              </Link>
+            </div>
+          </aside>
+        </div>
+
+        {showItemsModal && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+            <div
+              className="absolute inset-0 bg-black/60"
+              onClick={() => setShowItemsModal(false)}
+            />
+            <div className="relative w-full sm:w-[min(720px,95vw)] max-h-[80vh] sm:max-h-[70vh] overflow-y-auto no-scrollbar rounded-t-xl sm:rounded-xl shadow-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800">
+              <button
+                aria-label="Close"
+                onClick={() => setShowItemsModal(false)}
+                className="absolute right-3 top-3 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
+              >
+                <X size={22} />
+              </button>
+              <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-neutral-200 dark:border-neutral-800">
+                <h2 className="text-[22px] leading-7 font-semibold text-center text-neutral-800 dark:text-neutral-100">
+                  Item details
+                </h2>
+              </div>
+              <div className="px-4 sm:px-6 py-2 divide-y divide-neutral-200 dark:divide-neutral-800">
+                {products.map((p) => {
+                  const q = idToQty[p._id] || 1;
+                  const discounted =
+                    typeof p.discount === "number" && p.discount > 0
+                      ? Math.max(
+                        0,
+                        Math.round((p.price * (100 - p.discount)) / 100)
+                      )
+                      : undefined;
+                  return (
+                    <div
+                      key={p._id}
+                      className="py-4 grid grid-cols-[96px_1fr_auto] sm:grid-cols-[160px_1fr_auto] gap-4 items-start"
+                    >
+                      <img
+                        src={
+                          p.images?.[0] ||
+                          `https://placehold.co/160x160?text=${encodeURIComponent(
+                            p.title
+                          )}`
+                        }
+                        alt={p.title}
+                        className="w-24 h-24 sm:w-40 sm:h-40 object-cover rounded-md"
+                      />
+                      <div className="min-w-0">
+                        <div className="text-lg font-semibold text-neutral-800 dark:text-neutral-100 truncate">
+                          {p.title}
+                        </div>
+                        {typeof p.discount === "number" && p.discount > 0 && (
+                          <div className="text-orange-500 font-semibold mt-2">
+                            Big sale | Limited time
+                          </div>
+                        )}
+                        <div className="mt-3 flex items-center gap-3">
+                          <div className="inline-flex items-baseline bg-orange-500 text-white rounded px-2 py-0.5">
+                            <span className="text-xl font-bold leading-none">
+                              {(discounted ?? p.price).toLocaleString()}
+                            </span>
+                            <span className="text-[10px] font-semibold ml-1 leading-none">
+                              {p.currency}
+                            </span>
+                          </div>
+                          {discounted !== undefined && (
+                            <div className="text-neutral-500 dark:text-neutral-400">
+                              <span className="line-through mr-2">
+                                {p.price.toLocaleString()} {p.currency}
+                              </span>
+                              <span className="inline-block bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 text-xs font-semibold px-2 py-0.5 rounded">
+                                -{p.discount}%
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="shrink-0">
+                        <label className="text-sm text-neutral-600 dark:text-neutral-400 mr-2 hidden sm:inline">
+                          Qty:
+                        </label>
+                        <select
+                          value={q}
+                          onChange={(e) =>
+                            setQty(p._id, Number(e.target.value), p.minOrderQuantity || 1)
+                          }
+                          className="appearance-none bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-lg px-3 py-1 pr-7 text-sm text-neutral-800 dark:text-neutral-100 w-[88px]"
+                        >
+                          {Array.from({ length: MAX_QTY - (p.minOrderQuantity || 1) + 1 }, (_, i) => i + (p.minOrderQuantity || 1)).map(
+                            (n) => (
+                              <option key={n} value={n}>
+                                {n}
+                              </option>
+                            )
+                          )}
+                        </select>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Address Modal */}
+        {showAddressModal && (
+          <AddressModal
+            open={showAddressModal}
+            onClose={() => setShowAddressModal(false)}
+            onSaved={(updatedAddress: any) => {
+              // Get the latest user data to construct the displayName
+              const userData = localStorage.getItem("afritrade:user");
+              if (userData) {
+                const user = JSON.parse(userData);
+                const updatedAddressWithName = {
+                  ...updatedAddress,
+                  displayName: `${user.firstName || user.username || "User"} ${user.lastName || ""
+                    }`.trim(),
+                };
+                setAddress(updatedAddressWithName);
+                console.log(
+                  "Checkout: Address updated with new displayName:",
+                  updatedAddressWithName.displayName
+                );
+              } else {
+                setAddress(updatedAddress);
+              }
+
+              // Force re-render to trigger validation logic update
+              setAddressUpdateTrigger((prev) => prev + 1);
+              console.log(
+                "Checkout: Triggered address validation re-render from onSaved"
+              );
+
+              setShowAddressModal(false);
+            }}
+            initialData={address}
+            onAddressUpdate={updateLocalUserData}
+          />
+        )}
+
+        {/* Insufficient Balance Modal */}
+        {showInsufficientBalanceModal && insufficientBalanceData && (
+          <InsufficientBalanceModal
+            isOpen={showInsufficientBalanceModal}
+            onClose={() => {
+              setShowInsufficientBalanceModal(false);
+              setInsufficientBalanceData(null);
+            }}
+            requiredAmount={insufficientBalanceData.requiredAmount}
+            availableAmount={insufficientBalanceData.availableAmount}
+            currency={insufficientBalanceData.currency}
+            onAddFunds={() => {
+              setShowInsufficientBalanceModal(false);
+              setInsufficientBalanceData(null);
+              // Navigate to wallet page or add funds modal
+              window.location.href = "/profile/wallet";
+            }}
+            onUseOtherPayment={() => {
+              setShowInsufficientBalanceModal(false);
+              setInsufficientBalanceData(null);
+              setPaymentMethod("card"); // Switch to card payment
+            }}
+          />
+        )}
+      </main>
+    </RequireAuth>
+  );
+}
