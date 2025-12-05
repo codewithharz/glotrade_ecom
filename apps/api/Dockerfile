@@ -27,7 +27,7 @@ COPY apps/api ./apps/api
 
 # Build TypeScript
 WORKDIR /app/apps/api
-RUN yarn build
+RUN yarn build:prod
 
 # Production image
 FROM base AS runner
