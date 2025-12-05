@@ -24,7 +24,6 @@ COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
 
 # Copy source code
 COPY apps/api ./apps/api
-COPY tsconfig.json ./tsconfig.json
 
 # Build TypeScript
 WORKDIR /app/apps/api
