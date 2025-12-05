@@ -42,7 +42,10 @@ RUN adduser --system --uid 1001 apiuser
 # Copy built application
 COPY --from=builder --chown=apiuser:nodejs /app/apps/api/dist ./dist
 COPY --from=builder --chown=apiuser:nodejs /app/apps/api/package.json ./package.json
-COPY --from=deps --chown=apiuser:nodejs /app/apps/api/node_modules ./node_modules
+
+# Copy node_modules from both root and apps/api
+COPY --from=deps --chown=apiuser:nodejs /app/node_modules ./node_modules
+COPY --from=deps --chown=apiuser:nodejs /app/apps/api/node_modules ./apps_api_modules
 
 USER apiuser
 
