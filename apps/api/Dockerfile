@@ -47,6 +47,9 @@ COPY --from=builder --chown=apiuser:nodejs /app/apps/api/package.json ./package.
 COPY --from=deps --chown=apiuser:nodejs /app/node_modules ./node_modules
 COPY --from=deps --chown=apiuser:nodejs /app/apps/api/node_modules ./apps_api_modules
 
+# Create directories that the app needs to write to
+RUN mkdir -p /app/public/invoices && chown -R apiuser:nodejs /app/public
+
 USER apiuser
 
 EXPOSE 5000
