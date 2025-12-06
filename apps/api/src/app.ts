@@ -38,19 +38,27 @@ const app = express();
 
 // Security middleware
 // Configure CORS to support credentials by reflecting a specific allowed origin (not "*")
-const rawAllowedOrigins = process.env.CORS_ORIGIN || "http://localhost:3000";
+const rawAllowedOrigins = process.env.CORS_ORIGIN || "http://localhost:3000,https://glotrade-ecom-web.vercel.app";
 const allowedOrigins = rawAllowedOrigins
   .split(",")
   .map((o) => o.trim())
   .filter(Boolean);
+
+console.log("🔒 CORS Allowed Origins:", allowedOrigins);
 
 app.use(
   cors({
     origin: (origin, callback) => {
       // Allow non-browser requests (no origin), e.g., server-to-server or curl
       if (!origin) return callback(null, true);
-      const isAllowed = allowedOrigins.some((o) => o === origin);
-      if (isAllowed) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+
+      // Check for trailing slash mismatch
+      const originNoSlash = origin.endsWith('/') ? origin.slice(0, -1) : origin;
+      if (allowedOrigins.includes(originNoSlash)) return callback(null, true);
+
+      console.warn(`⚠️ CORS Blocked: Origin '${origin}' not in allowed list:`, allowedOrigins);
       return callback(new Error(`CORS: Origin ${origin} not allowed`));
     },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
