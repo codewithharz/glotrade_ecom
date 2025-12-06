@@ -100,10 +100,10 @@ app.get("/health", (req: any, res: any) => {
 // Base route
 app.get("/", (req: any, res: any) => {
   res.json({
-    message: "AfriTrade Hub API",
+    message: "Glotrade International API",
     version: "1.0.0",
     documentation: process.env.NODE_ENV === 'production'
-      ? 'https://afritrade-api.onrender.com/api-docs'
+      ? 'https://glotrade-ecom.onrender.com/api-docs'
       : `http://localhost:${process.env.PORT || 8080}/api-docs`,
   });
 });
