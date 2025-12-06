@@ -42,7 +42,11 @@ const rawAllowedOrigins = process.env.CORS_ORIGIN || "http://localhost:3000,http
 const allowedOrigins = rawAllowedOrigins
   .split(",")
   .map((o) => o.trim())
-  .filter(Boolean);
+  .filter(Boolean)
+  .flatMap((o) => {
+    if (o.startsWith("http")) return [o];
+    return [`https://${o}`, `http://${o}`];
+  });
 
 console.log("🔒 CORS Allowed Origins:", allowedOrigins);
 
