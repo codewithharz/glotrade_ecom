@@ -706,7 +706,7 @@ export default function CheckoutPage() {
 
             {/* Shipping Methods */}
             {/* Shipping Methods - Hide for guests */}
-            {!!localStorage.getItem("afritrade:auth") && (
+            {isLoggedIn && (
               <div className="w-full lg:w-[40%]">
                 <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100 mb-4">
                   Shipping methods
