@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 import { useSearchParams } from "next/navigation";
 
@@ -9,6 +9,12 @@ import { CheckCircle, ShoppingBag, Package } from "lucide-react";
 function CheckoutSuccessForm() {
   const params = useSearchParams();
   const orderId = params.get("orderId");
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem("afritrade:auth"));
+  }, []);
 
   // Clear cart on successful checkout
   useEffect(() => {
@@ -59,13 +65,15 @@ function CheckoutSuccessForm() {
 
           {/* Action Buttons */}
           <div className="space-y-3">
-            <Link
-              href={`/orders/${orderId ?? ""}`}
-              className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2"
-            >
-              <Package className="h-5 w-5" />
-              <span>View Order Details</span>
-            </Link>
+            {isLoggedIn && (
+              <Link
+                href={`/orders/${orderId ?? ""}`}
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                <Package className="h-5 w-5" />
+                <span>View Order Details</span>
+              </Link>
+            )}
 
             <Link
               href="/"

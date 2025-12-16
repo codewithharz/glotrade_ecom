@@ -24,6 +24,13 @@ export class WalletController {
       const type = req.query.type || "user";
       const summary = await this.walletService.getWalletSummary(userId, type);
 
+      if (!summary) {
+        return res.status(404).json({
+          status: "error",
+          message: "Wallet not found or not enabled for this user"
+        });
+      }
+
       res.status(200).json({
         status: "success",
         data: summary,

@@ -187,6 +187,10 @@ export class UserService extends BaseService<IUser> {
       throw new ValidationError("User not found");
     }
 
+    if (user.businessInfo?.businessType === 'Wholesaler') {
+      throw new ValidationError("Wholesalers cannot have a wallet ID");
+    }
+
     if (!user.walletId) {
       const walletId = `WAL-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
 

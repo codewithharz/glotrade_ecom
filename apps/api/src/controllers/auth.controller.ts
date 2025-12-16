@@ -7,6 +7,8 @@ import { User } from "../models";
 import { ValidationError } from "../utils/errors";
 import { WalletService } from "../services/WalletService";
 import { UserService } from "../services/UserService";
+import ReferralService from "../services/ReferralService";
+import CommissionService from "../services/CommissionService";
 
 const resolvedPort = Number(process.env.SMTP_PORT || 587);
 const resolvedSecure = String(process.env.SMTP_SECURE || '').toLowerCase() === 'true' || resolvedPort === 465;
@@ -59,7 +61,7 @@ export class AuthController {
 
   register = async (req: any, res: any, next: any) => {
     try {
-      const { email, username, password, accountType, businessInfo } = req.body || {};
+      const { email, username, password, accountType, businessInfo, referralCode } = req.body || {};
       if (!email || !username || !password) throw new ValidationError("Missing fields");
 
       const normalizedEmail = String(email).trim().toLowerCase();
@@ -82,8 +84,19 @@ export class AuthController {
       if (usernameDoc) throw new ValidationError('username already exists');
       if (address && addressDoc) throw new ValidationError('address already exists');
 
+      // Validate referral code if provided
+      if (referralCode) {
+        const isValid = await ReferralService.validateReferralCode(referralCode);
+        if (!isValid) {
+          throw new ValidationError('Invalid referral code');
+        }
+      }
+
       const passwordHash = await bcrypt.hash(password, 10);
       const verifyToken = crypto.randomBytes(24).toString("hex");
+
+      // Normalize accountType
+      const normalizedAccountType = accountType === 'individual' ? 'individual' : 'business';
 
       const createDoc: any = {
         email: normalizedEmail,
@@ -91,20 +104,51 @@ export class AuthController {
         passwordHash,
         verifyToken,
         verifyTokenExpires: new Date(Date.now() + 1000 * 60 * 60 * 24),
-        accountType: accountType === 'business' ? 'business' : 'individual'
+        accountType: normalizedAccountType
       };
 
-      if (accountType === 'business' && businessInfo) {
+      if (normalizedAccountType === 'business' && businessInfo) {
         createDoc.businessInfo = {
           companyName: String(businessInfo.companyName || '').trim(),
           taxId: String(businessInfo.taxId || '').trim(),
-          businessType: String(businessInfo.businessType || 'Other'),
+          businessType: String(businessInfo.businessType || 'Wholesaler'),
           registrationNumber: String(businessInfo.registrationNumber || '').trim(),
           website: String(businessInfo.website || '').trim(),
           industry: String(businessInfo.industry || '').trim(),
           yearEstablished: Number(businessInfo.yearEstablished) || undefined,
           isVerified: false // Always false initially
         };
+
+        // Generate referral code for Sales Agents
+        if (businessInfo.businessType === 'Sales Agent') {
+          const agentReferralCode = await ReferralService.generateReferralCode('temp');
+          createDoc.businessInfo.referralCode = agentReferralCode;
+          createDoc.businessInfo.agentStats = {
+            totalReferrals: 0,
+            activeReferrals: 0,
+            totalCommissionEarned: 0,
+            pendingCommission: 0,
+            tier: 'Bronze'
+          };
+        }
+
+        // Track referral if code was provided
+        if (referralCode) {
+          createDoc.businessInfo.referredBy = referralCode.toUpperCase();
+        }
+
+        // Initialize Distributor Stats
+        if (businessInfo.businessType === 'Distributor') {
+          const nextDate = new Date();
+          // Use default 90 days if config not loaded yet, though config should be available
+          const intervalDays = parseInt(process.env.DISTRIBUTOR_REWARD_INTERVAL_DAYS || '90', 10);
+          nextDate.setDate(nextDate.getDate() + intervalDays);
+
+          createDoc.businessInfo.distributorStats = {
+            nextRewardDate: nextDate,
+            totalRewardsEarned: 0
+          };
+        }
       }
 
       // Only add address if it's provided
@@ -114,9 +158,35 @@ export class AuthController {
 
       const user = await User.create(createDoc);
 
+      // Track referral after user creation
+      if (referralCode) {
+        try {
+          const referral = await ReferralService.trackReferral(
+            referralCode,
+            user._id.toString(),
+            {
+              source: req.headers['referer'] || 'direct',
+              ipAddress: req.ip,
+              userAgent: req.headers['user-agent']
+            }
+          );
+
+          // Create registration commission if configured
+          if (referral) {
+            await CommissionService.calculateRegistrationCommission(referral._id.toString());
+          }
+        } catch (referralError) {
+          console.warn('Failed to track referral:', referralError);
+          // Don't fail registration if referral tracking fails
+        }
+      }
+
       // Create wallets for new user
       try {
-        await this.walletService.createUserWallets(user._id.toString());
+        const isWholesaler = accountType === 'business' && businessInfo?.businessType === 'Wholesaler';
+        if (!isWholesaler) {
+          await this.walletService.createUserWallets(user._id.toString());
+        }
       } catch (error) {
         console.warn(`Failed to create wallets for new user ${user._id}:`, error);
         // Don't fail registration if wallet creation fails, just log the warning
@@ -171,7 +241,8 @@ export class AuthController {
           token, // Restore for frontend compatibility
           id: user._id,
           email,
-          username
+          username,
+          businessInfo: (user as any).businessInfo
         }
       });
     } catch (e) {
@@ -235,14 +306,18 @@ export class AuthController {
 
       // Ensure user has walletId (for existing users who might not have it)
       try {
-        const walletId = await this.userService.ensureWalletId(user._id.toString());
-        (user as any).walletId = walletId;
-        console.log(`Ensured walletId ${walletId} for user ${user.email}`);
+        const isWholesaler = (user as any).businessInfo?.businessType === 'Wholesaler';
 
-        // Refresh user object to get updated data
-        const refreshedUser = await User.findById(user._id);
-        if (refreshedUser) {
-          Object.assign(user, refreshedUser.toObject());
+        if (!isWholesaler) {
+          const walletId = await this.userService.ensureWalletId(user._id.toString());
+          (user as any).walletId = walletId;
+          console.log(`Ensured walletId ${walletId} for user ${user.email}`);
+
+          // Refresh user object to get updated data
+          const refreshedUser = await User.findById(user._id);
+          if (refreshedUser) {
+            Object.assign(user, refreshedUser.toObject());
+          }
         }
       } catch (error) {
         console.warn(`Failed to ensure walletId for user ${user._id}:`, error);
@@ -250,7 +325,10 @@ export class AuthController {
 
       // Ensure user has wallets created (auto-create if they don't exist)
       try {
-        await this.walletService.getWalletSummary(user._id.toString(), "user");
+        const isWholesaler = (user as any).businessInfo?.businessType === 'Wholesaler';
+        if (!isWholesaler) {
+          await this.walletService.getWalletSummary(user._id.toString(), "user");
+        }
       } catch (error) {
         console.warn(`Failed to ensure wallets for user ${user._id}:`, error);
         // Don't fail login if wallet creation fails, just log the warning
@@ -295,6 +373,7 @@ export class AuthController {
           lastName: (user as any).lastName,
           isSuperAdmin: (user as any).isSuperAdmin || false,
           walletId: (user as any).walletId,
+          businessInfo: (user as any).businessInfo,
         }
       });
     } catch (e) { next(e); }

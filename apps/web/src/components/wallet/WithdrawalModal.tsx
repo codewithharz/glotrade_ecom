@@ -94,10 +94,10 @@ export default function WithdrawalModal({ isOpen, onClose, onSuccess, availableB
         setIsLoading(true);
 
         try {
-            const amountInKobo = Math.round(parseFloat(amount) * 100);
+            const amountInNaira = parseFloat(amount);
 
             await apiPost("/api/v1/withdrawals/request", {
-                amount: amountInKobo,
+                amount: amountInNaira,
                 bankDetails: {
                     bankName: banks.find(b => b.code === bankCode)?.name || bankName,
                     accountNumber,

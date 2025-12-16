@@ -77,7 +77,14 @@ export class WalletService extends BaseService<IWallet> {
   }
 
   // Create wallet for a user (NGN only for wholesaler platform)
-  async createUserWallets(userId: string): Promise<{ ngnWallet: IWallet }> {
+  async createUserWallets(userId: string): Promise<{ ngnWallet: IWallet | null }> {
+    // Check if user is Wholesaler
+    const user = await User.findById(userId);
+    if (user?.businessInfo?.businessType === 'Wholesaler') {
+      console.log(`Skipping wallet creation for Wholesaler: ${userId}`);
+      return { ngnWallet: null };
+    }
+
     const existingWallets = await this.model.find({ userId: new mongoose.Types.ObjectId(userId), type: "user" });
     if (existingWallets.length > 0) {
       throw new Error("Wallet already exists for this user");
@@ -125,7 +132,7 @@ export class WalletService extends BaseService<IWallet> {
   }
 
   // Get wallet balance
-  async getWalletBalance(userId: string, currency: "NGN", type: "user" | "vendor" = "user"): Promise<WalletBalance> {
+  async getWalletBalance(userId: string, currency: "NGN", type: "user" | "vendor" = "user"): Promise<WalletBalance | null> {
     const wallet = await this.model.findOne({
       userId: new mongoose.Types.ObjectId(userId),
       currency,
@@ -134,6 +141,13 @@ export class WalletService extends BaseService<IWallet> {
 
     // If wallet doesn't exist, create it automatically
     if (!wallet) {
+      // Check if user is Wholesaler before auto-creating
+      const user = await User.findById(userId);
+      if (user?.businessInfo?.businessType === 'Wholesaler') {
+        console.log(`Skipping auto-creation of wallet for Wholesaler: ${userId}`);
+        return null;
+      }
+
       const newWallet = await this.model.create({
         userId: new mongoose.Types.ObjectId(userId),
         type,
@@ -148,9 +162,9 @@ export class WalletService extends BaseService<IWallet> {
       });
 
       return {
-        available: currency === 'NGN' ? newWallet.balance / 100 : newWallet.balance,
-        frozen: currency === 'NGN' ? newWallet.frozenBalance / 100 : newWallet.frozenBalance,
-        total: currency === 'NGN' ? (newWallet.balance + newWallet.frozenBalance) / 100 : newWallet.balance + newWallet.frozenBalance,
+        available: newWallet.balance,
+        frozen: newWallet.frozenBalance,
+        total: newWallet.balance + newWallet.frozenBalance,
         currency: newWallet.currency,
         creditLimit: 0,
         creditUsed: 0,
@@ -158,19 +172,23 @@ export class WalletService extends BaseService<IWallet> {
     }
 
     return {
-      available: currency === 'NGN' ? wallet.balance / 100 : wallet.balance,
-      frozen: currency === 'NGN' ? wallet.frozenBalance / 100 : wallet.frozenBalance,
-      total: currency === 'NGN' ? (wallet.balance + wallet.frozenBalance) / 100 : wallet.balance + wallet.frozenBalance,
+      available: wallet.balance,
+      frozen: wallet.frozenBalance,
+      total: wallet.balance + wallet.frozenBalance,
       currency: wallet.currency,
-      creditLimit: currency === 'NGN' ? (wallet.creditLimit || 0) / 100 : (wallet.creditLimit || 0),
-      creditUsed: currency === 'NGN' ? (wallet.creditUsed || 0) / 100 : (wallet.creditUsed || 0),
+      creditLimit: wallet.creditLimit || 0,
+      creditUsed: wallet.creditUsed || 0,
     };
   }
 
   // Get wallet summary for user (NGN only for wholesaler platform)
-  async getWalletSummary(userId: string, type: "user" | "vendor" = "user"): Promise<WalletSummary> {
+  async getWalletSummary(userId: string, type: "user" | "vendor" = "user"): Promise<WalletSummary | null> {
     try {
       const ngnWallet = await this.getWalletBalance(userId, "NGN", type);
+
+      if (!ngnWallet) {
+        return null;
+      }
 
       return {
         ngnWallet,
@@ -1807,10 +1825,10 @@ export class WalletService extends BaseService<IWallet> {
         userId: String(userId),
         type: 'withdrawal_requested' as const,
         title: 'Withdrawal Request Submitted',
-        message: `Your withdrawal request for ${currency} ${currency === 'NGN' ? (amount / 100).toFixed(2) : amount} has been submitted`,
+        message: `Your withdrawal request for ${currency} ${amount.toLocaleString()} has been submitted`,
         data: {
           currency,
-          amount: currency === 'NGN' ? (amount / 100).toFixed(2) : amount.toString(),
+          amount: amount.toLocaleString(),
           reference: request.reference
         },
         priority: 'high' as const
@@ -1940,10 +1958,10 @@ export class WalletService extends BaseService<IWallet> {
         userId: String(request.userId),
         type: 'withdrawal_approved' as const,
         title: 'Withdrawal Approved',
-        message: `Your withdrawal request for ${request.currency} ${request.currency === 'NGN' ? (request.amount / 100).toFixed(2) : request.amount} has been approved and processed.`,
+        message: `Your withdrawal request for ${request.currency} ${request.amount.toLocaleString()} has been approved and processed.`,
         data: {
           currency: request.currency,
-          amount: request.currency === 'NGN' ? (request.amount / 100).toFixed(2) : request.amount.toString(),
+          amount: request.amount.toLocaleString(),
           reference: request.reference
         },
         priority: 'high' as const
@@ -1978,10 +1996,10 @@ export class WalletService extends BaseService<IWallet> {
         userId: String(request.userId),
         type: 'withdrawal_rejected' as const,
         title: 'Withdrawal Request Rejected',
-        message: `Your withdrawal request for ${request.currency} ${request.currency === 'NGN' ? (request.amount / 100).toFixed(2) : request.amount} has been rejected`,
+        message: `Your withdrawal request for ${request.currency} ${request.amount.toLocaleString()} has been rejected`,
         data: {
           currency: request.currency,
-          amount: request.currency === 'NGN' ? (request.amount / 100).toFixed(2) : request.amount.toString(),
+          amount: request.amount.toLocaleString(),
           reference: request.reference,
           reason
         },
@@ -2039,10 +2057,10 @@ export class WalletService extends BaseService<IWallet> {
         userId: String(request.userId),
         type: 'withdrawal_completed' as const,
         title: 'Withdrawal Completed',
-        message: `${request.currency} ${request.currency === 'NGN' ? (request.amount / 100).toFixed(2) : request.amount} has been successfully transferred to your bank account`,
+        message: `${request.currency} ${request.amount.toLocaleString()} has been successfully transferred to your bank account`,
         data: {
           currency: request.currency,
-          amount: request.currency === 'NGN' ? (request.amount / 100).toFixed(2) : request.amount.toString(),
+          amount: request.amount.toLocaleString(),
           reference: transactionReference,
           bankName: request.bankDetails.bankName
         },
@@ -2094,7 +2112,7 @@ export class WalletService extends BaseService<IWallet> {
       notificationType,
       {
         currency,
-        amount: currency === 'NGN' ? (amount / 100).toFixed(2) : amount.toString(),
+        amount: amount.toLocaleString(),
         transactionId,
         reason
       },
@@ -2138,7 +2156,7 @@ export class WalletService extends BaseService<IWallet> {
         'wallet_low_balance',
         {
           currency,
-          amount: currency === 'NGN' ? (balance / 100).toFixed(2) : balance.toString()
+          amount: balance.toLocaleString()
         },
         'medium'
       );

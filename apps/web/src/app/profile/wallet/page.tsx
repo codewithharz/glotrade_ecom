@@ -38,6 +38,7 @@ import WithdrawalModal from "@/components/wallet/WithdrawalModal";
 import WithdrawalHistory from "@/components/wallet/WithdrawalHistory";
 import CreditRequestModal from "@/components/wallet/CreditRequestModal";
 import TopUpModal from "@/components/wallet/TopUpModal";
+import CommissionWidget from "@/components/wallet/CommissionWidget";
 
 // Interfaces
 interface WalletBalance {
@@ -94,6 +95,7 @@ function WalletPageContent() {
   const [creditRequests, setCreditRequests] = useState<CreditRequest[]>([]);
 
   // Transaction states
+  const [user, setUser] = useState<any>(null);
   const [transactionFilters, setTransactionFilters] = useState({
     search: "",
     currency: "all",
@@ -241,35 +243,38 @@ function WalletPageContent() {
     }
   };
 
+  const fetchWalletData = async () => {
+    try {
+      const userId = getUserId();
+      if (!userId) return;
 
-  // Load wallet data
-  useEffect(() => {
-    const loadWalletData = async () => {
-      try {
-        const userId = getUserId();
-        if (!userId) return;
+      const summaryRes = await apiGet(`/api/v1/wallets/summary?userId=${userId}`) as {
+        data?: WalletSummary
+      };
+      setWalletSummary(summaryRes.data || null);
 
-        // Load wallet summary
-        const summaryRes = await apiGet(`/api/v1/wallets/summary?userId=${userId}`) as {
-          data?: WalletSummary
-        };
-        setWalletSummary(summaryRes.data || null);
+      // Fetch user profile to check business type
+      const userRes = await apiGet<{ status: string; data: any }>("/api/v1/users/me");
+      setUser(userRes.data);
 
-        // Load transactions with current filters
-        await loadTransactions(1);
-
-        // Load credit requests
-        await loadCreditRequests();
-
-      } catch (error) {
-        console.error("Error loading wallet data:", error);
+    } catch (error: any) {
+      console.error("Error loading wallet data:", error);
+      if (error?.message?.includes("Wallet not found") || error?.message?.includes("not enabled")) {
+        setWalletSummary(null);
+      } else {
         toast("Failed to load wallet data", "error");
-      } finally {
-        setIsLoading(false);
       }
-    };
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    loadWalletData();
+  // Initial load
+  useEffect(() => {
+    fetchWalletData();
+    // We can't easily call loadTransactions(1) here if it depends on state, 
+    // but the other useEffect handles transaction loading on filter change.
+    loadCreditRequests();
   }, []);
 
   // Reload transactions when filters change
@@ -407,10 +412,10 @@ function WalletPageContent() {
     return `${amount.toLocaleString()} ${currency}`;
   };
 
-  // Format currency for transactions (stored in kobo, need to convert to Naira)
+  // Format currency for transactions (stored in Naira)
   const formatCurrency = (amount: number, currency: string) => {
     if (currency === "NGN") {
-      return `₦${(amount / 100).toLocaleString()}`;
+      return `₦${amount.toLocaleString()}`;
     }
     return `${amount.toLocaleString()} ${currency}`;
   };
@@ -457,6 +462,29 @@ function WalletPageContent() {
                 ))}
               </div>
               <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+            </div>
+          </div>
+        </div>
+      </RequireAuth>
+    );
+  }
+
+  if (!walletSummary) {
+    return (
+      <RequireAuth>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center shadow-sm border border-gray-200 dark:border-gray-700 max-w-2xl mx-auto mt-10">
+              <div className="mx-auto w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                <Wallet className="w-8 h-8 text-gray-400" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Wallet Not Available</h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Your account type does not have access to the wallet feature.
+              </p>
+              <Link href="/profile" className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                Return to Profile
+              </Link>
             </div>
           </div>
         </div>
@@ -571,6 +599,9 @@ function WalletPageContent() {
             </div>
           )}
 
+          {/* Commission Widget for Sales Agents */}
+          <CommissionWidget />
+
           {/* Wallet Balance Card - Redesigned */}
           {walletSummary && (
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
@@ -637,6 +668,72 @@ function WalletPageContent() {
             </div>
           )}
 
+          {/* Distributor Rewards Card */}
+          {user?.businessInfo?.businessType === "Distributor" && user?.businessInfo?.distributorStats && (
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">Distributor Rewards</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-500">Quarterly Performance Bonus</p>
+                  </div>
+                  <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                    <TrendingUp className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-6 py-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Next Reward Date */}
+                  <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4">
+                    <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Next Reward Date</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">
+                      {user.businessInfo.distributorStats.nextRewardDate
+                        ? new Date(user.businessInfo.distributorStats.nextRewardDate).toLocaleDateString(undefined, {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })
+                        : "Calculating..."}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                      Rewards are processed every 3 months
+                    </p>
+                  </div>
+
+                  {/* Estimated Reward */}
+                  <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4">
+                    <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Estimated Reward</p>
+                    <p className="text-lg font-bold text-green-600 dark:text-green-400">
+                      {showBalance
+                        ? formatWalletBalance(Math.floor((walletSummary?.ngnWallet.total || 0) * 0.02), "NGN")
+                        : "••••••"}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                      2% of your current total balance
+                    </p>
+                  </div>
+
+                  {/* Total Rewards Earned */}
+                  <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4">
+                    <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Total Rewards Earned</p>
+                    <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                      {showBalance
+                        ? formatWalletBalance(user.businessInfo.distributorStats.totalRewardsEarned || 0, "NGN")
+                        : "••••••"}
+                    </p>
+                    {user.businessInfo.distributorStats.lastRewardDate && (
+                      <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                        Last: {formatWalletBalance(user.businessInfo.distributorStats.lastRewardAmount || 0, "NGN")} on {new Date(user.businessInfo.distributorStats.lastRewardDate).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Quick Actions */}
           <div className="grid grid-cols-2 lg:grid-cols-8 gap-2 mb-6">
             <button
@@ -649,15 +746,17 @@ function WalletPageContent() {
               <span className="text-sm font-medium text-gray-900 dark:text-white text-center">Top Up</span>
             </button>
 
-            <button
-              onClick={() => setShowWithdrawalModal(true)}
-              className="flex flex-col items-center gap-3 p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all group"
-            >
-              <div className="p-4 bg-orange-100 dark:bg-orange-900/30 rounded-lg group-hover:bg-orange-200 dark:group-hover:bg-orange-800/40 transition-colors">
-                <ArrowUpRight className="w-4 h-4 text-orange-600 dark:text-orange-400" />
-              </div>
-              <span className="text-sm font-medium text-gray-900 dark:text-white text-center">Withdraw</span>
-            </button>
+            {user?.businessInfo?.businessType === "Sales Agent" && (
+              <button
+                onClick={() => setShowWithdrawalModal(true)}
+                className="flex flex-col items-center gap-3 p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all group"
+              >
+                <div className="p-4 bg-orange-100 dark:bg-orange-900/30 rounded-lg group-hover:bg-orange-200 dark:group-hover:bg-orange-800/40 transition-colors">
+                  <ArrowUpRight className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                </div>
+                <span className="text-sm font-medium text-gray-900 dark:text-white text-center">Withdraw</span>
+              </button>
+            )}
 
             <button
               onClick={() => setShowCreditRequestModal(true)}
@@ -735,18 +834,20 @@ function WalletPageContent() {
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-400 rounded-t-full" />
                 )}
               </button>
-              <button
-                onClick={() => setActiveTab('withdrawals')}
-                className={`pb-4 text-sm font-medium transition-colors relative ${activeTab === 'withdrawals'
-                  ? 'text-blue-600 dark:text-blue-400'
-                  : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-                  }`}
-              >
-                Withdrawal History
-                {activeTab === 'withdrawals' && (
-                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-400 rounded-t-full" />
-                )}
-              </button>
+              {user?.businessInfo?.businessType === "Sales Agent" && (
+                <button
+                  onClick={() => setActiveTab('withdrawals')}
+                  className={`pb-4 text-sm font-medium transition-colors relative ${activeTab === 'withdrawals'
+                    ? 'text-blue-600 dark:text-blue-400'
+                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+                    }`}
+                >
+                  Withdrawal History
+                  {activeTab === 'withdrawals' && (
+                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-400 rounded-t-full" />
+                  )}
+                </button>
+              )}
               <button
                 onClick={() => setActiveTab('credit-requests')}
                 className={`pb-4 text-sm font-medium transition-colors relative ${activeTab === 'credit-requests'

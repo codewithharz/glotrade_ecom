@@ -29,6 +29,7 @@ export interface UserManagementFilters {
   search?: string;
   page?: number;
   limit?: number;
+  businessType?: string;
 }
 
 export interface VendorManagementFilters {
@@ -426,6 +427,7 @@ export class AdminService extends BaseService<IUser> {
       if (filterCriteria.isVerified !== undefined) filterQuery.isVerified = filterCriteria.isVerified;
       if (filterCriteria.isBlocked !== undefined) filterQuery.isBlocked = filterCriteria.isBlocked;
       if (filterCriteria.isSuperAdmin !== undefined) filterQuery.isSuperAdmin = filterCriteria.isSuperAdmin;
+      if (filterCriteria.businessType) filterQuery["businessInfo.businessType"] = filterCriteria.businessType;
 
       if (filterCriteria.search) {
         filterQuery.$or = [
@@ -1680,6 +1682,31 @@ export class AdminService extends BaseService<IUser> {
 
       if (!order) {
         throw new Error('Order not found');
+      }
+
+      // **SALES AGENT INTEGRATION**: Calculate commission when order is delivered
+      if (newStatus === 'delivered') {
+        try {
+          // Import CommissionService dynamically to avoid circular dependencies
+          const CommissionService = (await import('./CommissionService')).default;
+          const User = (await import('../models/User')).default;
+
+          // Check if the user who placed this order was referred by an agent
+          const user = await User.findById(order.buyer);
+          if (user && user.businessInfo?.referredBy) {
+            // Calculate and award purchase commission
+            await CommissionService.calculatePurchaseCommission(
+              order._id.toString(),
+              user._id.toString(),
+              order.totalPrice
+            );
+
+            console.log(`[Sales Agent] Commission calculated for order ${orderId}`);
+          }
+        } catch (commissionError) {
+          // Log error but don't fail the order status update
+          console.error('[Sales Agent] Failed to calculate commission:', commissionError);
+        }
       }
 
       return order;

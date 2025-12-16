@@ -43,6 +43,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
   const [lastName, setLastName] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [isSeller, setIsSeller] = useState<boolean>(false);
+  const [hasWallet, setHasWallet] = useState<boolean>(true);
   const [showTrack, setShowTrack] = useState(false);
   const [trackId, setTrackId] = useState("");
   const [openLang, setOpenLang] = useState(false);
@@ -86,6 +87,17 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
               String(obj?.role || "").toLowerCase() === "seller" ||
               Boolean(obj?.store)
             );
+
+            // Check for wallet access
+            // If user has walletId, they have a wallet.
+            // If they are a Wholesaler (and no walletId yet), they don't.
+            if (obj?.businessInfo?.businessType === 'Wholesaler' && !obj?.walletId) {
+              setHasWallet(false);
+            } else {
+              // Default to true for backward compatibility or other roles
+              setHasWallet(true);
+            }
+
             break;
           } catch { }
         }
@@ -180,6 +192,13 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
             String(user?.role || "").toLowerCase() === "seller" ||
             Boolean(user?.store)
           );
+
+          // Check for wallet access
+          if (user?.businessInfo?.businessType === 'Wholesaler' && !user?.walletId) {
+            setHasWallet(false);
+          } else {
+            setHasWallet(true);
+          }
 
           // Only sync cart/wishlist on actual auth changes (login/logout), not profile updates
           // Check if this is a significant auth change by comparing with previous user data
@@ -638,7 +657,9 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                       Payments & Address
                     </div>
                     {/* coming soon */}
-                    <Link href="/profile/wallet" onClick={() => setOpen(false)} className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-[0.95rem] hover:bg-neutral-50 dark:hover:bg-neutral-800"><span className="inline-flex items-center gap-2"><Wallet size={14} className="sm:w-4 sm:h-4" /> Wallet</span><ChevronRight size={14} className="sm:w-4 sm:h-4" /></Link>
+                    {hasWallet && (
+                      <Link href="/profile/wallet" onClick={() => setOpen(false)} className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-[0.95rem] hover:bg-neutral-50 dark:hover:bg-neutral-800"><span className="inline-flex items-center gap-2"><Wallet size={14} className="sm:w-4 sm:h-4" /> Wallet</span><ChevronRight size={14} className="sm:w-4 sm:h-4" /></Link>
+                    )}
                     <Link
                       href="/profile#addresses"
                       onClick={() => setOpen(false)}

@@ -5,12 +5,12 @@ import { UserService } from "../services/UserService";
 
 const router = Router();
 
+// Create (Public for guest checkout)
+router.post("/", orderController.create);
+
 // Auth for create and reads
 const userService = new UserService();
 router.use(auth(userService));
-
-// Create
-router.post("/", orderController.create);
 // List
 router.get("/", orderController.list);
 // Analytics (place BEFORE dynamic :orderId routes to avoid matching 'analytics' as an id)

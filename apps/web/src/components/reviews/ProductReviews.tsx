@@ -30,7 +30,7 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
     try {
       const user = JSON.parse(localStorage.getItem('afritrade:user') || '{}');
       const userId = user?.id || user?._id;
-      
+
       if (!userId) {
         setUserHasPurchased(false);
         return;
@@ -38,8 +38,8 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
 
       // Check user's orders for this product
       const response = await fetch(new URL(`/api/v1/orders?userId=${userId}`, API_BASE_URL).toString(), {
-        headers: { 
-          Authorization: `Bearer ${localStorage.getItem('afritrade:auth') || ''}` 
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('afritrade:auth') || ''}`
         },
         cache: 'no-store'
       });
@@ -47,7 +47,7 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
       if (response.ok) {
         const ordersData = await response.json();
         // console.log('Orders API response:', ordersData);
-        
+
         // Handle different possible data structures
         let orders: any[] = [];
         if (ordersData?.data) {
@@ -59,20 +59,20 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
             orders = ordersData.data.items;
           }
         }
-        
+
         // console.log('Processed orders array:', orders);
-        
+
         // Ensure orders is an array before using .some()
         if (Array.isArray(orders)) {
           // Check if user has any delivered orders containing this product
           const hasPurchased = orders.some((order: any) => {
             if (order.status !== 'delivered') return false;
-            
-            return order.lineItems?.some((item: any) => 
+
+            return order.lineItems?.some((item: any) =>
               String(item.productId) === productId
             );
           });
-          
+
           setUserHasPurchased(hasPurchased);
         } else {
           console.error('Orders is not an array:', orders);
@@ -97,14 +97,14 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
           fetchProductReviews(productId, 1, 100), // Get all reviews for now
           checkUserReview(productId)
         ]);
-        
+
         // Ensure we have valid data before setting state
         // console.log('Reviews API response:', reviewsData);
-        
+
         // Handle nested data structure: data.reviews instead of data directly
         let reviewsArray: ProductReview[] = [];
         let totalCount = 0;
-        
+
         if (reviewsData?.data) {
           if (Array.isArray(reviewsData.data)) {
             // Old structure: data is directly an array
@@ -116,11 +116,11 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
             totalCount = (reviewsData.data as any).total || 0;
           }
         }
-        
+
         if (Array.isArray(reviewsArray)) {
           setReviews(reviewsArray);
           setTotalReviews(totalCount);
-          
+
           // Calculate average rating
           if (reviewsArray.length > 0) {
             const totalRating = reviewsArray.reduce((sum, review) => sum + review.rating, 0);
@@ -132,9 +132,9 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
           setTotalReviews(0);
           setAverageRating(0);
         }
-        
+
         setUserReview(existingUserReview);
-        
+
         // Check if user has purchased this product
         await checkUserPurchase();
       } catch (error) {
@@ -150,7 +150,13 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
     };
 
     if (productId) {
-      loadReviews();
+      // Check if user is logged in before fetching reviews to avoid 401s
+      const token = localStorage.getItem('afritrade:auth');
+      if (token) {
+        loadReviews();
+      } else {
+        setLoading(false);
+      }
     }
   }, [productId]);
 
@@ -173,7 +179,7 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 1) return "yesterday";
     if (diffDays < 7) return `${diffDays} days ago`;
     if (diffDays < 30) return `${Math.ceil(diffDays / 7)} weeks ago`;
@@ -213,10 +219,10 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
                 <span>{averageRating}</span>
                 <div className="flex items-center text-neutral-900 dark:text-neutral-100">
                   {[1, 2, 3, 4, 5].map((i) => (
-                    <Star 
-                      key={i} 
-                      size={16} 
-                      className={`sm:w-[18px] sm:h-[18px] ${i <= Math.round(averageRating) ? "fill-current" : "text-neutral-300 dark:text-neutral-600"}`} 
+                    <Star
+                      key={i}
+                      size={16}
+                      className={`sm:w-[18px] sm:h-[18px] ${i <= Math.round(averageRating) ? "fill-current" : "text-neutral-300 dark:text-neutral-600"}`}
                     />
                   ))}
                 </div>
@@ -224,7 +230,7 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
             </>
           )}
         </div>
-        
+
         {/* Review Button - Only show for users who purchased the product */}
         {userHasPurchased ? (
           userReview ? (
@@ -259,9 +265,9 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
       </div>
 
       {/* Tags row */}
-        {safeReviews.length > 0 && (
-      <div className="mt-4 flex flex items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-2 sm:gap-3">
+      {safeReviews.length > 0 && (
+        <div className="mt-4 flex flex items-center justify-between gap-3">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             {Object.entries(ratingDistribution)
               .sort(([a], [b]) => Number(b) - Number(a))
               .slice(0, 3)
@@ -270,13 +276,13 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
                   {rating} Star{Number(rating) !== 1 ? 's' : ''} ({count})
                 </span>
               ))}
+          </div>
+          <div className="w-fit inline-flex items-center gap-2 rounded-full bg-emerald-100 text-emerald-800 px-3 py-1.5 text-xs sm:text-sm font-medium">
+            <CheckCircle size={14} className="sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">All reviews are from verified purchases</span>
+            <span className="sm:hidden">Verified purchases</span>
+          </div>
         </div>
-        <div className="w-fit inline-flex items-center gap-2 rounded-full bg-emerald-100 text-emerald-800 px-3 py-1.5 text-xs sm:text-sm font-medium">
-          <CheckCircle size={14} className="sm:w-4 sm:h-4" /> 
-          <span className="hidden sm:inline">All reviews are from verified purchases</span>
-          <span className="sm:hidden">Verified purchases</span>
-        </div>
-      </div>
       )}
 
       {/* Review items */}
@@ -294,14 +300,14 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
                     <span className="text-neutral-500">• {formatDate(review.createdAt)}</span>
                     {review.isVerifiedPurchase && (
                       <span className="inline-flex items-center gap-1 text-emerald-600 text-xs">
-                        <CheckCircle size={10} className="sm:w-3 sm:h-3" /> 
+                        <CheckCircle size={10} className="sm:w-3 sm:h-3" />
                         <span className="hidden sm:inline">Verified Purchase</span>
                         <span className="sm:hidden">Verified</span>
                       </span>
                     )}
                   </div>
                 </div>
-                
+
                 {/* Rating */}
                 <div className="mt-2 flex items-center gap-2">
                   <div className="flex items-center">
@@ -309,11 +315,10 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
                       <Star
                         key={star}
                         size={14}
-                        className={`sm:w-4 sm:h-4 ${
-                          star <= review.rating
+                        className={`sm:w-4 sm:h-4 ${star <= review.rating
                             ? "fill-neutral-900 text-neutral-900 dark:fill-neutral-100 dark:text-neutral-100"
                             : "text-neutral-300 dark:text-neutral-600"
-                        }`}
+                          }`}
                       />
                     ))}
                   </div>
@@ -323,7 +328,7 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
                 </div>
               </div>
             </div>
-            
+
             {/* Comment */}
             {review.comment && (
               <div className="mt-3 text-sm sm:text-[15px] leading-6 sm:leading-7 text-neutral-800 dark:text-neutral-300">
@@ -333,7 +338,7 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
                 </p>
               </div>
             )}
-            
+
             {/* Images */}
             {review.images && review.images.length > 0 && (
               <div className="mt-3 flex gap-2 overflow-x-auto">
@@ -346,12 +351,12 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
                       className="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded-lg"
                     />
                   </div>
-              ))}
-            </div>
+                ))}
+              </div>
             )}
           </div>
         ))}
-        
+
         {canShowMore && (
           <button
             onClick={() => setVisible((v) => Math.min(v + 5, safeReviews.length))}
@@ -360,7 +365,7 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
             See more reviews
           </button>
         )}
-        
+
         {safeReviews.length === 0 && (
           <div className="text-center py-6 sm:py-8 text-neutral-500 dark:text-neutral-400">
             <MessageSquare size={40} className="mx-auto mb-3 sm:mb-4 text-neutral-300 dark:text-neutral-600 sm:w-12 sm:h-12" />
@@ -369,6 +374,14 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
           </div>
         )}
       </div>
+
+      {!localStorage.getItem('afritrade:auth') && (
+        <div className="mt-6 text-center p-6 bg-neutral-50 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
+          <p className="text-neutral-600 dark:text-neutral-400 mb-2">
+            Please <a href="/auth/login" className="text-blue-600 hover:underline">log in</a> to view and write reviews.
+          </p>
+        </div>
+      )}
 
       {/* Review Form Modal */}
       {showReviewForm && (

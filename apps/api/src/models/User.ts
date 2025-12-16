@@ -157,9 +157,6 @@ const userSchema = new Schema<IUser, IUserModel>(
       type: String,
       unique: true,
       sparse: true,
-      default: function () {
-        return `WAL-${Math.random().toString(36).substr(2, 4).toUpperCase()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
-      }
     },
     displayName: { type: String, trim: true, maxlength: 50 },
     isWalletPublic: { type: Boolean, default: true },
@@ -205,14 +202,15 @@ const userSchema = new Schema<IUser, IUserModel>(
     accountType: {
       type: String,
       enum: ["individual", "business"],
-      default: "individual"
+      default: "business"
     },
     businessInfo: {
       companyName: { type: String, trim: true },
       taxId: { type: String, trim: true },
       businessType: {
         type: String,
-        enum: ["Retailer", "Distributor", "Wholesaler", "Manufacturer", "Other"],
+        enum: ["Distributor", "Wholesaler", "Sales Agent"],
+        default: "Wholesaler"
       },
       registrationNumber: { type: String, trim: true },
       isVerified: { type: Boolean, default: false },
@@ -228,6 +226,23 @@ const userSchema = new Schema<IUser, IUserModel>(
         type: String,
         enum: ["prepaid", "net15", "net30", "net45", "net60"],
         default: "prepaid"
+      },
+      // Sales Agent specific fields
+      referralCode: { type: String, uppercase: true, sparse: true, unique: true },
+      referredBy: { type: String, uppercase: true },
+      agentStats: {
+        totalReferrals: { type: Number, default: 0 },
+        activeReferrals: { type: Number, default: 0 },
+        totalCommissionEarned: { type: Number, default: 0 },
+        pendingCommission: { type: Number, default: 0 },
+        tier: { type: String, enum: ["Bronze", "Silver", "Gold"], default: "Bronze" },
+      },
+      // Distributor specific fields
+      distributorStats: {
+        nextRewardDate: { type: Date },
+        totalRewardsEarned: { type: Number, default: 0 },
+        lastRewardDate: { type: Date },
+        lastRewardAmount: { type: Number }
       }
     }
   },
@@ -270,7 +285,10 @@ userSchema.pre("save", async function (next) {
   const self = this as unknown as IUser;
 
   // Generate wallet ID and display name for new users
-  if (this.isNew && !this.walletId) {
+  // SKIP wallet generation for Wholesalers
+  const isWholesaler = this.businessInfo?.businessType === 'Wholesaler';
+
+  if (this.isNew && !this.walletId && !isWholesaler) {
     let walletId;
     let attempts = 0;
     const maxAttempts = 10;

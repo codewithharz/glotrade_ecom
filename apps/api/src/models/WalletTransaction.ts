@@ -3,8 +3,8 @@ import mongoose, { Document, Schema } from "mongoose";
 export interface IWalletTransaction extends Document {
   walletId: Schema.Types.ObjectId;
   userId: Schema.Types.ObjectId;
-  type: "deposit" | "withdrawal" | "payment" | "refund" | "transfer" | "earning" | "fee" | "bonus" | "adjustment"; // Note: "transfer" deprecated
-  category: "order_payment" | "order_refund" | "top_up" | "withdrawal" | "transfer_in" | "transfer_out" | "sale_earning" | "platform_fee" | "bonus" | "adjustment"; // Note: transfer_in/transfer_out deprecated
+  type: "deposit" | "withdrawal" | "payment" | "refund" | "transfer" | "earning" | "fee" | "bonus" | "adjustment" | "commission"; // Note: "transfer" deprecated
+  category: "order_payment" | "order_refund" | "top_up" | "withdrawal" | "transfer_in" | "transfer_out" | "sale_earning" | "platform_fee" | "bonus" | "adjustment" | "commission" | "registration_bonus"; // Note: transfer_in/transfer_out deprecated
   amount: number; // in kobo for NGN
   currency: "NGN"; // Naira only
   balanceBefore: number;
@@ -30,6 +30,10 @@ export interface IWalletTransaction extends Document {
       processingFee: number;
       totalFees: number;
     };
+    // Sales Agent Commission metadata
+    commissionId?: string;
+    referralId?: string;
+    commissionType?: "registration" | "purchase" | "bonus" | "tier_upgrade";
   };
   processedAt?: Date;
   createdAt: Date;
@@ -52,13 +56,13 @@ const walletTransactionSchema = new Schema<IWalletTransaction>(
     },
     type: {
       type: String,
-      enum: ["deposit", "withdrawal", "payment", "refund", "transfer", "earning", "fee", "bonus", "adjustment"],
+      enum: ["deposit", "withdrawal", "payment", "refund", "transfer", "earning", "fee", "bonus", "adjustment", "commission"],
       required: true,
       index: true
     },
     category: {
       type: String,
-      enum: ["order_payment", "order_refund", "top_up", "withdrawal", "transfer_in", "transfer_out", "sale_earning", "platform_fee", "bonus", "adjustment"],
+      enum: ["order_payment", "order_refund", "top_up", "withdrawal", "transfer_in", "transfer_out", "sale_earning", "platform_fee", "bonus", "adjustment", "commission", "registration_bonus"],
       required: true,
       index: true
     },
@@ -117,6 +121,10 @@ const walletTransactionSchema = new Schema<IWalletTransaction>(
         processingFee: Number,
         totalFees: Number,
       },
+      // Sales Agent Commission metadata
+      commissionId: String,
+      referralId: String,
+      commissionType: String,
     },
     processedAt: Date,
   },

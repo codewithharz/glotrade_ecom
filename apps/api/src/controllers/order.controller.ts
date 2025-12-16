@@ -7,6 +7,7 @@ import { InventoryService } from "../services/InventoryService";
 import { WalletService } from "../services/WalletService";
 import { InvoiceService } from "../services/invoice.service";
 import { CreditService } from "../services/CreditService";
+import { CommissionService } from "../services/CommissionService";
 import path from 'path';
 import fs from 'fs';
 
@@ -71,15 +72,23 @@ export class OrderController {
             currency: product.currency || "NGN",
             productTitle: product.title,
             productImage: Array.isArray(product.images) ? product.images[0] : undefined,
+            discount: product.discount || 0,
           };
         })
       );
 
       const totalPrice = detailed.reduce((sum: number, li: any) => sum + li.unitPrice * li.qty, 0);
-      const buyer = (req as any).user?._id;
+      const buyer = (req as any).user?._id || req.body.buyerId;
+      const guestEmail = !buyer ? req.body.email : undefined;
 
-      // Check credit if payment method is net_terms
+      // Check credit if payment method is net_terms (only for logged in users)
       if (paymentMethod === 'net_terms') {
+        if (!buyer) {
+          return res.status(400).json({
+            status: "error",
+            message: "Net Terms payment is only available for registered users"
+          });
+        }
         const creditCheck = await this.creditService.checkCreditAvailability(buyer, totalPrice);
         if (!creditCheck.available) {
           return res.status(400).json({
@@ -92,6 +101,7 @@ export class OrderController {
       // Create the order
       const created = await Order.create({
         buyer,
+        guestEmail: !buyer ? guestEmail : undefined,
         lineItems: detailed,
         totalPrice,
         currency,
@@ -104,7 +114,7 @@ export class OrderController {
       });
 
       // Reserve credit if net terms
-      if (paymentMethod === 'net_terms') {
+      if (paymentMethod === 'net_terms' && buyer) {
         await this.creditService.reserveCredit(buyer, totalPrice);
       }
 
@@ -128,34 +138,37 @@ export class OrderController {
 
       // Create notification for order placed
       try {
-        const notificationService = new NotificationService();
-        await notificationService.createOrderNotification('order_placed', {
-          orderId: (created._id as any).toString(),
-          orderNumber: (created._id as any).toString().slice(-6),
-          totalAmount: totalPrice,
-          currency,
-          buyerId: (buyer as any).toString(),
-          sellerId: (detailed[0]?.vendorId as any)?.toString(),
-          productTitle: detailed[0]?.productTitle,
-          quantity: detailed[0]?.qty
-        });
+        if (buyer) {
+          const notificationService = new NotificationService();
+          await notificationService.createOrderNotification('order_placed', {
+            orderId: (created._id as any).toString(),
+            orderNumber: (created._id as any).toString().slice(-6),
+            totalAmount: totalPrice,
+            currency,
+            buyerId: (buyer as any).toString(),
+            sellerId: (detailed[0]?.vendorId as any)?.toString(),
+            productTitle: detailed[0]?.productTitle,
+            quantity: detailed[0]?.qty
+          });
+        }
       } catch (error) {
         console.error('Failed to create order notification:', error);
       }
 
       // Auto-generate invoice
       try {
-        const user = (req as any).user;
-        // Fetch full user details for invoice
-        const { User } = require("../models");
-        const fullBuyer = await User.findById(buyer).lean();
+        // Only generate invoice if we have a buyer or sufficient guest info
+        if (buyer) {
+          const { User } = require("../models");
+          const fullBuyer = await User.findById(buyer).lean();
 
-        await this.invoiceService.generateInvoice(created, fullBuyer);
+          await this.invoiceService.generateInvoice(created, fullBuyer);
 
-        // Update order with invoice generation time
-        await Order.findByIdAndUpdate(created._id, {
-          invoiceGeneratedAt: new Date()
-        });
+          // Update order with invoice generation time
+          await Order.findByIdAndUpdate(created._id, {
+            invoiceGeneratedAt: new Date()
+          });
+        }
       } catch (invoiceError) {
         console.error('Failed to auto-generate invoice:', invoiceError);
         // Don't fail the order creation
@@ -317,6 +330,21 @@ export class OrderController {
         } catch (paymentError) {
           console.error('Failed to process vendor payments:', paymentError);
           // Continue with notification even if payment fails
+        }
+      }
+
+      // Handle Sales Agent Commission when order is delivered
+      if (status === "delivered" && order.buyer) {
+        try {
+          // Calculate commission based on product discounts
+          await CommissionService.calculatePurchaseCommission(
+            orderId,
+            (order.buyer as any).toString(),
+            0 // Order value is now calculated inside the service based on line items
+          );
+        } catch (commissionError) {
+          console.error('Failed to process sales agent commission:', commissionError);
+          // Continue - don't block the status update
         }
       }
 

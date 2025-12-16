@@ -29,7 +29,11 @@ import businessDocumentRoutes from "./routes/businessDocument.routes";
 import fileUploadRoutes from "./routes/fileUpload.routes";
 import bannerRoutes from "./routes/banner.routes";
 import creditRequestRoutes from "./routes/creditRequest.routes";
+import referralRoutes from "./routes/referral.routes";
+import commissionRoutes from "./routes/commission.routes";
+import adminCommissionRoutes from "./routes/admin/commission.routes";
 import { errorHandler } from "./middleware/errorHandler";
+import { initScheduledJobs } from "./jobs/scheduler";
 
 // Load environment variables
 dotenv.config();
@@ -145,6 +149,9 @@ app.use("/api/v1/business-documents", businessDocumentRoutes);
 app.use("/api/v1/files", fileUploadRoutes);
 app.use("/api/v1/banners", bannerRoutes);
 app.use("/api/v1/credit-requests", creditRequestRoutes);
+app.use("/api/v1/referrals", referralRoutes);
+app.use("/api/v1/commissions", commissionRoutes);
+app.use("/api/v1/admin/commissions", adminCommissionRoutes);
 
 // 404 handler
 app.use("*", (req: any, res: any) => {
@@ -165,6 +172,9 @@ const startServer = async () => {
   try {
     // Connect to MongoDB
     await connectDB();
+
+    // Initialize scheduled jobs
+    initScheduledJobs();
 
     // Start the server
     app.listen(PORT, () => {

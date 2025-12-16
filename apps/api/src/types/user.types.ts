@@ -92,7 +92,7 @@ export interface IUserBase {
   businessInfo?: {
     companyName?: string;
     taxId?: string;
-    businessType?: "Retailer" | "Distributor" | "Wholesaler" | "Manufacturer" | "Other";
+    businessType?: "Distributor" | "Wholesaler" | "Sales Agent";
     registrationNumber?: string;
     isVerified?: boolean;
     verifiedAt?: Date;
@@ -103,6 +103,23 @@ export interface IUserBase {
     creditLimit?: number;
     currentCreditUsage?: number;
     paymentTerms?: "prepaid" | "net15" | "net30" | "net45" | "net60";
+    // Sales Agent specific fields
+    referralCode?: string;
+    referredBy?: string;
+    agentStats?: {
+      totalReferrals: number;
+      activeReferrals: number;
+      totalCommissionEarned: number;
+      pendingCommission: number;
+      tier: "Bronze" | "Silver" | "Gold";
+    };
+    // Distributor specific fields
+    distributorStats?: {
+      nextRewardDate?: Date;
+      totalRewardsEarned?: number;
+      lastRewardDate?: Date;
+      lastRewardAmount?: number;
+    };
   };
 
   createdAt: Date;

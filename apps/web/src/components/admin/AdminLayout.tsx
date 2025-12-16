@@ -67,6 +67,11 @@ const adminMenuItems: MenuItem[] = [
     icon: <Wallet size={20} />
   },
   {
+    label: "Sales Agents",
+    href: "/admin/sales-agents",
+    icon: <Users size={20} />
+  },
+  {
     label: "Credit Requests",
     href: "/admin/credit-requests",
     icon: <CreditCard size={20} />

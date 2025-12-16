@@ -185,7 +185,8 @@ export class AdminController {
         isSuperAdmin: req.query.isSuperAdmin === 'true' ? true : req.query.isSuperAdmin === 'false' ? false : undefined,
         search: req.query.search as string,
         page: parseInt(req.query.page as string) || 1,
-        limit: parseInt(req.query.limit as string) || 20
+        limit: parseInt(req.query.limit as string) || 20,
+        businessType: req.query.businessType as string
       };
 
       const result = await this.adminService.getUsersWithFilters(filters);

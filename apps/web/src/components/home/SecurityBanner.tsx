@@ -1,7 +1,16 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Shield, Lock, CreditCard, Truck, Check, Bell, ArrowRight, X } from "lucide-react";
+import {
+  Shield,
+  Lock,
+  CreditCard,
+  Truck,
+  Check,
+  Bell,
+  ArrowRight,
+  X,
+} from "lucide-react";
 import { Modal } from "@/components/common/Modal";
 
 export default function SecurityBanner() {
@@ -10,12 +19,15 @@ export default function SecurityBanner() {
   return (
     <>
       {/* Security Banner */}
-      <div className="mb-6 rounded-lg border border-emerald-200 overflow-hidden" data-security-banner>
+      <div
+        className=" hidden md:block mb-6 rounded-lg border border-emerald-200 overflow-hidden"
+        data-security-banner
+      >
         {/* Top Section - Dark Green Background */}
         <div className="bg-emerald-700 text-white px-4 py-3">
           {/* Desktop Layout */}
           <div className="hidden md:flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 ">
               <Shield className="w-5 h-5" />
               <span className="font-medium">Why choose AfriTrade</span>
             </div>
@@ -60,7 +72,8 @@ export default function SecurityBanner() {
             <div className="flex items-center gap-2 text-emerald-700">
               <Bell className="w-4 h-4" />
               <span className="text-sm">
-                Security reminder: Please be wary of scam messages and links. AfriTrade won't ask for extra fees via SMS or email.
+                Security reminder: Please be wary of scam messages and links.
+                AfriTrade won&apos;t ask for extra fees via SMS or email.
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -88,7 +101,10 @@ export default function SecurityBanner() {
       >
         <div className="text-center space-y-4">
           <div className="text-sm text-neutral-600 leading-relaxed">
-            AfriTrade values your privacy and security. We will never send requests for extra payments by SMS or email. If you receive any requests claiming to be from AfriTrade, we strongly suggest you ignore them and do not click on any links they may contain.
+            AfriTrade values your privacy and security. We will never send
+            requests for extra payments by SMS or email. If you receive any
+            requests claiming to be from AfriTrade, we strongly suggest you
+            ignore them and do not click on any links they may contain.
           </div>
 
           <div className="text-sm">
@@ -123,4 +139,4 @@ export default function SecurityBanner() {
       </Modal>
     </>
   );
-} 
+}

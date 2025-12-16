@@ -3,6 +3,7 @@ import mongoose, { Document, Schema } from "mongoose";
 
 export interface IOrder extends Document {
   buyer?: Schema.Types.ObjectId;
+  guestEmail?: string;
   seller?: Schema.Types.ObjectId;
   product?: Schema.Types.ObjectId;
   quantity?: number;
@@ -18,6 +19,7 @@ export interface IOrder extends Document {
     // Snapshots to preserve product info at order time
     productTitle?: string;
     productImage?: string;
+    discount?: number;
   }>;
   status:
   | "pending"
@@ -52,6 +54,7 @@ export interface IOrder extends Document {
 const orderSchema = new Schema<IOrder>(
   {
     buyer: { type: Schema.Types.ObjectId, ref: "User", required: false },
+    guestEmail: { type: String, required: false },
     seller: { type: Schema.Types.ObjectId, ref: "User", required: false },
     product: { type: Schema.Types.ObjectId, ref: "Product", required: false },
     quantity: { type: Number, required: false, min: 1 },
@@ -66,6 +69,7 @@ const orderSchema = new Schema<IOrder>(
         currency: { type: String, default: "NGN" },
         productTitle: { type: String },
         productImage: { type: String },
+        discount: { type: Number, default: 0 }, // Snapshot of discount % at purchase time
       },
     ],
     status: {
@@ -114,6 +118,8 @@ const orderSchema = new Schema<IOrder>(
         required: true,
       },
       postalCode: String,
+      state: String,
+      phone: String,
     },
     // Invoice fields
     invoiceNumber: { type: String, unique: true, sparse: true },

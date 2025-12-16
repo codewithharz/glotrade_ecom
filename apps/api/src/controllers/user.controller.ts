@@ -81,14 +81,14 @@ export class UserController extends BaseController<IUser> {
   getProfile = async (req: any, res: any, next: any) => {
     try {
       if (!req.user) throw new ValidationError("Authentication required");
-      
+
       const user = await this.userService.findById(req.user.id);
       if (!user) throw new ValidationError("User not found");
-      
+
       // Ensure user has walletId (for existing users who might not have it)
       const walletId = await this.userService.ensureWalletId(req.user.id);
       user.walletId = walletId;
-      
+
       res.status(200).json({
         status: "success",
         data: {
@@ -135,13 +135,13 @@ export class UserController extends BaseController<IUser> {
   requestAccountDeletion = async (req: any, res: any, next: any) => {
     try {
       if (!req.user) throw new ValidationError("Authentication required");
-      
+
       const { reason } = req.body;
       const user = await this.userService.findById(req.user.id);
       if (!user) throw new ValidationError("User not found");
-      
+
       await user.requestAccountDeletion(reason);
-      
+
       res.json({
         status: "success",
         message: "Account deletion requested. You have 60 days to reactivate your account.",
@@ -160,7 +160,7 @@ export class UserController extends BaseController<IUser> {
           code: "UNSETTLED_ORDERS"
         });
       }
-      
+
       // For other errors, pass to global error handler
       next(error);
     }
@@ -169,12 +169,12 @@ export class UserController extends BaseController<IUser> {
   reactivateAccount = async (req: any, res: any, next: any) => {
     try {
       if (!req.user) throw new ValidationError("Authentication required");
-      
+
       const user = await this.userService.findById(req.user.id);
       if (!user) throw new ValidationError("User not found");
-      
+
       await user.reactivateAccount();
-      
+
       res.json({
         status: "success",
         message: "Account reactivated successfully!",
@@ -191,12 +191,12 @@ export class UserController extends BaseController<IUser> {
   getDeletionStatus = async (req: any, res: any, next: any) => {
     try {
       if (!req.user) throw new ValidationError("Authentication required");
-      
+
       const user = await this.userService.findById(req.user.id);
       if (!user) throw new ValidationError("User not found");
-      
+
       const deletionCheck = await user.canDeleteAccount();
-      
+
       res.json({
         status: "success",
         data: {
@@ -296,15 +296,15 @@ export class UserController extends BaseController<IUser> {
   getMe = async (req: any, res: any, next: any) => {
     try {
       if (!req.user) throw new ValidationError("Authentication required");
-      
+
       // Return complete user data including firstName/lastName
       const user = await this.userService.findById(req.user.id);
       if (!user) throw new ValidationError("User not found");
-      
+
       // Ensure user has walletId (for existing users who might not have it)
       const walletId = await this.userService.ensureWalletId(req.user.id);
       user.walletId = walletId;
-      
+
       res.json({
         status: "success",
         data: {
@@ -321,6 +321,7 @@ export class UserController extends BaseController<IUser> {
           reputation: user.reputation,
           totalTransactions: user.totalTransactions,
           tokenBalance: user.tokenBalance,
+          businessInfo: user.businessInfo, // Include business info for frontend checks
           createdAt: user.createdAt,
           updatedAt: user.updatedAt
         }
@@ -406,21 +407,21 @@ export class UserController extends BaseController<IUser> {
           next = next.map((a: any) => ({ ...a, isDefault: keep ? a.id === keep : false }));
         }
       }
-      
+
       // Prepare update data: addresses + user profile fields
       const updateData: any = { addresses: next };
-      
+
       // If firstName/lastName are provided, update user profile fields
       if (patch.firstName !== undefined) updateData.firstName = patch.firstName;
       if (patch.lastName !== undefined) updateData.lastName = patch.lastName;
-      
+
       // Update both addresses and user profile fields
       await this.userService.updateById(req.user.id, updateData);
-      
+
       // Return updated user data to confirm all changes
       const updatedUser = await this.userService.findById(req.user.id);
-      res.json({ 
-        status: "success", 
+      res.json({
+        status: "success",
         data: updatedUser?.addresses || [],
         user: {
           firstName: updatedUser?.firstName,
@@ -430,9 +431,9 @@ export class UserController extends BaseController<IUser> {
     } catch (e) { next(e); }
   };
   deleteAddress = async (req: any, res: any, next: any) => {
-    try { if (!req.user) throw new ValidationError("Authentication required"); const id = req.params.id; const u = await this.userService.findById(req.user.id); const list = Array.isArray((u as any).addresses) ? (u as any).addresses : []; const next = list.filter((a: any)=> a.id !== id); if (!next.some((a:any)=> a.isDefault) && next[0]) next[0].isDefault = true; await this.userService.updateById(req.user.id, { addresses: next } as any); res.json({ status: "success", data: next }); } catch (e) { next(e); }
+    try { if (!req.user) throw new ValidationError("Authentication required"); const id = req.params.id; const u = await this.userService.findById(req.user.id); const list = Array.isArray((u as any).addresses) ? (u as any).addresses : []; const next = list.filter((a: any) => a.id !== id); if (!next.some((a: any) => a.isDefault) && next[0]) next[0].isDefault = true; await this.userService.updateById(req.user.id, { addresses: next } as any); res.json({ status: "success", data: next }); } catch (e) { next(e); }
   };
   setDefaultAddress = async (req: any, res: any, next: any) => {
-    try { if (!req.user) throw new ValidationError("Authentication required"); const id = req.params.id; const u = await this.userService.findById(req.user.id); const list = Array.isArray((u as any).addresses) ? (u as any).addresses : []; const next = list.map((a:any)=> ({ ...a, isDefault: a.id === id })); await this.userService.updateById(req.user.id, { addresses: next } as any); res.json({ status: "success", data: next }); } catch (e) { next(e); }
+    try { if (!req.user) throw new ValidationError("Authentication required"); const id = req.params.id; const u = await this.userService.findById(req.user.id); const list = Array.isArray((u as any).addresses) ? (u as any).addresses : []; const next = list.map((a: any) => ({ ...a, isDefault: a.id === id })); await this.userService.updateById(req.user.id, { addresses: next } as any); res.json({ status: "success", data: next }); } catch (e) { next(e); }
   };
 }

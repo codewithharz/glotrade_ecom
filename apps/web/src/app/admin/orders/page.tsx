@@ -21,6 +21,7 @@ import {
   CalendarDays
 } from "lucide-react";
 import { apiGet, apiPost, apiPut } from "@/utils/api";
+import { getCountryPhoneCode } from "@/utils/countryData";
 
 interface Order {
   _id: string;
@@ -33,6 +34,7 @@ interface Order {
     username?: string;
     email?: string;
   };
+  guestEmail?: string;
   vendor: {
     _id: string;
     username?: string;
@@ -54,12 +56,14 @@ interface Order {
     qty: number;
     unitPrice: number;
   }>;
-  shippingAddress?: {
+  shippingDetails?: {
     address: string;
     city: string;
     state: string;
     country: string;
-    zipCode: string;
+    postalCode?: String;
+    zipCode?: string;
+    phone?: string;
   };
 }
 
@@ -598,9 +602,9 @@ export default function AdminOrdersPage() {
                         <td className="px-6 py-4">
                           <div>
                             <p className="text-sm font-medium text-gray-900">
-                              {order.buyer?.firstName || order.buyer?.username || 'Unknown User'} {order.buyer?.lastName || ''}
+                              {order.buyer?.firstName || order.buyer?.username || (order.guestEmail ? 'Guest User' : 'Unknown User')} {order.buyer?.lastName || ''}
                             </p>
-                            <p className="text-sm text-gray-500">{order.buyer?.email || 'No email'}</p>
+                            <p className="text-sm text-gray-500">{order.buyer?.email || order.guestEmail || 'No email'}</p>
                           </div>
                         </td>
 
@@ -709,7 +713,7 @@ export default function AdminOrdersPage() {
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-600">Customer:</span>
                           <span className="text-gray-900 font-medium">
-                            {order.buyer?.firstName || order.buyer?.username || 'Unknown User'} {order.buyer?.lastName || ''}
+                            {order.buyer?.firstName || order.buyer?.username || (order.guestEmail ? 'Guest User' : 'Unknown User')} {order.buyer?.lastName || ''}
                           </span>
                         </div>
                         <div className="flex justify-between text-sm">
@@ -894,10 +898,10 @@ export default function AdminOrdersPage() {
                           <p className="font-medium text-gray-900 truncate">
                             {selectedOrder.buyer?.firstName && selectedOrder.buyer?.lastName
                               ? `${selectedOrder.buyer.firstName} ${selectedOrder.buyer.lastName}`
-                              : selectedOrder.buyer?.username || 'Unknown User'
+                              : selectedOrder.buyer?.username || (selectedOrder.guestEmail ? 'Guest User' : 'Unknown User')
                             }
                           </p>
-                          <p className="text-xs sm:text-sm text-gray-600 truncate">{selectedOrder.buyer?.email || 'No email'}</p>
+                          <p className="text-xs sm:text-sm text-gray-600 truncate">{selectedOrder.buyer?.email || selectedOrder.guestEmail || 'No email'}</p>
                         </div>
                       </div>
                     </div>
@@ -959,16 +963,21 @@ export default function AdminOrdersPage() {
                 </div>
 
                 {/* Shipping Information */}
-                {selectedOrder.shippingAddress && (
+                {selectedOrder.shippingDetails && (
                   <div className="space-y-3 sm:space-y-4">
                     <h4 className="font-semibold text-gray-900 text-base sm:text-lg">Shipping Address</h4>
                     <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
                       <div className="flex items-start gap-2 sm:gap-3">
                         <MapPin size={16} className="text-gray-400 mt-0.5 flex-shrink-0 sm:w-5 sm:h-5" />
                         <div className="text-xs sm:text-sm text-gray-600 min-w-0 flex-1">
-                          <p className="break-words">{selectedOrder.shippingAddress.address}</p>
-                          <p className="break-words">{selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state}</p>
-                          <p className="break-words">{selectedOrder.shippingAddress.country} {selectedOrder.shippingAddress.zipCode}</p>
+                          <p className="break-words">{selectedOrder.shippingDetails.address}</p>
+                          <p className="break-words">{selectedOrder.shippingDetails.city}, {selectedOrder.shippingDetails.state}</p>
+                          <p className="break-words">{selectedOrder.shippingDetails.country} {selectedOrder.shippingDetails.postalCode || selectedOrder.shippingDetails.zipCode}</p>
+                          {selectedOrder.shippingDetails.phone && (
+                            <p className="break-words text-gray-500 mt-1 flex items-center gap-1">
+                              <span className="text-xs">📞</span> {getCountryPhoneCode(selectedOrder.shippingDetails.country)} {selectedOrder.shippingDetails.phone}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>

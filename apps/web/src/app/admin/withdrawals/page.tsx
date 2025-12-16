@@ -245,7 +245,7 @@ export default function AdminWithdrawalsPage() {
                                                     </td>
                                                     <td className="px-6 py-4">
                                                         <div className="text-gray-900 dark:text-white font-bold">
-                                                            ₦{(request.amount / 100).toLocaleString()}
+                                                            ₦{request.amount.toLocaleString()}
                                                         </div>
                                                     </td>
                                                     <td className="px-6 py-4">
@@ -333,7 +333,7 @@ export default function AdminWithdrawalsPage() {
                             <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg flex gap-3">
                                 <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
                                 <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                                    Are you sure you want to approve this withdrawal of <strong>₦{(selectedRequest?.amount ? selectedRequest.amount / 100 : 0).toLocaleString()}</strong>? This will initiate the payout process.
+                                    Are you sure you want to approve this withdrawal of <strong>₦{(selectedRequest?.amount ? selectedRequest.amount : 0).toLocaleString()}</strong>? This will initiate the payout process.
                                 </p>
                             </div>
                             <div className="flex gap-3">

@@ -16,11 +16,12 @@ export default function RegisterBusinessPage() {
 
     // Business fields
     const [companyName, setCompanyName] = useState("");
-    const [businessType, setBusinessType] = useState("Retailer");
+    const [businessType, setBusinessType] = useState("Wholesaler");
     const [taxId, setTaxId] = useState("");
     const [registrationNumber, setRegistrationNumber] = useState("");
     const [website, setWebsite] = useState("");
     const [industry, setIndustry] = useState("");
+    const [referralCode, setReferralCode] = useState("");
 
     const [isLoading, setIsLoading] = useState(false);
     const [msg, setMsg] = useState<string | null>(null);
@@ -44,7 +45,7 @@ export default function RegisterBusinessPage() {
         setIsLoading(true);
 
         try {
-            const payload = {
+            const payload: any = {
                 email,
                 username,
                 password,
@@ -58,6 +59,11 @@ export default function RegisterBusinessPage() {
                     industry
                 }
             };
+
+            // Add referral code if provided
+            if (referralCode.trim()) {
+                payload.referralCode = referralCode.trim().toUpperCase();
+            }
 
             await apiPost<{ status: string; data?: any }>("/api/v1/auth/register", payload);
             setMsg("Business account created! Please check your email to verify your account.");
@@ -217,27 +223,30 @@ export default function RegisterBusinessPage() {
                                                     onChange={(e) => setBusinessType(e.target.value)}
                                                     className="w-full pl-10 pr-4 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none appearance-none"
                                                 >
-                                                    <option value="Retailer">Retailer</option>
-                                                    <option value="Distributor">Distributor</option>
                                                     <option value="Wholesaler">Wholesaler</option>
-                                                    <option value="Manufacturer">Manufacturer</option>
-                                                    <option value="Other">Other</option>
+                                                    {/* <option value="Retailer">Retailer</option> */}
+                                                    <option value="Distributor">Distributor</option>
+                                                    <option value="Sales Agent">Sales Agent</option>
+                                                    {/* <option value="Other">Other</option> */}
                                                 </select>
                                             </div>
                                         </div>
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                                                Industry
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={industry}
-                                                onChange={(e) => setIndustry(e.target.value)}
-                                                placeholder="e.g. Electronics"
-                                                className="w-full px-4 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
-                                            />
-                                        </div>
+                                        {/* Conditionally show Industry field - hide for Sales Agents */}
+                                        {businessType !== "Sales Agent" && (
+                                            <div>
+                                                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                                                    Industry
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={industry}
+                                                    onChange={(e) => setIndustry(e.target.value)}
+                                                    placeholder="e.g. Electronics"
+                                                    className="w-full px-4 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
+                                                />
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -291,6 +300,22 @@ export default function RegisterBusinessPage() {
                                         </div>
                                     </div>
 
+                                    {/* Referral Code Field */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                                            Referral Code (Optional)
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={referralCode}
+                                            onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                                            placeholder="Enter referral code if you have one"
+                                            className="w-full px-4 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none uppercase"
+                                        />
+                                        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                                            If you were referred by a Sales Agent, enter their code here
+                                        </p>
+                                    </div>
                                     <div className="flex gap-3 pt-2">
                                         <button
                                             type="button"
@@ -341,11 +366,7 @@ export default function RegisterBusinessPage() {
                                     Sign in
                                 </Link>
                             </p>
-                            <div className="mt-2">
-                                <Link href="/auth/register" className="text-xs text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 underline">
-                                    Register as an individual instead
-                                </Link>
-                            </div>
+
                         </div>
                     </div>
                 </div>

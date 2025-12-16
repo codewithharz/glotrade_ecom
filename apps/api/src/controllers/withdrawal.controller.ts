@@ -21,6 +21,16 @@ export class WithdrawalController {
                 return res.status(401).json({ status: "error", message: "Unauthorized" });
             }
 
+            // Verify user is a Sales Agent
+            const User = (await import("../models/User")).default;
+            const user = await User.findById(userId);
+
+            if (!user || user.businessInfo?.businessType !== "Sales Agent") {
+                return res.status(403).json({ status: "error", message: "Withdrawals are only available for Sales Agents" });
+            }
+
+
+
             if (!amount || amount <= 0) {
                 return res.status(400).json({ status: "error", message: "Invalid amount" });
             }
@@ -53,6 +63,14 @@ export class WithdrawalController {
 
             if (!userId) {
                 return res.status(401).json({ status: "error", message: "Unauthorized" });
+            }
+
+            // Verify user is a Sales Agent
+            const User = (await import("../models/User")).default;
+            const user = await User.findById(userId);
+
+            if (!user || user.businessInfo?.businessType !== "Sales Agent") {
+                return res.status(403).json({ status: "error", message: "Withdrawal history is only available for Sales Agents" });
             }
 
             const query: any = { userId };

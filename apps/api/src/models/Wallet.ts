@@ -12,6 +12,10 @@ export interface IWallet extends Document {
   totalEarned: number; // for vendors (deprecated)
   creditLimit: number; // Max credit allowed (in kobo)
   creditUsed: number; // Current credit utilized (in kobo)
+  // Sales Agent Commission Tracking
+  totalCommissionEarned: number; // Total commissions earned (in kobo)
+  pendingCommission: number; // Commissions pending approval/payment (in kobo)
+  paidCommission: number; // Commissions that have been paid out (in kobo)
   status: "active" | "suspended" | "frozen";
   frozenAt?: Date;
   unfrozenAt?: Date;
@@ -91,6 +95,22 @@ const walletSchema = new Schema<IWallet>(
       min: 0
     },
     creditUsed: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    // Sales Agent Commission Tracking
+    totalCommissionEarned: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    pendingCommission: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    paidCommission: {
       type: Number,
       default: 0,
       min: 0

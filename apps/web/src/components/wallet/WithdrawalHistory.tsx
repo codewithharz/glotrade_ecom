@@ -116,7 +116,7 @@ export default function WithdrawalHistory() {
                                 {request.reference}
                             </td>
                             <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">
-                                ₦{(request.amount / 100).toLocaleString()}
+                                ₦{request.amount.toLocaleString()}
                             </td>
                             <td className="px-4 py-3 text-gray-500">
                                 {request.bankDetails.bankName} ••• {request.bankDetails.accountNumber.slice(-4)}

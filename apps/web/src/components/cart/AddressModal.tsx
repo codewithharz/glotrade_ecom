@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { X, Lock } from "lucide-react";
-import { API_BASE_URL } from "@/utils/api";
+import { API_BASE_URL, apiPost, apiPut } from "@/utils/api";
 import { countryData, getCountryPhoneCode, getStatesForCountry, getCitiesForState, getCountryNames } from "@/utils/countryData";
 
 type Address = {
@@ -17,9 +17,9 @@ type Address = {
   isDefault?: boolean;
 };
 
-export default function AddressModal({ open, onClose, onSaved, initialData, onAddressUpdate }: { 
-  open: boolean; 
-  onClose: () => void; 
+export default function AddressModal({ open, onClose, onSaved, initialData, onAddressUpdate }: {
+  open: boolean;
+  onClose: () => void;
   onSaved: (addr: Address) => void;
   initialData?: Address;
   onAddressUpdate?: (updatedUserData: any) => void;
@@ -27,14 +27,14 @@ export default function AddressModal({ open, onClose, onSaved, initialData, onAd
   const [form, setForm] = useState<Address>({ country: "Nigeria", firstName: "", lastName: "", phone: "", address: "", state: "", city: "", isDefault: true });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
-  
+
   // Get available states and cities based on selected country
   const availableStates = getStatesForCountry(form.country);
   const availableCities = form.state ? getCitiesForState(form.country, form.state) : [];
 
   useEffect(() => {
     if (!open) return;
-    
+
     if (initialData) {
       // Editing existing address
       setForm({
@@ -58,7 +58,7 @@ export default function AddressModal({ open, onClose, onSaved, initialData, onAd
             lastName: savedAddress.lastName || ''
           });
         }
-      } catch {}
+      } catch { }
     }
   }, [open, initialData]);
 
@@ -76,22 +76,22 @@ export default function AddressModal({ open, onClose, onSaved, initialData, onAd
 
   const save = async () => {
     if (!validate()) return;
-    
+
     setSaving(true);
     try {
       // First save to database if user is logged in
       let savedAddress = form;
-      
+
       try {
         const raw = localStorage.getItem('afritrade:user');
         if (raw) {
           const user = JSON.parse(raw);
           if (user?.id || user?._id) {
             const isEditing = !!form.id;
-            const endpoint = isEditing 
+            const endpoint = isEditing
               ? `/api/v1/users/me/addresses/${form.id}`
               : `/api/v1/users/me/addresses`;
-            
+
             // Prepare the request body
             const requestBody = {
               street: form.address,
@@ -103,90 +103,84 @@ export default function AddressModal({ open, onClose, onSaved, initialData, onAd
               lastName: form.lastName,
               isDefault: form.isDefault
             };
-            
+
             console.log(`Sending ${isEditing ? 'update' : 'create'} request:`, {
               method: isEditing ? 'PUT' : 'POST',
               endpoint,
               body: requestBody
             });
-            
+
             // Save to database (POST for create, PUT for update)
-            const res = await fetch(new URL(endpoint, API_BASE_URL).toString(), {
-              method: isEditing ? 'PUT' : 'POST',
-              headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${user.id || user._id}`
-              },
-              body: JSON.stringify(requestBody)
-            });
-            
-            if (res.ok) {
-              const result = await res.json();
-              console.log(`Address ${isEditing ? 'updated' : 'saved'} to database:`, result);
-              console.log('AddressModal: Full API response:', JSON.stringify(result, null, 2));
-              
-              if (isEditing) {
-                // Update mode - find the updated address by ID from the returned array
-                // Handle Mongoose document structure where data might be nested in _doc
-                const updatedAddress = result.data.find((addr: any) => {
-                  const addrId = addr.id || addr._doc?.id;
-                  return addrId === form.id;
-                });
-                
-                // Extract the actual address data, handling both direct and nested structures
-                let finalAddress;
-                if (updatedAddress) {
-                  // If it's a Mongoose document with nested _doc, use that
-                  if (updatedAddress._doc) {
-                    finalAddress = updatedAddress._doc;
-                  } else {
-                    // If it's a plain object, use it directly
-                    finalAddress = updatedAddress;
-                  }
+            // Use apiPost/apiPut to ensure correct Authorization header (Bearer token) is used
+            let result;
+            if (isEditing) {
+              result = await apiPut<{ status: string; data: any; user?: any }>(endpoint, requestBody);
+            } else {
+              result = await apiPost<{ status: string; data: any; user?: any }>(endpoint, requestBody);
+            }
+
+            console.log(`Address ${isEditing ? 'updated' : 'saved'} to database:`, result);
+            console.log('AddressModal: Full API response:', JSON.stringify(result, null, 2));
+
+            if (isEditing) {
+              // Update mode - find the updated address by ID from the returned array
+              // Handle Mongoose document structure where data might be nested in _doc
+              const updatedAddress = result.data.find((addr: any) => {
+                const addrId = addr.id || addr._doc?.id;
+                return addrId === form.id;
+              });
+
+              // Extract the actual address data, handling both direct and nested structures
+              let finalAddress;
+              if (updatedAddress) {
+                // If it's a Mongoose document with nested _doc, use that
+                if (updatedAddress._doc) {
+                  finalAddress = updatedAddress._doc;
                 } else {
-                  // Fallback to form if not found
-                  finalAddress = form;
-                }
-                
-                savedAddress = finalAddress;
-                console.log('Found updated address:', finalAddress);
-                
-                // Call onAddressUpdate with the user data from the response
-                if (onAddressUpdate && result.user) {
-                  console.log('AddressModal: Calling onAddressUpdate with user data:', result.user);
-                  onAddressUpdate(result.user);
-                  console.log('AddressModal: Successfully called onAddressUpdate');
-                } else {
-                  console.log('AddressModal: onAddressUpdate not called because:', {
-                    hasOnAddressUpdate: !!onAddressUpdate,
-                    hasResultUser: !!result.user,
-                    resultUser: result.user
-                  });
+                  // If it's a plain object, use it directly
+                  finalAddress = updatedAddress;
                 }
               } else {
-                // Create mode - use the newly created address
-                savedAddress = result.data[result.data.length - 1];
+                // Fallback to form if not found
+                finalAddress = form;
+              }
+
+              savedAddress = finalAddress;
+              console.log('Found updated address:', finalAddress);
+
+              // Call onAddressUpdate with the user data from the response
+              if (onAddressUpdate && result.user) {
+                console.log('AddressModal: Calling onAddressUpdate with user data:', result.user);
+                onAddressUpdate(result.user);
+                console.log('AddressModal: Successfully called onAddressUpdate');
+              } else {
+                console.log('AddressModal: onAddressUpdate not called because:', {
+                  hasOnAddressUpdate: !!onAddressUpdate,
+                  hasResultUser: !!result.user,
+                  resultUser: result.user
+                });
               }
             } else {
-              console.error(`Failed to ${isEditing ? 'update' : 'save'} address to database:`, res.status);
+              // Create mode - use the newly created address
+              savedAddress = result.data[result.data.length - 1];
             }
           }
         }
       } catch (error) {
         console.error('Error saving to database:', error);
       }
-      
+
       // Ensure the saved address has the 'address' field that validation logic expects
       const finalAddressForCallback = {
         ...savedAddress,
         address: savedAddress.street || savedAddress.address // Map street to address field
       };
-      
+
       // Also save to localStorage for immediate use
       try {
         localStorage.setItem("shippingAddress", JSON.stringify(finalAddressForCallback));
-      } catch {}
-      
+      } catch { }
+
       onSaved(finalAddressForCallback);
     } finally {
       setSaving(false)
@@ -212,17 +206,17 @@ export default function AddressModal({ open, onClose, onSaved, initialData, onAd
           <div className="space-y-3 sm:space-y-4 py-2">
             <div>
               <label className="text-xs sm:text-sm font-medium">Country / Region<span className="text-rose-500"> *</span></label>
-              <select 
-                value={form.country} 
+              <select
+                value={form.country}
                 onChange={(e) => {
                   const newCountry = e.currentTarget.value;
-                  setForm({ 
-                    ...form, 
-                    country: newCountry, 
+                  setForm({
+                    ...form,
+                    country: newCountry,
                     state: "", // Reset state when country changes
                     city: ""   // Reset city when state changes
                   });
-                }} 
+                }}
                 className="mt-1 w-full rounded-lg border border-neutral-300 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-3 py-2.5 sm:py-3 text-sm sm:text-base"
               >
                 {getCountryNames().map(country => (
@@ -233,22 +227,22 @@ export default function AddressModal({ open, onClose, onSaved, initialData, onAd
 
             <div>
               <label className="text-xs sm:text-sm font-medium">First name<span className="text-rose-500"> *</span></label>
-              <input 
-                value={form.firstName || ''} 
-                onChange={(e) => setForm({ ...form, firstName: e.currentTarget.value })} 
+              <input
+                value={form.firstName || ''}
+                onChange={(e) => setForm({ ...form, firstName: e.currentTarget.value })}
                 placeholder="Enter your first name"
-                className={`mt-1 w-full rounded-lg border px-3 py-2.5 sm:py-3 text-sm sm:text-base ${errors.firstName ? "border-rose-500" : "border-neutral-300 dark:border-neutral-800"} bg-white dark:bg-neutral-900`} 
+                className={`mt-1 w-full rounded-lg border px-3 py-2.5 sm:py-3 text-sm sm:text-base ${errors.firstName ? "border-rose-500" : "border-neutral-300 dark:border-neutral-800"} bg-white dark:bg-neutral-900`}
               />
               {errors.firstName ? <div className="text-xs text-rose-600 mt-1">{errors.firstName}</div> : null}
             </div>
 
             <div>
               <label className="text-xs sm:text-sm font-medium">Last name<span className="text-rose-500"> *</span></label>
-              <input 
-                value={form.lastName || ''} 
-                onChange={(e) => setForm({ ...form, lastName: e.currentTarget.value })} 
+              <input
+                value={form.lastName || ''}
+                onChange={(e) => setForm({ ...form, lastName: e.currentTarget.value })}
                 placeholder="Enter your last name"
-                className={`mt-1 w-full rounded-lg border px-3 py-2.5 sm:py-3 text-sm sm:text-base ${errors.lastName ? "border-rose-500" : "border-neutral-300 dark:border-neutral-800"} bg-white dark:bg-neutral-900`} 
+                className={`mt-1 w-full rounded-lg border px-3 py-2.5 sm:py-3 text-sm sm:text-base ${errors.lastName ? "border-rose-500" : "border-neutral-300 dark:border-neutral-800"} bg-white dark:bg-neutral-900`}
               />
               {errors.lastName ? <div className="text-xs text-rose-600 mt-1">{errors.lastName}</div> : null}
             </div>
@@ -270,16 +264,16 @@ export default function AddressModal({ open, onClose, onSaved, initialData, onAd
             </div>
             <div>
               <label className="text-xs sm:text-sm font-medium">State<span className="text-rose-500"> *</span></label>
-              <select 
-                value={form.state} 
+              <select
+                value={form.state}
                 onChange={(e) => {
                   const newState = e.currentTarget.value;
-                  setForm({ 
-                    ...form, 
-                    state: newState, 
+                  setForm({
+                    ...form,
+                    state: newState,
                     city: "" // Reset city when state changes
                   });
-                }} 
+                }}
                 className={`mt-1 w-full rounded-lg border px-3 py-2.5 sm:py-3 text-sm sm:text-base ${errors.state ? "border-rose-500" : "border-neutral-300 dark:border-neutral-800"} bg-white dark:bg-neutral-900`}
               >
                 <option value="">Select State</option>
@@ -291,9 +285,9 @@ export default function AddressModal({ open, onClose, onSaved, initialData, onAd
             </div>
             <div>
               <label className="text-xs sm:text-sm font-medium">City<span className="text-rose-500"> *</span></label>
-              <select 
-                value={form.city} 
-                onChange={(e) => setForm({ ...form, city: e.currentTarget.value })} 
+              <select
+                value={form.city}
+                onChange={(e) => setForm({ ...form, city: e.currentTarget.value })}
                 disabled={!form.state} // Disable if no state selected
                 className={`mt-1 w-full rounded-lg border px-3 py-2.5 sm:py-3 text-sm sm:text-base ${errors.city ? "border-rose-500" : "border-neutral-300 dark:border-neutral-800"} bg-white dark:bg-neutral-900 ${!form.state ? "opacity-50 cursor-not-allowed" : ""}`}
               >
@@ -312,8 +306,8 @@ export default function AddressModal({ open, onClose, onSaved, initialData, onAd
         </div>
 
         <div className="sticky bottom-0 px-4 sm:px-5 py-3 sm:py-4 bg-white dark:bg-neutral-950 border-t border-neutral-200 dark:border-neutral-800">
-          <button 
-            onClick={save} 
+          <button
+            onClick={save}
             disabled={saving}
             className={`w-full rounded-full bg-orange-500 text-white font-semibold py-3 sm:py-4 text-sm sm:text-base transition-colors ${saving ? 'opacity-50 cursor-not-allowed' : 'hover:bg-orange-600 active:bg-orange-700'}`}
           >
