@@ -119,7 +119,7 @@ router.get("/verify", async (req: any, res: any, next: any) => {
               // Update wallet balance
               const transaction = await walletService.addFunds(
                 userId,
-                payment.amount,
+                payment.currency === "NGN" ? payment.amount / 100 : payment.amount,
                 payment.currency,
                 "user",
                 `Wallet top-up via ${payment.provider}`,
@@ -239,7 +239,7 @@ router.post("/webhook/paystack", bodyParser.raw({ type: "*/*" }), async (req: an
               // Update wallet balance
               const transaction = await walletService.addFunds(
                 userId,
-                payment.amount,
+                payment.currency === "NGN" ? payment.amount / 100 : payment.amount,
                 payment.currency,
                 "user",
                 `Wallet top-up via ${payment.provider}`,
