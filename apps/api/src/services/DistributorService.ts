@@ -99,37 +99,32 @@ export class DistributorService {
         // Calculate reward amount in Naira
         const rewardNaira = totalBalanceNaira * (distributorConfig.rewards.percentage / 100);
 
-        // Convert to Kobo for transaction (WalletService expects Kobo)
-        const rewardKobo = Math.floor(rewardNaira * 100);
+        // Pass Naira amount directly (WalletService expects Naira)
+        await this.walletService.addFunds(
+            user._id.toString(),
+            rewardNaira,
+            "NGN",
+            "user",
+            `Quarterly Distributor Reward (${distributorConfig.rewards.percentage}%)`,
+            {
+                type: "earning",
+                systemGenerated: true
+            },
+            undefined, // session
+            "distributor_reward" // category
+        );
 
-        if (rewardKobo > 0) {
-            // Create transaction using addFunds
-            await this.walletService.addFunds(
-                user._id.toString(),
-                rewardKobo,
-                "NGN",
-                "user",
-                `Quarterly Distributor Reward (${distributorConfig.rewards.percentage}%)`,
-                {
-                    type: "earning",
-                    systemGenerated: true
-                },
-                undefined, // session
-                "distributor_reward" // category
-            );
-
-            // Update stats
-            if (!user.businessInfo.distributorStats) {
-                user.businessInfo.distributorStats = {
-                    totalRewardsEarned: 0,
-                    nextRewardDate: new Date() // Will be updated at end of function
-                };
-            }
-
-            user.businessInfo.distributorStats.totalRewardsEarned = (user.businessInfo.distributorStats.totalRewardsEarned || 0) + rewardNaira;
-            user.businessInfo.distributorStats.lastRewardDate = new Date();
-            user.businessInfo.distributorStats.lastRewardAmount = rewardNaira;
+        // Update stats
+        if (!user.businessInfo.distributorStats) {
+            user.businessInfo.distributorStats = {
+                totalRewardsEarned: 0,
+                nextRewardDate: new Date() // Will be updated at end of function
+            };
         }
+
+        user.businessInfo.distributorStats.totalRewardsEarned = (user.businessInfo.distributorStats.totalRewardsEarned || 0) + rewardNaira;
+        user.businessInfo.distributorStats.lastRewardDate = new Date();
+        user.businessInfo.distributorStats.lastRewardAmount = rewardNaira;
 
         // Update next reward date
         await this.updateNextRewardDate(user);
