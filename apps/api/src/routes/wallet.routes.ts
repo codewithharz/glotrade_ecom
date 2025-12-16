@@ -69,6 +69,9 @@ router.get("/export/transactions", walletController.exportTransactions);
 // Pay for order using wallet
 router.post("/pay-order", walletController.payOrder);
 
+// Process wallet checkout (payment before order creation)
+router.post("/checkout", walletController.processWalletCheckout);
+
 // Admin routes (require admin authentication)
 router.use(adminAuth); // Apply admin auth middleware to routes below
 

@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   Check,
@@ -16,7 +17,7 @@ import {
   X,
   Tag,
 } from "lucide-react";
-import { API_BASE_URL, apiGet } from "@/utils/api";
+import { API_BASE_URL, apiGet, apiDelete } from "@/utils/api";
 import { initiatePayment, createOrder } from "./initiate";
 
 import AddressModal from "@/components/cart/AddressModal";
@@ -133,6 +134,8 @@ export default function CheckoutPage() {
   const [walletBalance, setWalletBalance] = useState<{ available: number, creditLimit: number, creditUsed: number } | null>(null);
   const [guestEmail, setGuestEmail] = useState("");
   const [userData, setUserData] = useState<any>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const router = useRouter();
 
 
   // Function to update localStorage user data when address is updated
@@ -1149,7 +1152,9 @@ export default function CheckoutPage() {
 
             <button
               onClick={async () => {
+                let orderId: string | undefined;
                 try {
+                  setIsProcessing(true);
                   if (summary?.finalTotal <= 0) {
                     console.warn(
                       "Order total must be greater than 0 to proceed to payment."
@@ -1198,27 +1203,8 @@ export default function CheckoutPage() {
                   });
                   console.log("Order items being sent:", items);
 
-
-
-
-
-                  // Handle other payment methods (existing logic)
-                  const provider =
-                    paymentMethod === "flutterwave"
-                      ? "flutterwave"
-                      : "paystack";
-
-                  const orderRes = await createOrder({
-                    buyerId,
-                    email: buyerId ? undefined : guestEmail, // Send email for guests
-                    lineItems: items,
-                    currency: "NGN",
-                    shippingDetails: address || {},
-                  });
-                  const orderId = orderRes?.data?.orderId;
-
+                  // WALLET PAYMENT: Process payment FIRST, then create order
                   if (paymentMethod === "wallet" && isLoggedIn) {
-                    // Handle wallet payment
                     const availableFunds = (walletBalance?.available || 0) + (walletBalance?.creditLimit || 0) - (walletBalance?.creditUsed || 0);
                     const orderAmount = Math.round((summary?.finalTotal || 0)); // Wallet balance is already in Naira, not kobo
 
@@ -1232,16 +1218,44 @@ export default function CheckoutPage() {
                       return;
                     }
 
-                    await apiPost("/api/v1/wallets/pay-order", {
-                      orderId,
-                      amount: orderAmount * 100, // Convert to kobo for API
-                      currency: "NGN"
-                    });
+                    // 1. Process payment FIRST
+                    const paymentResult = await apiPost("/api/v1/wallets/checkout", {
+                      amount: orderAmount * 100, // Convert to kobo
+                      currency: "NGN",
+                      lineItems: items
+                    }) as any;
 
-                    // Redirect to success page
-                    window.location.href = `/checkout/success?orderId=${orderId}`;
+                    // 2. Create order ONLY after successful payment
+                    const orderRes = await createOrder({
+                      buyerId,
+                      lineItems: items,
+                      currency: "NGN",
+                      shippingDetails: address || {},
+                      paymentStatus: "completed", // Already paid!
+                      paymentMethod: "wallet",
+                      paymentReference: paymentResult.data.transactionId
+                    });
+                    orderId = orderRes?.data?.orderId;
+
+                    // 3. Redirect to success
+                    router.push(`/checkout/success?orderId=${orderId}`);
                     return;
                   }
+
+                  // BANK PAYMENT: Create order first, then redirect to gateway
+                  const provider =
+                    paymentMethod === "flutterwave"
+                      ? "flutterwave"
+                      : "paystack";
+
+                  const orderRes = await createOrder({
+                    buyerId,
+                    email: buyerId ? undefined : guestEmail,
+                    lineItems: items,
+                    currency: "NGN",
+                    shippingDetails: address || {},
+                  });
+                  orderId = orderRes?.data?.orderId;
 
                   const payload = {
                     orderId,
@@ -1251,7 +1265,7 @@ export default function CheckoutPage() {
                       Math.round((summary?.finalTotal || 0) * 100)
                     ),
                     currency: "NGN",
-                    customer: { email: buyerId ? "user@example.com" : guestEmail }, // Use guest email
+                    customer: { email: buyerId ? "user@example.com" : guestEmail }, // Use guest ema
                     returnUrl: `${window.location.origin}/checkout/callback?provider=${provider}&orderId=${orderId}`,
                     metadata: { items },
                   };
@@ -1261,9 +1275,12 @@ export default function CheckoutPage() {
                 } catch (e) {
                   console.error("init payment error", e);
                   alert("Payment failed. Please try again. Error: " + (e as Error).message);
+                } finally {
+                  setIsProcessing(false);
                 }
               }}
               disabled={
+                isProcessing ||
                 (summary?.finalTotal || 0) <= 0 ||
                 !address ||
                 !address.address ||
@@ -1271,13 +1288,15 @@ export default function CheckoutPage() {
                 !address.country
               }
               aria-disabled={
+                isProcessing ||
                 (summary?.finalTotal || 0) <= 0 ||
                 !address ||
                 !address.address ||
                 !address.city ||
                 !address.country
               }
-              className={`w-full font-semibold py-3 px-4 rounded-full transition-colors ${(summary?.finalTotal || 0) <= 0 ||
+              className={`w-full font-semibold py-3 px-4 rounded-full transition-colors ${isProcessing ||
+                (summary?.finalTotal || 0) <= 0 ||
                 !address ||
                 !address.address ||
                 !address.city ||
@@ -1286,7 +1305,7 @@ export default function CheckoutPage() {
                 : "bg-orange-500 text-white hover:bg-orange-600"
                 }`}
             >
-              Submit order ({summary?.items || 0})
+              {isProcessing ? "Processing..." : `Submit order (${summary?.items || 0})`}
             </button>
             {
               (summary?.finalTotal || 0) <= 0 && (

@@ -26,6 +26,9 @@ router.patch("/:orderId/status", orderController.updateStatus);
 router.post("/:id/invoice", orderController.generateInvoice);
 router.get("/:id/invoice/download", orderController.downloadInvoice);
 
+// Delete order (for cancelled bank payments and admin cleanup)
+router.delete("/:orderId", orderController.delete);
+
 export default router;
 
 // // src/routes/order.routes.ts

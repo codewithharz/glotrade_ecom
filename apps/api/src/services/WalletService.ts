@@ -1542,6 +1542,106 @@ export class WalletService extends BaseService<IWallet> {
     }
   }
 
+  // Process wallet checkout (payment BEFORE order creation)
+  async processWalletCheckout(
+    userId: string,
+    amount: number,
+    currency: "NGN",
+    lineItems: any[],
+    metadata?: any
+  ) {
+    try {
+      // Validate line items exist and calculate expected total
+      const { Product } = await import("../models");
+      let calculatedTotal = 0;
+
+      for (const item of lineItems) {
+        const product = await Product.findById(item.productId);
+        if (!product) {
+          throw new Error(`Product not found: ${item.productId}`);
+        }
+
+        // Calculate discounted price
+        const discountedPrice = typeof product.discount === "number" && product.discount > 0
+          ? Math.max(0, Math.round((product.price * (100 - product.discount)) / 100))
+          : product.price;
+
+        calculatedTotal += discountedPrice * item.qty;
+      }
+
+      // Verify amount matches calculated total (in kobo)
+      const expectedAmount = Math.round(calculatedTotal * 100);
+      if (Math.abs(amount - expectedAmount) > 100) { // Allow 1 NGN tolerance
+        throw new Error(`Amount mismatch. Expected: ${expectedAmount}, Received: ${amount}`);
+      }
+
+      // Get wallet
+      const wallet = await this.model.findOne({
+        userId: new mongoose.Types.ObjectId(userId),
+        currency,
+        type: "user"
+      });
+
+      if (!wallet) {
+        throw new Error(`Wallet not found for currency ${currency}`);
+      }
+
+      // Convert amount from Kobo to Naira for wallet operations
+      const amountInNaira = currency === "NGN" ? amount / 100 : amount;
+
+      // Check available funds (balance + available credit)
+      const availableCredit = (wallet.creditLimit || 0) - (wallet.creditUsed || 0);
+      const availableFunds = wallet.balance + availableCredit;
+
+      if (availableFunds < amountInNaira) {
+        throw new Error(`Insufficient funds. Required: ${amountInNaira}, Available: ${availableFunds} (Balance: ${wallet.balance}, Credit: ${availableCredit})`);
+      }
+
+      // Deduct funds from wallet (in Naira)
+      const transaction = await this.deductFunds(
+        userId,
+        amountInNaira,
+        currency,
+        "user",
+        `Wallet checkout payment`,
+        { ...metadata, paymentType: "checkout_payment", lineItems },
+        null,
+        "order_payment"
+      );
+
+      // Send payment notification
+      try {
+        await this.sendWalletNotification(
+          userId,
+          "wallet_withdrawal_success",
+          {
+            amount: currency === 'NGN' ? (amount / 100).toFixed(2) : amount.toString(),
+            currency,
+            transactionId: transaction._id.toString(),
+            description: `Wallet checkout payment`
+          },
+          "medium"
+        );
+      } catch (notificationError) {
+        console.error("Failed to send payment notification:", notificationError);
+      }
+
+      return {
+        success: true,
+        message: "Payment processed successfully",
+        transactionId: transaction._id.toString(),
+        amount,
+        currency,
+        newBalance: wallet.balance - amountInNaira
+      };
+    } catch (error) {
+      console.error("Process wallet checkout error:", error);
+      throw error;
+    }
+  }
+
+  // Process order payment using wallet (DEPRECATED - use processWalletCheckout instead)
+
   // Export user transactions
   async exportTransactions(
     userId: string,

@@ -1040,6 +1040,46 @@ export class WalletController {
     }
   };
 
+  // Process wallet checkout (payment before order creation)
+  processWalletCheckout = async (req: any, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({
+          status: "error",
+          message: "User not authenticated"
+        });
+      }
+
+      const { amount, currency, lineItems, metadata } = req.body;
+
+      if (!amount || !currency || !lineItems || !Array.isArray(lineItems)) {
+        return res.status(400).json({
+          status: "error",
+          message: "amount, currency, and lineItems are required"
+        });
+      }
+
+      // Process wallet checkout
+      const result = await this.walletService.processWalletCheckout(
+        userId,
+        amount,
+        currency as "NGN",
+        lineItems,
+        metadata
+      );
+
+      res.status(200).json({
+        status: "success",
+        message: "Payment processed successfully",
+        data: result
+      });
+    } catch (error) {
+      console.error("Process wallet checkout error:", error);
+      next(error);
+    }
+  };
+
   // Export user transactions (CSV/Excel)
   exportTransactions = async (req: any, res: Response, next: NextFunction) => {
     try {

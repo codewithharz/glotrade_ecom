@@ -105,12 +105,14 @@ export class OrderController {
         lineItems: detailed,
         totalPrice,
         currency,
-        status: "pending",
-        paymentStatus: "pending",
+        status: req.body.paymentStatus === "completed" ? "processing" : "pending", // Auto-process if already paid
+        paymentStatus: req.body.paymentStatus || "pending",
         payoutStatus: "none",
         shippingDetails,
         purchaseOrderNumber,
         paymentMethod: paymentMethod || "card", // Default to card if not specified
+        paymentReference: req.body.paymentReference,
+        paidAt: req.body.paymentStatus === "completed" ? new Date() : undefined,
       });
 
       // Reserve credit if net terms
@@ -569,6 +571,54 @@ export class OrderController {
       }
 
       res.download(filePath, fileName);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+
+  // Delete order
+  delete = async (req: any, res: any, next: any) => {
+    try {
+      const { orderId } = req.params;
+      const order = await Order.findById(orderId);
+
+      if (!order) {
+        return res.status(404).json({ status: "error", message: "Order not found" });
+      }
+
+      // Check permission: Only allow deleting if status is pending (e.g. failed payment)
+      // And only by the buyer or admin
+      const userId = (req as any).user?._id?.toString();
+      const userRole = (req as any).user?.role;
+
+      if (userRole !== 'admin' && order.buyer?.toString() !== userId) {
+        return res.status(403).json({ status: "error", message: "Unauthorized" });
+      }
+
+      if (order.status !== 'pending' && order.status !== 'cancelled') {
+        return res.status(400).json({ status: "error", message: "Cannot delete processed order" });
+      }
+
+      // Release stock if reserved
+      if (order.lineItems && order.lineItems.length > 0) {
+        try {
+          for (const item of order.lineItems) {
+            await this.inventoryService.releaseStock(
+              item.productId.toString(),
+              item.qty,
+              orderId,
+              "Order deleted"
+            );
+          }
+        } catch (stockError) {
+          console.error('Failed to release stock for deleted order:', stockError);
+        }
+      }
+
+      await Order.findByIdAndDelete(orderId);
+
+      res.json({ status: "success", message: "Order deleted successfully" });
     } catch (err) {
       next(err);
     }
