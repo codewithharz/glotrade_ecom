@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Heart, ShoppingBag, TicketPercent, Wallet, MapPin, CreditCard, Globe, Sun, Shield, Bell, Settings, PackageSearch, Store, UserPlus, LogOut, ChevronRight, Trash2, Star, Clock, XCircle, AlertTriangle, Eye, ArrowLeft, Briefcase, CheckCircle2, Camera, Mail, Phone, RefreshCw } from "lucide-react";
+import { Heart, ShoppingBag, TicketPercent, Building, Wallet, MapPin, CreditCard, Globe, Sun, Shield, Bell, Settings, PackageSearch, Store, UserPlus, LogOut, ChevronRight, Trash2, Star, Clock, XCircle, AlertTriangle, Eye, ArrowLeft, Briefcase, CheckCircle2, Camera, Mail, Phone, RefreshCw } from "lucide-react";
 import { RequireAuth } from "@/components/auth/Guards";
 import Modal from "@/components/common/Modal";
 import { toast } from "@/components/common/Toast";
@@ -9,9 +9,15 @@ import AvatarUpload from "@/components/profile/AvatarUpload";
 import { API_BASE_URL } from "@/utils/api";
 import { clearUserData, logout, getUserId, authHeader } from "@/utils/auth";
 import { useRouter } from "next/navigation";
+import { getCountryPhoneCode, getStatesForCountry, getCitiesForState, getCountryNames } from "@/utils/countryData";
 
 // Shared UI classes for headers inside cards (module scope so subcomponents can reuse)
 const CARD_HEADER = "flex items-center gap-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 px-3 py-2";
+
+interface Bank {
+  name: string;
+  code: string;
+}
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -412,6 +418,10 @@ export default function ProfilePage() {
     const [editingAddr, setEditingAddr] = useState<Address | null>(null);
     const [addrForm, setAddrForm] = useState({ street: "", city: "", state: "", country: "Nigeria", phone: "" });
 
+    // Get available states and cities based on selected country
+    const availableStates = getStatesForCountry(addrForm.country);
+    const availableCities = addrForm.state ? getCitiesForState(addrForm.country, addrForm.state) : [];
+
     const loadAddresses = async () => {
       setLoading(true);
       try {
@@ -544,22 +554,67 @@ export default function ProfilePage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City</label>
-                <input value={addrForm.city} onChange={(e) => setAddrForm((s) => ({ ...s, city: e.target.value }))} className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Country</label>
+                <select
+                  value={addrForm.country}
+                  onChange={(e) => {
+                    setAddrForm((s) => ({
+                      ...s,
+                      country: e.target.value,
+                      state: "", // Reset state when country changes
+                      city: ""   // Reset city when state changes
+                    }));
+                  }}
+                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
+                >
+                  {getCountryNames().map(country => (
+                    <option key={country} value={country}>{country}</option>
+                  ))}
+                </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">State</label>
-                <input value={addrForm.city} onChange={(e) => setAddrForm((s) => ({ ...s, state: e.target.value }))} className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone</label>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600">
+                    {getCountryPhoneCode(addrForm.country)}
+                  </span>
+                  <input value={addrForm.phone} onChange={(e) => setAddrForm((s) => ({ ...s, phone: e.target.value }))} className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900" />
+                </div>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Country</label>
-                <input value={addrForm.country} onChange={(e) => setAddrForm((s) => ({ ...s, country: e.target.value }))} className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">State</label>
+                <select
+                  value={addrForm.state}
+                  onChange={(e) => {
+                    setAddrForm((s) => ({
+                      ...s,
+                      state: e.target.value,
+                      city: "" // Reset city when state changes
+                    }));
+                  }}
+                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
+                >
+                  <option value="">Select State</option>
+                  {availableStates.map(state => (
+                    <option key={state.name} value={state.name}>{state.name}</option>
+                  ))}
+                </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone</label>
-                <input value={addrForm.phone} onChange={(e) => setAddrForm((s) => ({ ...s, phone: e.target.value }))} className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900" />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City</label>
+                <select
+                  value={addrForm.city}
+                  onChange={(e) => setAddrForm((s) => ({ ...s, city: e.target.value }))}
+                  disabled={!addrForm.state}
+                  className={`w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900 ${!addrForm.state ? "opacity-50 cursor-not-allowed" : ""}`}
+                >
+                  <option value="">{addrForm.state ? "Select City" : "Select State First"}</option>
+                  {availableCities.map(city => (
+                    <option key={city} value={city}>{city}</option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>
@@ -817,6 +872,198 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  function BankAccountCard({ cardClass }: { cardClass: string }) {
+    const [bankAccount, setBankAccount] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const [showModal, setShowModal] = useState(false);
+    const [banks, setBanks] = useState<Bank[]>([]);
+    const [loadingBanks, setLoadingBanks] = useState(false);
+    const [isResolving, setIsResolving] = useState(false);
+    const [form, setForm] = useState({ accountNumber: "", bankCode: "", accountName: "", bankName: "" });
+    const [error, setError] = useState("");
+
+    const loadBankInfo = async () => {
+      try {
+        setLoading(true);
+        const uid = getUserId();
+        const res = await fetch(new URL(`/api/v1/users/profile/${uid}`, API_BASE_URL).toString(), { headers: { ...authHeader() }, cache: "no-store" });
+        if (res.ok) {
+          const json = await res.json();
+          const user = json.data;
+          setBankAccount(user.bankAccount);
+          if (user.bankAccount) {
+            setForm(user.bankAccount);
+          }
+        }
+      } catch (err) {
+        console.error("Error loading bank info:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchBanks = async () => {
+      try {
+        setLoadingBanks(true);
+        const res = await fetch(new URL("/api/v1/withdrawals/banks", API_BASE_URL).toString(), { headers: { ...authHeader() } });
+        if (res.ok) {
+          const json = await res.json();
+          setBanks(json.data);
+        }
+      } catch (err) {
+        console.error("Error fetching banks:", err);
+      } finally {
+        setLoadingBanks(false);
+      }
+    };
+
+    const resolveAccount = async () => {
+      if (!form.accountNumber || !form.bankCode) return;
+      try {
+        setIsResolving(true);
+        setError("");
+        const res = await fetch(new URL(`/api/v1/withdrawals/resolve-account?accountNumber=${form.accountNumber}&bankCode=${form.bankCode}`, API_BASE_URL).toString(), { headers: { ...authHeader() } });
+        if (res.ok) {
+          const json = await res.json();
+          setForm(s => ({ ...s, accountName: json.data.accountName }));
+        } else {
+          const json = await res.json();
+          setError(json.message || "Could not resolve account");
+        }
+      } catch (err) {
+        setError("Resolution failed");
+      } finally {
+        setIsResolving(false);
+      }
+    };
+
+    const handleSave = async () => {
+      try {
+        const res = await fetch(new URL(`/api/v1/users/me`, API_BASE_URL).toString(), {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", ...authHeader() },
+          body: JSON.stringify({ bankAccount: form })
+        });
+        if (res.ok) {
+          toast("Bank details updated", "success");
+          setShowModal(false);
+          loadBankInfo();
+        } else {
+          const json = await res.json();
+          toast(json.message || "Failed to update", "error");
+        }
+      } catch (err) {
+        toast("Update failed", "error");
+      }
+    };
+
+    useEffect(() => {
+      loadBankInfo();
+    }, []);
+
+    useEffect(() => {
+      if (showModal && banks.length === 0) {
+        fetchBanks();
+      }
+    }, [showModal]);
+
+    useEffect(() => {
+      if (form.accountNumber.length === 10 && form.bankCode) {
+        resolveAccount();
+      }
+    }, [form.accountNumber, form.bankCode]);
+
+    return (
+      <div id="bank-account" className={`${cardClass}`}>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+              <Building className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Bank Account</h3>
+          </div>
+          <button onClick={() => setShowModal(true)} className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400">
+            {bankAccount ? "Edit Details" : "+ Add Bank"}
+          </button>
+        </div>
+
+        {loading ? (
+          <div className="h-20 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800" />
+        ) : !bankAccount ? (
+          <div className="text-sm text-gray-500 dark:text-gray-400 text-center py-8">
+            No bank details saved. Necessary for commission payouts.
+          </div>
+        ) : (
+          <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+            <div className="flex items-center gap-4">
+              <div className="h-10 w-10 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-full">
+                <CreditCard className="w-5 h-5 text-gray-400" />
+              </div>
+              <div className="flex-1">
+                <div className="text-sm font-medium text-gray-900 dark:text-white">{bankAccount.accountName}</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  {bankAccount.bankName} • {bankAccount.accountNumber}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <Modal
+          open={showModal}
+          onClose={() => setShowModal(false)}
+          title={<span className="text-lg font-semibold">Bank Payout Details</span>}
+          size="sm"
+          footer={(
+            <>
+              <button onClick={() => setShowModal(false)} className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600">Cancel</button>
+              <button onClick={handleSave} disabled={!form.accountName} className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50">Save</button>
+            </>
+          )}
+        >
+          <div className="space-y-4 py-2">
+            {error && <div className="text-xs text-rose-600 bg-rose-50 p-2 rounded">{error}</div>}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Select Bank</label>
+              <select
+                value={form.bankCode}
+                onChange={(e) => {
+                  const b = banks.find(x => x.code === e.target.value);
+                  setForm(s => ({ ...s, bankCode: e.target.value, bankName: b?.name || "" }));
+                }}
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:bg-gray-900 dark:border-gray-600"
+              >
+                <option value="">{loadingBanks ? "Loading..." : "Choose Bank"}</option>
+                {banks.map(b => <option key={b.code} value={b.code}>{b.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Account Number</label>
+              <input
+                maxLength={10}
+                value={form.accountNumber}
+                onChange={(e) => setForm(s => ({ ...s, accountNumber: e.target.value.replace(/\D/g, "") }))}
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:bg-gray-900 dark:border-gray-600"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Account Name</label>
+              <div className="relative">
+                <input
+                  readOnly
+                  value={form.accountName}
+                  className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700"
+                  placeholder={isResolving ? "Resolving..." : "Automatic resolution"}
+                />
+                {isResolving && <div className="absolute right-3 top-1/2 -translate-y-1/2"><RefreshCw size={12} className="animate-spin text-blue-500" /></div>}
+              </div>
+            </div>
+          </div>
+        </Modal>
       </div>
     );
   }
@@ -1238,8 +1485,8 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* Business Credit Info - Only for business accounts */}
-              {accountType === 'business' && businessInfo && (
+              {/* Business Credit Info - Only for business accounts Coming Soon */}
+              {/* {accountType === 'business' && businessInfo && (
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
@@ -1282,9 +1529,10 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 </div>
-              )}
+              )} */}
 
               <SecurityCard cardClass="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6" />
+              <BankAccountCard cardClass="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6" />
               <NotificationsCard cardClass="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6" />
 
               {/* Danger Zone */}

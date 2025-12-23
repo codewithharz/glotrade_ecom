@@ -22,7 +22,7 @@ const upload = multer({
       'image/webp',
       'image/gif',
     ];
-    
+
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
@@ -35,7 +35,7 @@ const upload = multer({
 router.use(auth(userService));
 
 // Upload avatar
-router.post("/upload", upload.single('avatar'), avatarController.uploadAvatar);
+router.post("/upload", upload.single('avatar') as any, avatarController.uploadAvatar);
 
 // Delete avatar
 router.delete("/delete", avatarController.deleteAvatar);

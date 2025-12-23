@@ -210,7 +210,7 @@ export default function SalesAgentsPage() {
                                 <div className="bg-gray-50 p-4 rounded-lg">
                                     <p className="text-sm text-gray-500">Wallet Balance</p>
                                     <p className="text-xl font-bold text-purple-600">
-                                        {walletBalance !== null ? `₦${(walletBalance / 100).toLocaleString()}` : 'Loading...'}
+                                        {walletBalance !== null ? `₦${walletBalance.toLocaleString()}` : 'Loading...'}
                                     </p>
                                 </div>
                                 <div className="bg-gray-50 p-4 rounded-lg">

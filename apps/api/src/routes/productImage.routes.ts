@@ -32,7 +32,7 @@ router.use(auth(userService));
 // Product image management routes
 router.post(
   "/upload/:productId",
-  upload.array('images', 10), // Allow up to 10 images
+  upload.array('images', 10) as any, // Allow up to 10 images
   productImageController.uploadProductImages
 );
 

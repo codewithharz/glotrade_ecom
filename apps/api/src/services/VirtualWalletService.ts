@@ -38,20 +38,20 @@ export class VirtualWalletService {
   private readonly KYC_LIMITS: Record<number, KYCLevel> = {
     1: {
       level: 1,
-      dailyLimit: 5000000,    // ₦50,000
-      monthlyLimit: 50000000, // ₦500,000
+      dailyLimit: 50000,    // ₦50,000
+      monthlyLimit: 500000, // ₦500,000
       requirements: ["email", "phone"]
     },
     2: {
       level: 2,
-      dailyLimit: 20000000,   // ₦200,000
-      monthlyLimit: 200000000, // ₦2,000,000
+      dailyLimit: 200000,   // ₦200,000
+      monthlyLimit: 2000000, // ₦2,000,000
       requirements: ["email", "phone", "idCard", "utilityBill"]
     },
     3: {
       level: 3,
-      dailyLimit: 100000000,  // ₦1,000,000
-      monthlyLimit: 1000000000, // ₦10,000,000
+      dailyLimit: 1000000,  // ₦1,000,000
+      monthlyLimit: 10000000, // ₦10,000,000
       requirements: ["email", "phone", "idCard", "utilityBill", "bankStatement", "businessRegistration"]
     }
   };
@@ -196,7 +196,7 @@ export class VirtualWalletService {
           accountNumber: bankAccount.accountNumber,
           bankCode: bankAccount.bankCode
         });
-        
+
         payoutResult = await this.paystack.transfer({
           recipientCode: recipientResult.recipientCode,
           amount: amount,
@@ -235,18 +235,18 @@ export class VirtualWalletService {
 
       const kycLevel = user.kycLevel || 1;
       const limits = this.KYC_LIMITS[kycLevel];
-      
+
       if (!limits) {
         return { valid: false, error: "Invalid KYC level" };
       }
 
       const limit = type === "daily" ? limits.dailyLimit : limits.monthlyLimit;
-      
+
       if (amount > limit) {
-        const limitAmount = (limit / 100).toLocaleString(); // Convert from kobo to naira
-        return { 
-          valid: false, 
-          error: `Transaction amount exceeds ${type} limit of ₦${limitAmount} for KYC level ${kycLevel}` 
+        const limitAmount = limit.toLocaleString(); // Already in naira
+        return {
+          valid: false,
+          error: `Transaction amount exceeds ${type} limit of ₦${limitAmount} for KYC level ${kycLevel}`
         };
       }
 
@@ -263,7 +263,7 @@ export class VirtualWalletService {
   private async getUserWallet(userId: string, currency: "NGN" | "ATH"): Promise<any> {
     try {
       let wallet = await Wallet.findOne({ userId, currency });
-      
+
       // Auto-create wallet if it doesn't exist
       if (!wallet) {
         wallet = await Wallet.create({
@@ -279,7 +279,7 @@ export class VirtualWalletService {
           status: "active"
         });
       }
-      
+
       return wallet;
     } catch (error) {
       console.error("Get wallet error:", error);
@@ -292,7 +292,7 @@ export class VirtualWalletService {
    */
   private async executeVirtualTransfer(senderWallet: any, recipientWallet: any, amount: number, description?: string, reference?: string): Promise<void> {
     const session = await Wallet.startSession();
-    
+
     try {
       await session.withTransaction(async () => {
         // Debit sender
@@ -393,7 +393,7 @@ export class VirtualWalletService {
   async verifyPayment(reference: string, gateway: "paystack" | "flutterwave"): Promise<{ success: boolean; error?: string }> {
     try {
       let verificationResult;
-      
+
       if (gateway === "paystack" && this.paystack) {
         verificationResult = await this.paystack.verify(reference);
       } else if (gateway === "flutterwave" && this.flutterwave) {

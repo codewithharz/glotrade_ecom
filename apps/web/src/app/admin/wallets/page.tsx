@@ -161,7 +161,7 @@ export default function AdminWalletsPage() {
 
   const formatCurrency = (amount: number, currency: string) => {
     if (currency === 'NGN') {
-      return `₦${(amount / 100).toLocaleString()}`;
+      return `₦${amount.toLocaleString()}`;
     }
     return `${amount.toLocaleString()} ${currency}`;
   };

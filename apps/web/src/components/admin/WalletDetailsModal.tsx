@@ -137,9 +137,9 @@ export default function WalletDetailsModal({
 
             setIsAdjusting(true);
 
-            // Convert to kobo and apply sign based on type
-            const amountInKobo = Math.round(parseFloat(adjustmentAmount) * 100);
-            const finalAmount = adjustmentType === "debit" ? -amountInKobo : amountInKobo;
+            // Apply sign based on type
+            const amount = parseFloat(adjustmentAmount);
+            const finalAmount = adjustmentType === "debit" ? -amount : amount;
 
             await apiPost(`/api/v1/wallets/admin/${walletId}/adjust-balance`, {
                 amount: finalAmount,
@@ -174,11 +174,11 @@ export default function WalletDetailsModal({
 
             setIsUpdatingCredit(true);
 
-            // Convert to kobo
-            const limitInKobo = Math.round(parseFloat(newCreditLimit) * 100);
+            // Use Naira directly
+            const limit = parseFloat(newCreditLimit);
 
             await apiPost(`/api/v1/wallets/${details?.wallet.userId._id}/credit-limit`, {
-                creditLimit: limitInKobo,
+                creditLimit: limit,
                 reason: creditReason
             });
 
@@ -229,7 +229,7 @@ export default function WalletDetailsModal({
             }
 
             const amountInNaira = parseFloat(unfreezeAmount);
-            const frozenInNaira = (details?.wallet.frozenBalance || 0) / 100;
+            const frozenInNaira = details?.wallet.frozenBalance || 0;
 
             if (amountInNaira > frozenInNaira) {
                 toast(`Cannot unfreeze more than frozen balance (₦${frozenInNaira.toLocaleString()})`, "error");
@@ -243,12 +243,10 @@ export default function WalletDetailsModal({
 
             setIsUnfreezing(true);
 
-            // Convert to kobo
-            const amountInKobo = Math.round(amountInNaira * 100);
-
+            // Use Naira directly
             await apiPost(`/api/v1/wallets/unfreeze`, {
                 userId: details?.wallet.userId._id,
-                amount: amountInKobo,
+                amount: amountInNaira,
                 currency: details?.wallet.currency || 'NGN',
                 reason: unfreezeReason
             });
@@ -269,7 +267,7 @@ export default function WalletDetailsModal({
 
     const formatCurrency = (amount: number, currency: string) => {
         if (currency === 'NGN') {
-            return `₦${(amount / 100).toLocaleString()}`;
+            return `₦${amount.toLocaleString()}`;
         }
         return `${amount.toLocaleString()} ${currency}`;
     };
@@ -502,7 +500,7 @@ export default function WalletDetailsModal({
                                 </button>
                                 <button
                                     onClick={() => {
-                                        setNewCreditLimit((details.wallet.creditLimit / 100).toString());
+                                        setNewCreditLimit(details.wallet.creditLimit.toString());
                                         setShowCreditModal(true);
                                     }}
                                     className="flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
@@ -513,7 +511,7 @@ export default function WalletDetailsModal({
                                 {details.wallet.frozenBalance > 0 && (
                                     <button
                                         onClick={() => {
-                                            setUnfreezeAmount(((details.wallet.frozenBalance || 0) / 100).toString());
+                                            setUnfreezeAmount((details.wallet.frozenBalance || 0).toString());
                                             setShowUnfreezeModal(true);
                                         }}
                                         className="flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
@@ -562,8 +560,8 @@ export default function WalletDetailsModal({
                             <button
                                 onClick={() => setAdjustmentType("credit")}
                                 className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg border-2 transition-colors ${adjustmentType === "credit"
-                                        ? "border-green-500 bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400"
-                                        : "border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    ? "border-green-500 bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400"
+                                    : "border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
                                     }`}
                             >
                                 <Plus className="w-4 h-4" />
@@ -572,8 +570,8 @@ export default function WalletDetailsModal({
                             <button
                                 onClick={() => setAdjustmentType("debit")}
                                 className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg border-2 transition-colors ${adjustmentType === "debit"
-                                        ? "border-red-500 bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400"
-                                        : "border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    ? "border-red-500 bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400"
+                                    : "border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
                                     }`}
                             >
                                 <Minus className="w-4 h-4" />
@@ -753,11 +751,11 @@ export default function WalletDetailsModal({
                             className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder="0.00"
                             min="0"
-                            max={(details?.wallet.frozenBalance || 0) / 100}
+                            max={details?.wallet.frozenBalance || 0}
                             step="0.01"
                         />
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            Maximum: ₦{((details?.wallet.frozenBalance || 0) / 100).toLocaleString()}
+                            Maximum: ₦{(details?.wallet.frozenBalance || 0).toLocaleString()}
                         </p>
                     </div>
 

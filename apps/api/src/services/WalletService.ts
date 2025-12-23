@@ -25,7 +25,7 @@ export interface WalletSummary {
 
 export interface TopUpRequest {
   userId: string;
-  amount: number; // in kobo
+  amount: number; // in Naira
   currency: "NGN";
   provider: "paystack" | "flutterwave";
   returnUrl?: string;
@@ -33,7 +33,7 @@ export interface TopUpRequest {
 
 export interface WithdrawalRequest {
   userId: string;
-  amount: number; // in kobo
+  amount: number; // in Naira
   bankAccount: {
     accountNumber: string;
     bankCode: string;
@@ -878,10 +878,13 @@ export class WalletService extends BaseService<IWallet> {
     // Format: WALLET_TOPUP_userId_timestamp
     const orderId = `WALLET_TOPUP_${userId}_${Date.now()}`;
 
+    // Convert to kobo for internal payment record and provider
+    const amountInKobo = currency === 'NGN' ? Math.round(amount * 100) : amount;
+
     // Initialize payment with provider
     const result = await providerInstance.initialize({
       orderId,
-      amount,
+      amount: amountInKobo,
       currency,
       email: "user@example.com", // TODO: Get actual user email
       customer: {
@@ -903,7 +906,7 @@ export class WalletService extends BaseService<IWallet> {
       orderId,
       provider,
       reference: result.reference,
-      amount,
+      amount: amountInKobo,
       currency,
       status: "pending",
       settled: false,
@@ -1515,7 +1518,7 @@ export class WalletService extends BaseService<IWallet> {
           "wallet_withdrawal_success",
           {
             orderId,
-            amount: currency === 'NGN' ? (amount / 100).toFixed(2) : amount.toString(),
+            amount: currency === 'NGN' ? amount.toFixed(2) : amount.toString(),
             currency,
             transactionId: transaction._id.toString(),
             description: `Payment for order ${orderId}`
@@ -1569,8 +1572,8 @@ export class WalletService extends BaseService<IWallet> {
         calculatedTotal += discountedPrice * item.qty;
       }
 
-      // Verify amount matches calculated total (in kobo)
-      const expectedAmount = Math.round(calculatedTotal * 100);
+      // Verify amount matches calculated total
+      const expectedAmount = Math.round(calculatedTotal);
       if (Math.abs(amount - expectedAmount) > 100) { // Allow 1 NGN tolerance
         throw new Error(`Amount mismatch. Expected: ${expectedAmount}, Received: ${amount}`);
       }
@@ -1586,8 +1589,8 @@ export class WalletService extends BaseService<IWallet> {
         throw new Error(`Wallet not found for currency ${currency}`);
       }
 
-      // Convert amount from Kobo to Naira for wallet operations
-      const amountInNaira = currency === "NGN" ? amount / 100 : amount;
+      // Use amount directly (standardized to Naira)
+      const amountInNaira = amount;
 
       // Check available funds (balance + available credit)
       const availableCredit = (wallet.creditLimit || 0) - (wallet.creditUsed || 0);
@@ -1615,10 +1618,10 @@ export class WalletService extends BaseService<IWallet> {
           userId,
           "wallet_withdrawal_success",
           {
-            amount: currency === 'NGN' ? (amount / 100).toFixed(2) : amount.toString(),
+            amount: currency === 'NGN' ? amount.toFixed(2) : amount.toString(),
             currency,
             transactionId: transaction._id.toString(),
-            description: `Wallet checkout payment`
+            description: `Checkout payment for ${lineItems.length} items`
           },
           "medium"
         );
@@ -1834,7 +1837,7 @@ export class WalletService extends BaseService<IWallet> {
         'wallet_transfer_sent',
         {
           currency,
-          amount: currency === 'NGN' ? (amount / 100).toFixed(2) : amount.toString(),
+          amount: currency === 'NGN' ? amount.toFixed(2) : amount.toString(),
           recipientName,
           transactionId,
           description
@@ -1848,7 +1851,7 @@ export class WalletService extends BaseService<IWallet> {
         'wallet_transfer_received',
         {
           currency,
-          amount: currency === 'NGN' ? (amount / 100).toFixed(2) : amount.toString(),
+          amount: currency === 'NGN' ? amount.toFixed(2) : amount.toString(),
           senderName,
           transactionId,
           description
@@ -1877,7 +1880,7 @@ export class WalletService extends BaseService<IWallet> {
       notificationType,
       {
         currency,
-        amount: currency === 'NGN' ? (amount / 100).toFixed(2) : amount.toString(),
+        amount: currency === 'NGN' ? amount.toFixed(2) : amount.toString(),
         transactionId,
         reason
       },
@@ -1888,7 +1891,7 @@ export class WalletService extends BaseService<IWallet> {
   // Request withdrawal
   async requestWithdrawal(
     userId: string,
-    amount: number, // in kobo
+    amount: number, // in Naira
     bankDetails: {
       bankName: string;
       accountNumber: string;
@@ -1950,6 +1953,14 @@ export class WalletService extends BaseService<IWallet> {
       request.adminNote = `Approved by admin ${adminId}`;
       await request.save({ session });
 
+      // Handle Commission Payouts
+      if (request.metadata?.type === "commission_payout" && request.metadata?.commissionIds) {
+        const CommissionService = require("./CommissionService").default;
+        for (const commissionId of request.metadata.commissionIds) {
+          await CommissionService.payCommission(commissionId, session);
+        }
+      }
+
       // Trigger payout logic
       let transferReference;
 
@@ -1960,10 +1971,16 @@ export class WalletService extends BaseService<IWallet> {
         request.status = "approved";
         request.transactionReference = transferReference;
 
-        // Deduct from frozen balance permanently (funds are gone)
+        // Deduct permanently (funds are gone)
         const wallet = await this.model.findOne({ userId: request.userId, currency: request.currency, type: "user" }).session(session);
         if (wallet) {
-          wallet.frozenBalance -= request.amount;
+          if (request.metadata?.type === "commission_payout") {
+            // Commissions were added to balance by payCommission, so we deduct from balance
+            wallet.balance -= request.amount;
+          } else {
+            // Normal withdrawals deduct from frozen balance
+            wallet.frozenBalance -= request.amount;
+          }
           wallet.totalWithdrawn += request.amount;
           await wallet.save({ session });
         }
@@ -2000,10 +2017,9 @@ export class WalletService extends BaseService<IWallet> {
             bankCode: request.bankDetails.bankCode
           });
 
-          // 2. Initiate Transfer
           const transfer = await this.providers.paystack.transfer({
             recipientCode: recipient.recipientCode,
-            amount: request.amount, // amount in kobo
+            amount: Math.round(request.amount * 100), // amount in kobo
             reason: `Withdrawal: ${request.reference}`
           });
 
@@ -2020,7 +2036,11 @@ export class WalletService extends BaseService<IWallet> {
 
           const wallet = await this.model.findOne({ userId: request.userId, currency: request.currency, type: "user" }).session(session);
           if (wallet) {
-            wallet.frozenBalance -= request.amount;
+            if (request.metadata?.type === "commission_payout") {
+              wallet.balance -= request.amount;
+            } else {
+              wallet.frozenBalance -= request.amount;
+            }
             wallet.totalWithdrawn += request.amount;
             await wallet.save({ session });
           }
@@ -2083,12 +2103,21 @@ export class WalletService extends BaseService<IWallet> {
       request.adminNote = `Rejected by admin ${adminId}: ${reason}`;
       await request.save({ session });
 
-      // Unfreeze funds
-      const wallet = await this.model.findOne({ userId: request.userId, currency: request.currency, type: "user" }).session(session);
-      if (wallet) {
-        wallet.balance += request.amount;
-        wallet.frozenBalance -= request.amount;
-        await wallet.save({ session });
+      // Handle Commission Payout Rejection
+      if (request.metadata?.type === "commission_payout" && request.metadata?.commissionIds) {
+        const Commission = require("../models/Commission").default;
+        await Commission.updateMany(
+          { _id: { $in: request.metadata.commissionIds } },
+          { $set: { status: "approved" }, $unset: { "metadata.withdrawalId": "" } }
+        ).session(session);
+      } else {
+        // Unfreeze funds for normal withdrawals
+        const wallet = await this.model.findOne({ userId: request.userId, currency: request.currency, type: "user" }).session(session);
+        if (wallet) {
+          wallet.balance += request.amount;
+          wallet.frozenBalance -= request.amount;
+          await wallet.save({ session });
+        }
       }
 
       // Send notification
@@ -2722,7 +2751,7 @@ export class WalletService extends BaseService<IWallet> {
    */
   async adjustBalance(
     walletId: string,
-    amount: number, // in kobo, positive for add, negative for deduct
+    amount: number, // in Naira, positive for add, negative for deduct
     reason: string,
     adminId: string
   ) {
@@ -2853,7 +2882,7 @@ export class WalletService extends BaseService<IWallet> {
    */
   private formatCurrency(amount: number, currency: string): string {
     if (currency === 'NGN') {
-      return `₦${(amount / 100).toLocaleString()}`;
+      return `₦${amount.toLocaleString()}`;
     }
     return `${amount.toLocaleString()} ${currency}`;
   }

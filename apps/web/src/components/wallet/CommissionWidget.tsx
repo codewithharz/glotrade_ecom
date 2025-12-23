@@ -2,12 +2,16 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { apiGet, apiPost } from "@/utils/api";
-import { DollarSign, TrendingUp, Clock, CheckCircle2, ChevronRight, Award } from "lucide-react";
+import { DollarSign, TrendingUp, Clock, CheckCircle2, ChevronRight, Award, AlertTriangle } from "lucide-react";
+import { toast } from "@/components/common/Toast";
+import Modal from "@/components/common/Modal";
+import Link from "next/link";
 
 interface CommissionSummary {
     totalEarned: number;
     pending: number;
     approved: number;
+    payoutPending: number;
     rejected: number;
     byType: {
         registration: number;
@@ -44,6 +48,7 @@ export default function CommissionWidget() {
     };
 
     const [isPayoutLoading, setIsPayoutLoading] = useState(false);
+    const [showBankErrorModal, setShowBankErrorModal] = useState(false);
 
     const handleRequestPayout = async () => {
         if (!summary || summary.approved < 100000) return;
@@ -53,16 +58,21 @@ export default function CommissionWidget() {
             await apiPost("/api/v1/commissions/request-payout", {});
 
             // Refresh summary
-            await checkIfAgent();
-
-            // Show success message (using alert for now as toast isn't imported, or I can import it)
             // Assuming toast is available globally or I should import it
-            alert("Payout request submitted successfully!");
-        } catch (error: any) {
-            console.error("Payout request failed:", error);
-            // Extract error message from API response if available
-            const errorMessage = error.response?.data?.message || error.message || "Failed to request payout";
-            alert(errorMessage);
+            toast("Payout request submitted successfully!", "success");
+            const summaryRes = await apiGet('/api/v1/commissions/summary') as { data: CommissionSummary };
+            setSummary(summaryRes.data);
+        } catch (err: any) {
+            console.error("Payout request failed:", err);
+            const msg = (err.message || "").toLowerCase();
+            const apiMsg = (err.response?.data?.message || "").toLowerCase();
+
+            if (msg.includes("bank details") || apiMsg.includes("bank details")) {
+                setShowBankErrorModal(true);
+            } else {
+                const errorMessage = err.response?.data?.message || err.message || "Failed to request payout";
+                toast(errorMessage, "error");
+            }
         } finally {
             setIsPayoutLoading(false);
         }
@@ -151,18 +161,28 @@ export default function CommissionWidget() {
                     <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                         Ready for payout
                     </p>
+
+                    {summary.payoutPending > 0 && (
+                        <div className="mt-2 flex items-center gap-1.5 py-1 px-2 bg-orange-50 dark:bg-orange-900/20 rounded border border-orange-100 dark:border-orange-800">
+                            <Clock className="w-3 h-3 text-orange-600 dark:text-orange-400" />
+                            <span className="text-[10px] font-medium text-orange-700 dark:text-orange-300">
+                                {formatCurrency(summary.payoutPending)} pending approval
+                            </span>
+                        </div>
+                    )}
+
                     <button
                         onClick={handleRequestPayout}
                         disabled={summary.approved < 100000 || isPayoutLoading}
-                        className={`mt-3 w-full py-1.5 px-3 rounded text-xs font-medium transition-colors flex items-center justify-center gap-1 ${summary.approved >= 100000
-                            ? "bg-blue-600 hover:bg-blue-700 text-white"
+                        className={`mt-4 w-full py-2.5 px-4 rounded-lg text-sm font-semibold transition-all shadow-sm flex items-center justify-center gap-2 ${summary.approved >= 100000
+                            ? "bg-blue-600 hover:bg-blue-700 text-white hover:shadow-md transform active:scale-[0.98]"
                             : "bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500"
                             }`}
                     >
                         {isPayoutLoading ? (
-                            <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         ) : (
-                            <DollarSign className="w-3 h-3" />
+                            <DollarSign className="w-4 h-4" />
                         )}
                         Request Payout
                     </button>
@@ -217,6 +237,39 @@ export default function CommissionWidget() {
                     Commission History
                 </button>
             </div>
+            {/* Bank details missing modal */}
+            <Modal
+                open={showBankErrorModal}
+                onClose={() => setShowBankErrorModal(false)}
+                title={<span className="flex items-center gap-2 text-orange-600"><AlertTriangle size={18} /> Bank Details Missing</span>}
+                size="sm"
+                footer={(
+                    <div className="flex gap-3 w-full">
+                        <button
+                            onClick={() => setShowBankErrorModal(false)}
+                            className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600"
+                        >
+                            Cancel
+                        </button>
+                        <Link
+                            href="/profile#bank-account"
+                            onClick={() => setShowBankErrorModal(false)}
+                            className="flex-1 px-4 py-2 text-sm font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 shadow-sm"
+                        >
+                            Update Profile
+                        </Link>
+                    </div>
+                )}
+            >
+                <div className="space-y-3">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                        We need your bank account information to process commission payouts.
+                    </p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        Please update your bank details in your profile before requesting a payout.
+                    </p>
+                </div>
+            </Modal>
         </div>
     );
 }

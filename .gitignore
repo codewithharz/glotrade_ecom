@@ -13,6 +13,8 @@ coverage
 apps/**/.env
 apps/**/.env.local
 apps/**/.env.*.local
+apps/api/public/invoices/*.pdf
+yarn.lock
 
 # Allow .env.example files
 !.env.example

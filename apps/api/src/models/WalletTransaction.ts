@@ -5,10 +5,10 @@ export interface IWalletTransaction extends Document {
   userId: Schema.Types.ObjectId;
   type: "deposit" | "withdrawal" | "payment" | "refund" | "transfer" | "earning" | "fee" | "bonus" | "adjustment" | "commission"; // Note: "transfer" deprecated
   category: "order_payment" | "order_refund" | "top_up" | "withdrawal" | "transfer_in" | "transfer_out" | "sale_earning" | "platform_fee" | "bonus" | "adjustment" | "commission" | "registration_bonus"; // Note: transfer_in/transfer_out deprecated
-  amount: number; // in kobo for NGN
+  amount: number; // in Naira
   currency: "NGN"; // Naira only
-  balanceBefore: number;
-  balanceAfter: number;
+  balanceBefore: number; // in Naira
+  balanceAfter: number; // in Naira
   status: "pending" | "completed" | "failed" | "cancelled";
   reference: string; // unique transaction reference
   externalReference?: string; // Paystack/Flutterwave reference

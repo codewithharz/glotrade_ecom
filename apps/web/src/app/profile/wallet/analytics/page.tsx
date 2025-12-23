@@ -4,11 +4,11 @@ import { RequireAuth } from "@/components/auth/Guards";
 import { apiGet } from "@/utils/api";
 import { getUserId } from "@/utils/auth";
 import { toast } from "@/components/common/Toast";
-import { 
-  BarChart3, 
-  TrendingUp, 
-  DollarSign, 
-  Calendar, 
+import {
+  BarChart3,
+  TrendingUp,
+  DollarSign,
+  Calendar,
   Filter,
   Download,
   RefreshCw,
@@ -104,7 +104,7 @@ export default function WalletAnalyticsPage() {
 
     checkScreenSize();
     window.addEventListener('resize', checkScreenSize);
-    
+
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
@@ -148,7 +148,7 @@ export default function WalletAnalyticsPage() {
 
   const formatCurrency = (amount: number, currency: string = "NGN") => {
     if (currency === "NGN") {
-      return `₦${(amount / 100).toLocaleString()}`;
+      return `₦${amount.toLocaleString()}`;
     }
     return `${amount} ATH`;
   };
@@ -225,10 +225,9 @@ export default function WalletAnalyticsPage() {
                 <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
               )}
             </button>
-            
-            <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 transition-all duration-300 ease-in-out overflow-hidden ${
-              isFiltersExpanded ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'
-            }`}>
+
+            <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 transition-all duration-300 ease-in-out overflow-hidden ${isFiltersExpanded ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'
+              }`}>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Time Period

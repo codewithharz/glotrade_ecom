@@ -25,7 +25,8 @@ import {
   ChevronRight,
   X,
   BarChart3,
-  User
+  User,
+  DollarSign
 } from "lucide-react";
 
 import { RequireAuth } from "@/components/auth/Guards";
@@ -93,6 +94,7 @@ function WalletPageContent() {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [activeTab, setActiveTab] = useState<'transactions' | 'withdrawals' | 'credit-requests'>('transactions');
   const [creditRequests, setCreditRequests] = useState<CreditRequest[]>([]);
+  const [commissionSummary, setCommissionSummary] = useState<any>(null);
 
   // Transaction states
   const [user, setUser] = useState<any>(null);
@@ -256,6 +258,16 @@ function WalletPageContent() {
       // Fetch user profile to check business type
       const userRes = await apiGet<{ status: string; data: any }>("/api/v1/users/me");
       setUser(userRes.data);
+
+      // Fetch commission summary if user is a Sales Agent
+      if (userRes.data?.businessInfo?.businessType === "Sales Agent") {
+        try {
+          const commRes = await apiGet<{ status: string; data: any }>("/api/v1/commissions/summary");
+          setCommissionSummary(commRes.data);
+        } catch (e) {
+          console.error("Failed to fetch commission summary:", e);
+        }
+      }
 
     } catch (error: any) {
       console.error("Error loading wallet data:", error);
@@ -746,17 +758,40 @@ function WalletPageContent() {
               <span className="text-sm font-medium text-gray-900 dark:text-white text-center">Top Up</span>
             </button>
 
-            {user?.businessInfo?.businessType === "Sales Agent" && (
-              <button
-                onClick={() => setShowWithdrawalModal(true)}
-                className="flex flex-col items-center gap-3 p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all group"
-              >
-                <div className="p-4 bg-orange-100 dark:bg-orange-900/30 rounded-lg group-hover:bg-orange-200 dark:group-hover:bg-orange-800/40 transition-colors">
-                  <ArrowUpRight className="w-4 h-4 text-orange-600 dark:text-orange-400" />
-                </div>
-                <span className="text-sm font-medium text-gray-900 dark:text-white text-center">Withdraw</span>
-              </button>
-            )}
+            {user?.businessInfo?.businessType === "Sales Agent" && (() => {
+              const thresholdMet = commissionSummary &&
+                commissionSummary.approved >= 100000 &&
+                commissionSummary.totalEarned >= 100000 &&
+                (walletSummary?.ngnWallet?.available || 0) >= 100000;
+
+              const getTitle = () => {
+                if (!commissionSummary) return "Loading...";
+                if (commissionSummary.approved < 100000) return "Commission approved amount must be at least ₦100,000";
+                if (commissionSummary.totalEarned < 100000) return "Total lifetime earned must be at least ₦100,000";
+                if ((walletSummary?.ngnWallet?.available || 0) < 100000) return "Available balance must be at least ₦100,000";
+                return "";
+              };
+
+              return (
+                <button
+                  disabled={!thresholdMet}
+                  onClick={() => setShowWithdrawalModal(true)}
+                  className={`flex flex-col items-center gap-3 p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 transition-all group ${!thresholdMet
+                    ? "opacity-50 cursor-not-allowed grayscale"
+                    : "hover:shadow-lg"
+                    }`}
+                  title={getTitle()}
+                >
+                  <div className={`p-4 rounded-lg transition-colors ${!thresholdMet
+                    ? "bg-gray-100 dark:bg-gray-700"
+                    : "bg-red-100 dark:bg-red-900/30 group-hover:bg-red-200 dark:group-hover:bg-red-800/40"
+                    }`}>
+                    <DollarSign className={`w-4 h-4 ${!thresholdMet ? "text-gray-400" : "text-red-600 dark:text-red-400"}`} />
+                  </div>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white text-center">Withdraw</span>
+                </button>
+              );
+            })()}
 
             <button
               onClick={() => setShowCreditRequestModal(true)}
@@ -1055,7 +1090,7 @@ function WalletPageContent() {
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
                             <h4 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white">
-                              ₦{(request.requestedAmount / 100).toLocaleString()}
+                              ₦{request.requestedAmount.toLocaleString()}
                             </h4>
                             <span className={`px-2 py-1 text-xs font-medium rounded-full ${request.status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' :
                               request.status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
@@ -1078,7 +1113,7 @@ function WalletPageContent() {
                           )}
                           {request.approvedAmount && request.status === 'approved' && (
                             <div className="mt-2 p-2 bg-green-50 dark:bg-green-900/20 rounded text-sm text-green-800 dark:text-green-400">
-                              ✓ Approved Amount: ₦{(request.approvedAmount / 100).toLocaleString()}
+                              ✓ Approved Amount: ₦{request.approvedAmount.toLocaleString()}
                               {request.adminNotes && <p className="text-xs mt-1">Note: {request.adminNotes}</p>}
                             </div>
                           )}

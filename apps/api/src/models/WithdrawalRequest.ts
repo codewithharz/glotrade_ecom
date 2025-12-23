@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IWithdrawalRequest extends Document {
     userId: mongoose.Types.ObjectId;
-    amount: number; // in Kobo
+    amount: number; // in Naira
     currency: string;
     bankDetails: {
         bankName: string;
@@ -14,6 +14,7 @@ export interface IWithdrawalRequest extends Document {
     adminNote?: string;
     transactionId?: mongoose.Types.ObjectId;
     reference: string;
+    metadata: any;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -37,6 +38,7 @@ const WithdrawalRequestSchema = new Schema(
         adminNote: { type: String },
         transactionId: { type: Schema.Types.ObjectId, ref: "WalletTransaction" },
         reference: { type: String, required: true, unique: true },
+        metadata: { type: Schema.Types.Mixed, default: {} },
     },
     { timestamps: true }
 );

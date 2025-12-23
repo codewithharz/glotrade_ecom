@@ -6,7 +6,7 @@ export interface ICommission extends Document {
     referralId: Schema.Types.ObjectId;
     orderId?: Schema.Types.ObjectId;
     type: "registration" | "purchase" | "bonus" | "tier_upgrade";
-    amount: number; // in kobo
+    amount: number; // in Naira
     status: "pending" | "approved" | "paid" | "rejected";
     calculatedAt: Date;
     approvedAt?: Date;
@@ -21,6 +21,8 @@ export interface ICommission extends Document {
         commissionRate?: number;
         autoApproved?: boolean;
         paymentReference?: string;
+        withdrawalId?: string;
+        calculationMethod?: string;
     };
     createdAt: Date;
     updatedAt: Date;
@@ -96,6 +98,8 @@ const commissionSchema = new Schema<ICommission>(
             commissionRate: Number,
             autoApproved: Boolean,
             paymentReference: String,
+            withdrawalId: Schema.Types.ObjectId,
+            calculationMethod: String
         },
     },
     { timestamps: true }

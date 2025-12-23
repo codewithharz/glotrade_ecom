@@ -4,18 +4,18 @@ export interface IWallet extends Document {
   userId: Schema.Types.ObjectId;
   type: "user" | "vendor"; // Note: "vendor" type deprecated for single-vendor platform
   currency: "NGN"; // Naira only for wholesaler platform
-  balance: number; // in kobo for NGN
+  balance: number; // in Naira
   frozenBalance: number; // for escrow, disputes, etc.
   totalDeposited: number;
   totalWithdrawn: number;
   totalSpent: number;
   totalEarned: number; // for vendors (deprecated)
-  creditLimit: number; // Max credit allowed (in kobo)
-  creditUsed: number; // Current credit utilized (in kobo)
+  creditLimit: number; // Max credit allowed (in Naira)
+  creditUsed: number; // Current credit utilized (in Naira)
   // Sales Agent Commission Tracking
-  totalCommissionEarned: number; // Total commissions earned (in kobo)
-  pendingCommission: number; // Commissions pending approval/payment (in kobo)
-  paidCommission: number; // Commissions that have been paid out (in kobo)
+  totalCommissionEarned: number; // Total commissions earned (in Naira)
+  pendingCommission: number; // Commissions pending approval/payment (in Naira)
+  paidCommission: number; // Commissions that have been paid out (in Naira)
   status: "active" | "suspended" | "frozen";
   frozenAt?: Date;
   unfrozenAt?: Date;

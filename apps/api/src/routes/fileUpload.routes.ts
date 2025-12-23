@@ -22,7 +22,7 @@ const upload = multer({
       'image/gif',
       'image/svg+xml',
     ];
-    
+
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
@@ -35,6 +35,6 @@ const upload = multer({
 router.use(auth(userService));
 
 // Generic file upload (doesn't update user profile)
-router.post("/upload", upload.single('file'), fileUploadController.uploadFile);
+router.post("/upload", upload.single('file') as any, fileUploadController.uploadFile);
 
 export default router;

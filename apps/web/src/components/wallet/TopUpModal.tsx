@@ -22,10 +22,10 @@ export default function TopUpModal({ open, onClose }: TopUpModalProps) {
             }
 
             setIsLoading(true);
-            const amountInKobo = Math.round(parseFloat(amount) * 100);
+            const amountInNaira = parseFloat(amount);
 
             const result = await apiPost("/api/v1/wallets/topup", {
-                amount: amountInKobo,
+                amount: amountInNaira,
                 currency: "NGN",
                 provider: "paystack",
                 returnUrl: `${window.location.origin}/profile/wallet/callback`

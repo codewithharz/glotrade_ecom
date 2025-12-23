@@ -5,7 +5,7 @@ import { ValidationError, NotFoundError } from '../utils/errors';
 
 const r2Service = new R2Service();
 
-export const createBanner = async (req: Request, res: Response, next: NextFunction) => {
+export const createBanner = async (req: any, res: any, next: any) => {
     try {
         const { title, link, isActive, startDate, endDate, position } = req.body;
         const file = req.file;
@@ -37,7 +37,7 @@ export const createBanner = async (req: Request, res: Response, next: NextFuncti
     }
 };
 
-export const getBanners = async (req: Request, res: Response, next: NextFunction) => {
+export const getBanners = async (req: any, res: any, next: any) => {
     try {
         // If admin, return all. If public, return only active and within date range.
         // Assuming there's a way to distinguish admin requests, e.g., via middleware attaching user role
@@ -84,7 +84,7 @@ export const getBanners = async (req: Request, res: Response, next: NextFunction
     }
 };
 
-export const getBanner = async (req: Request, res: Response, next: NextFunction) => {
+export const getBanner = async (req: any, res: any, next: any) => {
     try {
         const banner = await Banner.findById(req.params.id);
         if (!banner) {
@@ -99,7 +99,7 @@ export const getBanner = async (req: Request, res: Response, next: NextFunction)
     }
 }
 
-export const updateBanner = async (req: Request, res: Response, next: NextFunction) => {
+export const updateBanner = async (req: any, res: any, next: any) => {
     try {
         const { id } = req.params;
         const { title, link, isActive, startDate, endDate, position } = req.body;
@@ -149,7 +149,7 @@ export const updateBanner = async (req: Request, res: Response, next: NextFuncti
     }
 };
 
-export const deleteBanner = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteBanner = async (req: any, res: any, next: any) => {
     try {
         const { id } = req.params;
         const banner = await Banner.findById(id);

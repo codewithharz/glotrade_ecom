@@ -2,7 +2,7 @@ import mongoose, { Document, Schema } from "mongoose";
 
 export interface ICreditRequest extends Document {
     userId: Schema.Types.ObjectId;
-    requestedAmount: number; // in kobo
+    requestedAmount: number; // in Naira
     currency: "NGN";
     status: "pending" | "approved" | "rejected" | "cancelled";
     businessReason: string;
@@ -11,7 +11,7 @@ export interface ICreditRequest extends Document {
     // Admin review
     reviewedBy?: Schema.Types.ObjectId;
     reviewedAt?: Date;
-    approvedAmount?: number; // in kobo (may differ from requested)
+    approvedAmount?: number; // in Naira (may differ from requested)
     adminNotes?: string;
     rejectionReason?: string;
 
@@ -30,8 +30,8 @@ const creditRequestSchema = new Schema<ICreditRequest>(
         requestedAmount: {
             type: Number,
             required: true,
-            min: 5000000, // ₦50,000 minimum
-            max: 1000000000 // ₦10,000,000 maximum
+            min: 50000, // ₦50,000 minimum
+            max: 10000000 // ₦10,000,000 maximum
         },
         currency: {
             type: String,

@@ -1,5 +1,5 @@
 // apps/api/src/controllers/referral.controller.ts
-import { Request, Response, NextFunction } from "express";
+// Express types handled by any
 import ReferralService from "../services/ReferralService";
 import { ValidationError } from "../utils/errors";
 
@@ -7,7 +7,7 @@ export class ReferralController {
     /**
      * Get agent's referral code
      */
-    async getMyReferralCode(req: Request, res: Response, next: NextFunction) {
+    async getMyReferralCode(req: any, res: any, next: any) {
         try {
             const userId = (req as any).user?.id;
             if (!userId) throw new ValidationError("Unauthorized");
@@ -39,7 +39,7 @@ export class ReferralController {
     /**
      * Get referral statistics
      */
-    async getReferralStats(req: Request, res: Response, next: NextFunction) {
+    async getReferralStats(req: any, res: any, next: any) {
         try {
             const userId = (req as any).user?.id;
             if (!userId) throw new ValidationError("Unauthorized");
@@ -58,7 +58,7 @@ export class ReferralController {
     /**
      * Get list of agent's referrals
      */
-    async getMyReferrals(req: Request, res: Response, next: NextFunction) {
+    async getMyReferrals(req: any, res: any, next: any) {
         try {
             const userId = (req as any).user?.id;
             if (!userId) throw new ValidationError("Unauthorized");
@@ -89,7 +89,7 @@ export class ReferralController {
     /**
      * Validate a referral code
      */
-    async validateReferralCode(req: Request, res: Response, next: NextFunction) {
+    async validateReferralCode(req: any, res: any, next: any) {
         try {
             const { code } = req.params;
             if (!code) throw new ValidationError("Referral code is required");
@@ -111,7 +111,7 @@ export class ReferralController {
     /**
      * Get specific referral details
      */
-    async getReferralById(req: Request, res: Response, next: NextFunction) {
+    async getReferralById(req: any, res: any, next: any) {
         try {
             const userId = (req as any).user?.id;
             const { id } = req.params;

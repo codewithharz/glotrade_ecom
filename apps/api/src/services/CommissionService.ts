@@ -34,26 +34,21 @@ export class CommissionService {
             return existing; // Already awarded
         }
 
-        // Determine if should auto-approve
-        const autoApprove = shouldAutoApproveCommission(registrationBonus);
-
         // Create commission record
         const commission = await Commission.create({
             agentId: referral.agentId,
             referralId,
             type: "registration",
             amount: registrationBonus,
-            status: autoApprove ? "approved" : "pending",
+            status: "pending", // Always start as pending
             description: `Registration bonus for referring user`,
             metadata: {
-                autoApproved: autoApprove,
+                autoApproved: false,
             },
         });
 
-        // If auto-approved, pay immediately
-        if (autoApprove) {
-            await this.payCommission(commission._id.toString());
-        }
+        // Check cumulative threshold
+        await this.checkAndApproveCommissions(referral.agentId.toString());
 
         return commission;
     }
@@ -114,9 +109,6 @@ export class CommissionService {
             return null;
         }
 
-        // Determine if should auto-approve
-        const autoApprove = shouldAutoApproveCommission(totalCommission);
-
         // Create commission record
         const commission = await Commission.create({
             agentId: referral.agentId,
@@ -124,11 +116,11 @@ export class CommissionService {
             orderId,
             type: "purchase",
             amount: totalCommission,
-            status: autoApprove ? "approved" : "pending",
+            status: "pending", // Always start as pending
             description: `Commission from discounted products in order #${orderId.slice(-6)}`,
             metadata: {
                 orderValue: totalOrderValue,
-                autoApproved: autoApprove,
+                autoApproved: false,
                 calculationMethod: "discount_based"
             },
         });
@@ -139,10 +131,8 @@ export class CommissionService {
         // Mark referral as active if this is first purchase
         await ReferralService.markReferralActive(referredUserId);
 
-        // If auto-approved, pay immediately
-        if (autoApprove) {
-            await this.payCommission(commission._id.toString());
-        }
+        // Check cumulative threshold
+        await this.checkAndApproveCommissions(referral.agentId.toString());
 
         return commission;
     }
@@ -200,8 +190,8 @@ export class CommissionService {
     /**
      * Pay commission to agent's wallet
      */
-    static async payCommission(commissionId: string): Promise<ICommission> {
-        const commission = await Commission.findById(commissionId);
+    static async payCommission(commissionId: string, session?: mongoose.ClientSession): Promise<ICommission> {
+        const commission = await Commission.findById(commissionId).session(session || null);
         if (!commission) {
             throw new Error("Commission not found");
         }
@@ -211,14 +201,14 @@ export class CommissionService {
         }
 
         // Get or create agent's wallet
-        let wallet = await Wallet.findOne({ userId: commission.agentId });
+        let wallet = await Wallet.findOne({ userId: commission.agentId }).session(session || null);
         if (!wallet) {
-            wallet = await Wallet.create({
+            wallet = (await Wallet.create([{
                 userId: commission.agentId,
                 type: "user",
                 currency: "NGN",
                 balance: 0,
-            });
+            }], { session: session || null }))[0];
         }
 
         // Calculate new balances
@@ -227,7 +217,7 @@ export class CommissionService {
 
         // Create wallet transaction
         const reference = `COMM-${nanoid(10).toUpperCase()}`;
-        await WalletTransaction.create({
+        await WalletTransaction.create([{
             walletId: wallet._id,
             userId: commission.agentId,
             type: "commission",
@@ -246,20 +236,20 @@ export class CommissionService {
                 idempotencyKey: `payout-${commission._id.toString()}`
             },
             processedAt: new Date(),
-        });
+        }], { session: session || null });
 
         // Update wallet balances
         wallet.balance = balanceAfter;
         wallet.totalCommissionEarned += commission.amount;
         wallet.paidCommission += commission.amount;
         wallet.pendingCommission = Math.max(0, wallet.pendingCommission - commission.amount);
-        await wallet.save();
+        await wallet.save({ session: session || null });
 
         // Update commission status
         commission.status = "paid";
         commission.paidAt = new Date();
         commission.metadata.paymentReference = reference;
-        await commission.save();
+        await commission.save({ session: session || null });
 
         // Update agent stats
         await User.findByIdAndUpdate(commission.agentId, {
@@ -267,7 +257,7 @@ export class CommissionService {
                 "businessInfo.agentStats.totalCommissionEarned": commission.amount,
                 "businessInfo.agentStats.pendingCommission": -commission.amount,
             },
-        });
+        }).session(session || null);
 
         return commission;
     }
@@ -283,11 +273,17 @@ export class CommissionService {
             .reduce((sum, c) => sum + c.amount, 0);
 
         const pending = commissions
-            .filter((c) => c.status === "pending" || c.status === "approved")
+            .filter((c) => c.status === "pending")
             .reduce((sum, c) => sum + c.amount, 0);
 
+        // Approved is commissions that reached threshold and are ready for payout request
         const approved = commissions
-            .filter((c) => c.status === "approved")
+            .filter((c) => c.status === "approved" && !c.metadata?.withdrawalId)
+            .reduce((sum, c) => sum + c.amount, 0);
+
+        // Payout Pending is commissions that have an active withdrawal request awaiting admin approval
+        const payoutPending = commissions
+            .filter((c) => c.status === "approved" && c.metadata?.withdrawalId)
             .reduce((sum, c) => sum + c.amount, 0);
 
         const rejected = commissions
@@ -310,6 +306,7 @@ export class CommissionService {
             totalEarned,
             pending,
             approved,
+            payoutPending,
             rejected,
             byType,
             totalCommissions: commissions.length,
@@ -405,7 +402,7 @@ export class CommissionService {
     /**
      * Request payout for all approved commissions (bulk)
      */
-    static async requestBulkPayout(agentId: string): Promise<{ count: number; totalAmount: number }> {
+    static async requestBulkPayout(agentId: string): Promise<{ count: number; totalAmount: number; withdrawalId: string }> {
         // Find all approved commissions for this agent
         const commissions = await Commission.find({
             agentId,
@@ -419,7 +416,7 @@ export class CommissionService {
         // Calculate total amount
         const totalAmount = commissions.reduce((sum, c) => sum + c.amount, 0);
 
-        // Check minimum payout amount (Config is in Naira, convert to Kobo)
+        // Check minimum payout amount (Config is in Naira)
         const minPayoutAmount = agentConfig.payout.minPayoutAmount;
 
         if (totalAmount < minPayoutAmount) {
@@ -428,17 +425,80 @@ export class CommissionService {
             );
         }
 
-        // Process payments for all commissions
-        let processedCount = 0;
-        for (const commission of commissions) {
-            await this.payCommission(commission._id.toString());
-            processedCount++;
+        // Get agent's bank info from user model
+        const user = await User.findById(agentId);
+        if (!user || user.businessInfo?.businessType !== "Sales Agent") {
+            throw new Error("Only Sales Agents can request commission payouts");
         }
 
+        const bankAccount = user.bankAccount;
+        if (!bankAccount || !bankAccount.accountNumber) {
+            throw new Error("Please update your bank details in your profile before requesting payout");
+        }
+
+        // Create WithdrawalRequest
+        const WithdrawalRequest = mongoose.model("WithdrawalRequest");
+        const withdrawal = await WithdrawalRequest.create({
+            userId: agentId,
+            amount: totalAmount,
+            currency: "NGN",
+            bankDetails: {
+                bankName: bankAccount.bankName,
+                accountNumber: bankAccount.accountNumber,
+                accountName: bankAccount.accountName || user.displayName,
+                bankCode: bankAccount.bankCode
+            },
+            status: "pending",
+            reference: `COMM-WDR-${Date.now()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
+            metadata: {
+                commissionIds: commissions.map(c => c._id.toString()),
+                type: "commission_payout"
+            }
+        });
+
+        // Optionally mark commissions as "processing" to prevent double payout requests
+        await Commission.updateMany(
+            { _id: { $in: commissions.map(c => c._id) } },
+            { $set: { status: "approved", "metadata.withdrawalId": withdrawal._id } }
+            // Note: Keeping them as 'approved' but tagging with withdrawalId.
+            // Alternatively, we could add a 'payout_pending' status.
+        );
+
         return {
-            count: processedCount,
-            totalAmount
+            count: commissions.length,
+            totalAmount,
+            withdrawalId: withdrawal._id.toString()
         };
+    }
+
+    /**
+     * Check if cumulative pending commissions reach the threshold and approve them
+     */
+    static async checkAndApproveCommissions(agentId: string): Promise<void> {
+        const pendingCommissions = await Commission.find({
+            agentId,
+            status: "pending"
+        });
+
+        const totalPending = pendingCommissions.reduce((sum, c) => sum + c.amount, 0);
+        const threshold = agentConfig.payout.minPayoutAmount; // ₦100,000
+
+        if (totalPending >= threshold) {
+            // Update all to approved
+            await Commission.updateMany(
+                {
+                    agentId,
+                    status: "pending"
+                },
+                {
+                    $set: {
+                        status: "approved",
+                        approvedAt: new Date(),
+                        description: `Commission threshold of ₦${threshold.toLocaleString()} reached. Ready for payout.`
+                    }
+                }
+            );
+        }
     }
 }
 

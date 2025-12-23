@@ -1220,7 +1220,7 @@ export default function CheckoutPage() {
 
                     // 1. Process payment FIRST
                     const paymentResult = await apiPost("/api/v1/wallets/checkout", {
-                      amount: orderAmount * 100, // Convert to kobo
+                      amount: orderAmount,
                       currency: "NGN",
                       lineItems: items
                     }) as any;

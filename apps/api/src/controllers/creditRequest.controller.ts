@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+// Express types handled by any
 import { CreditRequestService } from "../services/CreditRequestService";
 
 class CreditRequestController {
@@ -11,7 +11,7 @@ class CreditRequestController {
     /**
      * Submit new credit request (wholesaler)
      */
-    submitRequest = async (req: Request, res: Response, next: NextFunction) => {
+    submitRequest = async (req: any, res: any, next: any) => {
         try {
             const userId = (req as any).user?.id;
             const { requestedAmount, businessReason, supportingDocuments } = req.body;
@@ -30,12 +30,9 @@ class CreditRequestController {
                 });
             }
 
-            // Convert Naira to kobo
-            const amountInKobo = Math.round(requestedAmount * 100);
-
             const request = await this.service.submitRequest(
                 userId,
-                amountInKobo,
+                requestedAmount,
                 businessReason,
                 supportingDocuments
             );
@@ -59,7 +56,7 @@ class CreditRequestController {
     /**
      * Get user's credit requests
      */
-    getMyRequests = async (req: Request, res: Response, next: NextFunction) => {
+    getMyRequests = async (req: any, res: any, next: any) => {
         try {
             const userId = (req as any).user?.id;
 
@@ -84,7 +81,7 @@ class CreditRequestController {
     /**
      * Get all credit requests (admin)
      */
-    getAllRequests = async (req: Request, res: Response, next: NextFunction) => {
+    getAllRequests = async (req: any, res: any, next: any) => {
         try {
             const { status, startDate, endDate, minAmount, maxAmount, page, limit } = req.query;
 
@@ -92,8 +89,8 @@ class CreditRequestController {
             if (status) filters.status = status;
             if (startDate) filters.startDate = new Date(startDate as string);
             if (endDate) filters.endDate = new Date(endDate as string);
-            if (minAmount) filters.minAmount = Number(minAmount) * 100; // Convert to kobo
-            if (maxAmount) filters.maxAmount = Number(maxAmount) * 100; // Convert to kobo
+            if (minAmount) filters.minAmount = Number(minAmount);
+            if (maxAmount) filters.maxAmount = Number(maxAmount);
             if (page) filters.page = Number(page);
             if (limit) filters.limit = Number(limit);
 
@@ -111,7 +108,7 @@ class CreditRequestController {
     /**
      * Get single request details (admin)
      */
-    getRequestById = async (req: Request, res: Response, next: NextFunction) => {
+    getRequestById = async (req: any, res: any, next: any) => {
         try {
             const { id } = req.params;
 
@@ -144,7 +141,7 @@ class CreditRequestController {
     /**
      * Approve credit request (admin)
      */
-    approveRequest = async (req: Request, res: Response, next: NextFunction) => {
+    approveRequest = async (req: any, res: any, next: any) => {
         try {
             const { id } = req.params;
             const adminId = (req as any).user?.id;
@@ -157,13 +154,10 @@ class CreditRequestController {
                 });
             }
 
-            // Convert approved amount to kobo if provided
-            const amountInKobo = approvedAmount ? Math.round(approvedAmount * 100) : undefined;
-
             const request = await this.service.approveRequest(
                 id,
                 adminId,
-                amountInKobo,
+                approvedAmount ? Number(approvedAmount) : undefined,
                 adminNotes
             );
 
@@ -186,7 +180,7 @@ class CreditRequestController {
     /**
      * Reject credit request (admin)
      */
-    rejectRequest = async (req: Request, res: Response, next: NextFunction) => {
+    rejectRequest = async (req: any, res: any, next: any) => {
         try {
             const { id } = req.params;
             const adminId = (req as any).user?.id;
@@ -231,7 +225,7 @@ class CreditRequestController {
     /**
      * Cancel credit request (user)
      */
-    cancelRequest = async (req: Request, res: Response, next: NextFunction) => {
+    cancelRequest = async (req: any, res: any, next: any) => {
         try {
             const { id } = req.params;
             const userId = (req as any).user?.id;

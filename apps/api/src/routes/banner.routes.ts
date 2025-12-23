@@ -23,9 +23,9 @@ router.get('/', getBanners);
 router.use(auth(userService));
 router.use(adminAuth);
 
-router.post('/', upload.single('image'), createBanner);
+router.post('/', upload.single('image') as any, createBanner);
 router.get('/:id', getBanner);
-router.put('/:id', upload.single('image'), updateBanner);
+router.put('/:id', upload.single('image') as any, updateBanner);
 router.delete('/:id', deleteBanner);
 
 export default router;

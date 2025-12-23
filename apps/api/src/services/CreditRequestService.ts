@@ -17,7 +17,7 @@ export class CreditRequestService {
      */
     async submitRequest(
         userId: string,
-        requestedAmount: number, // in kobo
+        requestedAmount: number, // in Naira
         businessReason: string,
         supportingDocuments?: string[]
     ): Promise<ICreditRequest> {
@@ -45,11 +45,11 @@ export class CreditRequestService {
         }
 
         // Validate amount range
-        const minAmount = 5000000; // ₦50,000
-        const maxAmount = 1000000000; // ₦10,000,000
+        const minAmount = 50000; // ₦50,000
+        const maxAmount = 10000000; // ₦10,000,000
 
         if (requestedAmount < minAmount || requestedAmount > maxAmount) {
-            throw new Error(`Credit request must be between ₦${(minAmount / 100).toLocaleString()} and ₦${(maxAmount / 100).toLocaleString()}`);
+            throw new Error(`Credit request must be between ₦${minAmount.toLocaleString()} and ₦${maxAmount.toLocaleString()}`);
         }
 
         // Create request
@@ -67,10 +67,10 @@ export class CreditRequestService {
             userId,
             type: "announcement",
             title: "Credit Request Submitted",
-            message: `Your credit request for ₦${(requestedAmount / 100).toLocaleString()} has been submitted and is pending review.`,
+            message: `Your credit request for ₦${requestedAmount.toLocaleString()} has been submitted and is pending review.`,
             data: {
                 requestId: request._id.toString(),
-                amount: (requestedAmount / 100).toString()
+                amount: requestedAmount.toString()
             },
             priority: "medium"
         });
@@ -85,11 +85,11 @@ export class CreditRequestService {
                     userId: admin._id.toString(),
                     type: "announcement",
                     title: "New Credit Request",
-                    message: `A new credit request for ₦${(requestedAmount / 100).toLocaleString()} has been submitted and requires review.`,
+                    message: `A new credit request for ₦${requestedAmount.toLocaleString()} has been submitted and requires review.`,
                     data: {
                         requestId: request._id.toString(),
                         userId,
-                        amount: (requestedAmount / 100).toString()
+                        amount: requestedAmount.toString()
                     },
                     priority: "high"
                 });
@@ -177,7 +177,7 @@ export class CreditRequestService {
     async approveRequest(
         requestId: string,
         adminId: string,
-        approvedAmount?: number, // in kobo, optional - defaults to requested amount
+        approvedAmount?: number, // in Naira, optional - defaults to requested amount
         adminNotes?: string
     ): Promise<ICreditRequest> {
         const request = await CreditRequest.findById(requestId);
@@ -208,10 +208,10 @@ export class CreditRequestService {
             userId: request.userId.toString(),
             type: "announcement",
             title: "Credit Request Approved",
-            message: `Your credit request has been approved! You now have a credit limit of ₦${(finalAmount / 100).toLocaleString()}.`,
+            message: `Your credit request has been approved! You now have a credit limit of ₦${finalAmount.toLocaleString()}.`,
             data: {
                 requestId: request._id.toString(),
-                approvedAmount: (finalAmount / 100).toString(),
+                approvedAmount: finalAmount.toString(),
                 adminNotes
             },
             priority: "high"
@@ -250,7 +250,7 @@ export class CreditRequestService {
             userId: request.userId.toString(),
             type: "announcement",
             title: "Credit Request Rejected",
-            message: `Your credit request for ₦${(request.requestedAmount / 100).toLocaleString()} has been rejected.`,
+            message: `Your credit request for ₦${request.requestedAmount.toLocaleString()} has been rejected.`,
             data: {
                 requestId: request._id.toString(),
                 rejectionReason

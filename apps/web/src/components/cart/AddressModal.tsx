@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { X, Lock } from "lucide-react";
 import { API_BASE_URL, apiPost, apiPut } from "@/utils/api";
-import { countryData, getCountryPhoneCode, getStatesForCountry, getCitiesForState, getCountryNames } from "@/utils/countryData";
+import { getCountryPhoneCode, getStatesForCountry, getCitiesForState, getCountryNames } from "@/utils/countryData";
 
 type Address = {
   id?: string;
@@ -251,7 +251,7 @@ export default function AddressModal({ open, onClose, onSaved, initialData, onAd
               <label className="text-xs sm:text-sm font-medium">Phone number<span className="text-rose-500"> *</span></label>
               <div className={`mt-1 flex items-center rounded-lg border ${errors.phone ? "border-rose-500" : "border-neutral-300 dark:border-neutral-800"} bg-white dark:bg-neutral-900`}>
                 <span className="px-2 sm:px-3 text-xs sm:text-sm text-neutral-500 whitespace-nowrap">
-                  {form.country === "Nigeria" ? "NG" : form.country === "Ghana" ? "GH" : form.country === "Kenya" ? "KE" : form.country === "South Africa" ? "ZA" : form.country === "Egypt" ? "EG" : "NG"} {getCountryPhoneCode(form.country)}
+                  {getCountryPhoneCode(form.country)}
                 </span>
                 <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.currentTarget.value })} placeholder="Enter a 10 or 11 digits number" className="flex-1 px-2 py-2.5 sm:py-3 bg-transparent outline-none text-sm sm:text-base" />
               </div>

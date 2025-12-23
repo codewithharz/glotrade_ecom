@@ -651,7 +651,7 @@ export default function UserManagementPage() {
                       {walletBalance !== null && (
                         <div className="text-center">
                           <div className="text-lg sm:text-xl font-bold text-purple-600">
-                            ₦{(walletBalance / 100).toLocaleString()}
+                            ₦{walletBalance.toLocaleString()}
                           </div>
                           <div className="text-xs sm:text-sm text-gray-600">Naira Balance</div>
                         </div>
@@ -1059,7 +1059,7 @@ export default function UserManagementPage() {
         try {
           const res = await apiGet(`/api/v1/wallets/summary?userId=${selectedUser._id}`) as any;
           if (res.data?.ngnWallet?.creditLimit) {
-            setLimit((res.data.ngnWallet.creditLimit / 100).toString());
+            setLimit(res.data.ngnWallet.creditLimit.toString());
           }
         } catch (error) {
           console.error("Error fetching wallet:", error);
@@ -1074,7 +1074,7 @@ export default function UserManagementPage() {
       setIsSubmitting(true);
       try {
         await apiPost(`/api/v1/wallets/${selectedUser._id}/credit-limit`, {
-          limit: Math.round(parseFloat(limit) * 100)
+          limit: parseFloat(limit)
         });
         setSuccessMessage("Credit limit updated successfully");
         setShowSuccessModal(true);

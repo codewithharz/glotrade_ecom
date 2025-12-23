@@ -1,5 +1,5 @@
 // apps/api/src/controllers/commission.controller.ts
-import { Request, Response, NextFunction } from "express";
+// Express types handled by any
 import CommissionService from "../services/CommissionService";
 import { ValidationError } from "../utils/errors";
 
@@ -7,7 +7,7 @@ export class CommissionController {
     /**
      * Get commission summary for agent
      */
-    async getCommissionSummary(req: Request, res: Response, next: NextFunction) {
+    async getCommissionSummary(req: any, res: any, next: any) {
         try {
             const userId = (req as any).user?.id;
             if (!userId) throw new ValidationError("Unauthorized");
@@ -34,7 +34,7 @@ export class CommissionController {
     /**
      * Get list of agent's commissions
      */
-    async getMyCommissions(req: Request, res: Response, next: NextFunction) {
+    async getMyCommissions(req: any, res: any, next: any) {
         try {
             const userId = (req as any).user?.id;
             if (!userId) throw new ValidationError("Unauthorized");
@@ -67,7 +67,7 @@ export class CommissionController {
     /**
      * Get specific commission details
      */
-    async getCommissionById(req: Request, res: Response, next: NextFunction) {
+    async getCommissionById(req: any, res: any, next: any) {
         try {
             const userId = (req as any).user?.id;
             const { id } = req.params;
@@ -95,7 +95,7 @@ export class CommissionController {
     /**
      * Request commission payout (agent action)
      */
-    async requestPayout(req: Request, res: Response, next: NextFunction) {
+    async requestPayout(req: any, res: any, next: any) {
         try {
             const userId = (req as any).user?.id;
             const { id } = req.params;
@@ -126,7 +126,7 @@ export class CommissionController {
     /**
      * Request bulk payout for all approved commissions
      */
-    async requestBulkPayout(req: Request, res: Response, next: NextFunction) {
+    async requestBulkPayout(req: any, res: any, next: any) {
         try {
             const userId = (req as any).user?.id;
             if (!userId) throw new ValidationError("Unauthorized");
@@ -159,7 +159,7 @@ export class CommissionController {
     /**
      * Approve commission (admin only)
      */
-    async approveCommission(req: Request, res: Response, next: NextFunction) {
+    async approveCommission(req: any, res: any, next: any) {
         try {
             const adminId = (req as any).user?.id;
             const { id } = req.params;
@@ -182,7 +182,7 @@ export class CommissionController {
     /**
      * Reject commission (admin only)
      */
-    async rejectCommission(req: Request, res: Response, next: NextFunction) {
+    async rejectCommission(req: any, res: any, next: any) {
         try {
             const adminId = (req as any).user?.id;
             const { id } = req.params;
@@ -207,7 +207,7 @@ export class CommissionController {
     /**
      * Pay commission (admin only)
      */
-    async payCommission(req: Request, res: Response, next: NextFunction) {
+    async payCommission(req: any, res: any, next: any) {
         try {
             const adminId = (req as any).user?.id;
             const { id } = req.params;

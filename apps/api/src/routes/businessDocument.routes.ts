@@ -16,8 +16,8 @@ const upload = multer({
   },
   fileFilter: (req, file, cb) => {
     // Allow only PDF and image files
-    if (file.mimetype === 'application/pdf' || 
-        file.mimetype.startsWith('image/')) {
+    if (file.mimetype === 'application/pdf' ||
+      file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
       cb(new Error('Only PDF and image files are allowed'));
@@ -36,7 +36,7 @@ router.use(auth(userService));
  * Body: documentType, vendorId
  * File: document file (PDF, JPG, PNG)
  */
-router.post("/upload", upload.single('document'), businessDocumentController.uploadDocument);
+router.post("/upload", upload.single('document') as any, businessDocumentController.uploadDocument);
 
 /**
  * GET /api/v1/business-documents/vendor/:vendorId

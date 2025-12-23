@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+// Express types handled by any
 import { WalletService } from "../services/WalletService";
 import WithdrawalRequest from "../models/WithdrawalRequest";
 
@@ -10,7 +10,7 @@ export class WithdrawalController {
     }
 
     // Request withdrawal (User)
-    requestWithdrawal = async (req: any, res: Response, next: NextFunction) => {
+    requestWithdrawal = async (req: any, res: any, next: any) => {
         try {
             console.log("Withdrawal request - req.user:", req.user);
             const userId = req.user?._id;
@@ -56,7 +56,7 @@ export class WithdrawalController {
     };
 
     // Get withdrawal history (User)
-    getHistory = async (req: any, res: Response, next: NextFunction) => {
+    getHistory = async (req: any, res: any, next: any) => {
         try {
             const userId = req.user?._id;
             const { page = 1, limit = 20, status } = req.query;
@@ -98,7 +98,7 @@ export class WithdrawalController {
     };
 
     // Get all withdrawals (Admin)
-    getAllWithdrawals = async (req: any, res: Response, next: NextFunction) => {
+    getAllWithdrawals = async (req: any, res: any, next: any) => {
         try {
             const { page = 1, limit = 20, status, userId } = req.query;
 
@@ -129,7 +129,7 @@ export class WithdrawalController {
     };
 
     // Approve withdrawal (Admin)
-    approveWithdrawal = async (req: any, res: Response, next: NextFunction) => {
+    approveWithdrawal = async (req: any, res: any, next: any) => {
         try {
             const { id } = req.params;
             const adminId = req.user?._id;
@@ -147,7 +147,7 @@ export class WithdrawalController {
     };
 
     // Reject withdrawal (Admin)
-    rejectWithdrawal = async (req: any, res: Response, next: NextFunction) => {
+    rejectWithdrawal = async (req: any, res: any, next: any) => {
         try {
             const { id } = req.params;
             const { reason } = req.body;
@@ -169,7 +169,7 @@ export class WithdrawalController {
         }
     };
 
-    getBanks = async (req: Request, res: Response, next: NextFunction) => {
+    getBanks = async (req: any, res: any, next: any) => {
         try {
             const banks = await this.walletService.listBanks();
 
@@ -188,7 +188,7 @@ export class WithdrawalController {
         }
     };
 
-    resolveAccount = async (req: Request, res: Response, next: NextFunction) => {
+    resolveAccount = async (req: any, res: any, next: any) => {
         try {
             const { accountNumber, bankCode } = req.query;
 

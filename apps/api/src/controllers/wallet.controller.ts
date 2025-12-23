@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+// Express types handled by any
 import mongoose from "mongoose";
 import { WalletService } from "../services/WalletService";
 import { BaseController } from "./BaseController";
@@ -13,7 +13,7 @@ export class WalletController {
   }
 
   // Get wallet summary
-  getWalletSummary = async (req: any, res: Response, next: NextFunction) => {
+  getWalletSummary = async (req: any, res: any, next: any) => {
     try {
       const userId = req.user?.id || req.query.userId;
 
@@ -42,7 +42,7 @@ export class WalletController {
   };
 
   // Get wallet balance
-  getWalletBalance = async (req: any, res: Response, next: NextFunction) => {
+  getWalletBalance = async (req: any, res: any, next: any) => {
     try {
       const userId = req.user?.id;
       const { currency, type } = req.query;
@@ -74,7 +74,7 @@ export class WalletController {
   };
 
   // Get transaction history with enhanced search and filtering
-  getTransactionHistory = async (req: any, res: Response, next: NextFunction) => {
+  getTransactionHistory = async (req: any, res: any, next: any) => {
     try {
       const userId = req.user?.id || req.query.userId;
       const {
@@ -128,7 +128,7 @@ export class WalletController {
   };
 
   // Top up wallet
-  topUpWallet = async (req: any, res: Response, next: NextFunction) => {
+  topUpWallet = async (req: any, res: any, next: any) => {
     try {
       const userId = req.user?.id;
       const { amount, currency, provider, returnUrl } = req.body;
@@ -176,7 +176,7 @@ export class WalletController {
   };
 
   // Verify top-up payment
-  verifyTopUp = async (req: any, res: Response, next: NextFunction) => {
+  verifyTopUp = async (req: any, res: any, next: any) => {
     try {
       const { reference, provider } = req.query;
 
@@ -210,7 +210,7 @@ export class WalletController {
 
   // DEPRECATED: P2P transfers disabled for wholesaler platform
   // Transfer funds to another user
-  transferFunds = async (req: any, res: Response, next: NextFunction) => {
+  transferFunds = async (req: any, res: any, next: any) => {
     return res.status(403).json({
       status: "error",
       message: "P2P transfers are disabled for wholesaler platform"
@@ -219,7 +219,7 @@ export class WalletController {
 
   // DEPRECATED: P2P transfers disabled for wholesaler platform
   // Validate transfer before execution
-  validateTransfer = async (req: any, res: Response, next: NextFunction) => {
+  validateTransfer = async (req: any, res: any, next: any) => {
     return res.status(403).json({
       status: "error",
       message: "P2P transfers are disabled for wholesaler platform"
@@ -227,7 +227,7 @@ export class WalletController {
   };
 
   // Create user wallets (for new users)
-  createUserWallets = async (req: any, res: Response, next: NextFunction) => {
+  createUserWallets = async (req: any, res: any, next: any) => {
     try {
       const userId = req.user?.id;
 
@@ -247,7 +247,7 @@ export class WalletController {
   };
 
   // Create vendor wallets
-  createVendorWallets = async (req: any, res: Response, next: NextFunction) => {
+  createVendorWallets = async (req: any, res: any, next: any) => {
     try {
       const userId = req.user?.id;
 
@@ -267,7 +267,7 @@ export class WalletController {
   };
 
   // Freeze funds (admin only)
-  freezeFunds = async (req: any, res: Response, next: NextFunction) => {
+  freezeFunds = async (req: any, res: any, next: any) => {
     try {
       const { userId, amount, currency, type, reason } = req.body;
 
@@ -296,7 +296,7 @@ export class WalletController {
   };
 
   // Unfreeze funds (admin only)
-  unfreezeFunds = async (req: any, res: Response, next: NextFunction) => {
+  unfreezeFunds = async (req: any, res: any, next: any) => {
     try {
       const { userId, amount, currency, type, reason } = req.body;
 
@@ -325,7 +325,7 @@ export class WalletController {
   };
 
   // Search users for transfers
-  searchUsers = async (req: any, res: Response, next: NextFunction) => {
+  searchUsers = async (req: any, res: any, next: any) => {
     try {
       const { q } = req.query;
 
@@ -386,7 +386,7 @@ export class WalletController {
   };
 
   // Get user's wallet ID and display info
-  getWalletInfo = async (req: any, res: Response, next: NextFunction) => {
+  getWalletInfo = async (req: any, res: any, next: any) => {
     try {
       const userId = req.user?.id || req.query.userId;
 
@@ -430,7 +430,7 @@ export class WalletController {
   };
 
   // Get vendor earnings analytics
-  getVendorEarnings = async (req: any, res: Response, next: NextFunction) => {
+  getVendorEarnings = async (req: any, res: any, next: any) => {
     try {
       const userId = req.user?.id || req.query.userId;
 
@@ -499,7 +499,7 @@ export class WalletController {
   };
 
   // Get all wallets for admin (with user data)
-  getAllWallets = async (req: any, res: Response, next: NextFunction) => {
+  getAllWallets = async (req: any, res: any, next: any) => {
     try {
       const { page = 1, limit = 20, status, type, currency } = req.query;
 
@@ -538,7 +538,7 @@ export class WalletController {
   };
 
   // Get wallet statistics for admin
-  getWalletStats = async (req: any, res: Response, next: NextFunction) => {
+  getWalletStats = async (req: any, res: any, next: any) => {
     try {
       const Wallet = require("../models/Wallet").default;
       const User = require("../models/User").default;
@@ -577,7 +577,7 @@ export class WalletController {
   };
 
   // Get user's contacts
-  getContacts = async (req: any, res: Response, next: NextFunction) => {
+  getContacts = async (req: any, res: any, next: any) => {
     try {
       const userId = req.user?.id || req.query.userId;
       const { search, favorite, sortBy = 'lastTransferred' } = req.query;
@@ -641,7 +641,7 @@ export class WalletController {
   };
 
   // Add contact
-  addContact = async (req: any, res: Response, next: NextFunction) => {
+  addContact = async (req: any, res: any, next: any) => {
     try {
       const userId = req.user?.id;
       const { contactUserId, notes, tags } = req.body;
@@ -712,7 +712,7 @@ export class WalletController {
   };
 
   // Update contact
-  updateContact = async (req: any, res: Response, next: NextFunction) => {
+  updateContact = async (req: any, res: any, next: any) => {
     try {
       const userId = req.user?.id;
       const { contactId } = req.params;
@@ -759,7 +759,7 @@ export class WalletController {
   };
 
   // Delete contact
-  deleteContact = async (req: any, res: Response, next: NextFunction) => {
+  deleteContact = async (req: any, res: any, next: any) => {
     try {
       const userId = req.user?.id;
       const { contactId } = req.params;
@@ -796,7 +796,7 @@ export class WalletController {
   };
 
   // Freeze wallet (Admin only)
-  freezeWallet = async (req: Request, res: Response, next: NextFunction) => {
+  freezeWallet = async (req: any, res: any, next: any) => {
     try {
       const { walletId } = req.params;
       const { reason, adminNotes } = req.body;
@@ -825,7 +825,7 @@ export class WalletController {
   };
 
   // Unfreeze wallet (Admin only)
-  unfreezeWallet = async (req: Request, res: Response, next: NextFunction) => {
+  unfreezeWallet = async (req: any, res: any, next: any) => {
     try {
       const { walletId } = req.params;
       const { reason, adminNotes } = req.body;
@@ -854,7 +854,7 @@ export class WalletController {
   };
 
   // Get wallet freeze history (Admin only)
-  async getWalletFreezeHistory(req: Request, res: Response, next: NextFunction) {
+  async getWalletFreezeHistory(req: any, res: any, next: any) {
     try {
       const { walletId } = req.params;
       const { page = 1, limit = 10 } = req.query;
@@ -882,7 +882,7 @@ export class WalletController {
   }
 
   // Get comprehensive wallet details (Admin only)
-  getWalletDetails = async (req: Request, res: Response, next: NextFunction) => {
+  getWalletDetails = async (req: any, res: any, next: any) => {
     try {
       const { walletId } = req.params;
 
@@ -905,7 +905,7 @@ export class WalletController {
   };
 
   // Adjust wallet balance (Admin only)
-  adjustWalletBalance = async (req: any, res: Response, next: NextFunction) => {
+  adjustWalletBalance = async (req: any, res: any, next: any) => {
     try {
       const { walletId } = req.params;
       const { amount, reason } = req.body;
@@ -957,7 +957,7 @@ export class WalletController {
   };
 
   // Add admin note to wallet (Admin only)
-  addAdminNote = async (req: any, res: Response, next: NextFunction) => {
+  addAdminNote = async (req: any, res: any, next: any) => {
     try {
       const { walletId } = req.params;
       const { note } = req.body;
@@ -1002,7 +1002,7 @@ export class WalletController {
 
 
   // Pay for order using wallet
-  payOrder = async (req: any, res: Response, next: NextFunction) => {
+  payOrder = async (req: any, res: any, next: any) => {
     try {
       const userId = req.user?.id;
       if (!userId) {
@@ -1041,7 +1041,7 @@ export class WalletController {
   };
 
   // Process wallet checkout (payment before order creation)
-  processWalletCheckout = async (req: any, res: Response, next: NextFunction) => {
+  processWalletCheckout = async (req: any, res: any, next: any) => {
     try {
       const userId = req.user?.id;
       if (!userId) {
@@ -1081,7 +1081,7 @@ export class WalletController {
   };
 
   // Export user transactions (CSV/Excel)
-  exportTransactions = async (req: any, res: Response, next: NextFunction) => {
+  exportTransactions = async (req: any, res: any, next: any) => {
     try {
       const userId = req.user?.id;
       if (!userId) {
@@ -1124,7 +1124,7 @@ export class WalletController {
   };
 
   // Get wallet analytics
-  getWalletAnalytics = async (req: any, res: Response, next: NextFunction) => {
+  getWalletAnalytics = async (req: any, res: any, next: any) => {
     try {
       const userId = req.user?.id || req.query.userId;
       const {
@@ -1154,7 +1154,7 @@ export class WalletController {
   };
 
   // Get spending insights
-  getSpendingInsights = async (req: any, res: Response, next: NextFunction) => {
+  getSpendingInsights = async (req: any, res: any, next: any) => {
     try {
       const userId = req.user?.id || req.query.userId;
       const {
@@ -1184,7 +1184,7 @@ export class WalletController {
   };
 
   // Get transaction trends
-  getTransactionTrends = async (req: any, res: Response, next: NextFunction) => {
+  getTransactionTrends = async (req: any, res: any, next: any) => {
     try {
       const userId = req.user?.id || req.query.userId;
       const {
@@ -1214,7 +1214,7 @@ export class WalletController {
   };
 
   // Export all transactions (Admin only)
-  async exportAllTransactions(req: Request, res: Response, next: NextFunction) {
+  async exportAllTransactions(req: any, res: any, next: any) {
     try {
       const {
         format = "csv",
@@ -1250,7 +1250,7 @@ export class WalletController {
   }
 
   // Set credit limit (Admin only)
-  setCreditLimit = async (req: any, res: Response, next: NextFunction) => {
+  setCreditLimit = async (req: any, res: any, next: any) => {
     try {
       const { userId } = req.params;
       const { limit } = req.body;

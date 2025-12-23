@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { logout } from "@/utils/auth";
 import { toast } from "@/components/common/Toast";
+import { getCountryNames } from "@/utils/countryData";
 import { API_BASE_URL, getUserStorage, saveUserStorage } from "@/utils/api";
 import Modal from "@/components/common/Modal";
 
@@ -778,37 +779,20 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                       </span>
                     </button>
                     {openCountry ? (
-                      <div className="mt-1.5 sm:mt-2 grid grid-cols-1 gap-1 px-2">
-                        <button
-                          onClick={() => {
-                            setCountry("Nigeria");
-                            setPref("country", "Nigeria");
-                            setOpen(false);
-                          }}
-                          className="rounded px-2 py-1 text-left text-xs sm:text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800"
-                        >
-                          Nigeria
-                        </button>
-                        <button
-                          onClick={() => {
-                            setCountry("Ghana");
-                            setPref("country", "Ghana");
-                            setOpen(false);
-                          }}
-                          className="rounded px-2 py-1 text-left text-xs sm:text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800"
-                        >
-                          Ghana
-                        </button>
-                        <button
-                          onClick={() => {
-                            setCountry("Côte d'Ivoire");
-                            setPref("country", "Côte d'Ivoire");
-                            setOpen(false);
-                          }}
-                          className="rounded px-2 py-1 text-left text-xs sm:text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800"
-                        >
-                          Côte d'Ivoire
-                        </button>
+                      <div className="mt-1.5 sm:mt-2 grid grid-cols-1 gap-1 px-2 max-h-60 overflow-y-auto no-scrollbar border-t border-neutral-100 dark:border-neutral-800 pt-2">
+                        {getCountryNames().map((c) => (
+                          <button
+                            key={c}
+                            onClick={() => {
+                              setCountry(c);
+                              setPref("country", c);
+                              setOpen(false);
+                            }}
+                            className={`rounded px-2 py-1.5 text-left text-xs sm:text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors ${country === c ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 font-medium" : ""}`}
+                          >
+                            {c}
+                          </button>
+                        ))}
                       </div>
                     ) : null}
                   </div>
