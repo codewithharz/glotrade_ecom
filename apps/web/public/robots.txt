@@ -1,0 +1,21 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Disallow admin pages
+Disallow: /admin/
+Disallow: /agent/
+
+# Disallow checkout and cart pages
+Disallow: /checkout/
+Disallow: /cart/
+
+# Disallow user profile pages
+Disallow: /profile/
+
+# Allow product and category pages
+Allow: /products/
+Allow: /categories/
+
+# Sitemap
+Sitemap: https://glotrade.online/sitemap.xml
