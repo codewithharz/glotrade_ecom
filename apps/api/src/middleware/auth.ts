@@ -1,5 +1,5 @@
-// src/middleware/auth.ts
 // Express types handled by any
+import { Request, Response, NextFunction } from "express";
 import { UnauthorizedError } from "../utils/errors";
 import { UserService } from "../services/UserService";
 import { IUser } from "../types/user.types";

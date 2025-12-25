@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Globe, HelpCircle } from "lucide-react";
+import { Globe, HelpCircle, ShieldCheck } from "lucide-react";
 
 import { useEffect, useState } from "react";
 import { setStoredLocale, translate } from "@/utils/i18n";
@@ -27,6 +27,12 @@ export default function UpperHeader() {
         </div>
 
         <div className="flex items-center gap-3 text-white text-sm font-semibold">
+          <Link
+            href="/gdip"
+            className="hover:underline whitespace-nowrap inline-flex items-center gap-1.5"
+          >
+            <ShieldCheck size={16} /> {translate(locale, "navInsuredPartners")}
+          </Link>
           <Link
             href="/support"
             className="hover:underline whitespace-nowrap inline-flex items-center gap-1.5"

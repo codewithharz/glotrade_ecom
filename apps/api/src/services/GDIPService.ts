@@ -1,0 +1,330 @@
+import TPIA from "../models/TPIA";
+import GDC from "../models/GDC";
+import TradeCycle from "../models/TradeCycle";
+import Insurance from "../models/Insurance";
+import Commodity from "../models/Commodity";
+import Wallet from "../models/Wallet";
+import WalletTransaction from "../models/WalletTransaction";
+import User from "../models/User";
+import { Schema } from "mongoose";
+
+/**
+ * GDIPService - Manages GDIP (Glotrade Distribution/Trusted Insured Partners) Platform
+ * Handles TPIA creation, GDC management, and trade cycle orchestration
+ */
+export class GDIPService {
+    /**
+     * Get next available TPIA number
+     */
+    private static async getNextTPIANumber(): Promise<number> {
+        const lastTPIA = await TPIA.findOne().sort({ tpiaNumber: -1 }).limit(1);
+        return lastTPIA ? lastTPIA.tpiaNumber + 1 : 1;
+    }
+
+    /**
+     * Get next available GDC number (increments by 10)
+     */
+    private static async getNextGDCNumber(): Promise<number> {
+        const lastGDC = await GDC.findOne().sort({ gdcNumber: -1 }).limit(1);
+        return lastGDC ? lastGDC.gdcNumber + 10 : 10;
+    }
+
+    /**
+     * Get next available cycle number for a GDC
+     */
+    private static async getNextCycleNumber(gdcId: Schema.Types.ObjectId): Promise<number> {
+        const lastCycle = await TradeCycle.findOne({ gdcId }).sort({ cycleNumber: -1 }).limit(1);
+        return lastCycle ? lastCycle.cycleNumber + 1 : 1;
+    }
+
+    /**
+     * Find or create an available GDC for new TPIA assignment
+     */
+    private static async findOrCreateAvailableGDC(commodityType: string): Promise<any> {
+        // Look for ANY GDC that's not full, regardless of commodity type
+        // Strict sequential filling: Sort by gdcNumber ASC to fill oldest first
+        let gdc = await GDC.findOne({
+            isFull: false,
+            status: "forming"
+        }).sort({ gdcNumber: 1 });
+
+        // If no available GDC, create a new one
+        if (!gdc) {
+            const gdcNumber = await this.getNextGDCNumber();
+            gdc = await GDC.create({
+                gdcNumber,
+                primaryCommodity: "Mixed", // GDC holds mixed commodities until Cycle determines trade
+                capacity: 10,
+                currentFill: 0,
+                isFull: false,
+                status: "forming",
+                totalCapital: 0,
+                totalProfitGenerated: 0,
+                averageROI: 0,
+                tpiaIds: [],
+                tpiaNumbers: [],
+                isActive: true
+            });
+        }
+
+        return gdc;
+    }
+
+    /**
+     * Bulk purchase TPIA blocks
+     * @param partnerId - User ID of the partner
+     * @param commodityType - Type of commodity
+     * @param profitMode - TPM or EPS
+     * @param quantity - Number of TPIAs to purchase (1-10)
+     */
+    static async purchaseBulk(
+        partnerId: Schema.Types.ObjectId,
+        commodityType: string,
+        profitMode: "TPM" | "EPS" = "TPM",
+        quantity: number = 1
+    ): Promise<any[]> {
+        if (quantity < 1 || quantity > 10) {
+            throw new Error("Quantity must be between 1 and 10");
+        }
+
+        const unitPrice = 1000000;
+        const totalPrice = unitPrice * quantity;
+
+        // Get partner details
+        const partner = await User.findById(partnerId);
+        if (!partner) {
+            throw new Error("Partner not found");
+        }
+
+        // Verify partner has sufficient funds
+        const wallet = await Wallet.findOne({ userId: partnerId });
+        if (!wallet || wallet.balance < totalPrice) {
+            throw new Error(`Insufficient wallet balance. Required: ${totalPrice.toLocaleString()}`);
+        }
+
+        const purchasedTPIAs = [];
+
+        // We process them one by one to ensure they fill GDCs correctly
+        // but we deduct the total amount once or keep track of balance
+        for (let i = 0; i < quantity; i++) {
+            // Re-fetch GDC each time to ensure we fill sequentially
+            const gdc = await this.findOrCreateAvailableGDC(commodityType);
+            const tpiaNumber = await this.getNextTPIANumber();
+            const positionInGDC = gdc.currentFill + 1;
+
+            const tpia = await TPIA.create({
+                tpiaNumber,
+                partnerId,
+                partnerName: partner.businessInfo?.companyName || `${partner.firstName} ${partner.lastName}`,
+                partnerEmail: partner.email,
+                gdcId: gdc._id,
+                gdcNumber: gdc.gdcNumber,
+                positionInGDC,
+                purchasePrice: unitPrice,
+                currentValue: unitPrice,
+                totalProfitEarned: 0,
+                compoundedValue: 0,
+                cyclesCompleted: 0,
+                profitMode,
+                insuranceCoverageAmount: unitPrice,
+                insuranceStatus: "pending",
+                commodityType,
+                commodityQuantity: 0,
+                commodityUnit: "bags",
+                status: "pending",
+                purchasedAt: new Date(),
+                documents: {}
+            });
+
+            // Update GDC
+            gdc.tpiaIds.push(tpia._id);
+            gdc.tpiaNumbers.push(tpiaNumber);
+            gdc.currentFill += 1;
+            gdc.totalCapital += unitPrice;
+
+            if (gdc.currentFill === 10) {
+                gdc.isFull = true;
+                gdc.status = "ready";
+                gdc.formedAt = new Date();
+                gdc.nextCycleStartDate = new Date(Date.now() + 37 * 24 * 60 * 60 * 1000);
+            }
+            await gdc.save();
+
+            // Create insurance record
+            await Insurance.create({
+                certificateNumber: tpia.insuranceCertificateNumber,
+                tpiaId: tpia._id,
+                tpiaNumber,
+                provider: "Default Insurance Provider",
+                policyType: "capital_protection",
+                coverageAmount: unitPrice,
+                deductible: 0,
+                premium: unitPrice * 0.02,
+                issueDate: new Date(),
+                effectiveDate: new Date(),
+                expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+                status: "pending",
+                partnerId,
+                partnerName: tpia.partnerName
+            });
+
+            purchasedTPIAs.push(tpia);
+        }
+
+        // Deduct total from wallet
+        wallet.balance -= totalPrice;
+        wallet.totalSpent += totalPrice;
+        await wallet.save();
+
+        const bulkRef = `BULK-TPIA-${Date.now()}`;
+
+        // Create one bulk wallet transaction
+        await WalletTransaction.create({
+            walletId: wallet._id,
+            userId: partnerId,
+            type: "payment",
+            category: "order_payment",
+            amount: totalPrice,
+            currency: "NGN",
+            balanceBefore: wallet.balance + totalPrice,
+            balanceAfter: wallet.balance,
+            status: "completed",
+            reference: bulkRef,
+            description: `Bulk purchase of ${quantity} TPIA blocks`,
+            metadata: {
+                quantity,
+                unitPrice,
+                tpiaIds: purchasedTPIAs.map(t => t._id.toString()),
+                idempotencyKey: bulkRef
+            },
+            processedAt: new Date()
+        });
+
+        return purchasedTPIAs;
+    }
+
+    /**
+     * Purchase a new TPIA block (deprecated in favor of bulk, but kept for compatibility)
+     */
+    static async purchaseTPIA(
+        partnerId: Schema.Types.ObjectId,
+        commodityType: string,
+        profitMode: "TPM" | "EPS" = "TPM",
+        purchasePrice: number = 1000000
+    ): Promise<any> {
+        const results = await this.purchaseBulk(partnerId, commodityType, profitMode, 1);
+        return results[0];
+    }
+
+    /**
+     * Get partner's TPIAs
+     */
+    static async getPartnerTPIAs(partnerId: Schema.Types.ObjectId): Promise<any[]> {
+        return await TPIA.find({ partnerId }).sort({ tpiaNumber: 1 });
+    }
+
+    /**
+     * Get TPIA details with related data
+     */
+    static async getTPIADetails(tpiaId: Schema.Types.ObjectId) {
+        const tpia = await TPIA.findById(tpiaId);
+        if (!tpia) {
+            throw new Error("TPIA not found");
+        }
+
+        const [gdc, insurance, currentCycle] = await Promise.all([
+            GDC.findById(tpia.gdcId),
+            Insurance.findOne({ tpiaId }),
+            tpia.currentCycleId ? TradeCycle.findById(tpia.currentCycleId) : null
+        ]);
+
+        return {
+            tpia,
+            gdc,
+            insurance,
+            currentCycle
+        };
+    }
+
+    /**
+     * Get GDC details with all TPIAs
+     */
+    static async getGDCDetails(gdcId: Schema.Types.ObjectId) {
+        const gdc = await GDC.findById(gdcId);
+        if (!gdc) {
+            throw new Error("GDC not found");
+        }
+
+        const [tpias, cycles] = await Promise.all([
+            TPIA.find({ gdcId }).sort({ positionInGDC: 1 }),
+            TradeCycle.find({ gdcId }).sort({ cycleNumber: -1 }).limit(10)
+        ]);
+
+        return {
+            gdc,
+            tpias,
+            recentCycles: cycles
+        };
+    }
+
+    /**
+     * Switch TPIA profit mode (TPM <-> EPS)
+     */
+    static async switchProfitMode(
+        tpiaId: Schema.Types.ObjectId,
+        newMode: "TPM" | "EPS"
+    ): Promise<any> {
+        const tpia = await TPIA.findById(tpiaId);
+        if (!tpia) {
+            throw new Error("TPIA not found");
+        }
+
+        tpia.profitMode = newMode;
+        await tpia.save();
+
+        return tpia;
+    }
+
+    /**
+     * Get partner's portfolio summary
+     */
+    static async getPartnerPortfolio(partnerId: Schema.Types.ObjectId) {
+        const tpias = await TPIA.find({ partnerId });
+
+        const summary = {
+            totalTPIAs: tpias.length,
+            totalInvested: tpias.reduce((sum, t) => sum + t.purchasePrice, 0),
+            currentValue: tpias.reduce((sum, t) => sum + t.currentValue, 0),
+            totalProfitEarned: tpias.reduce((sum, t) => sum + t.totalProfitEarned, 0),
+            activeCycles: tpias.filter(t => t.currentCycleId).length,
+            tpiasByStatus: {
+                pending: tpias.filter(t => t.status === "pending").length,
+                active: tpias.filter(t => t.status === "active").length,
+                matured: tpias.filter(t => t.status === "matured").length,
+                suspended: tpias.filter(t => t.status === "suspended").length
+            },
+            tpiasByMode: {
+                TPM: tpias.filter(t => t.profitMode === "TPM").length,
+                EPS: tpias.filter(t => t.profitMode === "EPS").length
+            },
+            gdcs: [...new Set(tpias.map(t => t.gdcNumber))].length
+        };
+
+        return {
+            summary,
+            tpias
+        };
+    }
+
+    /**
+     * Get the current GDC in formation (for status visualization)
+     */
+    static async getFormingGDC(): Promise<any> {
+        return await GDC.findOne({
+            status: "forming",
+            isFull: false
+        }).sort({ gdcNumber: 1 });
+    }
+}
+
+export default GDIPService;

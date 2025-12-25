@@ -114,3 +114,32 @@ Create the Category Management page?
 Seed your database with sample products?
 Something else?
 What would you like to tackle next? 🤔
+
+
+<!--  -->
+<!--  -->
+<!--  -->
+<!--  -->
+
+
+
+Log in as Admin.
+Navigate to Admin > Users (/admin/users).
+Search for the user you want to onboard.
+Click the "Verify User" button (Green button) on their user card.
+Once verified, that user will instantly have access to the Insured Partners dashboard and be able to purchase TPIAs.
+
+If you would like me to build a "Request Verification" form where users can upload documents, I can add that as a new task. Otherwise, manual verification is the current standard.
+
+
+
+
+
+
+this is what the client wants,
+
+when a GDC opens/created it has to be filled up before a new one gets created/open regardless of the Commodity Type and so on,
+
+the clients knows what to do since he knows the clusters he has available and the actual commodities, so GDC can have mixed Commodity Types
+
+and a user can also purchase all the 10 OR available TPIA OR GDC, so we should add this too

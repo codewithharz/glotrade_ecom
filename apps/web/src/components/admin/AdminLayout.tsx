@@ -77,6 +77,11 @@ const adminMenuItems: MenuItem[] = [
     icon: <CreditCard size={20} />
   },
   {
+    label: "Insured Partners",
+    href: "/admin/gdip",
+    icon: <Shield size={20} />
+  },
+  {
     label: "Analytics",
     href: "/admin/analytics",
     icon: <BarChart3 size={20} />
