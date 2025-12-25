@@ -1,7 +1,7 @@
 # GloTrade International Platform
 ### Enterprise B2B Commerce & Digital Trade Infrastructure
-**Version:** 2.0  
-**Last Updated:** December 2025  
+**Version:** 2.1  
+**Last Updated:** December 2025 (Latest: Auto-Activation, Progress Sync, QR Certificates)  
 **Developed & Implemented by:** NexGen Tech Innovations Ltd / NEXGEN TECH INNOVATIONS LIMITED  
 **Product Owner / Intellectual Property:** Client Organization (Confidential)  
 **Deployment Status:** Production-Ready  
@@ -96,12 +96,12 @@ All roles operate under strict role-based access control (RBAC) with isolated da
 - Key units:
   - **TPIA:** ₦1,000,000 trade blocks
   - **GDC:** Clusters of 10 TPIAs
-- **37-day automated trade cycles**
-- Insurance abstraction for capital protection
-- Profit modes:
-  - **TPM:** Compounding
-  - **EPS:** Direct wallet payout
-- Fully automated: pooling, scheduling, profit calculation, distribution, and reset
+- **Automated Lifecycle**: 
+  - **Auto-Activation**: Instant transition to "Active" status for TPIAs and Insurance once a cluster fills.
+  - **Visual Progress Sync**: Real-time progress bars and daily profit estimations for active cycles.
+  - **QR-Verified Certificates**: Professional printable insurance certificates with secure public verification.
+- **Profit Modes**: Support for TPM (Compounding) and EPS (Withdrawal) modes.
+- **Full Automation**: Pooling, scheduling, profit calculation, distribution, and reset handled by background system.
 
 ---
 ## 5. Automation & Background Processes
@@ -191,7 +191,8 @@ Built to handle growth in users, transactions, orders, and trade cycles.
 
 ---
 ## 11. Future Enhancements (Planned)
-- PDF generation (certificates, statements, invoices)
+- **Public Document Verification Portal** (Implemented)
+- **PDF generation** (Statements, Invoices)
 - Enhanced email/SMS notification system
 - Advanced real-time analytics dashboards
 - Native mobile applications
