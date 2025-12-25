@@ -85,10 +85,12 @@ Partner chooses from active commodities fetched dynamically via `GET /commoditie
       - positionInGDC: gdc.currentFill + 1
    d. Update GDC (tpiaIds, tpiaNumbers, currentFill)
    e. Create insurance record
-   f. If GDC full (10/10): 
-      - Mark GDC as "ready"
-      - Set formedAt
-      - Set nextCycleStartDate (+37 days)
+    f. If GDC full (10/10): 
+       - Mark GDC as "ready"
+       - Set formedAt
+       - Auto-activate all TPIAs in GDC (status: "active")
+       - Auto-activate all Insurance records (status: "active")
+       - Set nextCycleStartDate (+37 days)
 3. After loop: Deduct total from wallet
 4. Create single bulk wallet transaction with unique idempotencyKey
 ```
@@ -148,16 +150,21 @@ During formation, GDCs are assigned `primaryCommodity: "Mixed"`. This allows par
 #### When GDC Reaches 10 TPIAs:
 
 ```typescript
-// Automatic process in TPIA.save() middleware
+// Automatic process in GDIPService.purchaseBulk
 if (gdc.currentFill === 10) {
   gdc.isFull = true;
   gdc.status = "ready";
   gdc.formedAt = new Date();
   gdc.nextCycleStartDate = new Date(Date.now() + 37 * 24 * 60 * 60 * 1000);
   
-  // Update all TPIAs in GDC
+  // Update all TPIAs and Insurance in GDC
   await TPIA.updateMany(
     { gdcId: gdc._id },
+    { status: "active", activatedAt: new Date(), insuranceStatus: "active" }
+  );
+  
+  await Insurance.updateMany(
+    { tpiaId: { $in: gdc.tpiaIds } },
     { status: "active" }
   );
 }
@@ -446,7 +453,7 @@ Assign to GDC
     ↓
 Deduct from Wallet
     ↓
-If GDC Full → Schedule First Cycle
+If GDC Full → Auto-Activate TPIAs & Insurance → Schedule First Cycle
     ↓
 Return to Dashboard
 ```
@@ -647,6 +654,8 @@ GET /api/gdip/health
 ```
 
 ---
+
+**GloTrade — A Multi-Role Commerce & Distribution Infrastructure**
 
 **Last Updated:** December 25, 2025
 **Version:** 1.0.0

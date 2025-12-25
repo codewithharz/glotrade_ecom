@@ -5,7 +5,10 @@ import commodityController from "../controllers/commodity.controller";
 
 const router = express.Router();
 
-// All routes require authentication
+// Public routes
+router.get("/verify/:certificateNumber", insuranceController.verifyCertificate);
+
+// All other routes require authentication
 router.use(requireAuth);
 
 // ============================================

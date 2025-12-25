@@ -193,14 +193,6 @@ export const getAllClaims = async (req: Request, res: Response) => {
             }
         });
 
-        // Filter by status if provided
-        if (status) {
-            allClaims = allClaims.filter((claim) => claim.status === status);
-        }
-
-        // Sort by claim date (newest first)
-        allClaims.sort((a, b) => new Date(b.claimDate).getTime() - new Date(a.claimDate).getTime());
-
         res.json({
             success: true,
             count: allClaims.length,
@@ -212,9 +204,51 @@ export const getAllClaims = async (req: Request, res: Response) => {
     }
 };
 
+/**
+ * Verify insurance certificate authenticity (Public)
+ */
+export const verifyCertificate = async (req: Request, res: Response) => {
+    try {
+        const { certificateNumber } = req.params;
+
+        const insurance = await Insurance.findOne({ certificateNumber }).populate("tpiaId");
+
+        if (!insurance) {
+            return res.status(404).json({
+                success: false,
+                error: "Invalid certificate number. This document could not be verified."
+            });
+        }
+
+        const tpia = insurance.tpiaId as any;
+
+        const verificationData = {
+            certificateNumber: insurance.certificateNumber,
+            tpiaId: tpia?.tpiaId,
+            partnerName: tpia?.partnerName,
+            status: insurance.status,
+            coverageAmount: insurance.coverageAmount,
+            effectiveDate: insurance.effectiveDate,
+            expiryDate: insurance.expiryDate,
+            commodityType: tpia?.commodityType,
+            isAuthentic: true,
+            verifiedAt: new Date(),
+        };
+
+        res.json({
+            success: true,
+            data: verificationData,
+        });
+    } catch (error) {
+        console.error("Error verifying certificate:", error);
+        res.status(500).json({ error: "Failed to verify certificate" });
+    }
+};
+
 export default {
     getInsuranceCertificate,
     fileInsuranceClaim,
     processInsuranceClaim,
     getAllClaims,
+    verifyCertificate,
 };

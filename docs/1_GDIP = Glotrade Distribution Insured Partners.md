@@ -310,7 +310,7 @@ Profit → Sent to Wallet → Withdraw anytime
 - **Strict Sequential Filling**: GDC-10 fills completely before GDC-20 is opened.
 - **Commodity Agnostic**: Forming GDCs are marked as "Mixed" allowing partners to purchase using any commodity preference; specialized trade cycles are assigned by Admin later.
 - **Formulaic Numbering**: TPIA numbering is tied to GDC batches: `TPIA Number = (GDC Number - 10) + Slot Position`.
-- A full GDC automatically enters "Ready" status and schedules its first cycle (+37 days).
+- A full GDC automatically enters "Ready" status, activates all its member TPIAs/Insurance, and schedules its first cycle (+37 days).
 
 ### Flow Diagram
 

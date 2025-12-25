@@ -3,6 +3,17 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { apiPost, apiGet } from "@/utils/api";
+import {
+    Plus,
+    Minus,
+    ArrowLeft,
+    CheckCircle2,
+    Sparkles,
+    Trophy,
+    Check,
+    AlertCircle,
+    ExternalLink
+} from "lucide-react";
 
 // COMMODITY_OPTIONS will be fetched from API
 
@@ -113,9 +124,7 @@ export default function PurchaseTPIAPage() {
             <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center p-6">
                 <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
                     <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
+                        <CheckCircle2 className="w-10 h-10 text-green-600" />
                     </div>
                     <h2 className="text-2xl font-bold text-gray-900 mb-2">Purchase Successful!</h2>
                     <p className="text-gray-600 mb-6">Your TPIA block(s) have been created and assigned to GDC clusters.</p>
@@ -134,9 +143,7 @@ export default function PurchaseTPIAPage() {
                         onClick={() => router.back()}
                         className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
                     >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
+                        <ArrowLeft className="w-5 h-5" />
                         Back to Dashboard
                     </button>
                     <h1 className="text-4xl font-bold text-gray-900 mb-2">Purchase TPIA</h1>
@@ -243,9 +250,7 @@ export default function PurchaseTPIAPage() {
                                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
                                         className="w-14 h-full flex items-center justify-center bg-gray-50 hover:bg-gray-100 border-r border-gray-200"
                                     >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                                        </svg>
+                                        <Minus className="w-4 h-4 text-gray-600" />
                                     </button>
                                     <input
                                         type="number"
@@ -259,9 +264,7 @@ export default function PurchaseTPIAPage() {
                                         onClick={() => setQuantity(Math.min(10, quantity + 1))}
                                         className="w-14 h-full flex items-center justify-center bg-gray-50 hover:bg-gray-100 border-l border-gray-200"
                                     >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                        </svg>
+                                        <Plus className="w-4 h-4 text-gray-600" />
                                     </button>
                                 </div>
                                 <div className="flex-1 flex flex-wrap gap-2">
@@ -274,16 +277,18 @@ export default function PurchaseTPIAPage() {
                                     {formingGDC && (formingGDC.capacity - formingGDC.currentFill) > 0 && (
                                         <button
                                             onClick={() => setQuantity(formingGDC.capacity - formingGDC.currentFill)}
-                                            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-sm ${quantity === (formingGDC.capacity - formingGDC.currentFill) ? "bg-green-600 text-white" : "bg-white text-green-600 border border-green-200 hover:bg-green-50"}`}
+                                            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-sm flex items-center gap-1.5 ${quantity === (formingGDC.capacity - formingGDC.currentFill) ? "bg-green-600 text-white" : "bg-white text-green-600 border border-green-200 hover:bg-green-50"}`}
                                         >
-                                            ✨ Fill GDC Slot{formingGDC.capacity - formingGDC.currentFill > 1 ? 's' : ''} ({formingGDC.capacity - formingGDC.currentFill})
+                                            <Sparkles className="w-3.5 h-3.5" />
+                                            Fill GDC Slot{formingGDC.capacity - formingGDC.currentFill > 1 ? 's' : ''} ({formingGDC.capacity - formingGDC.currentFill})
                                         </button>
                                     )}
                                     <button
                                         onClick={() => setQuantity(10)}
-                                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-sm ${quantity === 10 ? "bg-purple-600 text-white" : "bg-white text-purple-600 border border-purple-200 hover:bg-purple-50"}`}
+                                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-sm flex items-center gap-1.5 ${quantity === 10 ? "bg-purple-600 text-white" : "bg-white text-purple-600 border border-purple-200 hover:bg-purple-50"}`}
                                     >
-                                        🏆 Buy Full GDC (10)
+                                        <Trophy className="w-3.5 h-3.5" />
+                                        Buy Full GDC (10)
                                     </button>
                                 </div>
                             </div>
@@ -359,33 +364,23 @@ export default function PurchaseTPIAPage() {
                                 <h4 className="font-semibold text-gray-900 mb-3">What You Get:</h4>
                                 <ul className="space-y-2 text-sm text-gray-600">
                                     <li className="flex items-start gap-2">
-                                        <svg className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                        </svg>
+                                        <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                                         Insurance certificate
                                     </li>
                                     <li className="flex items-start gap-2">
-                                        <svg className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                        </svg>
+                                        <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                                         Commodity backing
                                     </li>
                                     <li className="flex items-start gap-2">
-                                        <svg className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                        </svg>
+                                        <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                                         GDC assignment
                                     </li>
                                     <li className="flex items-start gap-2">
-                                        <svg className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                        </svg>
+                                        <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                                         Automated trade cycles
                                     </li>
                                     <li className="flex items-start gap-2">
-                                        <svg className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                        </svg>
+                                        <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                                         Capital protection
                                     </li>
                                 </ul>
@@ -399,9 +394,7 @@ export default function PurchaseTPIAPage() {
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
                         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
                             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
+                                <AlertCircle className="w-8 h-8 text-red-600" />
                             </div>
                             <h3 className="text-xl font-bold text-gray-900 text-center mb-2">Insufficient Funds</h3>
                             <p className="text-center text-gray-600 mb-6">
@@ -433,9 +426,10 @@ export default function PurchaseTPIAPage() {
                                 </button>
                                 <button
                                     onClick={() => router.push("/profile/wallet")}
-                                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium flex items-center justify-center gap-2"
                                 >
                                     Top Up Wallet
+                                    <ExternalLink className="w-4 h-4" />
                                 </button>
                             </div>
                         </div>

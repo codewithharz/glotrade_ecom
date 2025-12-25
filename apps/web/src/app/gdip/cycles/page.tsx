@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiGet } from "@/utils/api";
+import { ArrowLeft, ClipboardCheck, CheckCircle2, Clock } from "lucide-react";
 
 interface TradeCycle {
     _id: string;
@@ -150,9 +151,7 @@ export default function TradeCyclesPage() {
                         onClick={() => router.back()}
                         className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
                     >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
+                        <ArrowLeft className="w-5 h-5" />
                         Back to Dashboard
                     </button>
                     <h1 className="text-4xl font-bold text-gray-900 mb-2">Trade Cycles</h1>
@@ -217,14 +216,7 @@ export default function TradeCyclesPage() {
                 {/* Cycles Timeline */}
                 {filteredCycles.length === 0 ? (
                     <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-                        <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                            />
-                        </svg>
+                        <ClipboardCheck className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                         <h3 className="text-lg font-medium text-gray-900 mb-2">No Cycles Found</h3>
                         <p className="text-gray-600">No trade cycles match your filter criteria</p>
                     </div>
@@ -319,17 +311,14 @@ export default function TradeCyclesPage() {
                                             <span className="text-sm text-gray-600">Profit Distribution:</span>
                                             {cycle.profitDistributed ? (
                                                 <span className="flex items-center gap-2 text-sm text-green-600">
-                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path
-                                                            fillRule="evenodd"
-                                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                            clipRule="evenodd"
-                                                        />
-                                                    </svg>
+                                                    <CheckCircle2 className="w-4 h-4" />
                                                     Distributed on {cycle.distributionDate && formatDate(cycle.distributionDate)}
                                                 </span>
                                             ) : (
-                                                <span className="text-sm text-yellow-600">Pending</span>
+                                                <span className="flex items-center gap-2 text-sm text-yellow-600">
+                                                    <Clock className="w-4 h-4" />
+                                                    Pending
+                                                </span>
                                             )}
                                         </div>
                                     </div>

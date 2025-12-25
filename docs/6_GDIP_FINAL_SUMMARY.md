@@ -253,7 +253,7 @@ Request → authenticate → requireGDIPAccess → checkMinimumBalance → Contr
 5. Assigns to available GDC
 6. Deducts ₦1,000,000 from wallet
 7. Creates wallet transaction
-8. If GDC full (10/10), schedules first cycle
+8. If GDC full (10/10), auto-activates TPIAs & Insurance, then schedules first cycle
 
 ### Trade Cycle Flow
 1. **Scheduled** - Created with start date

@@ -144,6 +144,24 @@ export class GDIPService {
                 gdc.status = "ready";
                 gdc.formedAt = new Date();
                 gdc.nextCycleStartDate = new Date(Date.now() + 37 * 24 * 60 * 60 * 1000);
+
+                // Auto-activate all TPIAs in this GDC
+                await TPIA.updateMany(
+                    { gdcId: gdc._id },
+                    {
+                        $set: {
+                            status: "active",
+                            activatedAt: new Date(),
+                            insuranceStatus: "active"
+                        }
+                    }
+                );
+
+                // Auto-activate all Insurance records in this GDC
+                await Insurance.updateMany(
+                    { tpiaId: { $in: gdc.tpiaIds } },
+                    { $set: { status: "active" } }
+                );
             }
             await gdc.save();
 
@@ -286,7 +304,7 @@ export class GDIPService {
      * Get partner's portfolio summary
      */
     static async getPartnerPortfolio(partnerId: Schema.Types.ObjectId) {
-        const tpias = await TPIA.find({ partnerId });
+        const tpias = await TPIA.find({ partnerId }).populate("currentCycleId");
 
         const summary = {
             totalTPIAs: tpias.length,

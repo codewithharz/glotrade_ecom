@@ -3,6 +3,18 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiGet } from "@/utils/api";
+import {
+    Plus,
+    Layers,
+    Wallet,
+    TrendingUp,
+    ShieldCheck,
+    Activity,
+    LayoutGrid,
+    AlertTriangle,
+    Inbox,
+    ArrowRight
+} from "lucide-react";
 
 interface PortfolioSummary {
     totalTPIAs: number;
@@ -39,6 +51,12 @@ interface TPIA {
     insuranceCertificateNumber: string;
     commodityType: string;
     purchasedAt: string;
+    currentCycleId?: {
+        startDate: string;
+        endDate: string;
+        status: string;
+        targetProfitRate: number;
+    };
 }
 
 export default function GDIPDashboardPage() {
@@ -133,9 +151,7 @@ export default function GDIPDashboardPage() {
                         <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow">
                             <div className="flex items-center justify-between mb-4">
                                 <div className="p-3 bg-blue-100 rounded-lg">
-                                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                    </svg>
+                                    <Layers className="w-6 h-6 text-blue-600" />
                                 </div>
                             </div>
                             <h3 className="text-gray-600 text-sm font-medium mb-1">Total TPIAs</h3>
@@ -147,9 +163,7 @@ export default function GDIPDashboardPage() {
                         <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow">
                             <div className="flex items-center justify-between mb-4">
                                 <div className="p-3 bg-green-100 rounded-lg">
-                                    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
+                                    <Wallet className="w-6 h-6 text-green-600" />
                                 </div>
                             </div>
                             <h3 className="text-gray-600 text-sm font-medium mb-1">Total Invested</h3>
@@ -161,9 +175,7 @@ export default function GDIPDashboardPage() {
                         <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow">
                             <div className="flex items-center justify-between mb-4">
                                 <div className="p-3 bg-purple-100 rounded-lg">
-                                    <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                                    </svg>
+                                    <TrendingUp className="w-6 h-6 text-purple-600" />
                                 </div>
                             </div>
                             <h3 className="text-gray-600 text-sm font-medium mb-1">Total Profit Earned</h3>
@@ -175,9 +187,7 @@ export default function GDIPDashboardPage() {
                         <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow">
                             <div className="flex items-center justify-between mb-4">
                                 <div className="p-3 bg-yellow-100 rounded-lg">
-                                    <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                                    </svg>
+                                    <ShieldCheck className="w-6 h-6 text-yellow-600" />
                                 </div>
                             </div>
                             <h3 className="text-gray-600 text-sm font-medium mb-1">Current Portfolio Value</h3>
@@ -191,18 +201,14 @@ export default function GDIPDashboardPage() {
                         <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow">
                             <div className="flex items-center justify-between mb-4">
                                 <div className="p-3 bg-indigo-100 rounded-lg">
-                                    <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                    </svg>
+                                    <Wallet className="w-6 h-6 text-indigo-600" />
                                 </div>
                             </div>
                             <h3 className="text-gray-600 text-sm font-medium mb-1">Wallet Balance</h3>
                             <p className="text-3xl font-bold text-indigo-600">{formatCurrency(walletBalance)}</p>
                             {walletBalance < 1000000 && (
                                 <p className="text-sm text-orange-600 mt-2 flex items-center gap-1">
-                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                    </svg>
+                                    <AlertTriangle className="w-4 h-4" />
                                     Low balance
                                 </p>
                             )}
@@ -218,9 +224,7 @@ export default function GDIPDashboardPage() {
                             onClick={() => router.push("/gdip/purchase")}
                             className="flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-lg"
                         >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                            </svg>
+                            <Plus className="w-5 h-5" />
                             Purchase New TPIA
                         </button>
 
@@ -228,9 +232,7 @@ export default function GDIPDashboardPage() {
                             onClick={() => router.push("/gdip/tpias")}
                             className="flex items-center justify-center gap-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-4 rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all shadow-md hover:shadow-lg"
                         >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
+                            <LayoutGrid className="w-5 h-5" />
                             View All TPIAs
                         </button>
 
@@ -238,9 +240,7 @@ export default function GDIPDashboardPage() {
                             onClick={() => router.push("/gdip/cycles")}
                             className="flex items-center justify-center gap-3 bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-4 rounded-xl hover:from-green-700 hover:to-green-800 transition-all shadow-md hover:shadow-lg"
                         >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 02 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                            </svg>
+                            <Activity className="w-5 h-5" />
                             Trade Cycles
                         </button>
                     </div>
@@ -252,17 +252,15 @@ export default function GDIPDashboardPage() {
                         <h2 className="text-xl font-bold text-gray-900">Your TPIAs</h2>
                         <button
                             onClick={() => router.push("/gdip/tpias")}
-                            className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+                            className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1"
                         >
-                            View All →
+                            View All <ArrowRight className="w-4 h-4" />
                         </button>
                     </div>
 
                     {tpias.length === 0 ? (
                         <div className="text-center py-12">
-                            <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                            </svg>
+                            <Inbox className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                             <h3 className="text-lg font-medium text-gray-900 mb-2">No TPIAs Yet</h3>
                             <p className="text-gray-600 mb-4">Start your investment journey by purchasing your first TPIA</p>
                             <button
@@ -317,6 +315,36 @@ export default function GDIPDashboardPage() {
                                             <span className="text-gray-600">Cycles:</span>
                                             <span className="font-medium">{tpia.cyclesCompleted}</span>
                                         </div>
+
+                                        {tpia.status === "active" && tpia.currentCycleId && (
+                                            <div className="pt-2">
+                                                <div className="flex justify-between items-center mb-1 text-[10px]">
+                                                    <span className="text-gray-500 uppercase tracking-wider font-semibold">Cycle Progress</span>
+                                                    <span className="text-blue-600 font-bold">
+                                                        {(() => {
+                                                            const start = new Date(tpia.currentCycleId.startDate).getTime();
+                                                            const end = new Date(tpia.currentCycleId.endDate).getTime();
+                                                            const now = Date.now();
+                                                            const progress = Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
+                                                            return progress.toFixed(0);
+                                                        })()}%
+                                                    </span>
+                                                </div>
+                                                <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                                                    <div
+                                                        className="bg-gradient-to-r from-blue-500 to-purple-500 h-full"
+                                                        style={{
+                                                            width: `${(() => {
+                                                                const start = new Date(tpia.currentCycleId.startDate).getTime();
+                                                                const end = new Date(tpia.currentCycleId.endDate).getTime();
+                                                                const now = Date.now();
+                                                                return Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
+                                                            })()}%`
+                                                        }}
+                                                    ></div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             ))}

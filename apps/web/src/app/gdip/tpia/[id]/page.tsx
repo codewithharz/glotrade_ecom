@@ -3,6 +3,17 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { apiGet, apiPut } from "@/utils/api";
+import {
+    ArrowLeft,
+    TrendingUp,
+    ShieldCheck,
+    Activity,
+    Box,
+    CircleDollarSign,
+    BarChart3,
+    History,
+    Download
+} from "lucide-react";
 
 interface TPIADetails {
     tpia: {
@@ -133,6 +144,22 @@ export default function TPIADetailsPage() {
         if (!details) return 0;
         return ((details.tpia.totalProfitEarned / details.tpia.purchasePrice) * 100).toFixed(2);
     };
+    const calculateCycleProgress = () => {
+        if (!details || !details.currentCycle) return 0;
+        const start = new Date(details.currentCycle.startDate).getTime();
+        const end = new Date(details.currentCycle.endDate).getTime();
+        const now = Date.now();
+        if (now <= start) return 0;
+        if (now >= end || details.currentCycle.status === "completed" || details.currentCycle.status === "processing") return 100;
+        const progress = ((now - start) / (end - start)) * 100;
+        return Math.min(100, Math.max(0, progress));
+    };
+    const calculateEstimatedProfit = () => {
+        if (!details || !details.currentCycle) return 0;
+        const progress = calculateCycleProgress() / 100;
+        const totalTarget = (details.currentCycle.targetProfitRate / 100) * details.tpia.purchasePrice;
+        return totalTarget * progress;
+    };
 
     if (loading) {
         return (
@@ -170,9 +197,7 @@ export default function TPIADetailsPage() {
                         onClick={() => router.back()}
                         className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
                     >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
+                        <ArrowLeft className="w-5 h-5" />
                         Back
                     </button>
                     <div className="flex items-center justify-between">
@@ -198,7 +223,10 @@ export default function TPIADetailsPage() {
                     <div className="lg:col-span-2 space-y-6">
                         {/* Financial Overview */}
                         <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <h2 className="text-xl font-bold text-gray-900 mb-6">Financial Overview</h2>
+                            <div className="flex items-center gap-3 mb-6">
+                                <TrendingUp className="w-6 h-6 text-blue-600" />
+                                <h2 className="text-xl font-bold text-gray-900">Financial Overview</h2>
+                            </div>
                             <div className="grid grid-cols-2 gap-6">
                                 <div>
                                     <p className="text-sm text-gray-600 mb-1">Purchase Price</p>
@@ -227,7 +255,10 @@ export default function TPIADetailsPage() {
 
                         {/* GDC Information */}
                         <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <h2 className="text-xl font-bold text-gray-900 mb-6">GDC Assignment</h2>
+                            <div className="flex items-center gap-3 mb-6">
+                                <ShieldCheck className="w-6 h-6 text-green-600" />
+                                <h2 className="text-xl font-bold text-gray-900">GDC Assignment</h2>
+                            </div>
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center">
                                     <span className="text-gray-600">GDC Number:</span>
@@ -259,7 +290,10 @@ export default function TPIADetailsPage() {
                         {/* Current Cycle */}
                         {currentCycle && (
                             <div className="bg-white rounded-2xl shadow-lg p-6">
-                                <h2 className="text-xl font-bold text-gray-900 mb-6">Current Trade Cycle</h2>
+                                <div className="flex items-center gap-3 mb-6">
+                                    <Activity className="w-6 h-6 text-purple-600" />
+                                    <h2 className="text-xl font-bold text-gray-900">Current Trade Cycle</h2>
+                                </div>
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center">
                                         <span className="text-gray-600">Cycle ID:</span>
@@ -281,9 +315,30 @@ export default function TPIADetailsPage() {
                                         <span className="text-gray-600">Target Profit:</span>
                                         <span className="font-medium text-green-600">{currentCycle.targetProfitRate}%</span>
                                     </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-gray-600">Status:</span>
-                                        <span className="font-medium capitalize">{currentCycle.status}</span>
+                                    <div className="pt-4 border-t border-gray-100">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <span className="text-sm font-medium text-gray-600">Cycle Progress</span>
+                                            <span className="text-sm font-bold text-blue-600">{calculateCycleProgress().toFixed(1)}%</span>
+                                        </div>
+                                        <div className="w-full bg-gray-100 rounded-full h-3 mb-6 overflow-hidden">
+                                            <div
+                                                className="bg-gradient-to-r from-blue-500 to-purple-500 h-full transition-all duration-1000 ease-out"
+                                                style={{ width: `${calculateCycleProgress()}%` }}
+                                            ></div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4 mt-4 bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                                            <div>
+                                                <p className="text-xs text-gray-500 mb-1">Elapsed Days</p>
+                                                <p className="font-bold text-gray-900">
+                                                    {Math.floor((calculateCycleProgress() / 100) * 37)} / 37
+                                                </p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-xs text-blue-500 mb-1">Est. Accrued Profit</p>
+                                                <p className="font-bold text-blue-700">+{formatCurrency(calculateEstimatedProfit())}</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -291,7 +346,10 @@ export default function TPIADetailsPage() {
 
                         {/* Commodity Information */}
                         <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <h2 className="text-xl font-bold text-gray-900 mb-6">Commodity Backing</h2>
+                            <div className="flex items-center gap-3 mb-6">
+                                <Box className="w-6 h-6 text-orange-600" />
+                                <h2 className="text-xl font-bold text-gray-900">Commodity Backing</h2>
+                            </div>
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center">
                                     <span className="text-gray-600">Commodity Type:</span>
@@ -312,7 +370,10 @@ export default function TPIADetailsPage() {
                     <div className="lg:col-span-1 space-y-6">
                         {/* Profit Mode Card */}
                         <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <h3 className="font-bold text-lg text-gray-900 mb-4">Profit Mode</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <CircleDollarSign className="w-5 h-5 text-purple-600" />
+                                <h3 className="font-bold text-lg text-gray-900">Profit Mode</h3>
+                            </div>
                             <div className="mb-4">
                                 <div
                                     className={`p-4 rounded-xl border-2 ${tpia.profitMode === "TPM"
@@ -349,7 +410,10 @@ export default function TPIADetailsPage() {
 
                         {/* Insurance Card */}
                         <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <h3 className="font-bold text-lg text-gray-900 mb-4">Insurance</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <ShieldCheck className="w-5 h-5 text-blue-600" />
+                                <h3 className="font-bold text-lg text-gray-900">Insurance</h3>
+                            </div>
                             <div className="space-y-3 text-sm">
                                 <div>
                                     <p className="text-gray-600 mb-1">Certificate Number</p>
@@ -378,12 +442,24 @@ export default function TPIADetailsPage() {
                                     <span className="text-gray-600">Valid Until:</span>
                                     <span className="font-medium">{formatDate(insurance.expiryDate)}</span>
                                 </div>
+                                <div className="pt-4">
+                                    <button
+                                        onClick={() => router.push(`/gdip/tpia/${tpiaId}/certificate`)}
+                                        className="w-full flex items-center justify-center gap-2 bg-white border-2 border-green-600 text-green-700 py-2 rounded-xl font-medium hover:bg-green-50 transition-all"
+                                    >
+                                        <Download className="w-4 h-4" />
+                                        Download Certificate
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
                         {/* Stats Card */}
                         <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <h3 className="font-bold text-lg text-gray-900 mb-4">Statistics</h3>
+                            <div className="flex items-center gap-2 mb-4">
+                                <BarChart3 className="w-5 h-5 text-indigo-600" />
+                                <h3 className="font-bold text-lg text-gray-900">Statistics</h3>
+                            </div>
                             <div className="space-y-3 text-sm">
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Cycles Completed:</span>

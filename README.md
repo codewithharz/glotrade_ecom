@@ -586,9 +586,16 @@ Processing → Shipped → Delivered → Completed
 ### GDIP Investment Flow
 ```
 Purchase TPIA → Assign to GDC → GDC Full (10/10) → 
-Schedule Cycle → Active (37 days) → Complete → 
-Calculate Profit → Distribute (TPM/EPS) → Repeat
+Auto-Activate TPIAs & Insurance → Schedule Cycle → 
+Active (37 days) → Complete → Calculate Profit → 
+Distribute (TPM/EPS) → Repeat
 ```
+
+**Key GDIP Features:**
+- **Auto-Activation**: Instant transition to "Active" status for TPIAs and Insurance once a cluster fills.
+- **Visual Progress Tracking**: Real-time progress bars and daily profit estimations for active cycles.
+- **QR-Verified Certificates**: Professional printable insurance certificates with secure public verification.
+- **Flexible Profit Modes**: Easily switch between TPM (Compounding) and EPS (Withdrawal) modes.
 
 ### Commission Flow
 ```

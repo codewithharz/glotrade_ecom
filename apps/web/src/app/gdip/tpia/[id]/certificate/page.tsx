@@ -1,68 +1,89 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import axios from "axios";
+import { useRouter, useParams } from "next/navigation";
+import { apiGet } from "@/utils/api";
+import QRCode from "qrcode";
+import { ArrowLeft, Printer, ShieldCheck, Award, Calendar, MapPin, Package, Download, Globe, ScanLine } from "lucide-react";
 
-interface InsuranceCertificate {
-    certificateNumber: string;
-    tpiaId: string;
-    tpiaNumber: number;
-    partnerName: string;
-    partnerEmail: string;
-    provider: string;
-    coverageAmount: number;
-    effectiveDate: string;
-    expiryDate: string;
-    status: string;
-    commodityType: string;
-    commodityQuantity: number;
-    warehouseLocation: string;
-    issuedDate: string;
+interface CertificateData {
+    tpia: {
+        tpiaId: string;
+        tpiaNumber: number;
+        partnerName: string;
+        partnerEmail: string;
+        purchasePrice: number;
+        commodityType: string;
+        commodityQuantity: number;
+        commodityUnit: string;
+        purchasedAt: string;
+    };
+    insurance: {
+        certificateNumber: string;
+        provider: string;
+        coverageAmount: number;
+        status: string;
+        effectiveDate: string;
+        expiryDate: string;
+        warehouseLocation: string;
+    };
 }
 
 export default function InsuranceCertificatePage() {
-    const params = useParams();
     const router = useRouter();
+    const params = useParams();
     const tpiaId = params.id as string;
 
     const [loading, setLoading] = useState(true);
-    const [certificate, setCertificate] = useState<InsuranceCertificate | null>(null);
+    const [data, setData] = useState<CertificateData | null>(null);
+    const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
     const [error, setError] = useState("");
 
     useEffect(() => {
         if (tpiaId) {
-            fetchCertificate();
+            fetchCertificateData();
         }
     }, [tpiaId]);
 
-    const fetchCertificate = async () => {
+    const fetchCertificateData = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/insurance/certificate/${tpiaId}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                }
+            const response = await apiGet<{ success: boolean; data: any }>(
+                `/api/v1/gdip/tpia/${tpiaId}`
             );
 
-            if (response.data.success) {
-                setCertificate(response.data.data);
+            if (response.success) {
+                setData({
+                    tpia: response.data.tpia,
+                    insurance: response.data.insurance
+                });
+
+                // Generate QR Code
+                const verificationUrl = `${window.location.origin}/verify/${response.data.insurance.certificateNumber}`;
+                try {
+                    const qr = await QRCode.toDataURL(verificationUrl, {
+                        width: 200,
+                        margin: 1,
+                        color: {
+                            dark: "#064e3b", // green-900
+                            light: "#ffffff",
+                        },
+                    });
+                    setQrCodeUrl(qr);
+                } catch (err) {
+                    console.error("QR generation error:", err);
+                }
             }
         } catch (err: any) {
-            console.error("Error fetching certificate:", err);
-            setError(err.response?.data?.error || "Failed to load certificate");
+            console.error("Error fetching certificate data:", err);
+            setError(err.message || "Failed to load certificate data");
         } finally {
             setLoading(false);
         }
     };
 
-    const handleDownload = () => {
-        // In a real implementation, this would generate and download a PDF
-        alert("PDF generation feature coming soon!");
-        // You can integrate with libraries like jsPDF or pdfmake here
+    const handlePrint = () => {
+        window.print();
     };
 
     const formatCurrency = (amount: number) => {
@@ -82,21 +103,21 @@ export default function InsuranceCertificatePage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
             </div>
         );
     }
 
-    if (error || !certificate) {
+    if (error || !data) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center">
                     <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
                     <p className="text-gray-600 mb-4">{error || "Certificate not found"}</p>
                     <button
                         onClick={() => router.back()}
-                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+                        className="bg-blue-600 text-white px-6 py-2 rounded-lg"
                     >
                         Go Back
                     </button>
@@ -105,135 +126,183 @@ export default function InsuranceCertificatePage() {
         );
     }
 
+    const { tpia, insurance } = data;
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-6">
-            <div className="max-w-4xl mx-auto">
-                {/* Header */}
-                <div className="mb-8">
-                    <button
-                        onClick={() => router.back()}
-                        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
-                        Back
-                    </button>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-4xl font-bold text-gray-900 mb-2">Insurance Certificate</h1>
-                            <p className="text-gray-600">TPIA Capital Protection Certificate</p>
-                        </div>
-                        <button
-                            onClick={handleDownload}
-                            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl font-medium hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg flex items-center gap-2"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            Download PDF
-                        </button>
-                    </div>
-                </div>
+        <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8 print:bg-white print:p-0">
+            {/* Action Bar - Hidden during print */}
+            <div className="max-w-4xl mx-auto mb-8 flex justify-between items-center print:hidden">
+                <button
+                    onClick={() => router.back()}
+                    className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+                >
+                    <ArrowLeft className="w-5 h-5" />
+                    Back to Details
+                </button>
+                <button
+                    onClick={handlePrint}
+                    className="flex items-center gap-2 bg-green-600 text-white px-6 py-2 rounded-xl font-medium hover:bg-green-700 transition-all shadow-md"
+                >
+                    <Printer className="w-5 h-5" />
+                    Print Certificate
+                </button>
+            </div>
 
-                {/* Certificate */}
-                <div className="bg-white rounded-2xl shadow-2xl p-12 border-4 border-blue-600">
+            {/* Certificate Container */}
+            <div className="max-w-4xl mx-auto bg-white shadow-2xl overflow-hidden relative print:shadow-none print:max-w-none">
+                {/* Formal Border Decor */}
+                <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-r from-green-800 via-green-600 to-green-800"></div>
+                <div className="absolute bottom-0 left-0 w-full h-4 bg-gradient-to-r from-green-800 via-green-600 to-green-800"></div>
+                <div className="absolute top-0 left-0 w-4 h-full bg-gradient-to-b from-green-800 via-green-600 to-green-800"></div>
+                <div className="absolute top-0 right-0 w-4 h-full bg-gradient-to-b from-green-800 via-green-600 to-green-800"></div>
+
+                <div className="p-16 sm:p-24 space-y-12">
                     {/* Header */}
-                    <div className="text-center mb-8 pb-8 border-b-2 border-gray-200">
-                        <div className="text-6xl mb-4">🛡️</div>
-                        <h2 className="text-3xl font-bold text-gray-900 mb-2">INSURANCE CERTIFICATE</h2>
-                        <p className="text-lg text-gray-600">Glotrade Distribution Insured Partners</p>
+                    <div className="text-center space-y-4">
+                        <div className="flex justify-center mb-6 relative">
+                            <div className="p-4 bg-green-100 rounded-full relative z-10">
+                                <img
+                                    src="/favicon.png"
+                                    alt="GloTrade Logo"
+                                    className="w-16 h-16 object-contain"
+                                    onError={(e) => {
+                                        // Fallback if image fails
+                                        (e.target as any).style.display = 'none';
+                                        (e.target as any).nextSibling.style.display = 'block';
+                                    }}
+                                />
+                                <ShieldCheck className="w-16 h-16 text-green-700 hidden" />
+                            </div>
+                            {/* Decorative Seal Background */}
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-5">
+                                <Globe className="w-64 h-64 text-green-900" />
+                            </div>
+                        </div>
+                        <h1 className="text-4xl sm:text-5xl font-serif font-bold text-gray-900 tracking-tight">
+                            INSURANCE CERTIFICATE
+                        </h1>
+                        <p className="text-lg text-green-800 font-medium tracking-widest uppercase">
+                            Trade Partners Insured Alliance (TPIA)
+                        </p>
+                        <div className="w-32 h-1 bg-green-600 mx-auto mt-4"></div>
                     </div>
 
-                    {/* Certificate Number */}
-                    <div className="bg-blue-50 rounded-xl p-6 mb-8 text-center">
-                        <p className="text-sm text-gray-600 mb-2">Certificate Number</p>
-                        <p className="text-2xl font-bold font-mono text-blue-600">{certificate.certificateNumber}</p>
+                    {/* Certificate ID */}
+                    <div className="flex justify-between items-start border-b border-gray-100 pb-8">
+                        <div>
+                            <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">Certificate Number</p>
+                            <p className="text-xl font-mono font-bold text-gray-800">{insurance.certificateNumber}</p>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">Issue Date</p>
+                            <p className="text-lg font-medium text-gray-800">{formatDate(tpia.purchasedAt)}</p>
+                        </div>
                     </div>
 
-                    {/* Details */}
-                    <div className="space-y-6 mb-8">
-                        <div className="grid grid-cols-2 gap-6">
-                            <div>
-                                <p className="text-sm text-gray-600 mb-1">Partner Name</p>
-                                <p className="font-bold text-lg">{certificate.partnerName}</p>
+                    {/* Partner Content */}
+                    <div className="space-y-8">
+                        <div className="text-center">
+                            <p className="text-gray-500 italic mb-2 font-serif text-lg">This document certifies that</p>
+                            <h2 className="text-3xl font-bold text-gray-900 underline underline-offset-8 decoration-green-200">
+                                {tpia.partnerName}
+                            </h2>
+                            <p className="text-green-700 mt-4 font-medium">{tpia.partnerEmail}</p>
+                        </div>
+
+                        <div className="bg-gray-50/50 p-8 rounded-2xl border border-gray-100 space-y-6">
+                            <p className="text-gray-700 text-center leading-relaxed">
+                                Is a registered and insured partner holding the investment block identified as
+                                <span className="font-bold text-gray-900 mx-1">[{tpia.tpiaId}]</span>.
+                                This asset is fully backed by physical commodities and protected under the GloTrade
+                                Distribution Insured Partners (GDIP) risk management framework.
+                            </p>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <Award className="w-5 h-5 text-green-600" />
+                                        <div>
+                                            <p className="text-xs text-gray-400 uppercase tracking-widest">Coverage Amount</p>
+                                            <p className="text-lg font-bold text-gray-800">{formatCurrency(insurance.coverageAmount)}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <Package className="w-5 h-5 text-green-600" />
+                                        <div>
+                                            <p className="text-xs text-gray-400 uppercase tracking-widest">Asset Backing</p>
+                                            <p className="text-lg font-bold text-gray-800">{tpia.commodityQuantity} {tpia.commodityUnit} {tpia.commodityType}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <Calendar className="w-5 h-5 text-green-600" />
+                                        <div>
+                                            <p className="text-xs text-gray-400 uppercase tracking-widest">Effective Period</p>
+                                            <p className="text-sm font-medium text-gray-800">
+                                                {formatDate(insurance.effectiveDate)} — {formatDate(insurance.expiryDate)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <MapPin className="w-5 h-5 text-green-600" />
+                                        <div>
+                                            <p className="text-xs text-gray-400 uppercase tracking-widest">Logistics Hub</p>
+                                            <p className="text-sm font-medium text-gray-800">{insurance.warehouseLocation || "GloTrade Strategic Reserve"}</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-sm text-gray-600 mb-1">TPIA ID</p>
-                                <p className="font-bold text-lg">{certificate.tpiaId}</p>
+                        </div>
+                    </div>
+
+                    {/* Signatures */}
+                    <div className="grid grid-cols-2 gap-12 pt-16">
+                        <div className="text-center space-y-2">
+                            <div className="border-t-2 border-gray-200 pt-2 mx-auto w-48">
+                                <p className="text-sm font-bold text-gray-800">GloTrade Admin</p>
+                                <p className="text-xs text-gray-400 uppercase tracking-widest">System Authorized</p>
                             </div>
-                            <div>
-                                <p className="text-sm text-gray-600 mb-1">Insurance Provider</p>
-                                <p className="font-bold text-lg">{certificate.provider}</p>
+                        </div>
+                        <div className="text-center space-y-2">
+                            <div className="border-t-2 border-gray-200 pt-2 mx-auto w-48">
+                                <p className="text-sm font-bold text-gray-800">{insurance.provider}</p>
+                                <p className="text-xs text-gray-400 uppercase tracking-widest">Insurance Underwriter</p>
                             </div>
-                            <div>
-                                <p className="text-sm text-gray-600 mb-1">Coverage Amount</p>
-                                <p className="font-bold text-lg text-green-600">{formatCurrency(certificate.coverageAmount)}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600 mb-1">Effective Date</p>
-                                <p className="font-bold text-lg">{formatDate(certificate.effectiveDate)}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600 mb-1">Expiry Date</p>
-                                <p className="font-bold text-lg">{formatDate(certificate.expiryDate)}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600 mb-1">Commodity Type</p>
-                                <p className="font-bold text-lg">{certificate.commodityType}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600 mb-1">Status</p>
-                                <span
-                                    className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${certificate.status === "active"
-                                            ? "bg-green-100 text-green-700"
-                                            : "bg-yellow-100 text-yellow-700"
-                                        }`}
-                                >
-                                    {certificate.status.toUpperCase()}
-                                </span>
+                        </div>
+                    </div>
+
+                    {/* Footer / Disclaimer */}
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-8 pt-8 border-t border-gray-100">
+                        <div className="flex-1 space-y-2 text-center md:text-left">
+                            <p className="text-[10px] text-gray-400 leading-tight max-w-md">
+                                This certificate is a digital representation of the underlying insurance contract. Verify authenticity at glotrade.com/verify or by scanning the secure QR code. Underwritten for full capital protection of ₦1,000,000 per TPIA block.
+                            </p>
+                            <div className="flex justify-center md:justify-start pt-2 opacity-30">
+                                <div className="w-16 h-16 border-4 border-green-200 rounded-full flex items-center justify-center font-serif font-bold text-green-100 text-xl transform -rotate-12">
+                                    G-DP
+                                </div>
                             </div>
                         </div>
 
-                        {certificate.warehouseLocation && (
-                            <div>
-                                <p className="text-sm text-gray-600 mb-1">Warehouse Location</p>
-                                <p className="font-bold text-lg">{certificate.warehouseLocation}</p>
+                        {qrCodeUrl && (
+                            <div className="flex flex-col items-center gap-2 p-2 bg-white border border-gray-100 rounded-xl shadow-sm">
+                                <img src={qrCodeUrl} alt="Verification QR Code" className="w-24 h-24" />
+                                <div className="flex items-center gap-1 text-[8px] font-bold text-green-800 uppercase tracking-widest">
+                                    <ScanLine className="w-2 h-2" />
+                                    Scan to Verify
+                                </div>
                             </div>
                         )}
                     </div>
-
-                    {/* Coverage Details */}
-                    <div className="bg-gray-50 rounded-xl p-6 mb-8">
-                        <h3 className="font-bold text-lg mb-4">Coverage Details</h3>
-                        <ul className="space-y-2 text-sm text-gray-700">
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-600">✓</span>
-                                <span>100% capital protection against commodity loss or damage</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-600">✓</span>
-                                <span>Coverage for warehouse storage risks</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-600">✓</span>
-                                <span>Protection during commodity trading cycles</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-600">✓</span>
-                                <span>Claims processing within 30 business days</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    {/* Footer */}
-                    <div className="text-center pt-8 border-t-2 border-gray-200">
-                        <p className="text-sm text-gray-600 mb-2">Issued on {formatDate(certificate.issuedDate)}</p>
-                        <p className="text-xs text-gray-500">
-                            This certificate is valid and verifiable. For verification, contact {certificate.provider}
-                        </p>
-                    </div>
                 </div>
+            </div>
+
+            {/* Print Notice - Hidden during print */}
+            <div className="max-w-4xl mx-auto mt-8 text-center print:hidden">
+                <p className="text-sm text-gray-500">
+                    Pro tip: For best results when printing, enable "Background Graphics" in your browser's print settings.
+                </p>
             </div>
         </div>
     );

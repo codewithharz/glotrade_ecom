@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiGet } from "@/utils/api";
+import { ArrowLeft, Inbox, Search, Filter } from "lucide-react";
 
 interface TPIA {
     _id: string;
@@ -20,6 +21,12 @@ interface TPIA {
     insuranceCertificateNumber: string;
     commodityType: string;
     purchasedAt: string;
+    currentCycleId?: {
+        startDate: string;
+        endDate: string;
+        status: string;
+        targetProfitRate: number;
+    };
 }
 
 export default function AllTPIAsPage() {
@@ -113,9 +120,7 @@ export default function AllTPIAsPage() {
                         onClick={() => router.back()}
                         className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
                     >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
+                        <ArrowLeft className="w-5 h-5" />
                         Back to Dashboard
                     </button>
                     <h1 className="text-4xl font-bold text-gray-900 mb-2">All TPIAs</h1>
@@ -128,13 +133,16 @@ export default function AllTPIAsPage() {
                         {/* Search */}
                         <div className="md:col-span-2">
                             <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
-                            <input
-                                type="text"
-                                placeholder="Search by TPIA ID, commodity, or certificate..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                <input
+                                    type="text"
+                                    placeholder="Search by TPIA ID, commodity, or certificate..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                            </div>
                         </div>
 
                         {/* Status Filter */}
@@ -177,9 +185,7 @@ export default function AllTPIAsPage() {
                 {/* TPIAs Grid */}
                 {filteredTPIAs.length === 0 ? (
                     <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-                        <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                        </svg>
+                        <Inbox className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                         <h3 className="text-lg font-medium text-gray-900 mb-2">No TPIAs Found</h3>
                         <p className="text-gray-600 mb-4">Try adjusting your filters or purchase a new TPIA</p>
                         <button
@@ -259,6 +265,36 @@ export default function AllTPIAsPage() {
                                     </div>
                                     <span className="text-xs text-gray-500">{formatDate(tpia.purchasedAt)}</span>
                                 </div>
+
+                                {tpia.status === "active" && tpia.currentCycleId && (
+                                    <div className="mt-4 pt-4 border-t border-gray-100">
+                                        <div className="flex justify-between items-center mb-1.5">
+                                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Allocation Progress</span>
+                                            <span className="text-xs font-bold text-blue-600">
+                                                {(() => {
+                                                    const start = new Date(tpia.currentCycleId.startDate).getTime();
+                                                    const end = new Date(tpia.currentCycleId.endDate).getTime();
+                                                    const now = Date.now();
+                                                    const progress = Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
+                                                    return progress.toFixed(0);
+                                                })()}%
+                                            </span>
+                                        </div>
+                                        <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                                            <div
+                                                className="bg-gradient-to-r from-blue-500 to-purple-500 h-full transition-all"
+                                                style={{
+                                                    width: `${(() => {
+                                                        const start = new Date(tpia.currentCycleId.startDate).getTime();
+                                                        const end = new Date(tpia.currentCycleId.endDate).getTime();
+                                                        const now = Date.now();
+                                                        return Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
+                                                    })()}%`
+                                                }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
