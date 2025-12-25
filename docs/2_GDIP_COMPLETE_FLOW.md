@@ -76,21 +76,24 @@ Partner chooses from available commodities:
 
 #### Step 2.4: Confirm Purchase
 
-**Backend Process:**
+**Backend Process (purchaseBulk):**
 ```typescript
-1. Validate wallet balance (≥ ₦1,000,000)
-2. Generate next TPIA number (sequential)
-3. Find or create available GDC
-4. Create TPIA record
-   - tpiaId: "TPIA-{number}"
-   - insuranceCertificateNumber: "TPIA-{number}-{13 digits}"
-5. Assign to GDC position
-6. Deduct from wallet
-7. Create wallet transaction
-8. Create insurance record
-9. If GDC full (10/10):
-   - Mark GDC as "ready"
-   - Schedule first trade cycle (+37 days)
+1. Validate wallet balance (≥ ₦1,000,000 * quantity)
+2. Iterate 1 to quantity:
+   a. Find or create available GDC (commodity-agnostic "Mixed" cluster)
+   b. Calculate formulaic TPIA number: (gdc.gdcNumber - 10) + (gdc.currentFill + 1)
+   c. Create TPIA record with:
+      - tpiaId: "TPIA-{number}"
+      - gdcNumber: gdc.gdcNumber
+      - positionInGDC: gdc.currentFill + 1
+   d. Update GDC (tpiaIds, tpiaNumbers, currentFill)
+   e. Create insurance record
+   f. If GDC full (10/10): 
+      - Mark GDC as "ready"
+      - Set formedAt
+      - Set nextCycleStartDate (+37 days)
+3. After loop: Deduct total from wallet
+4. Create single bulk wallet transaction with unique idempotencyKey
 ```
 
 **Database Changes:**
@@ -127,17 +130,23 @@ Partner chooses from available commodities:
   status: "pending"
 }
 
-// Wallet Transaction
+// New Bulk Wallet Transaction
 {
   type: "payment",
-  amount: 1000000,
-  description: "Purchase of TPIA-1",
-  balanceBefore: 2000000,
-  balanceAfter: 1000000
+  amount: 2000000,
+  description: "Bulk purchase of 2 TPIA blocks",
+  metadata: {
+    quantity: 2,
+    tpiaIds: ["...", "..."],
+    idempotencyKey: "BULK-TPIA-..."
+  }
 }
 ```
 
 ### 3. GDC Formation & Activation
+
+#### Mixed Commodity Handling
+During formation, GDCs are assigned `primaryCommodity: "Mixed"`. This allows partners to purchase using any commodity type (Rice, Sugar, etc.) whilst still filling the same physical cluster sequentially.
 
 #### When GDC Reaches 10 TPIAs:
 

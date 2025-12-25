@@ -59,7 +59,8 @@ Each TPIA block has:
 - A **time-based maturity** (coming soon)
 - A **minimum annual trade calendar** (coming soon)
 - Expected **5% average annual trade proceed** (coming soon)
-- Monthly ( 37days ) profit cycles (5% trade cycles)
+- Monthly (37 days) profit cycles (5% trade cycles)
+- **Bulk Purchase**: Partners can buy multiple TPIAs (1-10) in a single transaction
 - Records tied to the partner (name/company)
 
 This means:
@@ -72,16 +73,15 @@ This means:
 
 ---
 
-# **4. User Can Buy:**
+Partners can purchase:
+- **Individual Blocks**: 1, 2, 5, etc.
+- **Fill Current GDC**: Automatically purchase remaining slots in the active cluster.
+- **Full GDC**: Purchase exactly 10 blocks to own a complete cluster.
 
-- 1 block
-- 3 blocks
-- 10 blocks
-- Or more… as long as the active GDC batch isn’t full.
-
-But no one can exceed **10 TPIAs per GDC**.
-
-So a partner can own:
+Limits:
+- Minimum: 1 TPIA
+- Maximum per transaction: 10 TPIAs (1 Full GDC)
+- But a partner can own blocks across multiple GDCs:
 
 - TPIA-2 (GDC-10)
 - TPIA-7 (GDC-10)
@@ -306,11 +306,10 @@ Profit → Sent to Wallet → Withdraw anytime
 
 ---
 
-## **5.3 GDC Formation Rules**
-
-- GDC-10 fills first
-- If overflow > 10 → create GDC-20
-- A full GDC automatically enters cycle queue
+- **Strict Sequential Filling**: GDC-10 fills completely before GDC-20 is opened.
+- **Commodity Agnostic**: Forming GDCs are marked as "Mixed" allowing partners to purchase using any commodity preference; specialized trade cycles are assigned by Admin later.
+- **Formulaic Numbering**: TPIA numbering is tied to GDC batches: `TPIA Number = (GDC Number - 10) + Slot Position`.
+- A full GDC automatically enters "Ready" status and schedules its first cycle (+37 days).
 
 ### Flow Diagram
 

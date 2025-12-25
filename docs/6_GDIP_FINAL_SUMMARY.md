@@ -42,14 +42,15 @@ The **GDIP (Glotrade Distribution/Trusted Insured Partners)** platform has been 
 ## ✅ Complete Feature List
 
 ### Core Features
-1. ✅ **TPIA Purchase System** - ₦1,000,000 investment blocks
-2. ✅ **GDC Auto-Clustering** - Groups of 10 TPIAs
-3. ✅ **37-Day Trade Cycles** - Fully automated
-4. ✅ **Dual Profit Modes** - TPM (compounding) & EPS (withdrawal)
-5. ✅ **Insurance Certificates** - Auto-generated with unique 13-digit format
-6. ✅ **Commodity Backing** - Physical asset tracking
-7. ✅ **Automated Profit Distribution** - Based on profit mode
-8. ✅ **Portfolio Management** - Real-time tracking
+1. ✅ **TPIA Purchase System** - Individual or bulk (1-10) blocks
+2. ✅ **GDC Auto-Clustering** - Sequential filling, commodity-agnostic
+3. ✅ **Formulaic Numbering** - TPIAs synced with GDC batch sequences
+4. ✅ **37-Day Trade Cycles** - Fully automated
+5. ✅ **Dual Profit Modes** - TPM (compounding) & EPS (withdrawal)
+6. ✅ **Insurance Certificates** - Auto-generated with unique 13-digit format
+7. ✅ **Commodity Backing** - Physical asset tracking
+8. ✅ **Automated Profit Distribution** - Based on profit mode
+9. ✅ **Portfolio Management** - Real-time tracking
 
 ### Admin Features
 9. ✅ **Cycle Management** - Create, complete, distribute
@@ -190,8 +191,9 @@ cd apps/web && npm run dev
 
 ## 📋 API Endpoints Summary
 
-### Partner Endpoints (7)
-- `POST /api/gdip/tpia/purchase` - Buy TPIA
+### Partner Endpoints (8)
+- `POST /api/gdip/tpia/purchase` - Buy TPIA (individual/bulk)
+- `GET /api/gdip/forming-gdc` - Get current forming cluster
 - `GET /api/gdip/portfolio` - Get portfolio
 - `GET /api/gdip/tpias` - List all TPIAs
 - `GET /api/gdip/tpia/:id` - TPIA details

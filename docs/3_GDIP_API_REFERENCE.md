@@ -27,7 +27,7 @@ Content-Type: application/json
 {
   "commodityType": "Rice",
   "profitMode": "TPM",
-  "purchasePrice": 1000000
+  "quantity": 3
 }
 ```
 
@@ -36,7 +36,8 @@ Content-Type: application/json
 |-------|------|----------|-------------|
 | commodityType | string | Yes | Type of commodity (Rice, Sugar, Wheat, Corn, Soybeans) |
 | profitMode | string | No | TPM (compounding) or EPS (withdrawal). Default: TPM |
-| purchasePrice | number | No | Investment amount. Default: 1000000 |
+| quantity | number | No | Number of TPIA blocks to purchase (1-10). Default: 1 |
+| purchasePrice | number | No | Investment amount per block. Default: 1000000 |
 
 **Response (201):**
 ```json
@@ -384,6 +385,34 @@ Authorization: Bearer {token}
       "profitDistributed": true
     }
   ]
+}
+```
+
+---
+
+### 8. Get Forming GDC
+
+Retrieve the cluster that is currently being filled.
+
+**Endpoint:** `GET /forming-gdc`
+
+**Headers:**
+```
+Authorization: Bearer {token}
+```
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "_id": "694d6632cebc33169c82f382",
+    "gdcNumber": 10,
+    "capacity": 10,
+    "currentFill": 4,
+    "isFull": false,
+    "status": "forming"
+  }
 }
 ```
 
