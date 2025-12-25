@@ -4,13 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { apiPost, apiGet } from "@/utils/api";
 
-const COMMODITY_OPTIONS = [
-    { value: "Rice", label: "Rice", icon: "🌾" },
-    { value: "Sugar", label: "Sugar", icon: "🍬" },
-    { value: "Wheat", label: "Wheat", icon: "🌾" },
-    { value: "Corn", label: "Corn", icon: "🌽" },
-    { value: "Soybeans", label: "Soybeans", icon: "🫘" },
-];
+// COMMODITY_OPTIONS will be fetched from API
 
 export default function PurchaseTPIAPage() {
     const router = useRouter();
@@ -23,6 +17,7 @@ export default function PurchaseTPIAPage() {
     const [success, setSuccess] = useState(false);
     const [quantity, setQuantity] = useState(1);
     const [formingGDC, setFormingGDC] = useState<any>(null);
+    const [commodityOptions, setCommodityOptions] = useState<{ name: string; label: string; icon: string }[]>([]);
 
     const TPIA_PRICE = 1000000; // ₦1,000,000
     const totalPrice = TPIA_PRICE * quantity;
@@ -37,7 +32,19 @@ export default function PurchaseTPIAPage() {
     useEffect(() => {
         fetchWalletBalance();
         fetchGDCStatus();
+        fetchCommodityTypes();
     }, []);
+
+    const fetchCommodityTypes = async () => {
+        try {
+            const response = await apiGet<{ success: boolean; data: any[] }>("/api/v1/gdip/commodities/types");
+            if (response.success && response.data) {
+                setCommodityOptions(response.data);
+            }
+        } catch (err) {
+            console.error("Error fetching commodity types:", err);
+        }
+    };
 
     const fetchGDCStatus = async () => {
         try {
@@ -155,19 +162,25 @@ export default function PurchaseTPIAPage() {
                                 Select Commodity Type *
                             </label>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {COMMODITY_OPTIONS.map((commodity) => (
-                                    <button
-                                        key={commodity.value}
-                                        onClick={() => setSelectedCommodity(commodity.value)}
-                                        className={`p-4 rounded-xl border-2 transition-all ${selectedCommodity === commodity.value
-                                            ? "border-blue-600 bg-blue-50"
-                                            : "border-gray-200 hover:border-blue-300"
-                                            }`}
-                                    >
-                                        <div className="text-3xl mb-2">{commodity.icon}</div>
-                                        <div className="font-medium text-gray-900">{commodity.label}</div>
-                                    </button>
-                                ))}
+                                {commodityOptions.length > 0 ? (
+                                    commodityOptions.map((commodity) => (
+                                        <button
+                                            key={commodity.name}
+                                            onClick={() => setSelectedCommodity(commodity.name)}
+                                            className={`p-4 rounded-xl border-2 transition-all ${selectedCommodity === commodity.name
+                                                ? "border-blue-600 bg-blue-50"
+                                                : "border-gray-200 hover:border-blue-300"
+                                                }`}
+                                        >
+                                            <div className="text-3xl mb-2">{commodity.icon}</div>
+                                            <div className="font-medium text-gray-900">{commodity.label}</div>
+                                        </button>
+                                    ))
+                                ) : (
+                                    <div className="col-span-full h-24 flex items-center justify-center border-2 border-dashed border-gray-200 rounded-xl">
+                                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -254,23 +267,23 @@ export default function PurchaseTPIAPage() {
                                 <div className="flex-1 flex flex-wrap gap-2">
                                     <button
                                         onClick={() => setQuantity(1)}
-                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${quantity === 1 ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-sm ${quantity === 1 ? "bg-blue-600 text-white" : "bg-white text-gray-600 border border-gray-200 hover:border-blue-300"}`}
                                     >
                                         1 Block
                                     </button>
-                                    {formingGDC && (formingGDC.capacity - formingGDC.currentFill) > 1 && (
+                                    {formingGDC && (formingGDC.capacity - formingGDC.currentFill) > 0 && (
                                         <button
                                             onClick={() => setQuantity(formingGDC.capacity - formingGDC.currentFill)}
-                                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${quantity === (formingGDC.capacity - formingGDC.currentFill) ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                                            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-sm ${quantity === (formingGDC.capacity - formingGDC.currentFill) ? "bg-green-600 text-white" : "bg-white text-green-600 border border-green-200 hover:bg-green-50"}`}
                                         >
-                                            Fill Current GDC ({formingGDC.capacity - formingGDC.currentFill} Slots)
+                                            ✨ Fill GDC Slot{formingGDC.capacity - formingGDC.currentFill > 1 ? 's' : ''} ({formingGDC.capacity - formingGDC.currentFill})
                                         </button>
                                     )}
                                     <button
                                         onClick={() => setQuantity(10)}
-                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${quantity === 10 ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-sm ${quantity === 10 ? "bg-purple-600 text-white" : "bg-white text-purple-600 border border-purple-200 hover:bg-purple-50"}`}
                                     >
-                                        Purchase Full GDC (10 Blocks)
+                                        🏆 Buy Full GDC (10)
                                     </button>
                                 </div>
                             </div>

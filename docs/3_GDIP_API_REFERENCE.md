@@ -34,7 +34,7 @@ Content-Type: application/json
 **Parameters:**
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| commodityType | string | Yes | Type of commodity (Rice, Sugar, Wheat, Corn, Soybeans) |
+| commodityType | string | Yes | Name of commodity (dynamic, fetch from `/commodities/types`) |
 | profitMode | string | No | TPM (compounding) or EPS (withdrawal). Default: TPM |
 | quantity | number | No | Number of TPIA blocks to purchase (1-10). Default: 1 |
 | purchasePrice | number | No | Investment amount per block. Default: 1000000 |
@@ -418,6 +418,41 @@ Authorization: Bearer {token}
 
 ---
 
+### 9. Get Commodity Types
+
+Retrieve list of all active commodity types for purchase.
+
+**Endpoint:** `GET /commodities/types`
+
+**Headers:**
+```
+Authorization: Bearer {token}
+```
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "_id": "...",
+      "name": "Rice",
+      "label": "Rice",
+      "icon": "🌾",
+      "isActive": true
+    },
+    {
+      "name": "Sugar",
+      "label": "Sugar",
+      "icon": "🍬",
+      "isActive": true
+    }
+  ]
+}
+```
+
+---
+
 ## Admin Endpoints
 
 All admin endpoints require admin role in addition to authentication.
@@ -648,6 +683,48 @@ Authorization: Bearer {admin_token}
   ]
 }
 ```
+
+---
+
+### 16. Create Commodity Type
+
+**Endpoint:** `POST /admin/commodities/types`
+
+**Headers:**
+```
+Authorization: Bearer {admin_token}
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+  "name": "Wheat",
+  "label": "Premium Wheat",
+  "icon": "🌾",
+  "isActive": true
+}
+```
+
+---
+
+### 17. Update Commodity Type
+
+**Endpoint:** `PATCH /admin/commodities/types/:id`
+
+**Request Body:**
+```json
+{
+  "label": "Golden Wheat",
+  "isActive": false
+}
+```
+
+---
+
+### 18. Delete Commodity Type
+
+**Endpoint:** `DELETE /admin/commodities/types/:id`
 
 ---
 

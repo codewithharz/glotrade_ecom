@@ -6,6 +6,7 @@ export { default as BusinessDocument } from "./BusinessDocument";
 export { default as Category } from "./Category";
 export { default as Commission } from "./Commission";
 export { default as Commodity } from "./Commodity";
+export { default as CommodityType } from "./CommodityType";
 export { default as Contact } from "./Contact";
 export { default as CreditRequest } from "./CreditRequest";
 export { default as GDC } from "./GDC";

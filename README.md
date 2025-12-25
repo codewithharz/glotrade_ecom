@@ -8,9 +8,9 @@
 ## 📊 Platform Statistics
 
 ### Scale & Capacity
-- **319+ API Endpoints** across 30 route files
-- **67 Frontend Pages** (Next.js App Router)
-- **30 Database Models** (MongoDB/Mongoose)
+- **325+ API Endpoints** across 31 route files
+- **68 Frontend Pages** (Next.js App Router)
+- **31 Database Models** (MongoDB/Mongoose)
 - **26 Controllers** handling business logic
 - **40 Services** for core functionality
 - **6 Middleware** layers for security & validation
@@ -142,7 +142,7 @@ Glotrade International is a comprehensive e-commerce and investment platform tha
 
 ### 6. GDIP Investment Platform
 **Routes:** `/api/v1/gdip`, `/api/v1/insurance`, `/api/v1/commodity`  
-**Models:** TPIA, GDC, TradeCycle, Insurance, Commodity  
+**Models:** TPIA, GDC, TradeCycle, Insurance, Commodity, CommodityType  
 **Features:**
 - ₦1M investment blocks (TPIAs)
 - 10-TPIA clusters (GDCs)
@@ -150,6 +150,7 @@ Glotrade International is a comprehensive e-commerce and investment platform tha
 - Dual profit modes (TPM/EPS)
 - 100% insurance coverage
 - Commodity backing
+- Dynamic commodity management (Admin CRUD)
 - Claims processing
 - Price updates
 - Partner management
@@ -233,7 +234,7 @@ Glotrade International is a comprehensive e-commerce and investment platform tha
 
 ## 📡 API Endpoints Summary
 
-### Total: 319+ Endpoints
+### Total: 325+ Endpoints
 
 #### Authentication & Users (40+)
 - User registration, login, logout
@@ -268,6 +269,7 @@ Glotrade International is a comprehensive e-commerce and investment platform tha
 - GDC operations
 - Cycle management
 - Insurance & claims
+- Dynamic commodity management (Admin CRUD)
 - Commodity tracking
 
 #### Vendor Management (30+)
@@ -303,7 +305,7 @@ Glotrade International is a comprehensive e-commerce and investment platform tha
 
 ## 🎨 Frontend Pages
 
-### Total: 67 Pages
+### Total: 68 Pages
 
 #### Public Pages (10+)
 - Homepage
@@ -338,6 +340,7 @@ Glotrade International is a comprehensive e-commerce and investment platform tha
 - TPIA details
 - Insurance certificates
 - Commodity backing
+- Admin: Manage Commodities CRUD
 - Trade cycles
 
 #### Vendor Pages (10+)
@@ -348,7 +351,7 @@ Glotrade International is a comprehensive e-commerce and investment platform tha
 - Store settings
 - Payout requests
 
-#### Admin Pages (15+)
+#### Admin Pages (16+)
 - Admin dashboard
 - User management
 - Vendor management
@@ -367,7 +370,7 @@ Glotrade International is a comprehensive e-commerce and investment platform tha
 
 ## 💾 Database Models
 
-### Total: 30 Models
+### Total: 31 Models
 
 #### Core Models (8)
 1. **User** - User accounts & authentication
@@ -401,6 +404,7 @@ Glotrade International is a comprehensive e-commerce and investment platform tha
 23. **TradeCycle** - 37-day cycles
 24. **Insurance** - Coverage records
 25. **Commodity** - Physical assets
+26. **CommodityType** - Dynamic purchase options
 
 #### Business Models (5)
 26. **Commission** - Agent commissions
@@ -690,9 +694,9 @@ npm run build && npm start  # Production
 ## 🎓 Key Achievements
 
 ### Scale
-- **319+ API Endpoints** - Comprehensive functionality
-- **67 Frontend Pages** - Complete user experience
-- **30 Database Models** - Robust data structure
+- **325+ API Endpoints** - Comprehensive functionality
+- **68 Frontend Pages** - Complete user experience
+- **31 Database Models** - Robust data structure
 - **40 Services** - Modular business logic
 
 ### Features
@@ -773,9 +777,9 @@ grep "GDIP" logs/app.log
 **Status:** ✅ **PRODUCTION READY**
 
 **Completion:** 100%
-- Backend: ✅ Complete (319+ endpoints)
-- Frontend: ✅ Complete (67 pages)
-- Database: ✅ Complete (30 models)
+- Backend: ✅ Complete (325+ endpoints)
+- Frontend: ✅ Complete (68 pages)
+- Database: ✅ Complete (31 models)
 - Security: ✅ Complete (Multi-layer)
 - Documentation: ✅ Complete
 - Testing: ✅ Ready

@@ -214,7 +214,7 @@ export default function AdminGDIPDashboard() {
                 )}
 
                 {/* Quick Actions */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                     <button
                         onClick={() => router.push("/admin/gdip/cycles/create")}
                         className="flex items-center justify-center gap-3 bg-white border border-gray-200 text-gray-700 px-6 py-4 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm group"
@@ -241,6 +241,15 @@ export default function AdminGDIPDashboard() {
                             <Users className="w-5 h-5 text-green-600" />
                         </div>
                         <span className="font-medium">View All TPIAs</span>
+                    </button>
+                    <button
+                        onClick={() => router.push("/admin/gdip/commodities")}
+                        className="flex items-center justify-center gap-3 bg-white border border-gray-200 text-gray-700 px-6 py-4 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm group md:col-span-3 lg:col-span-1"
+                    >
+                        <div className="p-2 bg-yellow-100 rounded-lg group-hover:bg-yellow-200 transition-colors">
+                            <Shield className="w-5 h-5 text-yellow-600" />
+                        </div>
+                        <span className="font-medium">Manage Commodities</span>
                     </button>
                 </div>
 

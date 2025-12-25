@@ -53,12 +53,9 @@ Dashboard → "Purchase New TPIA" → /gdip/purchase
 ```
 
 #### Step 2.2: Select Commodity
-Partner chooses from available commodities:
-- 🌾 Rice
-- 🍬 Sugar
-- 🌾 Wheat
-- 🌽 Corn
-- 🫘 Soybeans
+Partner chooses from active commodities fetched dynamically via `GET /commodities/types`:
+- **Dynamic Icons**: Rice 🌾, Sugar 🍬, Wheat 🌾, etc.
+- **Admin Managed**: Options are configurable via Admin CRUD interface.
 
 #### Step 2.3: Choose Profit Mode
 

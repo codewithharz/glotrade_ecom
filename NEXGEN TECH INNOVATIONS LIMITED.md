@@ -44,9 +44,9 @@ Glotrade International is a **comprehensive enterprise platform** that combines 
 
 ### Scale & Statistics
 
-- **319+ REST API Endpoints** across 30 route files
-- **67 Frontend Pages** (Next.js App Router with TypeScript)
-- **30 Database Models** (MongoDB with Mongoose ODM)
+- **325+ REST API Endpoints** across 31 route files
+- **68 Frontend Pages** (Next.js App Router with TypeScript)
+- **31 Database Models** (MongoDB with Mongoose ODM)
 - **26 Controllers** handling business logic
 - **40+ Services** for core functionality
 - **6 Middleware Layers** for security & validation
@@ -133,7 +133,7 @@ Glotrade International is not just an e-commerce platform - it's a **complete bu
 │                            │                                     │
 │                   ┌────────▼────────┐                           │
 │                   │    MongoDB      │                           │
-│                   │  30 Collections │                           │
+│                   │  31 Collections │                           │
 │                   └─────────────────┘                           │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
@@ -209,11 +209,12 @@ Features:
 - 5% target ROI per cycle
 - 100% insurance coverage
 - Unique 13-digit insurance certificates
-- Commodity backing (rice, sugar, oil, etc.)
+- Commodity backing (Rice, Sugar, Wheat, Corn, etc.)
+- Dynamic commodity selection (Admin manageable)
 - Real-time portfolio tracking
 - Automated profit distribution
 - Claims processing system
-- Commodity price updates
+- Commodity CRUD management for Admins
 
 Comparable Platforms:
 - Piggyvest: $300M+ valuation
@@ -538,8 +539,8 @@ Response: {
 ### Module 5: GDIP Investment Platform
 
 **Location:** `apps/api/src/routes/gdip.routes.ts`  
-**Endpoints:** 21+  
-**Models:** TPIA, GDC, TradeCycle, Insurance, Commodity
+**Endpoints:** 25+  
+**Models:** TPIA, GDC, TradeCycle, Insurance, Commodity, CommodityType  
 
 #### Investment Flow
 
@@ -564,6 +565,7 @@ POST /api/v1/gdip/tpia/purchase
 4. Assign to available GDC
 5. If GDC full (10/10), schedule first 37-day cycle
 6. Create wallet transaction record
+7. Admin: Dynamically manage commodity options via CRUD interface
 
 // TPIA Details
 GET /api/v1/gdip/tpia/:id
@@ -774,7 +776,7 @@ PUT /api/v1/admin/withdrawals/:id/process
 
 ---
 
-## 📡 API Endpoints (319+ Total)
+## 📡 API Endpoints (325+ Total)
 
 ### Complete Endpoint List by Module
 
@@ -893,4 +895,1125 @@ GET    /api/v1/admin/gdip/gdcs/:id/details
 POST   /api/v1/admin/gdip/cycle/create
 POST   /api/v1/admin/gdip/cycle/:id/complete
 POST   /api/v1/admin/gdip/cycle/:id/distribute
-GET
+GET    /api/v1/admin/gdip/cycles
+GET    /api/v1/admin/gdip/tpias
+GET    /api/v1/admin/gdip/partners
+
+# Insurance
+GET    /api/v1/insurance/certificate/:tpiaId
+POST   /api/v1/insurance/claim/:tpiaId
+PUT    /api/v1/insurance/:id/claim/:claimNum
+GET    /api/v1/insurance/claims
+
+# Commodity
+PUT    /api/v1/commodity/:id/price
+POST   /api/v1/commodity/prices/bulk
+GET    /api/v1/commodity/prices
+GET    /api/v1/commodity/backing/:tpiaId
+```
+
+#### Vendor Management (30+)
+```
+# Vendor Registration & Profile
+POST   /api/v1/vendors/register
+GET    /api/v1/vendors/profile
+PUT    /api/v1/vendors/profile
+POST   /api/v1/vendors/documents
+
+# Product Management
+GET    /api/v1/vendors/products
+POST   /api/v1/vendors/products
+PUT    /api/v1/vendors/products/:id
+DELETE /api/v1/vendors/products/:id
+PUT    /api/v1/vendors/products/:id/stock
+
+# Analytics
+GET    /api/v1/vendors/analytics/sales
+GET    /api/v1/vendors/analytics/products
+GET    /api/v1/vendors/analytics/customers
+GET    /api/v1/vendors/analytics/revenue
+
+# Store Management
+GET    /api/v1/sellers/:id
+POST   /api/v1/sellers/:id/follow
+DELETE /api/v1/sellers/:id/unfollow
+GET    /api/v1/sellers/:id/followers
+GET    /api/v1/sellers/:id/products
+```
+
+#### Commission & Referrals (20+)
+```
+# Referral System
+GET    /api/v1/referrals/my-link
+GET    /api/v1/referrals/stats
+GET    /api/v1/referrals/downline
+GET    /api/v1/referrals/history
+
+# Commission Management
+GET    /api/v1/commissions/balance
+GET    /api/v1/commissions/history
+POST   /api/v1/commissions/withdraw
+GET    /api/v1/commissions/withdrawals
+GET    /api/v1/commissions/analytics
+
+# Admin Commission Control
+GET    /api/v1/admin/commissions/pending
+PUT    /api/v1/admin/commissions/:id/approve
+GET    /api/v1/admin/commissions/stats
+```
+
+#### Credit Management (15+)
+```
+# Credit Requests
+POST   /api/v1/credit-requests
+GET    /api/v1/credit-requests
+GET    /api/v1/credit-requests/:id
+PUT    /api/v1/credit-requests/:id/cancel
+
+# Admin Credit Control
+GET    /api/v1/admin/credit-requests
+PUT    /api/v1/admin/credit-requests/:id/approve
+PUT    /api/v1/admin/credit-requests/:id/reject
+GET    /api/v1/admin/credit-requests/stats
+
+# Credit Usage
+GET    /api/v1/credit/balance
+GET    /api/v1/credit/history
+POST   /api/v1/credit/repay
+```
+
+#### Admin Panel (50+)
+```
+# User Management
+GET    /api/v1/admin/users
+GET    /api/v1/admin/users/:id
+PUT    /api/v1/admin/users/:id/status
+PUT    /api/v1/admin/users/:id/role
+DELETE /api/v1/admin/users/:id
+PUT    /api/v1/admin/users/:id/kyc/verify
+
+# Vendor Management
+GET    /api/v1/admin/vendors
+PUT    /api/v1/admin/vendors/:id/approve
+PUT    /api/v1/admin/vendors/:id/suspend
+GET    /api/v1/admin/vendors/:id/documents
+
+# Order Management
+GET    /api/v1/admin/orders
+GET    /api/v1/admin/orders/stats
+PUT    /api/v1/admin/orders/:id/intervene
+DELETE /api/v1/admin/orders/:id
+
+# Payment Monitoring
+GET    /api/v1/admin/payments
+GET    /api/v1/admin/payments/stats
+GET    /api/v1/admin/wallets/overview
+GET    /api/v1/admin/transactions
+
+# Platform Analytics
+GET    /api/v1/admin/dashboard/stats
+GET    /api/v1/admin/analytics/revenue
+GET    /api/v1/admin/analytics/users
+GET    /api/v1/admin/analytics/products
+GET    /api/v1/admin/analytics/gdip
+GET    /api/v1/admin/reports/generate
+```
+
+#### Notifications (15+)
+```
+GET    /api/v1/notifications
+GET    /api/v1/notifications/unread
+PUT    /api/v1/notifications/:id/read
+PUT    /api/v1/notifications/read-all
+DELETE /api/v1/notifications/:id
+GET    /api/v1/notifications/preferences
+PUT    /api/v1/notifications/preferences
+```
+
+#### Security & Compliance (20+)
+```
+# Security Reports
+POST   /api/v1/security-reports
+GET    /api/v1/security-reports
+GET    /api/v1/security-reports/:id
+PUT    /api/v1/admin/security-reports/:id/investigate
+
+# Business Documents
+POST   /api/v1/business-documents
+GET    /api/v1/business-documents
+PUT    /api/v1/business-documents/:id
+DELETE /api/v1/business-documents/:id
+PUT    /api/v1/admin/business-documents/:id/verify
+
+# Audit Logs
+GET    /api/v1/admin/audit-logs
+GET    /api/v1/admin/audit-logs/user/:userId
+GET    /api/v1/admin/audit-logs/action/:action
+```
+
+#### File Management (15+)
+```
+POST   /api/v1/files/upload
+GET    /api/v1/files/:id
+DELETE /api/v1/files/:id
+POST   /api/v1/avatars/upload
+POST   /api/v1/product-images/upload
+POST   /api/v1/banners/upload
+GET    /api/v1/banners
+PUT    /api/v1/admin/banners/:id
+```
+
+#### Vouchers & Promotions (10+)
+```
+GET    /api/v1/vouchers
+POST   /api/v1/vouchers/apply
+GET    /api/v1/vouchers/:code/validate
+POST   /api/v1/admin/vouchers
+PUT    /api/v1/admin/vouchers/:id
+DELETE /api/v1/admin/vouchers/:id
+GET    /api/v1/admin/vouchers/stats
+```
+
+---
+
+## 💾 Database Models (30 Collections)
+
+### Core User Models
+
+#### 1. User Model
+```typescript
+interface IUser {
+  _id: ObjectId;
+  email: string; // unique, indexed
+  password: string; // bcrypt hashed
+  firstName: string;
+  lastName: string;
+  phone: string;
+  role: 'customer' | 'vendor' | 'agent' | 'admin';
+  businessType?: 'wholesaler' | 'distributor' | 'agent';
+  
+  // KYC
+  kycStatus: 'pending' | 'verified' | 'rejected';
+  kycDocuments: string[];
+  kycVerifiedAt?: Date;
+  
+  // Account Status
+  isActive: boolean;
+  isEmailVerified: boolean;
+  isSuspended: boolean;
+  suspensionReason?: string;
+  
+  // Profile
+  avatar?: string;
+  address?: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+  };
+  
+  // Referral
+  referralCode: string; // unique
+  referredBy?: ObjectId; // User ID
+  
+  // Metadata
+  lastLogin?: Date;
+  loginCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Indexes
+email: unique
+referralCode: unique
+kycStatus, businessType: compound
+```
+
+#### 2. Token Model
+```typescript
+interface IToken {
+  _id: ObjectId;
+  userId: ObjectId; // ref: User
+  token: string; // JWT token
+  type: 'access' | 'refresh' | 'reset' | 'verification';
+  expires: Date;
+  isRevoked: boolean;
+  createdAt: Date;
+}
+
+// Indexes
+token: unique
+userId, type: compound
+expires: TTL index (auto-delete expired)
+```
+
+#### 3. UserPreferences Model
+```typescript
+interface IUserPreferences {
+  _id: ObjectId;
+  userId: ObjectId; // ref: User
+  
+  // Notifications
+  emailNotifications: boolean;
+  smsNotifications: boolean;
+  pushNotifications: boolean;
+  
+  // Communication Preferences
+  marketingEmails: boolean;
+  orderUpdates: boolean;
+  promotionalSMS: boolean;
+  
+  // Display
+  language: string; // 'en', 'yo', etc.
+  currency: string; // 'NGN'
+  
+  updatedAt: Date;
+}
+```
+
+### Marketplace Models
+
+#### 4. Product Model
+```typescript
+interface IProduct {
+  _id: ObjectId;
+  name: string;
+  slug: string; // unique, indexed
+  brand: string;
+  category: string;
+  
+  // Pricing
+  price: number;
+  discountPrice?: number;
+  discountPercentage?: number;
+  
+  // Inventory
+  stock: number;
+  minOrder: number;
+  sku?: string;
+  
+  // Details
+  description: string;
+  shortDescription?: string;
+  specifications?: Record<string, any>;
+  
+  // Media
+  images: string[];
+  mainImage: string;
+  
+  // Vendor
+  vendorId: ObjectId; // ref: User
+  
+  // Status
+  isActive: boolean;
+  isFeatured: boolean;
+  
+  // Metrics
+  views: number;
+  sales: number;
+  rating: number;
+  reviewCount: number;
+  
+  // SEO
+  metaTitle?: string;
+  metaDescription?: string;
+  keywords?: string[];
+  
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Indexes
+slug: unique
+vendorId, isActive: compound
+category, price: compound
+name: text index (for search)
+```
+
+#### 5. Category Model
+```typescript
+interface ICategory {
+  _id: ObjectId;
+  name: string;
+  slug: string; // unique
+  description?: string;
+  icon?: string;
+  image?: string;
+  parentId?: ObjectId; // ref: Category (for hierarchy)
+  isActive: boolean;
+  order: number; // display order
+  productCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+#### 6. ProductReview Model
+```typescript
+interface IProductReview {
+  _id: ObjectId;
+  productId: ObjectId; // ref: Product
+  userId: ObjectId; // ref: User
+  orderId: ObjectId; // ref: Order
+  
+  rating: number; // 1-5
+  comment: string;
+  images?: string[];
+  
+  // Status
+  isVerifiedPurchase: boolean;
+  isApproved: boolean;
+  
+  // Helpfulness
+  helpfulCount: number;
+  
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Indexes
+productId, userId: compound unique
+productId, isApproved: compound
+```
+
+### Transaction Models
+
+#### 7. Order Model
+```typescript
+interface IOrder {
+  _id: ObjectId;
+  orderNumber: string; // unique, e.g., "ORD-2025-001"
+  userId: ObjectId; // ref: User
+  
+  // Items
+  items: [{
+    productId: ObjectId;
+    productName: string;
+    quantity: number;
+    price: number;
+    discountPrice?: number;
+    vendorId: ObjectId;
+  }];
+  
+  // Amounts
+  subtotal: number;
+  discount: number;
+  shippingFee: number;
+  total: number;
+  
+  // Shipping
+  shippingAddress: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    phone: string;
+  };
+  
+  // Payment
+  paymentMethod: 'wallet' | 'paystack' | 'credit';
+  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
+  paymentReference?: string;
+  
+  // Status
+  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'completed' | 'cancelled';
+  statusHistory: [{
+    status: string;
+    timestamp: Date;
+    note?: string;
+  }];
+  
+  // Tracking
+  trackingNumber?: string;
+  estimatedDelivery?: Date;
+  
+  // Metadata
+  notes?: string;
+  cancelReason?: string;
+  
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Indexes
+orderNumber: unique
+userId, status: compound
+createdAt: descending
+```
+
+#### 8. Payment Model
+```typescript
+interface IPayment {
+  _id: ObjectId;
+  userId: ObjectId; // ref: User
+  orderId?: ObjectId; // ref: Order
+  
+  amount: number;
+  currency: string; // 'NGN'
+  method: 'wallet' | 'paystack' | 'bank_transfer';
+  
+  // Paystack
+  paystackReference?: string;
+  paystackAuthorizationUrl?: string;
+  
+  // Status
+  status: 'pending' | 'processing' | 'success' | 'failed' | 'refunded';
+  
+  // Metadata
+  metadata?: Record<string, any>;
+  failureReason?: string;
+  
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+#### 9. Wallet Model
+```typescript
+interface IWallet {
+  _id: ObjectId;
+  userId: ObjectId; // ref: User, unique
+  
+  balance: number; // current balance
+  availableBalance: number; // balance - locked funds
+  lockedBalance: number; // funds on hold
+  
+  currency: string; // 'NGN'
+  
+  // Limits
+  dailyLimit: number;
+  monthlyLimit: number;
+  
+  // Status
+  isActive: boolean;
+  isFrozen: boolean;
+  freezeReason?: string;
+  
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Indexes
+userId: unique
+```
+
+#### 10. WalletTransaction Model
+```typescript
+interface IWalletTransaction {
+  _id: ObjectId;
+  walletId: ObjectId; // ref: Wallet
+  userId: ObjectId; // ref: User
+  
+  type: 'credit' | 'debit';
+  amount: number;
+  
+  // Categories
+  category: 'deposit' | 'withdrawal' | 'order' | 'refund' | 'commission' | 'transfer' | 'gdip_investment' | 'gdip_profit';
+  
+  // References
+  referenceId?: ObjectId; // Order, TPIA, etc.
+  referenceType?: string; // 'Order', 'TPIA', etc.
+  
+  // Balance After Transaction
+  balanceBefore: number;
+  balanceAfter: number;
+  
+  description: string;
+  
+  // Status
+  status: 'pending' | 'completed' | 'failed' | 'reversed';
+  
+  createdAt: Date;
+}
+
+// Indexes
+walletId, createdAt: compound
+userId, category: compound
+```
+
+### GDIP Models
+
+#### 11. TPIA Model
+```typescript
+interface ITPIA {
+  _id: ObjectId;
+  tpiaId: string; // unique, e.g., "TPIA-2025-001-0001"
+  userId: ObjectId; // ref: User
+  
+  // Investment
+  investmentAmount: number; // ₦1,000,000
+  currentValue: number; // increases with TPM mode
+  
+  // Profit Configuration
+  profitMode: 'TPM' | 'EPS';
+  // TPM: Total Profit Mode (compound)
+  // EPS: Earned Profit System (withdraw)
+  
+  // Commodity
+  commodityType: 'rice' | 'sugar' | 'oil' | 'wheat' | 'others';
+  quantityBacked: number; // physical quantity
+  
+  // GDC Assignment
+  gdcId?: ObjectId; // ref: GDC
+  
+  // Insurance
+  insuranceNumber: string; // unique, 13-digit
+  insuranceCoverage: number; // 100% of investment
+  
+  // Status
+  status: 'active' | 'matured' | 'claimed' | 'suspended';
+  
+  // Cycle Tracking
+  totalCycles: number;
+  completedCycles: number;
+  activeCycleId?: ObjectId; // ref: TradeCycle
+  
+  // Profit Tracking
+  totalProfit: number;
+  totalProfitWithdrawn: number; // for EPS mode
+  
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Indexes
+tpiaId: unique
+userId, status: compound
+gdcId: index
+insuranceNumber: unique
+```
+
+#### 12. GDC Model
+```typescript
+interface IGDC {
+  _id: ObjectId;
+  gdcId: string; // unique, e.g., "GDC-2025-001"
+  
+  // Capacity
+  capacity: number; // always 10
+  currentFill: number; // 0-10
+  tpias: ObjectId[]; // ref: TPIA[]
+  
+  // Status
+  status: 'filling' | 'full' | 'active' | 'completed';
+  
+  // Investment
+  totalInvestment: number; // sum of all TPIAs
+  
+  // Cycle Tracking
+  totalCycles: number;
+  activeCycles: number;
+  completedCycles: number;
+  
+  // Profit Tracking
+  totalProfitGenerated: number;
+  totalProfitDistributed: number;
+  
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Indexes
+gdcId: unique
+status: index
+```
+
+#### 13. TradeCycle Model
+```typescript
+interface ITradeCycle {
+  _id: ObjectId;
+  cycleId: string; // unique, e.g., "CYCLE-2025-001"
+  gdcId: ObjectId; // ref: GDC
+  
+  // Duration
+  startDate: Date;
+  endDate: Date; // startDate + 37 days
+  duration: number; // 37 days
+  
+  // Status
+  status: 'scheduled' | 'active' | 'processing' | 'completed' | 'failed';
+  
+  // Investment
+  totalInvestment: number;
+  
+  // Profit
+  targetProfitRate: number; // 5%
+  actualProfitRate?: number;
+  totalProfit?: number;
+  
+  // Distribution
+  distributionDate?: Date;
+  distributionStatus: 'pending' | 'distributed' | 'failed';
+  
+  // TPIAs in this cycle
+  tpias: ObjectId[]; // ref: TPIA[]
+  
+  // Metadata
+  notes?: string;
+  
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Indexes
+cycleId: unique
+gdcId, status: compound
+startDate, endDate: compound
+```
+
+#### 14. Insurance Model
+```typescript
+interface IInsurance {
+  _id: ObjectId;
+  insuranceNumber: string; // unique, 13-digit
+  tpiaId: ObjectId; // ref: TPIA
+  userId: ObjectId; // ref: User
+  
+  // Coverage
+  coverageAmount: number; // 100% of investment
+  commodityType: string;
+  
+  // Dates
+  issuedDate: Date;
+  expiryDate: Date; // typically 1 year
+  
+  // Status
+  status: 'active' | 'expired' | 'claimed' | 'cancelled';
+  
+  // Claims
+  claims: [{
+    claimNumber: string;
+    claimDate: Date;
+    claimType: 'total_loss' | 'partial_loss';
+    claimAmount: number;
+    status: 'filed' | 'investigating' | 'approved' | 'rejected' | 'paid';
+    evidence: string[];
+    resolution?: string;
+    paidDate?: Date;
+  }];
+  
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Indexes
+insuranceNumber: unique
+tpiaId: unique
+userId, status: compound
+```
+
+#### 15. Commodity Model
+```typescript
+interface ICommodity {
+  _id: ObjectId;
+  type: string; // 'rice', 'sugar', 'oil', etc.
+  name: string;
+  unit: string; // 'bag', 'ton', 'liter'
+  
+  // Pricing
+  currentPrice: number;
+  previousPrice: number;
+  priceChange: number; // percentage
+  lastUpdated: Date;
+  
+  // Supply
+  totalQuantity: number;
+  availableQuantity: number;
+  reservedQuantity: number; // backed by TPIAs
+  
+  // Storage
+  warehouseLocations: [{
+    location: string;
+    quantity: number;
+  }];
+  
+  // Audit
+  lastAuditDate?: Date;
+  nextAuditDate?: Date;
+  
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### Business Models
+
+#### 16. Commission Model
+```typescript
+interface ICommission {
+  _id: ObjectId;
+  agentId: ObjectId; // ref: User
+  customerId: ObjectId; // ref: User (referral)
+  
+  // Source
+  sourceType: 'product_purchase' | 'order' | 'subscription';
+  sourceId: ObjectId;
+  
+  // Amount
+  orderAmount: number;
+  discountAmount: number;
+  commissionAmount: number; // = discountAmount
+  commissionRate?: number; // percentage
+  
+  // Status
+  status: 'pending' | 'approved' | 'paid' | 'cancelled';
+  
+  // Payment
+  paidDate?: Date;
+  paymentReference?: string;
+  
+  // Level (for multi-level tracking)
+  level: number; // 1, 2, 3, etc.
+  
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Indexes
+agentId, status: compound
+customerId: index
+createdAt: descending
+```
+
+#### 17. Referral Model
+```typescript
+interface IReferral {
+  _id: ObjectId;
+  referrerId: ObjectId; // ref: User (agent)
+  referredId: ObjectId; // ref: User (customer)
+  
+  referralCode: string;
+  
+  // Status
+  status: 'active' | 'inactive' | 'suspended';
+  isConverted: boolean; // made a purchase
+  conversionDate?: Date;
+  
+  // Tracking
+  totalOrders: number;
+  totalSpent: number;
+  totalCommissions: number;
+  
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Indexes
+referrerId, referredId: compound unique
+referralCode: index
+```
+
+#### 18. CreditRequest Model
+```typescript
+interface ICreditRequest {
+  _id: ObjectId;
+  requestNumber: string; // unique
+  userId: ObjectId; // ref: User
+  
+  // Request Details
+  requestedAmount: number;
+  purpose: string;
+  
+  // Documents
+  documents: [{
+    type: 'cac' | 'bank_statement' | 'tax_clearance' | 'others';
+    url: string;
+    uploadedAt: Date;
+  }];
+  
+  // Business Info
+  businessName: string;
+  businessType: string;
+  yearsInBusiness: number;
+  monthlyRevenue: number;
+  
+  // Status
+  status: 'pending' | 'under_review' | 'approved' | 'rejected' | 'disbursed';
+  
+  // Approval
+  reviewedBy?: ObjectId; // ref: User (admin)
+  reviewDate?: Date;
+  reviewNotes?: string;
+  
+  // Credit Terms
+  approvedAmount?: number;
+  interestRate?: number;
+  tenure?: number; // months
+  
+  // Disbursement
+  disbursementDate?: Date;
+  disbursementReference?: string;
+  
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+#### 19. Payout Model
+```typescript
+interface IPayout {
+  _id: ObjectId;
+  payoutNumber: string; // unique
+  userId: ObjectId; // ref: User
+  
+  // Amount
+  amount: number;
+  currency: string; // 'NGN'
+  
+  // Type
+  type: 'commission' | 'vendor_sales' | 'refund';
+  
+  // Bank Details
+  bankAccount: {
+    bankName: string;
+    accountNumber: string;
+    accountName: string;
+  };
+  
+  // Status
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
+  
+  // Processing
+  processedBy?: ObjectId; // ref: User (admin)
+  processedDate?: Date;
+  transactionReference?: string;
+  
+  // Failure
+  failureReason?: string;
+  
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+#### 20. WithdrawalRequest Model
+```typescript
+interface IWithdrawalRequest {
+  _id: ObjectId;
+  userId: ObjectId; // ref: User
+  
+  // Amount
+  amount: number;
+  source: 'wallet' | 'commission';
+  
+  // Bank Details
+  bankDetails: {
+    bankName: string;
+    accountNumber: string;
+    accountName: string;
+  };
+  
+  // Status
+  status: 'pending' | 'approved' | 'processing' | 'completed' | 'rejected';
+  
+  // Processing
+  approvedBy?: ObjectId;
+  processedDate?: Date;
+  rejectionReason?: string;
+  
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### Vendor Models
+
+#### 21. Seller Model
+```typescript
+interface ISeller {
+  _id: ObjectId;
+  userId: ObjectId; // ref: User, unique
+  
+  // Store Info
+  storeName: string;
+  storeSlug: string; // unique
+  storeDescription: string;
+  storeLogo?: string;
+  storeBanner?: string;
+  
+  // Contact
+  phone: string;
+  email: string;
+  address: {
+    street: string;
+    city: string;
+    state: string;
+  };
+  
+  // Business
+  businessName: string;
+  businessType: string;
+  cacNumber?: string;
+  taxId?: string;
+  
+  // Status
+  isVerified: boolean;
+  verifiedAt?: Date;
+  isActive: boolean;
+  
+  // Metrics
+  totalProducts: number;
+  totalSales: number;
+  totalRevenue: number;
+  rating: number;
+  reviewCount: number;
+  
+  // Social
+  followerCount: number;
+  
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Indexes
+userId: unique
+storeSlug: unique
+isVerified, isActive: compound
+```
+
+#### 22. SellerFollow Model
+```typescript
+interface ISellerFollow {
+  _id: ObjectId;
+  sellerId: ObjectId; // ref: Seller
+  followerId: ObjectId; // ref: User
+  createdAt: Date;
+}
+
+// Indexes
+sellerId, followerId: compound unique
+```
+
+### Additional Models
+
+#### 23. Voucher Model
+```typescript
+interface IVoucher {
+  _id: ObjectId;
+  code: string; // unique
+  
+  // Discount
+  type: 'percentage' | 'fixed';
+  value: number;
+  maxDiscount?: number; // for percentage type
+  
+  // Conditions
+  minPurchase: number;
+  applicableProducts?: ObjectId[];
+  applicableCategories?: string[];
+  
+  // Usage
+  totalUsageLimit: number;
+  usagePerUser: number;
+  currentUsage: number;
+  
+  // Dates
+  startDate: Date;
+  endDate: Date;
+  
+  // Status
+  isActive: boolean;
+  
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Indexes
+code: unique
+startDate, endDate: compound
+```
+
+#### 24. Notification Model
+```typescript
+interface INotification {
+  _id: ObjectId;
+  userId: ObjectId; // ref: User
+  
+  // Content
+  title: string;
+  message: string;
+  type: 'order' | 'payment' | 'gdip' | 'commission' | 'system';
+  
+  // Link
+  link?: string;
+  actionText?: string;
+  
+  // Status
+  isRead: boolean;
+  readAt?: Date;
+  
+  // Priority
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  
+  createdAt: Date;
+}
+
+// Indexes
+userId, isRead: compound
+createdAt: descending
+```
+
+#### 25. SecurityReport Model
+```typescript
+interface ISecurityReport {
+  _id: ObjectId;
+  reportNumber: string; // unique
+  reportedBy: ObjectId; // ref: User
+  
+  // Incident
+  incidentType: 'fraud' | 'phishing' | 'unauthorized_access' | 'data_breach' | 'others';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  description: string;
+  
+  // Evidence
+  evidence: string[];
+  
+  // Status
+  status: 'reported' | 'investigating' | 'resolved' | 'closed';
+  
+  // Investigation
+  assignedTo?: ObjectId; // ref: User (admin)
+  investigationNotes?: string;
+  resolution?: string;
+  resolvedAt?: Date;
+  
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+#### 26. BusinessDocument Model
+```typescript
+interface IBusinessDocument {
+  _id: ObjectId;
+  userId: ObjectId; // ref: User
+  
+  // Document
+  documentType: 'cac' | 'tin' | 'business_permit' | 'bank_statement' | 'others';
+  documentNumber: string;
+  documentUrl: string;
+  
+  // Status
+  status: 'pending' | 'verified' | 'rejected';
+  verifiedBy?: ObjectId; // ref: User (admin)
+  verifiedAt?: Date;
+  rejectionReason?: string;
+  
+  // Expiry
+  expiryDate?: Date;
+  
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+#### 27-30. Additional Models
+```typescript
+// Contact, Banner, Transaction, AuditLog, etc.
+// (Following similar patterns as above)
+```
+
+---
+
+## 🎨 Frontend Pages (67 Total)

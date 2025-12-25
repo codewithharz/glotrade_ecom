@@ -422,6 +422,83 @@ export class GDIPController {
             });
         }
     }
+
+    /**
+     * Get all active commodity types
+     */
+    static async getCommodityTypes(req: Request, res: Response) {
+        try {
+            const types = await GDIPService.getCommodityTypes();
+            res.json({
+                success: true,
+                data: types
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                success: false,
+                message: error.message || "Failed to fetch commodity types"
+            });
+        }
+    }
+
+    /**
+     * ADMIN: Create a new commodity type
+     */
+    static async createCommodityType(req: Request, res: Response) {
+        try {
+            const type = await GDIPService.createCommodityType(req.body);
+            res.status(201).json({
+                success: true,
+                data: type
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                success: false,
+                message: error.message || "Failed to create commodity type"
+            });
+        }
+    }
+
+    /**
+     * ADMIN: Update a commodity type
+     */
+    static async updateCommodityType(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            const type = await GDIPService.updateCommodityType(id, req.body);
+            if (!type) {
+                return res.status(404).json({ success: false, message: "Commodity type not found" });
+            }
+            res.json({
+                success: true,
+                data: type
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                success: false,
+                message: error.message || "Failed to update commodity type"
+            });
+        }
+    }
+
+    /**
+     * ADMIN: Delete a commodity type
+     */
+    static async deleteCommodityType(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            await GDIPService.deleteCommodityType(id);
+            res.json({
+                success: true,
+                message: "Commodity type deleted successfully"
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                success: false,
+                message: error.message || "Failed to delete commodity type"
+            });
+        }
+    }
 }
 
 export default GDIPController;

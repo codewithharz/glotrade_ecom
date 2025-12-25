@@ -8,10 +8,10 @@ The **GDIP (Glotrade Distribution/Trusted Insured Partners)** platform has been 
 
 ## 📊 Implementation Statistics
 
-### Files Created: 28 Total
+### Files Created: 30 Total
 
-**Backend (14 files):**
-- 5 Database Models
+**Backend (15 files):**
+- 6 Database Models
 - 2 Core Services
 - 3 Controllers
 - 2 Route Files
@@ -34,7 +34,7 @@ The **GDIP (Glotrade Distribution/Trusted Insured Partners)** platform has been 
 ### Code Statistics
 - **~8,000+ Lines of Code**
 - **13+ API Endpoints**
-- **5 Database Collections**
+- **6 Database Collections** (TPIA, GDC, TradeCycle, Insurance, Commodity, CommodityType)
 - **37-Day Automated Cycles**
 
 ---
@@ -49,7 +49,8 @@ The **GDIP (Glotrade Distribution/Trusted Insured Partners)** platform has been 
 5. ✅ **Dual Profit Modes** - TPM (compounding) & EPS (withdrawal)
 6. ✅ **Insurance Certificates** - Auto-generated with unique 13-digit format
 7. ✅ **Commodity Backing** - Physical asset tracking
-8. ✅ **Automated Profit Distribution** - Based on profit mode
+8. ✅ **Dynamic Commodity Selection** - Admin-managed purchase options
+9. ✅ **Automated Profit Distribution** - Based on profit mode
 9. ✅ **Portfolio Management** - Real-time tracking
 
 ### Admin Features
@@ -82,6 +83,7 @@ apps/api/src/
 │   ├── TradeCycle.ts              # 37-day cycle model
 │   ├── Insurance.ts               # Coverage tracking
 │   ├── Commodity.ts               # Physical asset model
+│   ├── CommodityType.ts           # Dynamic purchase options model
 │   └── index.ts                   # Model exports
 │
 ├── services/
@@ -132,6 +134,7 @@ apps/web/src/app/
     └── cycles/
         ├── page.tsx               # Cycle management
         └── create/page.tsx        # Create cycle
+    └── commodities/page.tsx       # Commodity CRUD
 ```
 
 ### Documentation Files
@@ -208,6 +211,7 @@ cd apps/web && npm run dev
 - `GET /api/gdip/admin/gdcs` - All GDCs
 - `GET /api/gdip/admin/tpias` - All TPIAs
 - `GET /api/gdip/admin/cycles` - All cycles
+- `GET /api/gdip/admin/commodities/types` - Manage commodities (CRUD)
 
 ### Insurance & Commodity (8)
 - `GET /api/insurance/certificate/:tpiaId` - Get certificate

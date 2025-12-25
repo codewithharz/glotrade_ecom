@@ -149,6 +149,7 @@ Purchase → Pending → Active (in GDC) → Trading → Profit Distribution →
 3. **tradecycles** - 37-day cycles
 4. **insurances** - Coverage records
 5. **commodities** - Physical assets
+6. **commoditytypes** - Dynamic purchase options
 
 ### Data Flow
 
@@ -173,11 +174,12 @@ Cron (4 AM) → Distribute Profits (TPM/EPS) → Update TPIAs
 ### Partner Features
 
 #### 1. TPIA Purchase
-- Select commodity (Rice, Sugar, Wheat, Corn, Soybeans)
+- Select commodity (Rice, Sugar, Wheat, Corn, etc. fetched dynamically from API)
 - Choose profit mode (TPM/EPS)
 - Instant insurance certificate generation
 - Auto-assignment to available GDC
 - Wallet integration
+- **Admin Managed**: Commodities are configurable via Admin interface
 
 #### 2. Portfolio Management
 - Real-time portfolio value
@@ -228,6 +230,7 @@ Cron (4 AM) → Distribute Profits (TPM/EPS) → Update TPIAs
 - Distribute profits
 - Status tracking
 - Manual intervention controls
+- **Commodity Management**: Full CRUD for commodity types
 
 #### 4. Partner Management
 - All partners listing
@@ -263,12 +266,13 @@ Cron (4 AM) → Distribute Profits (TPM/EPS) → Update TPIAs
 #### File Structure (14 files)
 ```
 apps/api/src/
-├── models/ (6 files)
+├── models/ (7 files)
 │   ├── TPIA.ts
 │   ├── GDC.ts
 │   ├── TradeCycle.ts
 │   ├── Insurance.ts
 │   ├── Commodity.ts
+│   ├── CommodityType.ts
 │   └── index.ts
 ├── services/ (2 files)
 │   ├── GDIPService.ts
@@ -296,7 +300,7 @@ apps/api/src/
 **Styling:** Tailwind CSS  
 **HTTP Client:** Axios
 
-#### File Structure (12 pages)
+#### File Structure (13 pages)
 ```
 apps/web/src/app/
 ├── gdip/ (7 partner pages)
@@ -308,10 +312,11 @@ apps/web/src/app/
 │       ├── page.tsx (details)
 │       ├── certificate/page.tsx
 │       └── commodity-backing/page.tsx
-└── admin/gdip/ (5 admin pages)
+└── admin/gdip/ (6 admin pages)
     ├── page.tsx (dashboard)
     ├── gdcs/page.tsx
     ├── partners/page.tsx
+    ├── commodities/page.tsx
     └── cycles/
         ├── page.tsx
         └── create/page.tsx
@@ -431,6 +436,12 @@ GET /api/gdip/gdc/:gdcId
 Authorization: Bearer {token}
 ```
 
+#### Get Commodity Types
+```http
+GET /api/gdip/commodities/types
+Authorization: Bearer {token}
+```
+
 ### Admin Endpoints (6+)
 
 #### Create Cycle
@@ -461,6 +472,13 @@ Authorization: Bearer {admin_token}
 ```http
 POST /api/gdip/admin/cycle/:cycleId/distribute
 Authorization: Bearer {admin_token}
+```
+
+#### Manage Commodities
+```http
+POST   /api/gdip/admin/commodities/types
+PATCH  /api/gdip/admin/commodities/types/:id
+DELETE /api/gdip/admin/commodities/types/:id
 ```
 
 ### Insurance Endpoints (4)
@@ -781,12 +799,12 @@ grep "Purchase" logs/app.log | grep "TPIA"
 
 ### Technical Highlights
 
-- **28 Files** created
-- **~8,000+ Lines** of code
-- **21+ API Endpoints**
-- **5 Database Models**
-- **12 Frontend Pages**
-- **6 Documentation Files**
+- **30 Files** created
+- **~8,500+ Lines** of code
+- **25+ API Endpoints**
+- **6 Database Models**
+- **13 Frontend Pages**
+- **7 Documentation Files**
 
 ### Business Impact
 

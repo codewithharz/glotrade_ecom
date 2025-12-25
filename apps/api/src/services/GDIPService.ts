@@ -6,6 +6,7 @@ import Commodity from "../models/Commodity";
 import Wallet from "../models/Wallet";
 import WalletTransaction from "../models/WalletTransaction";
 import User from "../models/User";
+import CommodityType from "../models/CommodityType";
 import { Schema } from "mongoose";
 
 /**
@@ -13,13 +14,6 @@ import { Schema } from "mongoose";
  * Handles TPIA creation, GDC management, and trade cycle orchestration
  */
 export class GDIPService {
-    /**
-     * Get next available TPIA number
-     */
-    private static async getNextTPIANumber(): Promise<number> {
-        const lastTPIA = await TPIA.findOne().sort({ tpiaNumber: -1 }).limit(1);
-        return lastTPIA ? lastTPIA.tpiaNumber + 1 : 1;
-    }
 
     /**
      * Get next available GDC number (increments by 10)
@@ -109,7 +103,10 @@ export class GDIPService {
         for (let i = 0; i < quantity; i++) {
             // Re-fetch GDC each time to ensure we fill sequentially
             const gdc = await this.findOrCreateAvailableGDC(commodityType);
-            const tpiaNumber = await this.getNextTPIANumber();
+
+            //TPIA numbers are now derived formulaically from the GDC cluster number and the slot position ((gdcNumber - 10) + slotPosition).
+            // Formulaic numbering: (GDC-10 starting at 1, GDC-20 starting at 11, etc.)
+            const tpiaNumber = (gdc.gdcNumber - 10) + (gdc.currentFill + 1);
             const positionInGDC = gdc.currentFill + 1;
 
             const tpia = await TPIA.create({
@@ -320,10 +317,72 @@ export class GDIPService {
      * Get the current GDC in formation (for status visualization)
      */
     static async getFormingGDC(): Promise<any> {
+        const GDC = require("../models/GDC").default;
         return await GDC.findOne({
             status: "forming",
             isFull: false
         }).sort({ gdcNumber: 1 });
+    }
+
+    /**
+     * Get all active commodity types
+     */
+    static async getCommodityTypes(): Promise<any[]> {
+        let types = await CommodityType.find({ isActive: true });
+
+        // Auto-seed if empty
+        if (types.length === 0) {
+            await this.seedCommodityTypes();
+            types = await CommodityType.find({ isActive: true });
+        }
+
+        return types;
+    }
+
+    /**
+     * Seed initial commodity types
+     */
+    private static async seedCommodityTypes(): Promise<void> {
+        const initialTypes = [
+            { name: "Rice", label: "Rice", icon: "🌾" },
+            { name: "Sugar", label: "Sugar", icon: "🍬" },
+            { name: "Wheat", label: "Wheat", icon: "🌾" },
+            { name: "Corn", label: "Corn", icon: "🌽" },
+            { name: "Soybeans", label: "Soybeans", icon: "🫘" },
+        ];
+
+        for (const type of initialTypes) {
+            await CommodityType.findOneAndUpdate(
+                { name: type.name },
+                { $set: type },
+                { upsert: true, new: true }
+            );
+        }
+    }
+
+    /**
+     * Create a new commodity type
+     */
+    static async createCommodityType(data: any): Promise<any> {
+        return await CommodityType.create(data);
+    }
+
+    /**
+     * Update an existing commodity type
+     */
+    static async updateCommodityType(id: string, data: any): Promise<any> {
+        return await CommodityType.findByIdAndUpdate(
+            id,
+            { $set: data },
+            { new: true, runValidators: true }
+        );
+    }
+
+    /**
+     * Delete a commodity type (or deactivate it)
+     */
+    static async deleteCommodityType(id: string): Promise<any> {
+        return await CommodityType.findByIdAndDelete(id);
     }
 }
 

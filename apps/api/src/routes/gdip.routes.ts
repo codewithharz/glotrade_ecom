@@ -1,5 +1,5 @@
 import express from "express";
-import { GDIPController } from "../controllers/gdip.controller";
+import GDIPController from "../controllers/gdip.controller";
 import { requireAuth, requireAdmin } from "../middleware/auth";
 
 const router = express.Router();
@@ -26,6 +26,7 @@ router.get("/portfolio", requireAuth, GDIPController.getPortfolio);
  * @access  Private (Authenticated Partners)
  */
 router.get("/tpias", requireAuth, GDIPController.getTPIAs);
+router.get("/commodities/types", requireAuth, GDIPController.getCommodityTypes);
 
 /**
  * @route   GET /api/gdip/tpia/:tpiaId
@@ -112,5 +113,26 @@ router.get("/admin/cycles", requireAuth, requireAdmin, GDIPController.getAllCycl
  * @access  Private (Admin only)
  */
 router.get("/admin/cycle/:cycleId", requireAuth, requireAdmin, GDIPController.getCycleDetails);
+
+/**
+ * @route   POST /api/gdip/admin/commodities/types
+ * @desc    Create a new commodity type
+ * @access  Private (Admin only)
+ */
+router.post("/admin/commodities/types", requireAuth, requireAdmin, GDIPController.createCommodityType);
+
+/**
+ * @route   PATCH /api/gdip/admin/commodities/types/:id
+ * @desc    Update a commodity type
+ * @access  Private (Admin only)
+ */
+router.patch("/admin/commodities/types/:id", requireAuth, requireAdmin, GDIPController.updateCommodityType);
+
+/**
+ * @route   DELETE /api/gdip/admin/commodities/types/:id
+ * @desc    Delete a commodity type
+ * @access  Private (Admin only)
+ */
+router.delete("/admin/commodities/types/:id", requireAuth, requireAdmin, GDIPController.deleteCommodityType);
 
 export default router;

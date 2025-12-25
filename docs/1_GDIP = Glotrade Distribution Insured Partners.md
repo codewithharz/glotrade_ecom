@@ -106,7 +106,7 @@ Each block has its own:
 - Maturity date
 - Proceeds distribution history
 - Transaction history
-- Commodity type behind it
+- Commodity type behind it (Dynamically managed by Admin)
 
 ### **TPIA = Digital mirror of a real commodity store**
 
@@ -148,7 +148,7 @@ It is a **digital commodity allocation engine** that organizes users’ capital 
 - **EPS** — _Earning Payout System (monthly withdrawals)_
 - **Lifecycle Engine** — controls month-to-month trade profit cycles
 - **Insurance Model** — protects capital from real-world loss
-- **Warehouse & Commodity Engine** — ensures physical asset backing
+- **Warehouse & Commodity Engine** — ensures physical asset backing and manages dynamic commodity types
 
 ### What GDIP Guarantees
 
@@ -177,6 +177,7 @@ This volume (Volume 1) explains the foundations needed to build and understand t
 | **Markup Engine**         | Updates TPIA price as commodities change in market                                                                    |
 | **Commodity NAV**         | Net Asset Value of unit commodity used to price TPIAs                                                                 |
 | **Warehouse Certificate** | Physical backing proof for commodities                                                                                |
+| **Commodity Type**        | A specific commodity (Rice, Sugar, etc.) with associated icon, managed by Admin via CRUD interface                   |
 | **Auto-Balancer**         | Redistributes TPIAs when GDCs overflow                                                                                |
 
 ---
