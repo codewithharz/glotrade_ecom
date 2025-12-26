@@ -145,7 +145,12 @@ export class GDIPService {
                 gdc.status = "ready";
                 gdc.formedAt = new Date();
                 gdc.nextCycleStartDate = new Date(Date.now() + 37 * 24 * 60 * 60 * 1000);
+            }
 
+            // Save GDC state first to ensure checking logic in createTradeCycle passes
+            await gdc.save();
+
+            if (gdc.currentFill === 10) {
                 // Auto-activate all TPIAs in this GDC
                 await TPIA.updateMany(
                     { gdcId: gdc._id },
@@ -174,7 +179,6 @@ export class GDIPService {
                     new Date() // Start immediately
                 );
             }
-            await gdc.save();
 
             // Create insurance record
             await Insurance.create({

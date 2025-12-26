@@ -104,6 +104,14 @@ export default function TradeCyclesPage() {
         return days > 0 ? days : 0;
     };
 
+    const calculateEstimatedProfit = (cycle: TradeCycle) => {
+        if (cycle.status !== 'active') return 0;
+        const totalProfitTarget = (cycle.targetProfitRate / 100) * cycle.totalCapital;
+        const remaining = getDaysRemaining(cycle.endDate);
+        const progress = Math.max(0, Math.min(1, (37 - remaining) / 37));
+        return totalProfitTarget * progress;
+    };
+
     const getStatusColor = (status: string) => {
         switch (status) {
             case "active":
@@ -290,15 +298,21 @@ export default function TradeCyclesPage() {
                                         <p className="text-xs text-gray-600 mb-1">Target ROI</p>
                                         <p className="font-bold text-gray-900">{cycle.targetProfitRate}%</p>
                                     </div>
+                                    {cycle.status === "active" && (
+                                        <div className="md:col-span-2">
+                                            <p className="text-xs text-blue-600 mb-1">Est. Accrued Profit</p>
+                                            <p className="font-bold text-blue-600">+{formatCurrency(calculateEstimatedProfit(cycle))}</p>
+                                        </div>
+                                    )}
                                     {cycle.status === "completed" && (
                                         <>
                                             <div>
                                                 <p className="text-xs text-gray-600 mb-1">Actual ROI</p>
-                                                <p className="font-bold text-green-600">{cycle.actualProfitRate.toFixed(2)}%</p>
+                                                <p className="font-bold text-green-600">{cycle.actualProfitRate?.toFixed(2) || 0}%</p>
                                             </div>
                                             <div>
                                                 <p className="text-xs text-gray-600 mb-1">Total Profit</p>
-                                                <p className="font-bold text-green-600">{formatCurrency(cycle.totalProfitGenerated)}</p>
+                                                <p className="font-bold text-green-600">{formatCurrency(cycle.totalProfitGenerated || 0)}</p>
                                             </div>
                                         </>
                                     )}

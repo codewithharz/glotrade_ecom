@@ -143,7 +143,8 @@ export default function TPIADetailsPage() {
 
     const calculateROI = () => {
         if (!details) return 0;
-        return ((details.tpia.totalProfitEarned / details.tpia.purchasePrice) * 100).toFixed(2);
+        const totalProfit = details.tpia.totalProfitEarned + calculateEstimatedProfit();
+        return ((totalProfit / details.tpia.purchasePrice) * 100).toFixed(2);
     };
     const calculateCycleProgress = () => {
         if (!details || !details.currentCycle) return 0;
@@ -239,7 +240,7 @@ export default function TPIADetailsPage() {
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600 mb-1">Total Profit Earned</p>
-                                    <p className="text-2xl font-bold text-green-600">+{formatCurrency(tpia.totalProfitEarned)}</p>
+                                    <p className="text-2xl font-bold text-green-600">+{formatCurrency(tpia.totalProfitEarned + calculateEstimatedProfit())}</p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600 mb-1">ROI</p>

@@ -51,6 +51,7 @@ export class TradeCycleService {
 
         // Create trade cycle
         const cycle = await TradeCycle.create({
+            cycleId: `GDC${gdc.gdcNumber}-C${cycleNumber}`,
             cycleNumber,
             gdcId,
             gdcNumber: gdc.gdcNumber,

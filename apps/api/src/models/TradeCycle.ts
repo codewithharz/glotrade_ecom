@@ -258,8 +258,8 @@ const tradeCycleSchema = new Schema<ITradeCycle>(
 
 // Pre-save middleware
 tradeCycleSchema.pre("save", async function (next) {
-    if (this.isNew) {
-        this.cycleId = `CYCLE-${this.cycleNumber}`;
+    if (this.isNew && !this.cycleId) {
+        this.cycleId = `GDC${this.gdcNumber}-CYCLE-${this.cycleNumber}`;
 
         // Calculate end date if not provided
         if (!this.endDate && this.startDate) {
