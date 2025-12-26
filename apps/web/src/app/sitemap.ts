@@ -1,7 +1,11 @@
 import { MetadataRoute } from 'next';
 import { apiGet } from '@/utils/api';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 3600; // Optional: revalidate every hour
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+
     const baseUrl = 'https://glotrade.online';
 
     // Static routes
