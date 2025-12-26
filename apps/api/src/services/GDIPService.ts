@@ -8,6 +8,7 @@ import WalletTransaction from "../models/WalletTransaction";
 import User from "../models/User";
 import CommodityType from "../models/CommodityType";
 import { Schema } from "mongoose";
+import TradeCycleService from "./TradeCycleService";
 
 /**
  * GDIPService - Manages GDIP (Glotrade Distribution/Trusted Insured Partners) Platform
@@ -162,6 +163,16 @@ export class GDIPService {
                     { tpiaId: { $in: gdc.tpiaIds } },
                     { $set: { status: "active" } }
                 );
+
+                // Auto-create the first trade cycle for this GDC
+                // This enables progress visualization immediately
+                await TradeCycleService.createTradeCycle(
+                    gdc._id,
+                    commodityType,
+                    1000, // Default quantity
+                    gdc.totalCapital,
+                    new Date() // Start immediately
+                );
             }
             await gdc.save();
 
@@ -235,7 +246,34 @@ export class GDIPService {
      * Get partner's TPIAs
      */
     static async getPartnerTPIAs(partnerId: Schema.Types.ObjectId): Promise<any[]> {
-        return await TPIA.find({ partnerId }).sort({ tpiaNumber: 1 });
+        const tpias = await TPIA.find({ partnerId }).populate("currentCycleId").sort({ tpiaNumber: 1 });
+
+        // Calculate estimated accrued profit for each TPIA (same logic as portfolio)
+        const tpiasWithEstimates = tpias.map(tpia => {
+            let estimatedProfit = 0;
+
+            if (tpia.currentCycleId && typeof tpia.currentCycleId === 'object') {
+                const cycle = tpia.currentCycleId as any;
+                if (cycle.startDate && cycle.endDate && cycle.targetProfitRate) {
+                    const start = new Date(cycle.startDate).getTime();
+                    const end = new Date(cycle.endDate).getTime();
+                    const now = Date.now();
+
+                    if (now > start && now < end) {
+                        const progress = (now - start) / (end - start);
+                        const totalTarget = (cycle.targetProfitRate / 100) * tpia.purchasePrice;
+                        estimatedProfit = totalTarget * progress;
+                    } else if (now >= end && cycle.status !== 'completed') {
+                        // Cycle ended but not completed yet, show full target
+                        estimatedProfit = (cycle.targetProfitRate / 100) * tpia.purchasePrice;
+                    }
+                }
+            }
+
+            return { ...tpia.toObject(), estimatedProfit };
+        });
+
+        return tpiasWithEstimates;
     }
 
     /**
@@ -253,8 +291,27 @@ export class GDIPService {
             tpia.currentCycleId ? TradeCycle.findById(tpia.currentCycleId) : null
         ]);
 
+        // Calculate estimated profit
+        let estimatedProfit = 0;
+        if (currentCycle && currentCycle.startDate && currentCycle.endDate && currentCycle.targetProfitRate) {
+            const start = new Date(currentCycle.startDate).getTime();
+            const end = new Date(currentCycle.endDate).getTime();
+            const now = Date.now();
+
+            if (now > start && now < end) {
+                const progress = (now - start) / (end - start);
+                const totalTarget = (currentCycle.targetProfitRate / 100) * tpia.purchasePrice;
+                estimatedProfit = totalTarget * progress;
+            } else if (now >= end && currentCycle.status !== 'completed') {
+                estimatedProfit = (currentCycle.targetProfitRate / 100) * tpia.purchasePrice;
+            }
+        }
+
+        const tpiaObj = tpia.toObject();
+        (tpiaObj as any).estimatedProfit = estimatedProfit;
+
         return {
-            tpia,
+            tpia: tpiaObj,
             gdc,
             insurance,
             currentCycle
@@ -275,8 +332,29 @@ export class GDIPService {
             TradeCycle.find({ gdcId }).sort({ cycleNumber: -1 }).limit(10)
         ]);
 
+        // Calculate estimated profit from active or scheduled cycle (if started)
+        const activeCycle = cycles.find((c: any) => c.status === "active" || c.status === "scheduled");
+        let estimatedProfit = 0;
+
+        if (activeCycle && activeCycle.startDate && activeCycle.endDate && activeCycle.targetProfitRate) {
+            const start = new Date(activeCycle.startDate).getTime();
+            const end = new Date(activeCycle.endDate).getTime();
+            const now = Date.now();
+
+            if (now > start && now < end) {
+                const progress = (now - start) / (end - start);
+                const totalTarget = (activeCycle.targetProfitRate / 100) * gdc.totalCapital;
+                estimatedProfit = totalTarget * progress;
+            } else if (now >= end) {
+                estimatedProfit = (activeCycle.targetProfitRate / 100) * gdc.totalCapital;
+            }
+        }
+
+        const gdcObj = gdc.toObject();
+        gdcObj.totalProfitGenerated = (gdc.totalProfitGenerated || 0) + estimatedProfit;
+
         return {
-            gdc,
+            gdc: gdcObj,
             tpias,
             recentCycles: cycles
         };
@@ -306,11 +384,39 @@ export class GDIPService {
     static async getPartnerPortfolio(partnerId: Schema.Types.ObjectId) {
         const tpias = await TPIA.find({ partnerId }).populate("currentCycleId");
 
+        // Calculate estimated accrued profit for each TPIA
+        let totalEstimatedProfit = 0;
+        const tpiasWithEstimates = tpias.map(tpia => {
+            let estimatedProfit = 0;
+
+            if (tpia.currentCycleId && typeof tpia.currentCycleId === 'object') {
+                const cycle = tpia.currentCycleId as any;
+                if (cycle.startDate && cycle.endDate && cycle.targetProfitRate) {
+                    const start = new Date(cycle.startDate).getTime();
+                    const end = new Date(cycle.endDate).getTime();
+                    const now = Date.now();
+
+                    if (now > start && now < end) {
+                        const progress = (now - start) / (end - start);
+                        const totalTarget = (cycle.targetProfitRate / 100) * tpia.purchasePrice;
+                        estimatedProfit = totalTarget * progress;
+                    } else if (now >= end && cycle.status !== 'completed') {
+                        // Cycle ended but not completed yet, show full target
+                        estimatedProfit = (cycle.targetProfitRate / 100) * tpia.purchasePrice;
+                    }
+                }
+            }
+
+            totalEstimatedProfit += estimatedProfit;
+            return { ...tpia.toObject(), estimatedProfit };
+        });
+
         const summary = {
             totalTPIAs: tpias.length,
             totalInvested: tpias.reduce((sum, t) => sum + t.purchasePrice, 0),
-            currentValue: tpias.reduce((sum, t) => sum + t.currentValue, 0),
-            totalProfitEarned: tpias.reduce((sum, t) => sum + t.totalProfitEarned, 0),
+            currentValue: tpias.reduce((sum, t) => sum + t.currentValue, 0) + totalEstimatedProfit,
+            totalProfitEarned: tpias.reduce((sum, t) => sum + t.totalProfitEarned, 0) + totalEstimatedProfit,
+            estimatedAccruedProfit: totalEstimatedProfit,
             activeCycles: tpias.filter(t => t.currentCycleId).length,
             tpiasByStatus: {
                 pending: tpias.filter(t => t.status === "pending").length,
@@ -327,7 +433,7 @@ export class GDIPService {
 
         return {
             summary,
-            tpias
+            tpias: tpiasWithEstimates
         };
     }
 

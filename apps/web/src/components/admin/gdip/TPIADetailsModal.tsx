@@ -23,6 +23,7 @@ interface TPIADetails {
         commodityType: string;
         insuranceCertificateNumber: string;
         totalProfitEarned: number;
+        estimatedProfit?: number;
         cyclesCompleted: number;
     };
     gdc: {
@@ -112,8 +113,8 @@ export default function TPIADetailsModal({ tpiaId, onClose }: TPIADetailsModalPr
                     <div className="p-6 space-y-8">
                         {/* Status Banner */}
                         <div className={`p-4 rounded-xl flex items-center justify-between ${data.tpia.status === "active" ? "bg-green-50 border border-green-100" :
-                                data.tpia.status === "pending" ? "bg-yellow-50 border border-yellow-100" :
-                                    "bg-gray-50 border border-gray-100"
+                            data.tpia.status === "pending" ? "bg-yellow-50 border border-yellow-100" :
+                                "bg-gray-50 border border-gray-100"
                             }`}>
                             <div className="flex items-center gap-3">
                                 <div className={`p-2 rounded-lg ${data.tpia.status === "active" ? "bg-green-100" : "bg-yellow-100"
@@ -173,7 +174,7 @@ export default function TPIADetailsModal({ tpiaId, onClose }: TPIADetailsModalPr
                                 <div className="bg-gray-50 rounded-xl p-4 space-y-3">
                                     <div className="flex justify-between text-sm">
                                         <span className="text-gray-500">Total Profit Earned</span>
-                                        <span className="font-bold text-green-600">{formatCurrency(data.tpia.totalProfitEarned)}</span>
+                                        <span className="font-bold text-green-600">+{formatCurrency(data.tpia.estimatedProfit || 0)}</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
                                         <span className="text-gray-500">Cycles Completed</span>

@@ -13,7 +13,8 @@ import {
     LayoutGrid,
     AlertTriangle,
     Inbox,
-    ArrowRight
+    ArrowRight,
+    FileText
 } from "lucide-react";
 
 interface PortfolioSummary {
@@ -45,6 +46,7 @@ interface TPIA {
     purchasePrice: number;
     currentValue: number;
     totalProfitEarned: number;
+    estimatedProfit?: number;
     profitMode: "TPM" | "EPS";
     status: string;
     cyclesCompleted: number;
@@ -136,12 +138,23 @@ export default function GDIPDashboardPage() {
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                        GDIP Dashboard
-                    </h1>
-                    <p className="text-gray-600">
-                        Glotrade Distribution/Trusted Insured Partners Platform
-                    </p>
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                                GDIP Dashboard
+                            </h1>
+                            <p className="text-gray-600">
+                                Glotrade Distribution/Trusted Insured Partners Platform
+                            </p>
+                        </div>
+                        <button
+                            onClick={() => router.push('/gdip/statement')}
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 shadow-lg shadow-slate-200 transition-all active:scale-95"
+                        >
+                            <FileText size={18} />
+                            Generate Statement
+                        </button>
+                    </div>
                 </div>
 
                 {/* Summary Cards */}
@@ -301,9 +314,11 @@ export default function GDIPDashboardPage() {
                                             <span className="text-gray-600">Current Value:</span>
                                             <span className="font-medium text-green-600">{formatCurrency(tpia.currentValue)}</span>
                                         </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-600">Profit:</span>
-                                            <span className="font-medium text-green-600">+{formatCurrency(tpia.totalProfitEarned)}</span>
+                                        <div className="flex justify-between items-center mb-2">
+                                            <span className="text-xs text-gray-500 font-medium">Profit</span>
+                                            <span className="text-sm font-bold text-green-600">
+                                                {formatCurrency(tpia.estimatedProfit || 0)}
+                                            </span>
                                         </div>
                                         <div className="flex justify-between">
                                             <span className="text-gray-600">Mode:</span>
@@ -322,11 +337,17 @@ export default function GDIPDashboardPage() {
                                                     <span className="text-gray-500 uppercase tracking-wider font-semibold">Cycle Progress</span>
                                                     <span className="text-blue-600 font-bold">
                                                         {(() => {
+                                                            if (!tpia.currentCycleId?.startDate || !tpia.currentCycleId?.endDate) {
+                                                                return "0";
+                                                            }
                                                             const start = new Date(tpia.currentCycleId.startDate).getTime();
                                                             const end = new Date(tpia.currentCycleId.endDate).getTime();
                                                             const now = Date.now();
+                                                            if (isNaN(start) || isNaN(end) || end <= start) {
+                                                                return "0";
+                                                            }
                                                             const progress = Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
-                                                            return progress.toFixed(0);
+                                                            return progress.toFixed(1);
                                                         })()}%
                                                     </span>
                                                 </div>
@@ -335,9 +356,15 @@ export default function GDIPDashboardPage() {
                                                         className="bg-gradient-to-r from-blue-500 to-purple-500 h-full"
                                                         style={{
                                                             width: `${(() => {
+                                                                if (!tpia.currentCycleId?.startDate || !tpia.currentCycleId?.endDate) {
+                                                                    return 0;
+                                                                }
                                                                 const start = new Date(tpia.currentCycleId.startDate).getTime();
                                                                 const end = new Date(tpia.currentCycleId.endDate).getTime();
                                                                 const now = Date.now();
+                                                                if (isNaN(start) || isNaN(end) || end <= start) {
+                                                                    return 0;
+                                                                }
                                                                 return Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
                                                             })()}%`
                                                         }}

@@ -135,4 +135,11 @@ router.patch("/admin/commodities/types/:id", requireAuth, requireAdmin, GDIPCont
  */
 router.delete("/admin/commodities/types/:id", requireAuth, requireAdmin, GDIPController.deleteCommodityType);
 
+/**
+ * @route   POST /api/gdip/admin/initialize-cycles
+ * @desc    Initialize trade cycles for existing full GDCs
+ * @access  Private (Admin only)
+ */
+router.post("/admin/initialize-cycles", requireAuth, requireAdmin, GDIPController.initializeCycles);
+
 export default router;

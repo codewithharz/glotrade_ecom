@@ -12,7 +12,8 @@ import {
     CircleDollarSign,
     BarChart3,
     History,
-    Download
+    Download,
+    FileText
 } from "lucide-react";
 
 interface TPIADetails {
@@ -442,12 +443,19 @@ export default function TPIADetailsPage() {
                                     <span className="text-gray-600">Valid Until:</span>
                                     <span className="font-medium">{formatDate(insurance.expiryDate)}</span>
                                 </div>
-                                <div className="pt-4">
+                                <div className="pt-4 flex flex-col sm:flex-row gap-3">
+                                    <button
+                                        onClick={() => router.push(`/gdip/tpia/${tpiaId}/invoice`)}
+                                        className="flex-1 flex items-center justify-center gap-2 bg-white border-2 border-slate-200 text-slate-700 py-2 rounded-xl font-medium hover:bg-slate-50 transition-all active:scale-95"
+                                    >
+                                        <FileText className="w-4 h-4 text-slate-400" />
+                                        View Invoice
+                                    </button>
                                     <button
                                         onClick={() => router.push(`/gdip/tpia/${tpiaId}/certificate`)}
-                                        className="w-full flex items-center justify-center gap-2 bg-white border-2 border-green-600 text-green-700 py-2 rounded-xl font-medium hover:bg-green-50 transition-all"
+                                        className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 text-white py-2 rounded-xl font-medium hover:bg-emerald-700 shadow-lg shadow-emerald-200 transition-all active:scale-95"
                                     >
-                                        <Download className="w-4 h-4" />
+                                        <ShieldCheck className="w-4 h-4" />
                                         Download Certificate
                                     </button>
                                 </div>

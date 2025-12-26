@@ -97,13 +97,13 @@ export default function CycleDetailsModal({ cycleId, onClose }: CycleDetailsModa
                     <div className="p-6 space-y-8">
                         {/* Status Banner */}
                         <div className={`p-4 rounded-xl border flex items-center justify-between ${cycle.status === "completed" ? "bg-green-50 border-green-100" :
-                                cycle.status === "active" ? "bg-blue-50 border-blue-100" :
-                                    "bg-yellow-50 border-yellow-100"
+                            cycle.status === "active" ? "bg-blue-50 border-blue-100" :
+                                "bg-yellow-50 border-yellow-100"
                             }`}>
                             <div className="flex items-center gap-3">
                                 <div className={`p-2 rounded-lg ${cycle.status === "completed" ? "bg-green-100 text-green-600" :
-                                        cycle.status === "active" ? "bg-blue-100 text-blue-600" :
-                                            "bg-yellow-100 text-yellow-600"
+                                    cycle.status === "active" ? "bg-blue-100 text-blue-600" :
+                                        "bg-yellow-100 text-yellow-600"
                                     }`}>
                                     <Activity className="w-5 h-5" />
                                 </div>
@@ -167,7 +167,9 @@ export default function CycleDetailsModal({ cycleId, onClose }: CycleDetailsModa
                                     </div>
                                     <div className="flex justify-between text-sm">
                                         <span className="text-gray-500">Trading Costs</span>
-                                        <span className="font-medium text-red-600">-{formatCurrency(cycle.tradingCosts)}</span>
+                                        <span className={`font-medium ${cycle.tradingCosts > 0 ? "text-red-600" : "text-gray-900"}`}>
+                                            {cycle.tradingCosts > 0 ? `-${formatCurrency(cycle.tradingCosts)}` : formatCurrency(0)}
+                                        </span>
                                     </div>
                                     <div className="flex justify-between text-sm pt-2 border-t border-gray-200">
                                         <span className="text-gray-900 font-medium">Net Profit</span>

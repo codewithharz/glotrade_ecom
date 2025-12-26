@@ -15,6 +15,7 @@ interface TPIA {
     purchasePrice: number;
     currentValue: number;
     totalProfitEarned: number;
+    estimatedProfit?: number;
     profitMode: "TPM" | "EPS";
     status: string;
     cyclesCompleted: number;
@@ -248,7 +249,7 @@ export default function AllTPIAsPage() {
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-gray-600">Total Profit:</span>
-                                        <span className="font-medium text-green-600">+{formatCurrency(tpia.totalProfitEarned)}</span>
+                                        <span className="font-medium text-green-600">+{formatCurrency(tpia.estimatedProfit || 0)}</span>
                                     </div>
                                 </div>
 
@@ -272,11 +273,17 @@ export default function AllTPIAsPage() {
                                             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Allocation Progress</span>
                                             <span className="text-xs font-bold text-blue-600">
                                                 {(() => {
+                                                    if (!tpia.currentCycleId?.startDate || !tpia.currentCycleId?.endDate) {
+                                                        return "0";
+                                                    }
                                                     const start = new Date(tpia.currentCycleId.startDate).getTime();
                                                     const end = new Date(tpia.currentCycleId.endDate).getTime();
                                                     const now = Date.now();
+                                                    if (isNaN(start) || isNaN(end) || end <= start) {
+                                                        return "0";
+                                                    }
                                                     const progress = Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
-                                                    return progress.toFixed(0);
+                                                    return progress.toFixed(1);
                                                 })()}%
                                             </span>
                                         </div>
@@ -285,9 +292,15 @@ export default function AllTPIAsPage() {
                                                 className="bg-gradient-to-r from-blue-500 to-purple-500 h-full transition-all"
                                                 style={{
                                                     width: `${(() => {
+                                                        if (!tpia.currentCycleId?.startDate || !tpia.currentCycleId?.endDate) {
+                                                            return 0;
+                                                        }
                                                         const start = new Date(tpia.currentCycleId.startDate).getTime();
                                                         const end = new Date(tpia.currentCycleId.endDate).getTime();
                                                         const now = Date.now();
+                                                        if (isNaN(start) || isNaN(end) || end <= start) {
+                                                            return 0;
+                                                        }
                                                         return Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
                                                     })()}%`
                                                 }}

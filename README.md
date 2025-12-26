@@ -154,6 +154,8 @@ Glotrade International is a comprehensive e-commerce and investment platform tha
 - Claims processing
 - Price updates
 - Partner management
+- Automated Invoice & Statement Generation
+- Real-time Profit Estimation & Visualization
 
 ### 7. Commission & Referral System
 **Routes:** `/api/v1/commissions`, `/api/v1/referrals`  

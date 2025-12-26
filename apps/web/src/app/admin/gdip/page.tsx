@@ -99,7 +99,12 @@ export default function AdminGDIPDashboard() {
                 activeTPIAs: tpias.filter((t: any) => t.status === "active").length,
                 activeCycles: allCycles.filter((c: TradeCycle) => c.status === "active").length,
                 totalCapitalDeployed: allGDCs.reduce((sum: number, g: GDC) => sum + g.totalCapital, 0),
-                totalProfitGenerated: completedCycles.reduce((sum: number, c: TradeCycle) => sum + (c.actualProfitRate / 100) * c.totalCapital, 0),
+                totalProfitGenerated: allCycles.reduce((sum: number, c: any) => {
+                    if (c.status === "completed") {
+                        return sum + ((c.actualProfitRate || 0) / 100) * c.totalCapital;
+                    }
+                    return sum + (c.currentProfit || 0);
+                }, 0),
                 averageROI: avgROI,
             });
 

@@ -309,12 +309,51 @@ export class GDIPController {
     static async getAllGDCs(req: Request, res: Response) {
         try {
             const GDC = require("../models/GDC").default;
+            const TradeCycle = require("../models/TradeCycle").default;
+
             const gdcs = await GDC.find().sort({ gdcNumber: 1 });
+
+            // Fetch all active cycles to calculate estimated profit
+            const activeCycles = await TradeCycle.find({
+                status: { $in: ["active", "scheduled"] }
+            });
+
+            // Map cycles to GDCs
+            const cycleMap = new Map();
+            activeCycles.forEach((cycle: any) => {
+                cycleMap.set(cycle.gdcId.toString(), cycle);
+            });
+
+            const gdcsWithEstimates = gdcs.map((gdc: any) => {
+                let estimatedProfit = 0;
+                const cycle = cycleMap.get(gdc._id.toString());
+
+                if (cycle && cycle.startDate && cycle.endDate && cycle.targetProfitRate) {
+                    const start = new Date(cycle.startDate).getTime();
+                    const end = new Date(cycle.endDate).getTime();
+                    const now = Date.now();
+
+                    if (now > start && now < end) {
+                        const progress = (now - start) / (end - start);
+                        const totalTarget = (cycle.targetProfitRate / 100) * gdc.totalCapital;
+                        estimatedProfit = totalTarget * progress;
+                    } else if (now >= end) {
+                        estimatedProfit = (cycle.targetProfitRate / 100) * gdc.totalCapital;
+                    }
+                }
+
+                // Return GDC with estimated profit added to totalProfitGenerated
+                // We keep original totalProfitGenerated (realized) and add estimated
+                const gdcObj = gdc.toObject();
+                gdcObj.totalProfitGenerated = (gdc.totalProfitGenerated || 0) + estimatedProfit;
+                gdcObj.estimatedProfit = estimatedProfit; // Also sending separately just in case
+                return gdcObj;
+            });
 
             res.json({
                 success: true,
-                count: gdcs.length,
-                data: gdcs
+                count: gdcsWithEstimates.length,
+                data: gdcsWithEstimates
             });
         } catch (error: any) {
             console.error("Error fetching GDCs:", error);
@@ -334,12 +373,37 @@ export class GDIPController {
             const status = req.query.status as string;
 
             const query = status ? { status } : {};
-            const tpias = await TPIA.find(query).sort({ tpiaNumber: 1 });
+            const tpias = await TPIA.find(query).populate("currentCycleId").sort({ tpiaNumber: 1 });
+
+            // Calculate estimated accrued profit for each TPIA
+            const tpiasWithEstimates = tpias.map((tpia: any) => {
+                let estimatedProfit = 0;
+
+                if (tpia.currentCycleId && typeof tpia.currentCycleId === 'object') {
+                    const cycle = tpia.currentCycleId as any;
+                    if (cycle.startDate && cycle.endDate && cycle.targetProfitRate) {
+                        const start = new Date(cycle.startDate).getTime();
+                        const end = new Date(cycle.endDate).getTime();
+                        const now = Date.now();
+
+                        if (now > start && now < end) {
+                            const progress = (now - start) / (end - start);
+                            const totalTarget = (cycle.targetProfitRate / 100) * tpia.purchasePrice;
+                            estimatedProfit = totalTarget * progress;
+                        } else if (now >= end && cycle.status !== 'completed') {
+                            // Cycle ended but not completed yet, show full target
+                            estimatedProfit = (cycle.targetProfitRate / 100) * tpia.purchasePrice;
+                        }
+                    }
+                }
+
+                return { ...tpia.toObject(), estimatedProfit };
+            });
 
             res.json({
                 success: true,
-                count: tpias.length,
-                data: tpias
+                count: tpiasWithEstimates.length,
+                data: tpiasWithEstimates
             });
         } catch (error: any) {
             console.error("Error fetching TPIAs:", error);
@@ -361,10 +425,35 @@ export class GDIPController {
             const query = status ? { status } : {};
             const cycles = await TradeCycle.find(query).sort({ cycleNumber: -1 });
 
+            const cyclesWithProfit = cycles.map((cycle: any) => {
+                let currentProfit = 0;
+
+                // Calculate accrued profit for active/scheduled(started) cycles
+                if ((cycle.status === 'active' || cycle.status === 'scheduled') &&
+                    cycle.startDate && cycle.endDate && cycle.targetProfitRate) {
+
+                    const start = new Date(cycle.startDate).getTime();
+                    const end = new Date(cycle.endDate).getTime();
+                    const now = Date.now();
+
+                    if (now > start && now < end) {
+                        const progress = (now - start) / (end - start);
+                        const totalTarget = (cycle.targetProfitRate / 100) * cycle.totalCapital;
+                        currentProfit = totalTarget * progress;
+                    } else if (now >= end) {
+                        currentProfit = (cycle.targetProfitRate / 100) * cycle.totalCapital;
+                    }
+                }
+
+                const cycleObj = cycle.toObject();
+                cycleObj.currentProfit = currentProfit;
+                return cycleObj;
+            });
+
             res.json({
                 success: true,
-                count: cycles.length,
-                data: cycles
+                count: cyclesWithProfit.length,
+                data: cyclesWithProfit
             });
         } catch (error: any) {
             console.error("Error fetching cycles:", error);
@@ -496,6 +585,90 @@ export class GDIPController {
             res.status(500).json({
                 success: false,
                 message: error.message || "Failed to delete commodity type"
+            });
+        }
+    }
+
+    /**
+     * ADMIN: Initialize trade cycles for existing full GDCs
+     * POST /api/gdip/admin/initialize-cycles
+     */
+    static async initializeCycles(req: Request, res: Response) {
+        try {
+            const GDC = require("../models/GDC").default;
+            const TPIA = require("../models/TPIA").default;
+
+            // Find all full GDCs without a current cycle
+            const gdcsWithoutCycles = await GDC.find({
+                isFull: true,
+                $or: [
+                    { currentCycleId: null },
+                    { currentCycleId: { $exists: false } }
+                ]
+            });
+
+            if (gdcsWithoutCycles.length === 0) {
+                return res.json({
+                    success: true,
+                    message: "No GDCs found that need cycle initialization",
+                    data: { cyclesCreated: 0, tpiasLinked: 0 }
+                });
+            }
+
+            const results = {
+                cyclesCreated: 0,
+                tpiasLinked: 0,
+                gdcsProcessed: [] as any[]
+            };
+
+            for (const gdc of gdcsWithoutCycles) {
+                try {
+                    // Get TPIAs for this GDC
+                    const tpias = await TPIA.find({ gdcId: gdc._id });
+
+                    if (tpias.length === 0) {
+                        continue;
+                    }
+
+                    // Use the GDC's formedAt date as start, or current date if not available
+                    const startDate = gdc.formedAt || new Date();
+
+                    // Create trade cycle
+                    const cycle = await TradeCycleService.createTradeCycle(
+                        gdc._id,
+                        tpias[0].commodityType || "Rice",
+                        1000, // Default quantity
+                        gdc.totalCapital,
+                        startDate
+                    );
+
+                    results.cyclesCreated++;
+                    results.tpiasLinked += tpias.length;
+                    results.gdcsProcessed.push({
+                        gdcId: gdc.gdcId,
+                        gdcNumber: gdc.gdcNumber,
+                        cycleId: cycle.cycleId,
+                        tpiasLinked: tpias.length,
+                        startDate: cycle.startDate
+                    });
+
+                } catch (error: any) {
+                    console.error(`Error initializing cycle for GDC ${gdc.gdcNumber}:`, error);
+                    // Continue with next GDC even if one fails
+                }
+            }
+
+            res.json({
+                success: true,
+                message: `Successfully initialized ${results.cyclesCreated} trade cycles for ${results.tpiasLinked} TPIAs`,
+                data: results
+            });
+
+        } catch (error: any) {
+            console.error("Error initializing cycles:", error);
+            res.status(500).json({
+                success: false,
+                error: error.message || "Failed to initialize cycles"
             });
         }
     }
