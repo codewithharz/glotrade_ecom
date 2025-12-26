@@ -140,13 +140,13 @@ export default function AdminPartnersPage() {
                         </svg>
                         Back to Dashboard
                     </button>
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">GDIP Partners</h1>
+                    <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2">GDIP Partners</h1>
                     <p className="text-gray-600">Manage and verify Trusted Insured Partners</p>
                 </div>
 
                 {/* Stats */}
                 {partners.length > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
                         <div className="bg-white rounded-2xl shadow-lg p-6">
                             <p className="text-sm text-gray-600 mb-1">Total Partners</p>
                             <p className="text-3xl font-bold text-gray-900">{partners.length}</p>
@@ -199,8 +199,8 @@ export default function AdminPartnersPage() {
                     </div>
                 </div>
 
-                {/* Partners Table */}
-                <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                {/* Partners Table - Desktop */}
+                <div className="bg-white rounded-2xl shadow-lg overflow-hidden hidden md:block">
                     <table className="w-full">
                         <thead className="bg-gray-50 border-b border-gray-200">
                             <tr>
@@ -262,6 +262,55 @@ export default function AdminPartnersPage() {
 
                     {filteredPartners.length === 0 && (
                         <div className="text-center py-12">
+                            <p className="text-gray-500">No partners found</p>
+                        </div>
+                    )}
+                </div>
+
+                {/* Partners List - Mobile */}
+                <div className="md:hidden space-y-4">
+                    {filteredPartners.map((partner) => (
+                        <div key={partner._id} className="bg-white rounded-xl shadow-lg p-5 border border-gray-100">
+                            <div className="flex justify-between items-start mb-4">
+                                <div>
+                                    <p className="font-bold text-lg text-gray-900">{partner.name}</p>
+                                    <p className="text-sm text-gray-500">{partner.email}</p>
+                                </div>
+                                <span
+                                    className={`px-3 py-1 rounded-full text-xs font-medium ${partner.kycVerified
+                                        ? "bg-green-100 text-green-700"
+                                        : "bg-yellow-100 text-yellow-700"
+                                        }`}
+                                >
+                                    {partner.kycVerified ? "✓ Verified" : "⏳ Pending"}
+                                </span>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 py-4 border-t border-b border-gray-100 mb-4">
+                                <div>
+                                    <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Total Invested</p>
+                                    <p className="font-bold text-gray-900">{formatCurrency(partner.totalInvested)}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Total Profit</p>
+                                    <p className="font-bold text-green-600">{formatCurrency(partner.totalProfit)}</p>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-between items-center text-sm">
+                                <div>
+                                    <span className="text-gray-500 mr-2">TPIAs:</span>
+                                    <span className="font-medium text-gray-900">{partner.totalTPIAs}</span>
+                                </div>
+                                <div className="text-gray-500">
+                                    Joined {formatDate(partner.joinedDate)}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+
+                    {filteredPartners.length === 0 && (
+                        <div className="text-center py-12 bg-white rounded-xl shadow-lg">
                             <p className="text-gray-500">No partners found</p>
                         </div>
                     )}

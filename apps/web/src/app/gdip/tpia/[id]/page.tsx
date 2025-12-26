@@ -126,10 +126,12 @@ export default function TPIADetailsPage() {
         }
     };
 
-    const formatCurrency = (amount: number) => {
+    const formatCurrency = (amount: number, minimumFractionDigits = 0) => {
         return new Intl.NumberFormat("en-NG", {
             style: "currency",
             currency: "NGN",
+            minimumFractionDigits,
+            maximumFractionDigits: minimumFractionDigits,
         }).format(amount);
     };
 
@@ -191,32 +193,44 @@ export default function TPIADetailsPage() {
     const { tpia, gdc, insurance, currentCycle } = details;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-6">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen bg-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
                 {/* Header */}
-                <div className="mb-8">
+                <div className="mb-8 overflow-hidden">
                     <button
                         onClick={() => router.back()}
-                        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+                        className="flex items-center gap-2 text-gray-500 hover:text-gray-900 mb-6 font-bold text-xs uppercase tracking-widest transition-colors group"
                     >
-                        <ArrowLeft className="w-5 h-5" />
-                        Back
+                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                        Back to Portfolio
                     </button>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-4xl font-bold text-gray-900 mb-2">{tpia.tpiaId}</h1>
-                            <p className="text-gray-600">Trade Partners Insured Alliance Block</p>
+                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-3 flex-wrap">
+                                <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight leading-none uppercase">
+                                    {tpia.tpiaId}
+                                </h1>
+                                <span
+                                    className={`px-3 py-1 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] ${tpia.status === "active"
+                                        ? "bg-green-100 text-green-700"
+                                        : tpia.status === "pending"
+                                            ? "bg-amber-100 text-amber-700"
+                                            : "bg-gray-100 text-gray-500 border border-gray-200"
+                                        }`}
+                                >
+                                    {tpia.status}
+                                </span>
+                            </div>
+                            <p className="text-gray-500 font-medium sm:text-lg">
+                                Trusted Insured Partners Alliance Block
+                            </p>
                         </div>
-                        <span
-                            className={`px-4 py-2 rounded-full text-sm font-medium ${tpia.status === "active"
-                                ? "bg-green-100 text-green-700"
-                                : tpia.status === "pending"
-                                    ? "bg-yellow-100 text-yellow-700"
-                                    : "bg-gray-100 text-gray-700"
-                                }`}
-                        >
-                            {tpia.status.toUpperCase()}
-                        </span>
+                        <div className="flex gap-2">
+                            <div className="bg-gray-50 px-4 py-3 rounded-2xl border border-gray-100 hidden sm:block">
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Ownership</p>
+                                <p className="text-sm font-black text-gray-900">{tpia.partnerName}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -224,266 +238,252 @@ export default function TPIADetailsPage() {
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-6">
                         {/* Financial Overview */}
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <div className="flex items-center gap-3 mb-6">
-                                <TrendingUp className="w-6 h-6 text-blue-600" />
-                                <h2 className="text-xl font-bold text-gray-900">Financial Overview</h2>
+                        <div className="bg-white rounded-3xl border border-gray-100 p-5 sm:p-8 shadow-sm relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
+                                <TrendingUp className="w-24 h-24" />
                             </div>
-                            <div className="grid grid-cols-2 gap-6">
-                                <div>
-                                    <p className="text-sm text-gray-600 mb-1">Purchase Price</p>
-                                    <p className="text-2xl font-bold text-gray-900">{formatCurrency(tpia.purchasePrice)}</p>
+                            <div className="flex items-center gap-3 mb-8">
+                                <div className="p-2 bg-blue-50 rounded-xl text-blue-600">
+                                    <TrendingUp className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <p className="text-sm text-gray-600 mb-1">Current Value</p>
-                                    <p className="text-2xl font-bold text-green-600">{formatCurrency(tpia.currentValue)}</p>
+                                    <h2 className="text-2xl font-black text-gray-900 tracking-tight leading-none mb-1">Financial Performance</h2>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Asset value & earnings</p>
                                 </div>
-                                <div>
-                                    <p className="text-sm text-gray-600 mb-1">Total Profit Earned</p>
-                                    <p className="text-2xl font-bold text-green-600">+{formatCurrency(tpia.totalProfitEarned + calculateEstimatedProfit())}</p>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 sm:gap-6">
+                                <div className="bg-gray-50 p-4 sm:p-5 rounded-3xl border border-gray-100">
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 leading-none">Original Cost</p>
+                                    <p className="text-lg sm:text-2xl font-black text-gray-900 leading-none">
+                                        {formatCurrency(tpia.purchasePrice)}
+                                    </p>
                                 </div>
-                                <div>
-                                    <p className="text-sm text-gray-600 mb-1">ROI</p>
-                                    <p className="text-2xl font-bold text-purple-600">{calculateROI()}%</p>
+                                <div className="bg-emerald-50/50 p-4 sm:p-5 rounded-3xl border border-emerald-100">
+                                    <p className="text-[10px] font-bold text-emerald-600/70 uppercase tracking-widest mb-1.5 leading-none">Current Value</p>
+                                    <p className="text-lg sm:text-2xl font-black text-emerald-600 leading-none">
+                                        {formatCurrency(tpia.currentValue)}
+                                    </p>
+                                </div>
+                                <div className="bg-indigo-50/50 p-4 sm:p-5 rounded-3xl border border-indigo-100">
+                                    <p className="text-[10px] font-bold text-indigo-600/70 uppercase tracking-widest mb-1.5 leading-none">Net Accrued</p>
+                                    <p className="text-lg sm:text-2xl font-black text-indigo-600 leading-none">
+                                        +{formatCurrency(tpia.totalProfitEarned + calculateEstimatedProfit())}
+                                    </p>
+                                </div>
+                                <div className="bg-purple-50/50 p-4 sm:p-5 rounded-3xl border border-purple-100">
+                                    <p className="text-[10px] font-bold text-purple-600/70 uppercase tracking-widest mb-1.5 leading-none">Total ROI</p>
+                                    <p className="text-lg sm:text-2xl font-black text-purple-600 leading-none whitespace-nowrap">
+                                        {calculateROI()}<span className="text-sm font-bold opacity-50">%</span>
+                                    </p>
                                 </div>
                                 {tpia.profitMode === "TPM" && (
-                                    <div className="col-span-2">
-                                        <p className="text-sm text-gray-600 mb-1">Compounded Value</p>
-                                        <p className="text-2xl font-bold text-purple-600">{formatCurrency(tpia.compoundedValue)}</p>
+                                    <div className="col-span-2 bg-slate-900 p-5 rounded-3xl text-white">
+                                        <div className="flex justify-between items-center">
+                                            <div>
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 leading-none">Compounded Exit Value</p>
+                                                <p className="text-2xl font-black leading-none">{formatCurrency(tpia.compoundedValue)}</p>
+                                            </div>
+                                            <div className="p-2 bg-white/10 rounded-xl">
+                                                <Activity className="w-6 h-6 text-purple-400" />
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
                             </div>
                         </div>
 
-                        {/* GDC Information */}
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <div className="flex items-center gap-3 mb-6">
-                                <ShieldCheck className="w-6 h-6 text-green-600" />
-                                <h2 className="text-xl font-bold text-gray-900">GDC Assignment</h2>
-                            </div>
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-gray-600">GDC Number:</span>
-                                    <span className="font-bold text-lg">{gdc.gdcId}</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-gray-600">Position:</span>
-                                    <span className="font-medium">{tpia.positionInGDC} of {gdc.capacity}</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-gray-600">GDC Status:</span>
-                                    <span className="font-medium capitalize">{gdc.status}</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-gray-600">GDC Fill:</span>
-                                    <span className="font-medium">{gdc.currentFill}/{gdc.capacity}</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-gray-600">GDC Cycles Completed:</span>
-                                    <span className="font-medium">{gdc.cyclesCompleted}</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-gray-600">GDC Average ROI:</span>
-                                    <span className="font-medium text-green-600">{gdc.averageROI.toFixed(2)}%</span>
-                                </div>
-                            </div>
-                        </div>
 
-                        {/* Current Cycle */}
+
+                        {/* Trade Cycle */}
                         {currentCycle && (
-                            <div className="bg-white rounded-2xl shadow-lg p-6">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <Activity className="w-6 h-6 text-purple-600" />
-                                    <h2 className="text-xl font-bold text-gray-900">Current Trade Cycle</h2>
-                                </div>
-                                <div className="space-y-4">
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-gray-600">Cycle ID:</span>
-                                        <span className="font-medium">{currentCycle.cycleId}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-gray-600">Cycle Number:</span>
-                                        <span className="font-medium">#{currentCycle.cycleNumber}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-gray-600">Start Date:</span>
-                                        <span className="font-medium">{formatDate(currentCycle.startDate)}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-gray-600">End Date:</span>
-                                        <span className="font-medium">{formatDate(currentCycle.endDate)}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-gray-600">Target Profit:</span>
-                                        <span className="font-medium text-green-600">{currentCycle.targetProfitRate}%</span>
-                                    </div>
-                                    <div className="pt-4 border-t border-gray-100">
-                                        <div className="flex justify-between items-center mb-2">
-                                            <span className="text-sm font-medium text-gray-600">Cycle Progress</span>
-                                            <span className="text-sm font-bold text-blue-600">{calculateCycleProgress().toFixed(1)}%</span>
+                            <div className="bg-white rounded-3xl border border-gray-100 p-5 sm:p-8 shadow-sm">
+                                <div className="flex items-center justify-between mb-8">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-indigo-50 rounded-xl text-indigo-600">
+                                            <Activity className="w-5 h-5" />
                                         </div>
-                                        <div className="w-full bg-gray-100 rounded-full h-3 mb-6 overflow-hidden">
+                                        <div>
+                                            <h2 className="text-2xl font-black text-gray-900 tracking-tight leading-none mb-1">Active Cycle</h2>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Growth in progress</p>
+                                        </div>
+                                    </div>
+                                    <span className="px-3 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-black uppercase tracking-widest rounded-lg">
+                                        #{currentCycle.cycleNumber}
+                                    </span>
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Open Date</p>
+                                            <p className="text-xs sm:text-sm font-black text-gray-900">{formatDate(currentCycle.startDate)}</p>
+                                        </div>
+                                        <div className="space-y-1 text-right">
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Projected Close</p>
+                                            <p className="text-xs sm:text-sm font-black text-gray-900">{formatDate(currentCycle.endDate)}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-4">
+                                        <div className="flex justify-between items-end mb-3">
+                                            <div>
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Cycle ROI Target</p>
+                                                <p className="text-2xl font-black text-gray-900">{currentCycle.targetProfitRate}<span className="text-sm font-bold opacity-30">%</span></p>
+                                            </div>
+                                            <p className="text-sm font-black text-blue-600 uppercase tracking-widest">
+                                                {calculateCycleProgress().toFixed(1)}% Complete
+                                            </p>
+                                        </div>
+                                        <div className="h-4 bg-gray-100 rounded-full overflow-hidden p-1 border border-gray-50">
                                             <div
-                                                className="bg-gradient-to-r from-blue-500 to-purple-500 h-full transition-all duration-1000 ease-out"
+                                                className="bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 h-full rounded-full transition-all duration-1000 ease-out shadow-sm"
                                                 style={{ width: `${calculateCycleProgress()}%` }}
                                             ></div>
                                         </div>
+                                    </div>
 
-                                        <div className="grid grid-cols-2 gap-4 mt-4 bg-blue-50/50 p-4 rounded-xl border border-blue-100">
-                                            <div>
-                                                <p className="text-xs text-gray-500 mb-1">Elapsed Days</p>
-                                                <p className="font-bold text-gray-900">
-                                                    {Math.floor((calculateCycleProgress() / 100) * 37)} / 37
-                                                </p>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="text-xs text-blue-500 mb-1">Est. Accrued Profit</p>
-                                                <p className="font-bold text-blue-700">+{formatCurrency(calculateEstimatedProfit())}</p>
-                                            </div>
+                                    <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 flex items-center justify-between">
+                                        <div>
+                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Elapsed Duration</p>
+                                            <p className="text-sm font-black text-gray-900 leading-none">~{Math.floor((calculateCycleProgress() / 100) * 37)} of 37 Market Days</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-[9px] font-bold text-blue-600 uppercase tracking-widest mb-1">Accrued Profit</p>
+                                            <p className="text-lg font-black text-blue-700 leading-none">+{formatCurrency(calculateEstimatedProfit())}</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         )}
 
-                        {/* Commodity Information */}
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <div className="flex items-center gap-3 mb-6">
-                                <Box className="w-6 h-6 text-orange-600" />
-                                <h2 className="text-xl font-bold text-gray-900">Commodity Backing</h2>
-                            </div>
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-gray-600">Commodity Type:</span>
-                                    <span className="font-medium flex items-center gap-2">
-                                        <span>🌾</span>
-                                        {tpia.commodityType}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-gray-600">Quantity Allocated:</span>
-                                    <span className="font-medium">{tpia.commodityQuantity} {tpia.commodityUnit}</span>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
 
                     {/* Sidebar */}
                     <div className="lg:col-span-1 space-y-6">
                         {/* Profit Mode Card */}
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <div className="flex items-center gap-2 mb-4">
-                                <CircleDollarSign className="w-5 h-5 text-purple-600" />
-                                <h3 className="font-bold text-lg text-gray-900">Profit Mode</h3>
+                        <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="p-2 bg-purple-50 rounded-xl text-purple-600">
+                                    <CircleDollarSign className="w-5 h-5" />
+                                </div>
+                                <h3 className="font-black text-lg text-gray-900 tracking-tight">Earnings Method</h3>
                             </div>
-                            <div className="mb-4">
+                            <div className="mb-6">
                                 <div
-                                    className={`p-4 rounded-xl border-2 ${tpia.profitMode === "TPM"
-                                        ? "border-purple-600 bg-purple-50"
-                                        : "border-blue-600 bg-blue-50"
-                                        }`}
+                                    className={`p-5 rounded-2xl border ${tpia.profitMode === "TPM"
+                                        ? "border-purple-200 bg-purple-50/50"
+                                        : "border-blue-200 bg-blue-50/50"
+                                        } transition-colors group relative overflow-hidden`}
                                 >
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h4 className="font-bold text-lg">{tpia.profitMode}</h4>
+                                    <div className="flex items-center justify-between mb-3 relative z-10">
+                                        <h4 className="font-black text-2xl tracking-tighter text-gray-900 leading-none">{tpia.profitMode}</h4>
                                         <span
-                                            className={`px-2 py-1 rounded-full text-xs font-medium ${tpia.profitMode === "TPM"
+                                            className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${tpia.profitMode === "TPM"
                                                 ? "bg-purple-100 text-purple-700"
                                                 : "bg-blue-100 text-blue-700"
                                                 }`}
                                         >
-                                            {tpia.profitMode === "TPM" ? "Compounding" : "Withdrawal"}
+                                            {tpia.profitMode === "TPM" ? "Compound" : "Withdrawal"}
                                         </span>
                                     </div>
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-xs font-medium text-gray-500 leading-relaxed mb-1 relative z-10">
                                         {tpia.profitMode === "TPM"
-                                            ? "Profits reinvest automatically to increase your TPIA value"
-                                            : "Profits are credited to your wallet for withdrawal"}
+                                            ? "Profits reinvest automatically to expand asset equity."
+                                            : "Profits credit to your liquid wallet after each cycle."}
                                     </p>
+                                    <div className={`absolute bottom-[-20%] right-[-10%] opacity-[0.03] rotate-12 transition-transform group-hover:scale-110 pointer-events-none`}>
+                                        <CircleDollarSign className="w-24 h-24" />
+                                    </div>
                                 </div>
                             </div>
                             <button
                                 onClick={handleSwitchProfitMode}
                                 disabled={switchingMode}
-                                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-xl font-medium hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50"
+                                className="w-full bg-gray-900 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black transition-all disabled:opacity-50 shadow-xl shadow-gray-200 active:scale-95 flex items-center justify-center gap-2 group"
                             >
-                                {switchingMode ? "Switching..." : `Switch to ${tpia.profitMode === "TPM" ? "EPS" : "TPM"}`}
+                                {switchingMode ? (
+                                    <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                                ) : (
+                                    <>
+                                        Switch to {tpia.profitMode === "TPM" ? "EPS" : "TPM"}
+                                        <Activity size={14} className="opacity-50 group-hover:animate-pulse" />
+                                    </>
+                                )}
                             </button>
                         </div>
 
                         {/* Insurance Card */}
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <div className="flex items-center gap-2 mb-4">
-                                <ShieldCheck className="w-5 h-5 text-blue-600" />
-                                <h3 className="font-bold text-lg text-gray-900">Insurance</h3>
+                        <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm overflow-hidden relative group">
+                            <div className="absolute top-0 right-0 p-6 opacity-5 rotate-12 group-hover:rotate-0 transition-transform pointer-events-none">
+                                <ShieldCheck className="w-20 h-20 text-emerald-600" />
                             </div>
-                            <div className="space-y-3 text-sm">
-                                <div>
-                                    <p className="text-gray-600 mb-1">Certificate Number</p>
-                                    <p className="font-mono text-xs bg-gray-100 p-2 rounded">{insurance.certificateNumber}</p>
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="p-2 bg-emerald-50 rounded-xl text-emerald-600">
+                                    <ShieldCheck className="w-5 h-5" />
                                 </div>
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Provider:</span>
-                                    <span className="font-medium">{insurance.provider}</span>
+                                <h3 className="font-black text-lg text-gray-900 tracking-tight">Active Coverage</h3>
+                            </div>
+                            <div className="space-y-4">
+                                <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 leading-none">Protection Certificate</p>
+                                    <p className="font-mono text-[10px] text-gray-900 font-bold bg-white px-2.5 py-1.5 rounded-lg border border-gray-100 shadow-sm">{insurance.certificateNumber}</p>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Coverage:</span>
-                                    <span className="font-medium">{formatCurrency(insurance.coverageAmount)}</span>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1">
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Insurer</p>
+                                        <p className="text-xs font-black text-gray-900">{insurance.provider}</p>
+                                    </div>
+                                    <div className="space-y-1 text-right">
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Verified</p>
+                                        <span className="inline-flex px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[9px] font-black uppercase tracking-widest rounded-md">
+                                            {insurance.status}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Status:</span>
-                                    <span
-                                        className={`px-2 py-1 rounded-full text-xs font-medium ${insurance.status === "active"
-                                            ? "bg-green-100 text-green-700"
-                                            : "bg-yellow-100 text-yellow-700"
-                                            }`}
-                                    >
-                                        {insurance.status}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Valid Until:</span>
-                                    <span className="font-medium">{formatDate(insurance.expiryDate)}</span>
-                                </div>
-                                <div className="pt-4 flex flex-col sm:flex-row gap-3">
+                                <div className="pt-2 border-t border-gray-100 flex flex-col gap-3">
                                     <button
                                         onClick={() => router.push(`/gdip/tpia/${tpiaId}/invoice`)}
-                                        className="flex-1 flex items-center justify-center gap-2 bg-white border-2 border-slate-200 text-slate-700 py-2 rounded-xl font-medium hover:bg-slate-50 transition-all active:scale-95"
+                                        className="w-full flex items-center justify-center gap-2 bg-gray-50 text-gray-600 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-gray-100 transition-all active:scale-95"
                                     >
-                                        <FileText className="w-4 h-4 text-slate-400" />
-                                        View Invoice
+                                        <FileText className="w-3.5 h-3.5" />
+                                        Purchase Invoice
                                     </button>
                                     <button
                                         onClick={() => router.push(`/gdip/tpia/${tpiaId}/certificate`)}
-                                        className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 text-white py-2 rounded-xl font-medium hover:bg-emerald-700 shadow-lg shadow-emerald-200 transition-all active:scale-95"
+                                        className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-emerald-700 shadow-xl shadow-emerald-100 transition-all active:scale-95"
                                     >
-                                        <ShieldCheck className="w-4 h-4" />
-                                        Download Certificate
+                                        <Download className="w-3.5 h-3.5" />
+                                        Asset Certificate
                                     </button>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Stats Card */}
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <div className="flex items-center gap-2 mb-4">
-                                <BarChart3 className="w-5 h-5 text-indigo-600" />
-                                <h3 className="font-bold text-lg text-gray-900">Statistics</h3>
+                        {/* GDC Assignment */}
+                        <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="p-2 bg-blue-50 rounded-xl text-blue-600">
+                                    <Box className="w-5 h-5" />
+                                </div>
+                                <h3 className="font-black text-lg text-gray-900 tracking-tight">Cluster Node</h3>
                             </div>
-                            <div className="space-y-3 text-sm">
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Cycles Completed:</span>
-                                    <span className="font-bold text-lg">{tpia.cyclesCompleted}</span>
+                            <div className="space-y-3">
+                                <div className="flex justify-between items-center py-2 border-b border-gray-50">
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">GDC Reference</span>
+                                    <span className="text-xs font-black text-gray-900">{gdc.gdcId}</span>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Purchased:</span>
-                                    <span className="font-medium">{formatDate(tpia.purchasedAt)}</span>
+                                <div className="flex justify-between items-center py-2 border-b border-gray-50">
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Node Position</span>
+                                    <span className="text-xs font-black text-gray-900">Block {tpia.positionInGDC} of {gdc.capacity}</span>
                                 </div>
-                                {tpia.activatedAt && (
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600">Activated:</span>
-                                        <span className="font-medium">{formatDate(tpia.activatedAt)}</span>
-                                    </div>
-                                )}
+                                <div className="flex justify-between items-center py-2">
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Commodity Backing</span>
+                                    <span className="text-xs font-black text-gray-900 flex items-center gap-1.5 truncate ml-4">
+                                        <span className="opacity-50">🌾</span> {tpia.commodityType}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>

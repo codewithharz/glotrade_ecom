@@ -12,7 +12,8 @@ import {
     Trophy,
     Check,
     AlertCircle,
-    ExternalLink
+    ExternalLink,
+    Activity
 } from "lucide-react";
 
 // COMMODITY_OPTIONS will be fetched from API
@@ -33,10 +34,12 @@ export default function PurchaseTPIAPage() {
     const TPIA_PRICE = 1000000; // ₦1,000,000
     const totalPrice = TPIA_PRICE * quantity;
 
-    const formatCurrency = (amount: number) => {
+    const formatCurrency = (amount: number, minimumFractionDigits = 0) => {
         return new Intl.NumberFormat("en-NG", {
             style: "currency",
             currency: "NGN",
+            minimumFractionDigits,
+            maximumFractionDigits: minimumFractionDigits,
         }).format(amount);
     };
 
@@ -135,254 +138,279 @@ export default function PurchaseTPIAPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-6">
-            <div className="max-w-4xl mx-auto">
+        <div className="min-h-screen bg-white">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
                 {/* Header */}
                 <div className="mb-8">
                     <button
                         onClick={() => router.back()}
-                        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+                        className="flex items-center gap-2 text-gray-500 hover:text-gray-900 mb-6 font-bold text-xs uppercase tracking-widest transition-colors group"
                     >
-                        <ArrowLeft className="w-5 h-5" />
+                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                         Back to Dashboard
                     </button>
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">Purchase TPIA</h1>
-                    <p className="text-gray-600">
-                        Trade Partners Insured Alliance - Commodity-backed Investment Block
+                    <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight leading-none uppercase mb-2">
+                        Acquire TPIA
+                    </h1>
+                    <p className="text-gray-500 font-medium sm:text-lg">
+                        Secure your commodity-backed Digital Investment Block
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Purchase Form */}
-                    <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-8">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Investment Details</h2>
-
-                        {error && (
-                            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-                                <p className="text-red-600 text-sm">{error}</p>
-                            </div>
-                        )}
-
-                        {/* Commodity Selection */}
-                        <div className="mb-8">
-                            <label className="block text-sm font-medium text-gray-700 mb-3">
-                                Select Commodity Type *
-                            </label>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {commodityOptions.length > 0 ? (
-                                    commodityOptions.map((commodity) => (
-                                        <button
-                                            key={commodity.name}
-                                            onClick={() => setSelectedCommodity(commodity.name)}
-                                            className={`p-4 rounded-xl border-2 transition-all ${selectedCommodity === commodity.name
-                                                ? "border-blue-600 bg-blue-50"
-                                                : "border-gray-200 hover:border-blue-300"
-                                                }`}
-                                        >
-                                            <div className="text-3xl mb-2">{commodity.icon}</div>
-                                            <div className="font-medium text-gray-900">{commodity.label}</div>
-                                        </button>
-                                    ))
-                                ) : (
-                                    <div className="col-span-full h-24 flex items-center justify-center border-2 border-dashed border-gray-200 rounded-xl">
-                                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Profit Mode Selection */}
-                        <div className="mb-8">
-                            <label className="block text-sm font-medium text-gray-700 mb-3">
-                                Profit Distribution Mode *
-                            </label>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {/* TPM Mode */}
-                                <button
-                                    onClick={() => setProfitMode("TPM")}
-                                    className={`p-6 rounded-xl border-2 text-left transition-all ${profitMode === "TPM"
-                                        ? "border-purple-600 bg-purple-50"
-                                        : "border-gray-200 hover:border-purple-300"
-                                        }`}
-                                >
-                                    <div className="flex items-center justify-between mb-3">
-                                        <h3 className="font-bold text-lg text-gray-900">TPM</h3>
-                                        <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
-                                            Compounding
-                                        </span>
-                                    </div>
-                                    <p className="text-sm text-gray-600 mb-2">Trade Profit Mode</p>
-                                    <p className="text-xs text-gray-500">
-                                        Profits automatically reinvest into your TPIA, increasing value for next cycle
-                                    </p>
-                                </button>
-
-                                {/* EPS Mode */}
-                                <button
-                                    onClick={() => setProfitMode("EPS")}
-                                    className={`p-6 rounded-xl border-2 text-left transition-all ${profitMode === "EPS"
-                                        ? "border-blue-600 bg-blue-50"
-                                        : "border-gray-200 hover:border-blue-300"
-                                        }`}
-                                >
-                                    <div className="flex items-center justify-between mb-3">
-                                        <h3 className="font-bold text-lg text-gray-900">EPS</h3>
-                                        <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
-                                            Withdrawal
-                                        </span>
-                                    </div>
-                                    <p className="text-sm text-gray-600 mb-2">Earning Payout System</p>
-                                    <p className="text-xs text-gray-500">
-                                        Profits credited to your wallet for immediate withdrawal
-                                    </p>
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Quantity Selection */}
-                        <div className="mb-8">
-                            <label className="block text-sm font-medium text-gray-700 mb-3">
-                                Number of Blocks *
-                            </label>
-                            <div className="flex flex-col md:flex-row gap-4 items-center">
-                                <div className="flex items-center border-2 border-gray-200 rounded-xl overflow-hidden h-14 w-full md:w-48">
-                                    <button
-                                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                        className="w-14 h-full flex items-center justify-center bg-gray-50 hover:bg-gray-100 border-r border-gray-200"
-                                    >
-                                        <Minus className="w-4 h-4 text-gray-600" />
-                                    </button>
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        max="10"
-                                        value={quantity}
-                                        onChange={(e) => setQuantity(Math.min(10, Math.max(1, parseInt(e.target.value) || 1)))}
-                                        className="flex-1 text-center font-bold text-lg text-gray-900 focus:outline-none"
-                                    />
-                                    <button
-                                        onClick={() => setQuantity(Math.min(10, quantity + 1))}
-                                        className="w-14 h-full flex items-center justify-center bg-gray-50 hover:bg-gray-100 border-l border-gray-200"
-                                    >
-                                        <Plus className="w-4 h-4 text-gray-600" />
-                                    </button>
+                    <div className="lg:col-span-2 space-y-6">
+                        <div className="bg-white rounded-3xl border border-gray-100 p-6 sm:p-8 shadow-sm">
+                            <div className="flex items-center gap-3 mb-8">
+                                <div className="p-2 bg-blue-50 rounded-xl text-blue-600">
+                                    <Sparkles className="w-5 h-5" />
                                 </div>
-                                <div className="flex-1 flex flex-wrap gap-2">
-                                    <button
-                                        onClick={() => setQuantity(1)}
-                                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-sm ${quantity === 1 ? "bg-blue-600 text-white" : "bg-white text-gray-600 border border-gray-200 hover:border-blue-300"}`}
-                                    >
-                                        1 Block
-                                    </button>
-                                    {formingGDC && (formingGDC.capacity - formingGDC.currentFill) > 0 && (
-                                        <button
-                                            onClick={() => setQuantity(formingGDC.capacity - formingGDC.currentFill)}
-                                            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-sm flex items-center gap-1.5 ${quantity === (formingGDC.capacity - formingGDC.currentFill) ? "bg-green-600 text-white" : "bg-white text-green-600 border border-green-200 hover:bg-green-50"}`}
-                                        >
-                                            <Sparkles className="w-3.5 h-3.5" />
-                                            Fill GDC Slot{formingGDC.capacity - formingGDC.currentFill > 1 ? 's' : ''} ({formingGDC.capacity - formingGDC.currentFill})
-                                        </button>
-                                    )}
-                                    <button
-                                        onClick={() => setQuantity(10)}
-                                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-sm flex items-center gap-1.5 ${quantity === 10 ? "bg-purple-600 text-white" : "bg-white text-purple-600 border border-purple-200 hover:bg-purple-50"}`}
-                                    >
-                                        <Trophy className="w-3.5 h-3.5" />
-                                        Buy Full GDC (10)
-                                    </button>
+                                <div>
+                                    <h2 className="text-2xl font-black text-gray-900 tracking-tight leading-none mb-1">Asset Configuration</h2>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Customize your investment</p>
                                 </div>
                             </div>
-                            <p className="text-xs text-gray-500 mt-2">
-                                Each TPIA block is ₦1,000,000. You can purchase up to 10 blocks (one full GDC) at once.
-                            </p>
-                        </div>
 
-                        {/* GDC Status */}
-                        {formingGDC && (
-                            <div className="mb-8 p-4 bg-green-50 border border-green-100 rounded-xl">
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm font-medium text-green-800">Current GDC Cluster: GDC-{formingGDC.gdcNumber}</span>
-                                    <span className="text-xs font-bold text-green-600 uppercase">Active Formation</span>
+                            {error && (
+                                <div className="bg-red-50 border border-red-100 rounded-2xl p-4 mb-8 flex items-start gap-3">
+                                    <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                                    <p className="text-red-700 text-sm font-bold">{error}</p>
                                 </div>
-                                <div className="w-full bg-green-200 rounded-full h-2 mb-2">
-                                    <div
-                                        className="bg-green-600 h-2 rounded-full transition-all duration-500"
-                                        style={{ width: `${(formingGDC.currentFill / formingGDC.capacity) * 100}%` }}
-                                    ></div>
-                                </div>
-                                <div className="flex justify-between text-xs text-green-700">
-                                    <span>{formingGDC.currentFill} of {formingGDC.capacity} slots filled</span>
-                                    <span>{formingGDC.capacity - formingGDC.currentFill} slots remaining</span>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Purchase Button */}
-                        <button
-                            onClick={handlePurchase}
-                            disabled={loading || !selectedCommodity}
-                            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
-                        >
-                            {loading ? (
-                                <span className="flex items-center justify-center gap-2">
-                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                                    Processing...
-                                </span>
-                            ) : (
-                                `Purchase ${quantity} TPIA${quantity > 1 ? 's' : ''} for ${formatCurrency(totalPrice)}`
                             )}
-                        </button>
+
+                            {/* Commodity Selection */}
+                            <div className="mb-10">
+                                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">
+                                    Select Cluster Commodity
+                                </label>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                                    {commodityOptions.length > 0 ? (
+                                        commodityOptions.map((commodity) => (
+                                            <button
+                                                key={commodity.name}
+                                                onClick={() => setSelectedCommodity(commodity.name)}
+                                                className={`p-4 sm:p-5 rounded-2xl border-2 transition-all text-left relative overflow-hidden group active:scale-95 ${selectedCommodity === commodity.name
+                                                    ? "border-blue-600 bg-blue-50/50"
+                                                    : "border-gray-100 hover:border-blue-200 bg-white"
+                                                    }`}
+                                            >
+                                                <div className="text-3xl mb-3 relative z-10">{commodity.icon}</div>
+                                                <div className="font-black text-sm text-gray-900 tracking-tight relative z-10 leading-none">{commodity.label}</div>
+                                                {selectedCommodity === commodity.name && (
+                                                    <div className="absolute top-2 right-2">
+                                                        <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                                                    </div>
+                                                )}
+                                                <div className="absolute -bottom-2 -right-2 opacity-[0.03] group-hover:scale-110 transition-transform">
+                                                    <CheckCircle2 className="w-16 h-16" />
+                                                </div>
+                                            </button>
+                                        ))
+                                    ) : (
+                                        <div className="col-span-full h-24 flex items-center justify-center border-2 border-dashed border-gray-100 rounded-2xl">
+                                            <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-600 border-t-transparent"></div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Profit Mode Selection */}
+                            <div className="mb-10">
+                                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">
+                                    Strategic Earnings Mode
+                                </label>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {/* TPM Mode */}
+                                    <button
+                                        onClick={() => setProfitMode("TPM")}
+                                        className={`p-6 rounded-2xl border-2 text-left transition-all relative overflow-hidden group active:scale-[0.98] ${profitMode === "TPM"
+                                            ? "border-purple-600 bg-purple-50/50 shadow-lg shadow-purple-100"
+                                            : "border-gray-100 hover:border-purple-200 bg-white"
+                                            }`}
+                                    >
+                                        <div className="flex items-center justify-between mb-4 relative z-10">
+                                            <h3 className="font-black text-2xl tracking-tighter text-gray-900">TPM</h3>
+                                            <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${profitMode === "TPM" ? "bg-purple-600 text-white" : "bg-purple-100 text-purple-700"}`}>
+                                                Compounding
+                                            </span>
+                                        </div>
+                                        <div className="relative z-10">
+                                            <p className="text-[10px] font-bold text-purple-600/70 uppercase tracking-widest mb-1.5 leading-none">Capital Multiplier</p>
+                                            <p className="text-xs font-medium text-gray-500 leading-relaxed">
+                                                Profits reinvest automatically to increase active asset equity.
+                                            </p>
+                                        </div>
+                                        <div className="absolute -bottom-4 -right-4 opacity-[0.03] rotate-12 group-hover:rotate-0 transition-transform">
+                                            <Trophy className="w-24 h-24" />
+                                        </div>
+                                    </button>
+
+                                    {/* EPS Mode */}
+                                    <button
+                                        onClick={() => setProfitMode("EPS")}
+                                        className={`p-6 rounded-2xl border-2 text-left transition-all relative overflow-hidden group active:scale-[0.98] ${profitMode === "EPS"
+                                            ? "border-indigo-600 bg-indigo-50/50 shadow-lg shadow-indigo-100"
+                                            : "border-gray-100 hover:border-indigo-200 bg-white"
+                                            }`}
+                                    >
+                                        <div className="flex items-center justify-between mb-4 relative z-10">
+                                            <h3 className="font-black text-2xl tracking-tighter text-gray-900">EPS</h3>
+                                            <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${profitMode === "EPS" ? "bg-indigo-600 text-white" : "bg-indigo-100 text-indigo-700"}`}>
+                                                Withdrawal
+                                            </span>
+                                        </div>
+                                        <div className="relative z-10">
+                                            <p className="text-[10px] font-bold text-indigo-600/70 uppercase tracking-widest mb-1.5 leading-none">Liquidity Focus</p>
+                                            <p className="text-xs font-medium text-gray-500 leading-relaxed">
+                                                Profits credit to your wallet for immediate withdrawal flexibility.
+                                            </p>
+                                        </div>
+                                        <div className="absolute -bottom-4 -right-4 opacity-[0.03] rotate-12 group-hover:rotate-0 transition-transform">
+                                            <CheckCircle2 className="w-24 h-24" />
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Quantity Selection */}
+                            <div className="mb-10">
+                                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">
+                                    Allocation Volume
+                                </label>
+                                <div className="flex flex-col gap-4">
+                                    <div className="flex items-center bg-gray-50 rounded-2xl p-2 border border-gray-100 w-full md:w-fit self-center sm:self-start">
+                                        <button
+                                            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                            className="w-12 h-12 flex items-center justify-center bg-white rounded-xl shadow-sm hover:bg-gray-50 active:scale-95 transition-all text-gray-400 hover:text-gray-900"
+                                        >
+                                            <Minus className="w-5 h-5" />
+                                        </button>
+                                        <div className="px-10 text-center">
+                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-0.5 leading-none">Block Count</p>
+                                            <p className="text-3xl font-black text-gray-900 leading-none">{quantity}</p>
+                                        </div>
+                                        <button
+                                            onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                                            className="w-12 h-12 flex items-center justify-center bg-white rounded-xl shadow-sm hover:bg-gray-50 active:scale-95 transition-all text-gray-400 hover:text-gray-900"
+                                        >
+                                            <Plus className="w-5 h-5" />
+                                        </button>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2 pt-2 justify-center sm:justify-start">
+                                        <button
+                                            onClick={() => setQuantity(1)}
+                                            className={`px-4 py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all ${quantity === 1 ? "bg-gray-900 text-white shadow-lg shadow-gray-200" : "bg-white text-gray-500 border border-gray-100 hover:bg-gray-50"}`}
+                                        >
+                                            Single
+                                        </button>
+                                        {formingGDC && (formingGDC.capacity - formingGDC.currentFill) > 0 && (
+                                            <button
+                                                onClick={() => setQuantity(formingGDC.capacity - formingGDC.currentFill)}
+                                                className={`px-4 py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all gap-2 flex items-center ${quantity === (formingGDC.capacity - formingGDC.currentFill) ? "bg-emerald-600 text-white shadow-lg shadow-emerald-100" : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-100"}`}
+                                            >
+                                                Complete Cluster ({formingGDC.capacity - formingGDC.currentFill})
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={() => setQuantity(10)}
+                                            className={`px-4 py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all gap-2 flex items-center ${quantity === 10 ? "bg-indigo-600 text-white shadow-lg shadow-indigo-100" : "bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-100"}`}
+                                        >
+                                            <Trophy size={14} /> Full Node (10)
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* GDC Status */}
+                            {formingGDC && (
+                                <div className="mb-10 p-6 bg-slate-900 rounded-3xl relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 group-hover:rotate-0 transition-transform pointer-events-none">
+                                        <Activity className="w-20 h-20 text-white" />
+                                    </div>
+                                    <div className="flex items-center justify-between mb-6 relative z-10">
+                                        <div>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">GDC FORMATION STATUS</p>
+                                            <p className="text-xl font-black text-white tracking-tight">Node Cluster GDC-{formingGDC.gdcNumber}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-2xl font-black text-white leading-none">{(formingGDC.currentFill / formingGDC.capacity * 100).toFixed(0)}%</p>
+                                            <p className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Active Velocity</p>
+                                        </div>
+                                    </div>
+                                    <div className="h-3 bg-white/10 rounded-full overflow-hidden p-0.5 border border-white/5 mb-4 relative z-10">
+                                        <div
+                                            className="bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 h-full rounded-full transition-all duration-700"
+                                            style={{ width: `${(formingGDC.currentFill / formingGDC.capacity) * 100}%` }}
+                                        ></div>
+                                    </div>
+                                    <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-gray-400 relative z-10">
+                                        <span>{formingGDC.currentFill} OF {formingGDC.capacity} SLOTS LOCKED</span>
+                                        <span className="text-emerald-400">{formingGDC.capacity - formingGDC.currentFill} SLOTS REMAINING</span>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Purchase Button */}
+                            <button
+                                onClick={handlePurchase}
+                                disabled={loading || !selectedCommodity}
+                                className="w-full bg-gray-900 text-white py-5 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-black transition-all disabled:opacity-50 shadow-2xl shadow-gray-200 active:scale-95 flex items-center justify-center gap-3 group overflow-hidden relative"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                                {loading ? (
+                                    <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                                ) : (
+                                    <>
+                                        Execute Acquisition <ArrowLeft size={16} className="rotate-180 opacity-50 group-hover:translate-x-1 transition-transform" />
+                                    </>
+                                )}
+                            </button>
+                        </div>
                     </div>
 
                     {/* Summary Sidebar */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-6">
-                            <h3 className="font-bold text-lg text-gray-900 mb-4">Investment Summary</h3>
+                        <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm sticky top-6">
+                            <h3 className="font-black text-xl text-gray-900 tracking-tight mb-6">Order Summary</h3>
 
-                            <div className="space-y-4 mb-6">
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Quantity:</span>
-                                    <span className="font-bold text-gray-900">{quantity} Block{quantity > 1 ? 's' : ''}</span>
+                            <div className="space-y-4 mb-8">
+                                <div className="flex justify-between items-center py-2 border-b border-gray-50">
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Selected Units</span>
+                                    <span className="text-sm font-black text-gray-900">{quantity} TPIA Block{quantity > 1 ? 's' : ''}</span>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Unit Price:</span>
-                                    <span className="font-bold text-gray-900">{formatCurrency(TPIA_PRICE)}</span>
+                                <div className="flex justify-between items-center py-2 border-b border-gray-50">
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Base Value</span>
+                                    <span className="text-sm font-black text-gray-900">{formatCurrency(TPIA_PRICE)}</span>
                                 </div>
-                                <div className="flex justify-between pt-4 border-t">
-                                    <span className="text-lg font-bold text-gray-900">Total Price:</span>
-                                    <span className="text-lg font-bold text-blue-600">{formatCurrency(totalPrice)}</span>
+                                <div className="flex justify-between items-center py-2 pt-4">
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Grand Total</span>
+                                    <span className="text-xl font-black text-gray-900">{formatCurrency(totalPrice)}</span>
                                 </div>
-                                <div className="flex justify-between pt-4 border-t">
-                                    <span className="text-gray-600">Wallet Balance:</span>
-                                    <span className={`font-bold ${walletBalance >= totalPrice ? "text-green-600" : "text-red-600"}`}>
+                                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-2xl border border-gray-100 mt-4">
+                                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Wallet Credits</span>
+                                    <span className={`text-sm font-black ${walletBalance >= totalPrice ? "text-emerald-600" : "text-red-600"}`}>
                                         {formatCurrency(walletBalance)}
                                     </span>
                                 </div>
                             </div>
 
-                            <div className="border-t pt-4">
-                                <h4 className="font-semibold text-gray-900 mb-3">What You Get:</h4>
-                                <ul className="space-y-2 text-sm text-gray-600">
-                                    <li className="flex items-start gap-2">
-                                        <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                                        Insurance certificate
-                                    </li>
-                                    <li className="flex items-start gap-2">
-                                        <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                                        Commodity backing
-                                    </li>
-                                    <li className="flex items-start gap-2">
-                                        <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                                        GDC assignment
-                                    </li>
-                                    <li className="flex items-start gap-2">
-                                        <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                                        Automated trade cycles
-                                    </li>
-                                    <li className="flex items-start gap-2">
-                                        <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                                        Capital protection
-                                    </li>
+                            <div className="pt-6 border-t border-gray-50">
+                                <h4 className="text-[10px] font-black text-gray-900 uppercase tracking-[0.2em] mb-4">ASSET PROTECTIONS</h4>
+                                <ul className="space-y-3">
+                                    {[
+                                        "Insurance Coverage Certificate",
+                                        "Physical Commodity Backing",
+                                        "Cluster Node Assignment",
+                                        "Automated Scale Compounding",
+                                        "100% Capital Preservation"
+                                    ].map((item, i) => (
+                                        <li key={i} className="flex items-start gap-3 text-xs font-bold text-gray-500">
+                                            <div className="mt-0.5 p-0.5 bg-emerald-50 rounded text-emerald-600">
+                                                <Check size={10} />
+                                            </div>
+                                            {item}
+                                        </li>
+                                    ))}
                                 </ul>
                             </div>
                         </div>
@@ -401,35 +429,33 @@ export default function PurchaseTPIAPage() {
                                 You need to top up your wallet to complete this purchase.
                             </p>
 
-                            <div className="bg-gray-50 rounded-xl p-4 mb-6 space-y-3">
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-gray-600">Required Amount:</span>
-                                    <span className="font-bold text-gray-900">{formatCurrency(TPIA_PRICE)}</span>
+                            <div className="bg-gray-50 rounded-2xl p-6 mb-8 mt-2 space-y-4 border border-gray-100">
+                                <div className="flex justify-between items-center text-xs font-bold">
+                                    <span className="text-gray-400 uppercase tracking-widest">Required</span>
+                                    <span className="text-gray-900">{formatCurrency(totalPrice)}</span>
                                 </div>
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-gray-600">Current Balance:</span>
-                                    <span className="font-bold text-gray-900">{formatCurrency(walletBalance)}</span>
+                                <div className="flex justify-between items-center text-xs font-bold">
+                                    <span className="text-gray-400 uppercase tracking-widest">Current</span>
+                                    <span className="text-gray-900">{formatCurrency(walletBalance)}</span>
                                 </div>
-                                <div className="my-2 border-t border-gray-200"></div>
-                                <div className="flex justify-between text-base">
-                                    <span className="font-bold text-gray-900">Top-up Needed:</span>
-                                    <span className="font-bold text-red-600">{formatCurrency(TPIA_PRICE - walletBalance)}</span>
+                                <div className="border-t border-gray-200 mt-4 pt-4 flex justify-between items-center">
+                                    <span className="text-xs font-black text-gray-900 uppercase tracking-widest">Gap Amount</span>
+                                    <span className="text-lg font-black text-red-600">{formatCurrency(totalPrice - walletBalance)}</span>
                                 </div>
                             </div>
 
-                            <div className="flex gap-3">
+                            <div className="grid grid-cols-2 gap-3">
                                 <button
                                     onClick={() => setShowTopUpModal(false)}
-                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium"
+                                    className="px-6 py-3.5 rounded-2xl font-black text-[10px] uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={() => router.push("/profile/wallet")}
-                                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium flex items-center justify-center gap-2"
+                                    className="px-6 py-3.5 bg-gray-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-gray-200 flex items-center justify-center gap-2"
                                 >
-                                    Top Up Wallet
-                                    <ExternalLink className="w-4 h-4" />
+                                    Top Up <ExternalLink size={12} />
                                 </button>
                             </div>
                         </div>

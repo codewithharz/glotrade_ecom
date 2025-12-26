@@ -102,10 +102,12 @@ export default function GDIPDashboardPage() {
         }
     };
 
-    const formatCurrency = (amount: number) => {
+    const formatCurrency = (amount: number, minimumFractionDigits = 2) => {
         return new Intl.NumberFormat("en-NG", {
             style: "currency",
             currency: "NGN",
+            minimumFractionDigits: minimumFractionDigits,
+            maximumFractionDigits: minimumFractionDigits,
         }).format(amount);
     };
 
@@ -134,95 +136,105 @@ export default function GDIPDashboardPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-6">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen bg-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <div>
-                            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
+                        <div className="space-y-1">
+                            <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight leading-none">
                                 GDIP Dashboard
                             </h1>
-                            <p className="text-gray-600">
-                                Glotrade Distribution/Trusted Insured Partners Platform
+                            <p className="text-gray-500 font-medium">
+                                Glotrade Distribution / Trusted Insured Partners Platform
                             </p>
                         </div>
                         <button
                             onClick={() => router.push('/gdip/statement')}
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 shadow-lg shadow-slate-200 transition-all active:scale-95"
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gray-900 text-white rounded-2xl font-bold hover:bg-black shadow-xl shadow-gray-200 transition-all active:scale-95 group"
                         >
-                            <FileText size={18} />
-                            Generate Statement
+                            <FileText size={18} className="group-hover:rotate-6 transition-transform" />
+                            <span>Generate Statement</span>
                         </button>
                     </div>
                 </div>
 
                 {/* Summary Cards */}
                 {summary && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+                    <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-10">
                         {/* Total TPIAs */}
-                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="p-3 bg-blue-100 rounded-lg">
-                                    <Layers className="w-6 h-6 text-blue-600" />
+                        <div className="bg-white rounded-2xl border border-gray-100 p-3 sm:p-5 shadow-sm">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="p-1 px-1.5 bg-blue-50 rounded-md text-blue-600">
+                                    <Layers className="w-3.5 h-3.5" />
                                 </div>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Total TPIAs</p>
                             </div>
-                            <h3 className="text-gray-600 text-sm font-medium mb-1">Total TPIAs</h3>
-                            <p className="text-3xl font-bold text-gray-900">{summary.totalTPIAs}</p>
-                            <p className="text-sm text-gray-500 mt-2">Across {summary.gdcs} GDCs</p>
+                            <p className="text-xl sm:text-3xl font-black text-gray-900">{summary.totalTPIAs}</p>
+                            <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase">Across {summary.gdcs} Clusters</p>
                         </div>
 
                         {/* Total Invested */}
-                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="p-3 bg-green-100 rounded-lg">
-                                    <Wallet className="w-6 h-6 text-green-600" />
+                        <div className="bg-white rounded-2xl border border-gray-100 p-3 sm:p-5 shadow-sm">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="p-1 px-1.5 bg-emerald-50 rounded-md text-emerald-600">
+                                    <Wallet className="w-3.5 h-3.5" />
                                 </div>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Deployed</p>
                             </div>
-                            <h3 className="text-gray-600 text-sm font-medium mb-1">Total Invested</h3>
-                            <p className="text-3xl font-bold text-gray-900">{formatCurrency(summary.totalInvested)}</p>
-                            <p className="text-sm text-gray-500 mt-2">Capital deployed</p>
+                            <p className="text-lg sm:text-2xl font-black text-gray-900 leading-none">
+                                {formatCurrency(summary.totalInvested, 0)}
+                            </p>
+                            <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase">Starting Capital</p>
                         </div>
 
                         {/* Total Profit */}
-                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="p-3 bg-purple-100 rounded-lg">
-                                    <TrendingUp className="w-6 h-6 text-purple-600" />
+                        <div className="bg-white rounded-2xl border border-gray-100 p-3 sm:p-5 shadow-sm">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="p-1 px-1.5 bg-indigo-50 rounded-md text-indigo-600">
+                                    <TrendingUp className="w-3.5 h-3.5" />
                                 </div>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Profit</p>
                             </div>
-                            <h3 className="text-gray-600 text-sm font-medium mb-1">Total Profit Earned</h3>
-                            <p className="text-3xl font-bold text-green-600">{formatCurrency(summary.totalProfitEarned)}</p>
-                            <p className="text-sm text-gray-500 mt-2">ROI: {calculateROI()}%</p>
+                            <p className="text-lg sm:text-2xl font-black text-emerald-600 leading-none">
+                                {formatCurrency(summary.totalProfitEarned, 0)}
+                            </p>
+                            <p className="text-[10px] font-black text-emerald-600 mt-1 uppercase bg-emerald-50 w-fit px-1.5 py-0.5 rounded">+{calculateROI()}% ROI</p>
                         </div>
 
                         {/* Current Value */}
-                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="p-3 bg-yellow-100 rounded-lg">
-                                    <ShieldCheck className="w-6 h-6 text-yellow-600" />
+                        <div className="bg-white rounded-2xl border border-gray-100 p-3 sm:p-5 shadow-sm">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="p-1 px-1.5 bg-amber-50 rounded-md text-amber-600">
+                                    <ShieldCheck className="w-3.5 h-3.5" />
                                 </div>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Net Value</p>
                             </div>
-                            <h3 className="text-gray-600 text-sm font-medium mb-1">Current Portfolio Value</h3>
-                            <p className="text-3xl font-bold text-gray-900">{formatCurrency(summary.currentValue)}</p>
-                            <p className="text-sm text-green-600 mt-2">
-                                +{formatCurrency(summary.currentValue - summary.totalInvested)}
+                            <p className="text-lg sm:text-2xl font-black text-gray-900 leading-none">
+                                {formatCurrency(summary.currentValue, 0)}
                             </p>
+                            <div className="text-[9px] font-bold text-gray-400 mt-1 uppercase flex flex-wrap gap-1 leading-tight">
+                                Net Gain: <span className="text-emerald-600">+{formatCurrency(summary.currentValue - summary.totalInvested, 0)}</span>
+                            </div>
                         </div>
 
                         {/* Wallet Balance */}
-                        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="p-3 bg-indigo-100 rounded-lg">
-                                    <Wallet className="w-6 h-6 text-indigo-600" />
+                        <div className="bg-white rounded-2xl border border-gray-100 p-3 sm:p-5 shadow-sm flex flex-col justify-between col-span-2 lg:col-span-1">
+                            <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className="p-1 px-1.5 bg-blue-50 rounded-md text-blue-600">
+                                        <Activity className="w-3.5 h-3.5" />
+                                    </div>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Available</p>
                                 </div>
+                                <p className="text-lg sm:text-2xl font-black text-blue-600 leading-none">
+                                    {formatCurrency(walletBalance, 0)}
+                                </p>
                             </div>
-                            <h3 className="text-gray-600 text-sm font-medium mb-1">Wallet Balance</h3>
-                            <p className="text-3xl font-bold text-indigo-600">{formatCurrency(walletBalance)}</p>
                             {walletBalance < 1000000 && (
-                                <p className="text-sm text-orange-600 mt-2 flex items-center gap-1">
-                                    <AlertTriangle className="w-4 h-4" />
-                                    Low balance
+                                <p className="text-[9px] font-black text-amber-600 mt-2 flex items-center gap-1 uppercase tracking-tighter bg-amber-50 w-fit px-1.5 py-0.5 rounded leading-none whitespace-nowrap">
+                                    <AlertTriangle className="w-3 h-3" />
+                                    Balance Alert
                                 </p>
                             )}
                         </div>
@@ -230,148 +242,161 @@ export default function GDIPDashboardPage() {
                 )}
 
                 {/* Quick Actions */}
-                <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-                    <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white rounded-3xl border border-gray-100 p-5 sm:p-6 mb-10 shadow-sm relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-8 opacity-5">
+                        <Activity className="w-24 h-24" />
+                    </div>
+                    <h2 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-pulse"></span>
+                        Quick Actions
+                    </h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <button
                             onClick={() => router.push("/gdip/purchase")}
-                            className="flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-lg"
+                            className="flex items-center justify-center gap-3 bg-blue-600 text-white px-6 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-md shadow-blue-100 active:scale-95 group"
                         >
-                            <Plus className="w-5 h-5" />
-                            Purchase New TPIA
+                            <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+                            Purchase TPIA
                         </button>
 
                         <button
                             onClick={() => router.push("/gdip/tpias")}
-                            className="flex items-center justify-center gap-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-4 rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all shadow-md hover:shadow-lg"
+                            className="flex items-center justify-center gap-3 bg-gray-900 text-white px-6 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-black transition-all shadow-md shadow-gray-100 active:scale-95 group"
                         >
-                            <LayoutGrid className="w-5 h-5" />
-                            View All TPIAs
+                            <LayoutGrid className="w-5 h-5 opacity-70 group-hover:scale-110 transition-transform" />
+                            My Portfolio
                         </button>
 
                         <button
                             onClick={() => router.push("/gdip/cycles")}
-                            className="flex items-center justify-center gap-3 bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-4 rounded-xl hover:from-green-700 hover:to-green-800 transition-all shadow-md hover:shadow-lg"
+                            className="flex items-center justify-center gap-3 bg-indigo-600 text-white px-6 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100 active:scale-95 group"
                         >
-                            <Activity className="w-5 h-5" />
-                            Trade Cycles
+                            <Activity className="w-5 h-5 opacity-70 group-hover:translate-y-[-2px] transition-all" />
+                            Market Cycles
                         </button>
                     </div>
                 </div>
 
                 {/* Recent TPIAs */}
-                <div className="bg-white rounded-2xl shadow-lg p-6">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-xl font-bold text-gray-900">Your TPIAs</h2>
+                <div className="bg-white rounded-3xl border border-gray-100 p-5 sm:p-6 shadow-sm overflow-hidden">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                        <div>
+                            <h2 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight mb-1 leading-none">Active Holdings</h2>
+                            <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest">Recent performance tracking</p>
+                        </div>
                         <button
                             onClick={() => router.push("/gdip/tpias")}
-                            className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1"
+                            className="w-full sm:w-auto bg-gray-50 text-gray-900 px-4 py-2.5 rounded-xl font-bold text-[10px] sm:text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-gray-100 transition-all group active:scale-95 border border-gray-100 sm:border-none"
                         >
-                            View All <ArrowRight className="w-4 h-4" />
+                            Manage Portfolio <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                         </button>
                     </div>
 
                     {tpias.length === 0 ? (
-                        <div className="text-center py-12">
-                            <Inbox className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">No TPIAs Yet</h3>
-                            <p className="text-gray-600 mb-4">Start your investment journey by purchasing your first TPIA</p>
+                        <div className="text-center py-20 bg-gray-50/50 rounded-3xl border-2 border-dashed border-gray-100">
+                            <Inbox className="w-16 h-16 text-gray-200 mx-auto mb-4" />
+                            <h3 className="text-xl font-black text-gray-900 mb-2">Portfolio Empty</h3>
+                            <p className="text-gray-500 font-medium mb-6">Start your investment journey by purchasing your first TPIA</p>
                             <button
                                 onClick={() => router.push("/gdip/purchase")}
-                                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                                className="bg-blue-600 text-white px-8 py-3 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 active:scale-95"
                             >
-                                Purchase TPIA
+                                Get Started Now
                             </button>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                             {tpias.slice(0, 6).map((tpia) => (
                                 <div
                                     key={tpia._id}
                                     onClick={() => router.push(`/gdip/tpia/${tpia._id}`)}
-                                    className="border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-all cursor-pointer hover:border-blue-300"
+                                    className="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-lg transition-all cursor-pointer overflow-hidden p-5 space-y-5 active:scale-[0.98] group"
                                 >
-                                    <div className="flex items-center justify-between mb-3">
-                                        <h3 className="font-bold text-lg text-gray-900">{tpia.tpiaId}</h3>
-                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${tpia.status === "active" ? "bg-green-100 text-green-700" :
-                                            tpia.status === "pending" ? "bg-yellow-100 text-yellow-700" :
-                                                "bg-gray-100 text-gray-700"
+                                    <div className="flex items-center justify-between">
+                                        <div className="space-y-1">
+                                            <h3 className="font-black text-xl text-gray-900 tracking-tight">{tpia.tpiaId}</h3>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
+                                                    <span className="opacity-50 text-sm">#</span> Cluster-{tpia.gdcNumber}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${tpia.status === "active" ? "bg-green-100 text-green-700" :
+                                            tpia.status === "pending" ? "bg-amber-100 text-amber-700" :
+                                                "bg-gray-100 text-gray-500 border border-gray-200"
                                             }`}>
                                             {tpia.status}
                                         </span>
                                     </div>
 
-                                    <div className="space-y-2 text-sm">
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-600">GDC:</span>
-                                            <span className="font-medium">GDC-{tpia.gdcNumber}</span>
+                                    {/* Metrics Grid */}
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className="bg-gray-50 p-2.5 rounded-2xl border border-gray-100 space-y-1">
+                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Capital</p>
+                                            <p className="text-[11px] sm:text-sm font-black text-gray-900 leading-none">{formatCurrency(tpia.purchasePrice, 0)}</p>
                                         </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-600">Invested:</span>
-                                            <span className="font-medium">{formatCurrency(tpia.purchasePrice)}</span>
+                                        <div className="bg-gray-50 p-2.5 rounded-2xl border border-gray-100 space-y-1">
+                                            <p className="text-[9px] font-bold text-emerald-600/70 uppercase tracking-widest">Est. Return</p>
+                                            <p className="text-[11px] sm:text-sm font-black text-emerald-600 leading-none">+{formatCurrency(tpia.estimatedProfit || 0, 0)}</p>
                                         </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-600">Current Value:</span>
-                                            <span className="font-medium text-green-600">{formatCurrency(tpia.currentValue)}</span>
+                                    </div>
+
+                                    {/* Additional Stats */}
+                                    <div className="space-y-1.5 px-1">
+                                        <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-tight">
+                                            <span className="text-gray-400">Net Value</span>
+                                            <span className="text-gray-900 font-black ml-2">{formatCurrency(tpia.currentValue, 0)}</span>
                                         </div>
-                                        <div className="flex justify-between items-center mb-2">
-                                            <span className="text-xs text-gray-500 font-medium">Profit</span>
-                                            <span className="text-sm font-bold text-green-600">
-                                                {formatCurrency(tpia.estimatedProfit || 0)}
-                                            </span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-600">Mode:</span>
-                                            <span className={`font-medium ${tpia.profitMode === "TPM" ? "text-purple-600" : "text-blue-600"}`}>
+                                        <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-tight">
+                                            <span className="text-gray-400">Profit Mode</span>
+                                            <span className={`px-2 py-0.5 rounded ${tpia.profitMode === "TPM" ? "bg-indigo-50 text-indigo-600" : "bg-blue-50 text-blue-600"}`}>
                                                 {tpia.profitMode}
                                             </span>
                                         </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-600">Cycles:</span>
-                                            <span className="font-medium">{tpia.cyclesCompleted}</span>
-                                        </div>
+                                    </div>
 
-                                        {tpia.status === "active" && tpia.currentCycleId && (
-                                            <div className="pt-2">
-                                                <div className="flex justify-between items-center mb-1 text-[10px]">
-                                                    <span className="text-gray-500 uppercase tracking-wider font-semibold">Cycle Progress</span>
-                                                    <span className="text-blue-600 font-bold">
-                                                        {(() => {
-                                                            if (!tpia.currentCycleId?.startDate || !tpia.currentCycleId?.endDate) {
-                                                                return "0";
-                                                            }
+                                    {/* Cycle Progress */}
+                                    {tpia.status === "active" && tpia.currentCycleId ? (
+                                        <div className="pt-2">
+                                            <div className="flex justify-between items-end mb-2">
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Cycle Progress</p>
+                                                <p className="text-[10px] font-black text-blue-600 uppercase">
+                                                    {(() => {
+                                                        if (!tpia.currentCycleId?.startDate || !tpia.currentCycleId?.endDate) return "0";
+                                                        const start = new Date(tpia.currentCycleId.startDate).getTime();
+                                                        const end = new Date(tpia.currentCycleId.endDate).getTime();
+                                                        const now = Date.now();
+                                                        if (isNaN(start) || isNaN(end) || end <= start) return "0";
+                                                        return Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100)).toFixed(1);
+                                                    })()}%
+                                                </p>
+                                            </div>
+                                            <div className="h-3 bg-gray-100 rounded-full overflow-hidden p-0.5 border border-gray-50">
+                                                <div
+                                                    className="bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 h-full rounded-full transition-all duration-1000"
+                                                    style={{
+                                                        width: `${(() => {
+                                                            if (!tpia.currentCycleId?.startDate || !tpia.currentCycleId?.endDate) return 0;
                                                             const start = new Date(tpia.currentCycleId.startDate).getTime();
                                                             const end = new Date(tpia.currentCycleId.endDate).getTime();
                                                             const now = Date.now();
-                                                            if (isNaN(start) || isNaN(end) || end <= start) {
-                                                                return "0";
-                                                            }
-                                                            const progress = Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
-                                                            return progress.toFixed(1);
-                                                        })()}%
-                                                    </span>
-                                                </div>
-                                                <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
-                                                    <div
-                                                        className="bg-gradient-to-r from-blue-500 to-purple-500 h-full"
-                                                        style={{
-                                                            width: `${(() => {
-                                                                if (!tpia.currentCycleId?.startDate || !tpia.currentCycleId?.endDate) {
-                                                                    return 0;
-                                                                }
-                                                                const start = new Date(tpia.currentCycleId.startDate).getTime();
-                                                                const end = new Date(tpia.currentCycleId.endDate).getTime();
-                                                                const now = Date.now();
-                                                                if (isNaN(start) || isNaN(end) || end <= start) {
-                                                                    return 0;
-                                                                }
-                                                                return Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
-                                                            })()}%`
-                                                        }}
-                                                    ></div>
-                                                </div>
+                                                            if (isNaN(start) || isNaN(end) || end <= start) return 0;
+                                                            return Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
+                                                        })()}%`
+                                                    }}
+                                                ></div>
                                             </div>
-                                        )}
+                                        </div>
+                                    ) : (
+                                        <div className="pt-2">
+                                            <div className="p-3 bg-yellow-50 rounded-2xl border border-yellow-100 text-center">
+                                                <p className="text-[10px] font-bold text-amber-700 uppercase tracking-widest">Waiting for next trade cycle</p>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="pt-2 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all text-xs font-black text-blue-600 uppercase tracking-[0.2em]">
+                                        Block Details <ArrowRight size={14} className="ml-1" />
                                     </div>
                                 </div>
                             ))}

@@ -111,39 +111,41 @@ export default function AdminGDCsPage() {
                 <div className="mb-8">
                     <button
                         onClick={() => router.back()}
-                        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+                        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors group"
                     >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
                         Back to Dashboard
                     </button>
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">GDC Management</h1>
-                    <p className="text-gray-600">Monitor and manage Global Digital Clusters</p>
+                    <div className="space-y-1">
+                        <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">GDC Cluster Management</h1>
+                        <p className="text-gray-500 font-medium">Monitor and manage Global Digital Clusters</p>
+                    </div>
                 </div>
 
                 {/* Stats Summary */}
                 {gdcs.length > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <p className="text-sm text-gray-600 mb-1">Total GDCs</p>
-                            <p className="text-3xl font-bold text-gray-900">{gdcs.length}</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-10">
+                        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm">
+                            <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Total Clusters</p>
+                            <p className="text-2xl sm:text-3xl font-black text-gray-900">{gdcs.length}</p>
                         </div>
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <p className="text-sm text-gray-600 mb-1">Active GDCs</p>
-                            <p className="text-3xl font-bold text-green-600">
+                        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm">
+                            <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Active</p>
+                            <p className="text-2xl sm:text-3xl font-black text-green-500">
                                 {gdcs.filter((g) => g.status === "active").length}
                             </p>
                         </div>
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <p className="text-sm text-gray-600 mb-1">Full GDCs</p>
-                            <p className="text-3xl font-bold text-blue-600">
+                        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm">
+                            <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Full Slots</p>
+                            <p className="text-2xl sm:text-3xl font-black text-blue-500">
                                 {gdcs.filter((g) => g.isFull).length}
                             </p>
                         </div>
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <p className="text-sm text-gray-600 mb-1">Avg ROI</p>
-                            <p className="text-3xl font-bold text-purple-600">
+                        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm">
+                            <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Average ROI</p>
+                            <p className="text-2xl sm:text-3xl font-black text-indigo-500">
                                 {(
                                     gdcs.reduce((sum, g) => sum + g.averageROI, 0) / gdcs.length || 0
                                 ).toFixed(2)}
@@ -154,21 +156,23 @@ export default function AdminGDCsPage() {
                 )}
 
                 {/* Filters */}
-                <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-                    <div className="flex items-center gap-4">
-                        <label className="text-sm font-medium text-gray-700">Filter by Status:</label>
-                        <select
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                            <option value="all">All GDCs</option>
-                            <option value="forming">Forming</option>
-                            <option value="ready">Ready</option>
-                            <option value="active">Active</option>
-                        </select>
-                        <span className="text-sm text-gray-600 ml-auto">
-                            Showing {filteredGDCs.length} of {gdcs.length} GDCs
+                <div className="bg-white rounded-3xl border border-gray-100 p-5 mb-8 shadow-sm">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                            <label className="text-xs font-bold text-gray-400 uppercase tracking-tight whitespace-nowrap">Filter Status:</label>
+                            <select
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                className="px-4 py-2 bg-gray-50 border-none rounded-xl font-bold text-gray-700 focus:ring-2 focus:ring-indigo-500 cursor-pointer outline-none transition-all"
+                            >
+                                <option value="all">All GDCs</option>
+                                <option value="forming">Forming</option>
+                                <option value="ready">Ready</option>
+                                <option value="active">Active</option>
+                            </select>
+                        </div>
+                        <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
+                            Showing {filteredGDCs.length} of {gdcs.length} clusters
                         </span>
                     </div>
                 </div>
@@ -188,78 +192,81 @@ export default function AdminGDCsPage() {
                         <p className="text-gray-600">No GDCs match your filter criteria</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                         {filteredGDCs.map((gdc) => (
                             <div
                                 key={gdc._id}
                                 onClick={() => router.push(`/admin/gdip/gdc/${gdc._id}`)}
-                                className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border border-gray-100 hover:border-blue-300"
+                                className="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-lg transition-all cursor-pointer overflow-hidden active:scale-[0.98] group"
                             >
-                                {/* Header */}
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-2xl font-bold text-gray-900">{gdc.gdcId}</h3>
-                                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(gdc.status)}`}>
-                                        {gdc.status.toUpperCase()}
-                                    </span>
-                                </div>
-
-                                {/* Fill Progress */}
-                                <div className="mb-4">
-                                    <div className="flex justify-between text-sm mb-2">
-                                        <span className="text-gray-600">Capacity</span>
-                                        <span className="font-medium">
-                                            {gdc.currentFill}/{gdc.capacity}
+                                <div className="p-5 sm:p-6 space-y-5">
+                                    {/* Header */}
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">GDC-{gdc.gdcNumber}</h3>
+                                        <span className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${getStatusColor(gdc.status)}`}>
+                                            {gdc.status}
                                         </span>
                                     </div>
-                                    <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
-                                        <div
-                                            className={`h-full transition-all ${gdc.isFull ? "bg-green-600" : "bg-blue-600"
-                                                }`}
-                                            style={{ width: `${getFillPercentage(gdc)}%` }}
-                                        ></div>
-                                    </div>
-                                </div>
 
-                                {/* Commodity Badge */}
-                                <div className="mb-4">
-                                    <span className="inline-flex items-center gap-2 px-3 py-1 bg-purple-50 text-purple-700 rounded-lg text-sm font-medium">
-                                        <span>🌾</span>
-                                        {gdc.primaryCommodity}
-                                    </span>
-                                </div>
-
-                                {/* Stats */}
-                                <div className="space-y-3 text-sm mb-4">
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600">Total Capital:</span>
-                                        <span className="font-medium">{formatCurrency(gdc.totalCapital)}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600">Cycles Completed:</span>
-                                        <span className="font-medium">{gdc.cyclesCompleted}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600">Total Profit:</span>
-                                        <span className="font-medium text-green-600">{formatCurrency(gdc.totalProfitGenerated)}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600">Average ROI:</span>
-                                        <span className="font-medium text-purple-600">{gdc.averageROI.toFixed(2)}%</span>
-                                    </div>
-                                </div>
-
-                                {/* Footer */}
-                                <div className="pt-4 border-t border-gray-100">
-                                    {gdc.formedAt && (
-                                        <div className="text-xs text-gray-500">
-                                            Formed: {formatDate(gdc.formedAt)}
+                                    {/* Component Tag */}
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-lg">🌾</div>
+                                        <div className="space-y-0.5">
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Primary Commodity</p>
+                                            <p className="text-sm font-bold text-gray-800">{gdc.primaryCommodity}</p>
                                         </div>
-                                    )}
-                                    {gdc.nextCycleStartDate && (
-                                        <div className="text-xs text-gray-500">
-                                            Next Cycle: {formatDate(gdc.nextCycleStartDate)}
+                                    </div>
+
+                                    {/* Fill Progress */}
+                                    <div className="space-y-2">
+                                        <div className="flex justify-between items-end">
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Cluster Capacity</p>
+                                            <p className="text-xs font-black text-gray-900">{gdc.currentFill} <span className="text-gray-400 font-bold">/ {gdc.capacity}</span></p>
                                         </div>
-                                    )}
+                                        <div className="h-3.5 bg-gray-100 rounded-full overflow-hidden p-1 border border-gray-50 flex items-center">
+                                            <div
+                                                className={`h-full rounded-full transition-all duration-1000 ${gdc.isFull ? "bg-green-500 shadow-sm shadow-green-100" : "bg-indigo-500 shadow-sm shadow-indigo-100"
+                                                    }`}
+                                                style={{ width: `${getFillPercentage(gdc)}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+
+                                    {/* Metrics Grid */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="bg-gray-50 p-3 rounded-2xl border border-gray-100 space-y-1">
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Capital</p>
+                                            <p className="text-sm font-black text-gray-900">{formatCurrency(gdc.totalCapital)}</p>
+                                        </div>
+                                        <div className="bg-gray-50 p-3 rounded-2xl border border-gray-100 space-y-1">
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Average ROI</p>
+                                            <p className="text-sm font-black text-indigo-600">{gdc.averageROI.toFixed(2)}%</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Performance Stats */}
+                                    <div className="flex items-center justify-between px-1 text-sm font-bold">
+                                        <div className="flex items-center gap-2 text-gray-400 uppercase text-[10px] tracking-tight">
+                                            <span className="w-5 h-5 rounded-md bg-gray-100 flex items-center justify-center text-[10px]">🔄</span>
+                                            {gdc.cyclesCompleted} Cycles Completed
+                                        </div>
+                                        <div className="text-green-600 text-[10px] uppercase font-black">
+                                            +{formatCurrency(gdc.totalProfitGenerated)} Profit
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Footer Info */}
+                                <div className="px-5 py-3.5 bg-gray-50/50 border-t border-gray-50 flex items-center justify-between">
+                                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-400 uppercase tracking-tight">
+                                        <span className="text-xs opacity-60">📅</span> {gdc.formedAt ? formatDate(gdc.formedAt) : "Pending"}
+                                    </div>
+                                    <div className="flex items-center gap-2 text-indigo-600 text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all translate-x-1 group-hover:translate-x-0">
+                                        Cluster Details
+                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </div>
                                 </div>
                             </div>
                         ))}

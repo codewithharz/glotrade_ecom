@@ -92,14 +92,14 @@ export default function TPIADetailsModal({ tpiaId, onClose }: TPIADetailsModalPr
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-                <div className="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
-                    <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                        GDC Investment Block
-                        {data && <span className="text-gray-500 font-normal">#{data.tpia.tpiaId}</span>}
+                <div className="p-4 sm:p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-20">
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-900 flex flex-wrap items-center gap-1.5 sm:gap-2 pr-2">
+                        <span>GDC Investment Block</span>
+                        {data && <span className="text-gray-500 font-normal text-sm sm:text-base">#{data.tpia.tpiaId}</span>}
                     </h2>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-2 hover:bg-gray-100 rounded-xl transition-all active:scale-95"
                     >
                         <X className="w-5 h-5 text-gray-500" />
                     </button>
@@ -111,29 +111,28 @@ export default function TPIADetailsModal({ tpiaId, onClose }: TPIADetailsModalPr
                     </div>
                 ) : data ? (
                     <div className="p-6 space-y-8">
-                        {/* Status Banner */}
-                        <div className={`p-4 rounded-xl flex items-center justify-between ${data.tpia.status === "active" ? "bg-green-50 border border-green-100" :
+                        <div className={`p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${data.tpia.status === "active" ? "bg-green-50 border border-green-100" :
                             data.tpia.status === "pending" ? "bg-yellow-50 border border-yellow-100" :
                                 "bg-gray-50 border border-gray-100"
                             }`}>
                             <div className="flex items-center gap-3">
-                                <div className={`p-2 rounded-lg ${data.tpia.status === "active" ? "bg-green-100" : "bg-yellow-100"
+                                <div className={`p-2.5 rounded-xl ${data.tpia.status === "active" ? "bg-green-100" : "bg-yellow-100"
                                     }`}>
                                     <Shield className={`w-5 h-5 ${data.tpia.status === "active" ? "text-green-600" : "text-yellow-600"
                                         }`} />
                                 </div>
-                                <div>
-                                    <p className="font-bold text-gray-900 capitalize">{data.tpia.status} Status</p>
-                                    <p className="text-sm text-gray-600">
+                                <div className="space-y-0.5">
+                                    <p className="font-bold text-gray-900 capitalize leading-none text-sm sm:text-base">{data.tpia.status} Status</p>
+                                    <p className="text-xs sm:text-sm text-gray-600">
                                         {data.tpia.status === "active"
                                             ? "Investment is active and trading"
                                             : "Waiting for GDC cluster formation"}
                                     </p>
                                 </div>
                             </div>
-                            <div className="text-right">
-                                <p className="text-sm text-gray-500">Current Value</p>
-                                <p className="text-xl font-bold text-gray-900">{formatCurrency(data.tpia.currentValue)}</p>
+                            <div className="sm:text-right flex sm:flex-col justify-between items-end sm:items-end border-t sm:border-t-0 border-gray-200/50 pt-3 sm:pt-0">
+                                <p className="text-[10px] sm:text-xs text-gray-500 uppercase font-bold tracking-wider">Current Value</p>
+                                <p className="text-lg sm:text-xl font-extrabold text-gray-900">{formatCurrency(data.tpia.currentValue)}</p>
                             </div>
                         </div>
 

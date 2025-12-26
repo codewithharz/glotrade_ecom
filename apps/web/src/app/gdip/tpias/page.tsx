@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiGet } from "@/utils/api";
-import { ArrowLeft, Inbox, Search, Filter } from "lucide-react";
+import { ArrowLeft, Inbox, Search, Filter, Sparkles } from "lucide-react";
 
 interface TPIA {
     _id: string;
@@ -89,10 +89,12 @@ export default function AllTPIAsPage() {
         setFilteredTPIAs(filtered);
     };
 
-    const formatCurrency = (amount: number) => {
+    const formatCurrency = (amount: number, minimumFractionDigits = 0) => {
         return new Intl.NumberFormat("en-NG", {
             style: "currency",
             currency: "NGN",
+            minimumFractionDigits,
+            maximumFractionDigits: minimumFractionDigits,
         }).format(amount);
     };
 
@@ -101,7 +103,7 @@ export default function AllTPIAsPage() {
             year: "numeric",
             month: "short",
             day: "numeric",
-        });
+        }).toUpperCase();
     };
 
     if (loading) {
@@ -113,108 +115,134 @@ export default function AllTPIAsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-6">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen bg-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
                 {/* Header */}
                 <div className="mb-8">
                     <button
                         onClick={() => router.back()}
-                        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+                        className="flex items-center gap-2 text-gray-500 hover:text-gray-900 mb-6 font-bold text-xs uppercase tracking-widest transition-colors group"
                     >
-                        <ArrowLeft className="w-5 h-5" />
+                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                         Back to Dashboard
                     </button>
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">All TPIAs</h1>
-                    <p className="text-gray-600">Manage and track all your investment blocks</p>
+                    <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight leading-none uppercase mb-2">
+                        Active Holdings
+                    </h1>
+                    <p className="text-gray-500 font-medium sm:text-lg">
+                        Manage and track your private portfolio of commodity clusters
+                    </p>
                 </div>
 
                 {/* Filters */}
-                <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="bg-white rounded-3xl border border-gray-100 p-6 mb-8 shadow-sm">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                         {/* Search */}
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Filter Search</label>
+                            <div className="relative group">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 group-focus-within:text-blue-500 transition-colors" />
                                 <input
                                     type="text"
-                                    placeholder="Search by TPIA ID, commodity, or certificate..."
+                                    placeholder="Search IDs, Commodities, Certificates..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-bold text-sm text-gray-900 placeholder:text-gray-300"
                                 />
                             </div>
                         </div>
 
                         {/* Status Filter */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Status Filter</label>
                             <select
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full px-4 py-3 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-bold text-sm text-gray-900 appearance-none cursor-pointer"
                             >
-                                <option value="all">All Status</option>
-                                <option value="pending">Pending</option>
-                                <option value="active">Active</option>
-                                <option value="matured">Matured</option>
-                                <option value="suspended">Suspended</option>
+                                <option value="all">EVERY STATUS</option>
+                                <option value="pending">PENDING ACTIVATION</option>
+                                <option value="active">ACTIVE PORTFOLIO</option>
+                                <option value="matured">MATURED ASSETS</option>
+                                <option value="suspended">SUSPENDED</option>
                             </select>
                         </div>
 
                         {/* Mode Filter */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Profit Mode</label>
+                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Profit Strategy</label>
                             <select
                                 value={modeFilter}
                                 onChange={(e) => setModeFilter(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full px-4 py-3 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-bold text-sm text-gray-900 appearance-none cursor-pointer"
                             >
-                                <option value="all">All Modes</option>
-                                <option value="TPM">TPM (Compounding)</option>
-                                <option value="EPS">EPS (Withdrawal)</option>
+                                <option value="all">ALL MODES</option>
+                                <option value="TPM">TPM (COMPOUNDING)</option>
+                                <option value="EPS">EPS (WITHDRAWAL)</option>
                             </select>
                         </div>
                     </div>
 
                     {/* Results Count */}
-                    <div className="mt-4 text-sm text-gray-600">
-                        Showing {filteredTPIAs.length} of {tpias.length} TPIAs
+                    <div className="mt-6 pt-6 border-t border-gray-50 flex items-center justify-between">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            Found <span className="text-gray-900">{filteredTPIAs.length}</span> Results
+                        </p>
+                        <button
+                            onClick={() => {
+                                setStatusFilter("all");
+                                setModeFilter("all");
+                                setSearchQuery("");
+                            }}
+                            className="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:text-blue-700 transition-colors"
+                        >
+                            Reset Applied Filters
+                        </button>
                     </div>
                 </div>
 
                 {/* TPIAs Grid */}
                 {filteredTPIAs.length === 0 ? (
-                    <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-                        <Inbox className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">No TPIAs Found</h3>
-                        <p className="text-gray-600 mb-4">Try adjusting your filters or purchase a new TPIA</p>
+                    <div className="bg-white rounded-3xl border border-gray-100 p-16 text-center shadow-sm">
+                        <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <Inbox className="w-10 h-10 text-gray-200" />
+                        </div>
+                        <h3 className="text-2xl font-black text-gray-900 tracking-tight mb-2 uppercase">No Assets Found</h3>
+                        <p className="text-gray-500 font-medium mb-8 max-w-xs mx-auto">We couldn't find any investment blocks matching your current filters.</p>
                         <button
                             onClick={() => router.push("/gdip/purchase")}
-                            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                            className="bg-gray-900 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black transition-all active:scale-95 shadow-xl shadow-gray-200"
                         >
-                            Purchase TPIA
+                            Acquire New TPIA
                         </button>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {filteredTPIAs.map((tpia) => (
                             <div
                                 key={tpia._id}
                                 onClick={() => router.push(`/gdip/tpia/${tpia._id}`)}
-                                className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border border-gray-100 hover:border-blue-300"
+                                className="bg-white rounded-3xl border border-gray-100 p-6 sm:p-7 shadow-sm hover:shadow-2xl hover:border-blue-200 transition-all cursor-pointer group active:scale-[0.98] relative overflow-hidden"
                             >
+                                {/* Background Decorative Icon */}
+                                <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:scale-110 group-hover:rotate-12 transition-transform pointer-events-none">
+                                    <Sparkles className="w-24 h-24 text-gray-900" />
+                                </div>
+
                                 {/* Header */}
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="font-bold text-xl text-gray-900">{tpia.tpiaId}</h3>
+                                <div className="flex items-start justify-between mb-6 relative z-10">
+                                    <div>
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 leading-none">ASSET IDENTIFIER</p>
+                                        <h3 className="font-black text-2xl tracking-tighter text-gray-900 leading-none">{tpia.tpiaId}</h3>
+                                    </div>
                                     <span
-                                        className={`px-3 py-1 rounded-full text-xs font-medium ${tpia.status === "active"
-                                            ? "bg-green-100 text-green-700"
+                                        className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${tpia.status === "active"
+                                            ? "bg-emerald-600 text-white shadow-lg shadow-emerald-100"
                                             : tpia.status === "pending"
-                                                ? "bg-yellow-100 text-yellow-700"
+                                                ? "bg-amber-500 text-white shadow-lg shadow-amber-100"
                                                 : tpia.status === "matured"
-                                                    ? "bg-blue-100 text-blue-700"
-                                                    : "bg-gray-100 text-gray-700"
+                                                    ? "bg-blue-600 text-white shadow-lg shadow-blue-100"
+                                                    : "bg-gray-400 text-white shadow-lg shadow-gray-100"
                                             }`}
                                     >
                                         {tpia.status}
@@ -222,56 +250,53 @@ export default function AllTPIAsPage() {
                                 </div>
 
                                 {/* Commodity Badge */}
-                                <div className="mb-4">
-                                    <span className="inline-flex items-center gap-2 px-3 py-1 bg-purple-50 text-purple-700 rounded-lg text-sm font-medium">
-                                        <span>🌾</span>
-                                        {tpia.commodityType}
-                                    </span>
-                                </div>
-
-                                {/* Details */}
-                                <div className="space-y-3 text-sm mb-4">
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600">GDC:</span>
-                                        <span className="font-medium">GDC-{tpia.gdcNumber}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600">Position:</span>
-                                        <span className="font-medium">{tpia.positionInGDC}/10</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600">Invested:</span>
-                                        <span className="font-medium">{formatCurrency(tpia.purchasePrice)}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600">Current Value:</span>
-                                        <span className="font-medium text-green-600">{formatCurrency(tpia.currentValue)}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600">Total Profit:</span>
-                                        <span className="font-medium text-green-600">+{formatCurrency(tpia.estimatedProfit || 0)}</span>
+                                <div className="mb-8 relative z-10">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-xl">
+                                        <span className="text-base grayscale group-hover:grayscale-0 transition-all">🌾</span>
+                                        <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{tpia.commodityType} Node</span>
                                     </div>
                                 </div>
 
-                                {/* Footer */}
-                                <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <span
-                                            className={`px-2 py-1 rounded text-xs font-medium ${tpia.profitMode === "TPM" ? "bg-purple-100 text-purple-700" : "bg-blue-100 text-blue-700"
-                                                }`}
-                                        >
+                                {/* Metrics Grid */}
+                                <div className="grid grid-cols-2 gap-4 mb-8 relative z-10">
+                                    <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1 leading-none">Purchase</p>
+                                        <p className="text-base font-black text-gray-900 leading-none">{formatCurrency(tpia.purchasePrice)}</p>
+                                    </div>
+                                    <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                                        <p className="text-[9px] font-bold text-emerald-600/70 uppercase tracking-widest mb-1 leading-none">Net Value</p>
+                                        <p className="text-base font-black text-emerald-600 leading-none">{formatCurrency(tpia.currentValue)}</p>
+                                    </div>
+                                </div>
+
+                                {/* Additional Details Row */}
+                                <div className="flex items-center justify-between mb-8 px-1 relative z-10">
+                                    <div className="space-y-1">
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">Cluster Location</p>
+                                        <p className="text-xs font-black text-gray-900 uppercase">Node GDC-{tpia.gdcNumber}</p>
+                                    </div>
+                                    <div className="text-right space-y-1">
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">Market Slot</p>
+                                        <p className="text-xs font-black text-blue-600 uppercase">POS {tpia.positionInGDC}/10</p>
+                                    </div>
+                                </div>
+
+                                {/* Footer & Strategy */}
+                                <div className="pt-6 border-t border-gray-50 flex items-center justify-between relative z-10">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest ${tpia.profitMode === "TPM" ? "bg-purple-600 text-white shadow-lg shadow-purple-100" : "bg-indigo-600 text-white shadow-lg shadow-indigo-100"}`}>
                                             {tpia.profitMode}
-                                        </span>
-                                        <span className="text-xs text-gray-500">{tpia.cyclesCompleted} cycles</span>
+                                        </div>
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{tpia.cyclesCompleted} LIFECYCLES</span>
                                     </div>
-                                    <span className="text-xs text-gray-500">{formatDate(tpia.purchasedAt)}</span>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{formatDate(tpia.purchasedAt)}</p>
                                 </div>
 
                                 {tpia.status === "active" && tpia.currentCycleId && (
-                                    <div className="mt-4 pt-4 border-t border-gray-100">
-                                        <div className="flex justify-between items-center mb-1.5">
-                                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Allocation Progress</span>
-                                            <span className="text-xs font-bold text-blue-600">
+                                    <div className="mt-8 pt-6 border-t border-gray-50 relative z-10">
+                                        <div className="flex justify-between items-center mb-2.5">
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Growth Velocity</span>
+                                            <span className="text-xs font-black text-blue-600 tracking-tighter">
                                                 {(() => {
                                                     if (!tpia.currentCycleId?.startDate || !tpia.currentCycleId?.endDate) {
                                                         return "0";
@@ -287,9 +312,9 @@ export default function AllTPIAsPage() {
                                                 })()}%
                                             </span>
                                         </div>
-                                        <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                                        <div className="h-2 bg-gray-50 rounded-full overflow-hidden p-0.5 border border-gray-100 shadow-inner">
                                             <div
-                                                className="bg-gradient-to-r from-blue-500 to-purple-500 h-full transition-all"
+                                                className="bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 h-full rounded-full transition-all duration-1000"
                                                 style={{
                                                     width: `${(() => {
                                                         if (!tpia.currentCycleId?.startDate || !tpia.currentCycleId?.endDate) {

@@ -3,7 +3,17 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiGet } from "@/utils/api";
-import { ArrowLeft, ClipboardCheck, CheckCircle2, Clock } from "lucide-react";
+import {
+    ArrowLeft,
+    ClipboardCheck,
+    CheckCircle2,
+    Clock,
+    Sparkles,
+    Activity,
+    Trophy,
+    Search,
+    TrendingUp
+} from "lucide-react";
 
 interface TradeCycle {
     _id: string;
@@ -81,10 +91,12 @@ export default function TradeCyclesPage() {
         }
     };
 
-    const formatCurrency = (amount: number) => {
+    const formatCurrency = (amount: number, minimumFractionDigits = 0) => {
         return new Intl.NumberFormat("en-NG", {
             style: "currency",
             currency: "NGN",
+            minimumFractionDigits,
+            maximumFractionDigits: minimumFractionDigits,
         }).format(amount);
     };
 
@@ -93,7 +105,7 @@ export default function TradeCyclesPage() {
             year: "numeric",
             month: "short",
             day: "numeric",
-        });
+        }).toUpperCase();
     };
 
     const getDaysRemaining = (endDate: string) => {
@@ -151,190 +163,262 @@ export default function TradeCyclesPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-6">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen bg-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
                 {/* Header */}
                 <div className="mb-8">
                     <button
                         onClick={() => router.back()}
-                        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+                        className="flex items-center gap-2 text-gray-500 hover:text-gray-900 mb-6 font-bold text-xs uppercase tracking-widest transition-colors group"
                     >
-                        <ArrowLeft className="w-5 h-5" />
+                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                         Back to Dashboard
                     </button>
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">Trade Cycles</h1>
-                    <p className="text-gray-600">37-day commodity trading cycle history and performance</p>
+                    <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight leading-none uppercase mb-2">
+                        Lifecycle Tracking
+                    </h1>
+                    <p className="text-gray-500 font-medium sm:text-lg">
+                        Real-time commodity trading cycles and performance metrics
+                    </p>
                 </div>
 
                 {/* Stats Summary */}
                 {cycles.length > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <p className="text-sm text-gray-600 mb-1">Total Cycles</p>
-                            <p className="text-3xl font-bold text-gray-900">{cycles.length}</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8">
+                        <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm group hover:border-blue-200 transition-all">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="p-2 bg-blue-50 rounded-xl text-blue-600">
+                                    <Activity size={16} />
+                                </div>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Global Cycles</p>
+                            </div>
+                            <p className="text-3xl font-black text-gray-900 leading-none">{cycles.length}</p>
                         </div>
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <p className="text-sm text-gray-600 mb-1">Completed</p>
-                            <p className="text-3xl font-bold text-blue-600">
+                        <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm group hover:border-emerald-200 transition-all">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="p-2 bg-emerald-50 rounded-xl text-emerald-600">
+                                    <CheckCircle2 size={16} />
+                                </div>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Matured</p>
+                            </div>
+                            <p className="text-3xl font-black text-emerald-600 leading-none">
                                 {cycles.filter((c) => c.status === "completed").length}
                             </p>
                         </div>
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <p className="text-sm text-gray-600 mb-1">Active</p>
-                            <p className="text-3xl font-bold text-green-600">
+                        <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm group hover:border-indigo-200 transition-all">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="p-2 bg-indigo-50 rounded-xl text-indigo-600">
+                                    <TrendingUp size={16} />
+                                </div>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Active Velocity</p>
+                            </div>
+                            <p className="text-3xl font-black text-indigo-600 leading-none">
                                 {cycles.filter((c) => c.status === "active").length}
                             </p>
                         </div>
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <p className="text-sm text-gray-600 mb-1">Avg ROI</p>
-                            <p className="text-3xl font-bold text-purple-600">
+                        <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm group hover:border-purple-200 transition-all">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="p-2 bg-purple-50 rounded-xl text-purple-600">
+                                    <Trophy size={16} />
+                                </div>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Avg Growth</p>
+                            </div>
+                            <p className="text-3xl font-black text-purple-600 leading-none">
                                 {(
                                     cycles
                                         .filter((c) => c.status === "completed")
                                         .reduce((sum, c) => sum + c.roi, 0) /
                                     cycles.filter((c) => c.status === "completed").length || 0
-                                ).toFixed(2)}
-                                %
+                                ).toFixed(1)}
+                                <span className="text-sm ml-1">%</span>
                             </p>
                         </div>
                     </div>
                 )}
 
                 {/* Filters */}
-                <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-                    <div className="flex items-center gap-4">
-                        <label className="text-sm font-medium text-gray-700">Filter by Status:</label>
-                        <select
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                            <option value="all">All Cycles</option>
-                            <option value="scheduled">Scheduled</option>
-                            <option value="active">Active</option>
-                            <option value="processing">Processing</option>
-                            <option value="completed">Completed</option>
-                        </select>
-                        <span className="text-sm text-gray-600 ml-auto">
-                            Showing {filteredCycles.length} of {cycles.length} cycles
-                        </span>
+                <div className="bg-white rounded-3xl border border-gray-100 p-6 mb-8 shadow-sm">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div className="flex items-center gap-4 w-full sm:w-auto">
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Filter Lifecycle:</label>
+                            <select
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                className="flex-1 sm:flex-none px-4 py-2.5 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-bold text-xs text-gray-900 appearance-none cursor-pointer"
+                            >
+                                <option value="all">EVERY LIFECYCLE</option>
+                                <option value="scheduled">SCHEDULED</option>
+                                <option value="active">ACTIVE NODES</option>
+                                <option value="processing">DATA PROCESSING</option>
+                                <option value="completed">MATURED PHASES</option>
+                            </select>
+                        </div>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            Showing <span className="text-gray-900">{filteredCycles.length}</span> Phased Sequences
+                        </p>
                     </div>
                 </div>
 
                 {/* Cycles Timeline */}
                 {filteredCycles.length === 0 ? (
-                    <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-                        <ClipboardCheck className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">No Cycles Found</h3>
-                        <p className="text-gray-600">No trade cycles match your filter criteria</p>
+                    <div className="bg-white rounded-3xl border border-gray-100 p-16 text-center shadow-sm">
+                        <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <ClipboardCheck className="w-10 h-10 text-gray-200" />
+                        </div>
+                        <h3 className="text-2xl font-black text-gray-900 tracking-tight mb-2 uppercase">No Cycles Located</h3>
+                        <p className="text-gray-500 font-medium max-w-xs mx-auto">No operational cycles currently match your specified filters.</p>
                     </div>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                         {filteredCycles.map((cycle, index) => (
-                            <div key={cycle._id} className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow">
-                                <div className="flex items-start justify-between mb-4">
-                                    <div>
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <h3 className="text-2xl font-bold text-gray-900">{cycle.cycleId}</h3>
-                                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(cycle.status)}`}>
-                                                {cycle.status.toUpperCase()}
+                            <div
+                                key={cycle._id}
+                                className="bg-white rounded-3xl border border-gray-100 p-6 sm:p-8 shadow-sm hover:shadow-2xl hover:border-blue-100 transition-all group relative overflow-hidden"
+                            >
+                                {/* Background Decorative Icon */}
+                                <div className="absolute top-0 right-0 p-8 opacity-[0.02] group-hover:scale-110 group-hover:rotate-12 transition-transform pointer-events-none">
+                                    <Sparkles className="w-40 h-40 text-gray-900" />
+                                </div>
+
+                                <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 relative z-10">
+                                    <div className="flex-1">
+                                        <div className="flex flex-wrap items-center gap-3 mb-4">
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] leading-none mb-1 w-full">SEQUENCE IDENTIFIER</p>
+                                            <h3 className="text-3xl font-black text-gray-900 tracking-tighter leading-none">{cycle.cycleId}</h3>
+                                            <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${cycle.status === "active"
+                                                    ? "bg-emerald-600 text-white shadow-lg shadow-emerald-100"
+                                                    : cycle.status === "completed"
+                                                        ? "bg-blue-600 text-white shadow-lg shadow-blue-100"
+                                                        : cycle.status === "scheduled"
+                                                            ? "bg-amber-500 text-white shadow-lg shadow-amber-100"
+                                                            : "bg-purple-600 text-white shadow-lg shadow-purple-100"
+                                                }`}>
+                                                {cycle.status}
                                             </span>
                                             {cycle.performanceRating && (
-                                                <span className={`px-3 py-1 rounded-full text-xs font-medium bg-gray-100 ${getPerformanceColor(cycle.performanceRating)}`}>
-                                                    {cycle.performanceRating.toUpperCase()}
+                                                <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest bg-gray-900 text-white`}>
+                                                    {cycle.performanceRating} Performance
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="text-sm text-gray-600">
-                                            GDC-{cycle.gdcNumber} • {cycle.tpiaCount} TPIAs • {cycle.commodityType}
-                                        </p>
+                                        <div className="flex items-center gap-4 mb-8">
+                                            <div className="px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-xl flex items-center gap-2">
+                                                <span className="text-sm grayscale group-hover:grayscale-0 transition-all">🌾</span>
+                                                <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{cycle.commodityType} Node</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                                <Activity size={10} className="text-blue-500" />
+                                                GDC-{cycle.gdcNumber} • {cycle.tpiaCount} Clusters
+                                            </div>
+                                        </div>
                                     </div>
+
                                     {cycle.status === "active" && (
-                                        <div className="text-right">
-                                            <p className="text-sm text-gray-600">Days Remaining</p>
-                                            <p className="text-2xl font-bold text-green-600">{getDaysRemaining(cycle.endDate)}</p>
+                                        <div className="text-left md:text-right p-4 bg-emerald-50 rounded-2xl border border-emerald-100 min-w-[140px]">
+                                            <p className="text-[10px] font-black text-emerald-600/70 uppercase tracking-widest mb-1">DAYS REMAINING</p>
+                                            <p className="text-3xl font-black text-emerald-600 leading-none">{getDaysRemaining(cycle.endDate)}</p>
                                         </div>
                                     )}
                                 </div>
 
-                                {/* Timeline */}
-                                <div className="mb-6">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <div className="flex-1">
-                                            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                                                <div
-                                                    className={`h-full ${cycle.status === "completed"
-                                                        ? "bg-blue-600"
-                                                        : cycle.status === "active"
-                                                            ? "bg-green-600"
-                                                            : "bg-yellow-600"
-                                                        }`}
-                                                    style={{
-                                                        width:
-                                                            cycle.status === "completed"
-                                                                ? "100%"
-                                                                : cycle.status === "active"
-                                                                    ? `${((37 - getDaysRemaining(cycle.endDate)) / 37) * 100}%`
-                                                                    : "0%",
-                                                    }}
-                                                ></div>
-                                            </div>
+                                {/* Timeline / Velocity */}
+                                <div className="mb-10 relative z-10">
+                                    <div className="flex justify-between items-center mb-2.5">
+                                        <div className="flex items-center gap-2">
+                                            <Clock size={10} className="text-gray-400" />
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Growth Velocity</span>
                                         </div>
+                                        <span className="text-xs font-black text-blue-600 tracking-tighter uppercase">
+                                            {cycle.status === "completed" ? "Sequence Complete" : `${((37 - getDaysRemaining(cycle.endDate)) / 37 * 100).toFixed(1)}% Active`}
+                                        </span>
                                     </div>
-                                    <div className="flex justify-between text-xs text-gray-600">
-                                        <span>{formatDate(cycle.startDate)}</span>
-                                        <span>{cycle.duration} days</span>
-                                        <span>{formatDate(cycle.endDate)}</span>
+                                    <div className="h-2 bg-gray-50 rounded-full overflow-hidden p-0.5 border border-gray-100 shadow-inner">
+                                        <div
+                                            className={`h-full rounded-full transition-all duration-1000 bg-gradient-to-r ${cycle.status === "completed"
+                                                    ? "from-blue-500 to-indigo-600"
+                                                    : cycle.status === "active"
+                                                        ? "from-blue-500 via-indigo-500 to-emerald-500"
+                                                        : "from-amber-400 to-amber-600"
+                                                }`}
+                                            style={{
+                                                width:
+                                                    cycle.status === "completed"
+                                                        ? "100%"
+                                                        : cycle.status === "active"
+                                                            ? `${((37 - getDaysRemaining(cycle.endDate)) / 37) * 100}%`
+                                                            : "0%",
+                                            }}
+                                        ></div>
+                                    </div>
+                                    <div className="flex justify-between mt-3 px-1">
+                                        <div className="space-y-1">
+                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">Inauguration</p>
+                                            <p className="text-[10px] font-black text-gray-900">{formatDate(cycle.startDate)}</p>
+                                        </div>
+                                        <div className="text-center space-y-1">
+                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">Cycle Window</p>
+                                            <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest">{cycle.duration} Days</p>
+                                        </div>
+                                        <div className="text-right space-y-1">
+                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">Maturity Date</p>
+                                            <p className="text-[10px] font-black text-gray-900">{formatDate(cycle.endDate)}</p>
+                                        </div>
                                     </div>
                                 </div>
 
-                                {/* Financial Details */}
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    <div>
-                                        <p className="text-xs text-gray-600 mb-1">Total Capital</p>
-                                        <p className="font-bold text-gray-900">{formatCurrency(cycle.totalCapital)}</p>
+                                {/* Financial Architecture */}
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-6 border-t border-gray-50 relative z-10">
+                                    <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1 leading-none">Cycle Capital</p>
+                                        <p className="text-base font-black text-gray-900 leading-none">{formatCurrency(cycle.totalCapital)}</p>
                                     </div>
-                                    <div>
-                                        <p className="text-xs text-gray-600 mb-1">Target ROI</p>
-                                        <p className="font-bold text-gray-900">{cycle.targetProfitRate}%</p>
+                                    <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1 leading-none">Floor Target</p>
+                                        <p className="text-base font-black text-gray-900 leading-none">{cycle.targetProfitRate}% <span className="text-[10px] text-gray-400">ROI</span></p>
                                     </div>
                                     {cycle.status === "active" && (
-                                        <div className="md:col-span-2">
-                                            <p className="text-xs text-blue-600 mb-1">Est. Accrued Profit</p>
-                                            <p className="font-bold text-blue-600">+{formatCurrency(calculateEstimatedProfit(cycle))}</p>
+                                        <div className="md:col-span-2 p-4 bg-indigo-50 rounded-2xl border border-indigo-100 flex items-center justify-between">
+                                            <div>
+                                                <p className="text-[9px] font-black text-indigo-600/70 uppercase tracking-widest mb-1 leading-none">Accrued Yield</p>
+                                                <p className="text-base font-black text-indigo-600 leading-none">+{formatCurrency(calculateEstimatedProfit(cycle))}</p>
+                                            </div>
+                                            <TrendingUp className="text-indigo-600 opacity-20" size={24} />
                                         </div>
                                     )}
                                     {cycle.status === "completed" && (
                                         <>
-                                            <div>
-                                                <p className="text-xs text-gray-600 mb-1">Actual ROI</p>
-                                                <p className="font-bold text-green-600">{cycle.actualProfitRate?.toFixed(2) || 0}%</p>
+                                            <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                                                <p className="text-[9px] font-black text-emerald-600/70 uppercase tracking-widest mb-1 leading-none">Actual Yield</p>
+                                                <p className="text-base font-black text-emerald-600 leading-none">{cycle.actualProfitRate?.toFixed(1) || 0}%</p>
                                             </div>
-                                            <div>
-                                                <p className="text-xs text-gray-600 mb-1">Total Profit</p>
-                                                <p className="font-bold text-green-600">{formatCurrency(cycle.totalProfitGenerated || 0)}</p>
+                                            <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                                                <p className="text-[9px] font-black text-emerald-600/70 uppercase tracking-widest mb-1 leading-none">Net Growth</p>
+                                                <p className="text-base font-black text-emerald-600 leading-none">{formatCurrency(cycle.totalProfitGenerated || 0)}</p>
                                             </div>
                                         </>
                                     )}
                                 </div>
 
-                                {/* Distribution Status */}
+                                {/* Payout Architecture */}
                                 {cycle.status === "completed" && (
-                                    <div className="mt-4 pt-4 border-t border-gray-100">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-sm text-gray-600">Profit Distribution:</span>
-                                            {cycle.profitDistributed ? (
-                                                <span className="flex items-center gap-2 text-sm text-green-600">
-                                                    <CheckCircle2 className="w-4 h-4" />
-                                                    Distributed on {cycle.distributionDate && formatDate(cycle.distributionDate)}
-                                                </span>
-                                            ) : (
-                                                <span className="flex items-center gap-2 text-sm text-yellow-600">
-                                                    <Clock className="w-4 h-4" />
-                                                    Pending
-                                                </span>
-                                            )}
+                                    <div className="mt-4 pt-4 border-t border-gray-100 relative z-10 flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <div className={`w-2 h-2 rounded-full ${cycle.profitDistributed ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`} />
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Payout Architecture</span>
                                         </div>
+                                        {cycle.profitDistributed ? (
+                                            <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-xl border border-emerald-100">
+                                                <CheckCircle2 size={12} />
+                                                <span className="text-[9px] font-black uppercase tracking-widest">
+                                                    Disbursed {cycle.distributionDate && formatDate(cycle.distributionDate)}
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 text-amber-600 rounded-xl border border-amber-100">
+                                                <Clock size={12} />
+                                                <span className="text-[9px] font-black uppercase tracking-widest">Distribution Pending</span>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>

@@ -32,6 +32,17 @@ export default function AdminCommoditiesPage() {
         isActive: true
     });
 
+    // Delete Modal State
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [commodityToDelete, setCommodityToDelete] = useState<CommodityType | null>(null);
+
+    // Status Toggle Modal State
+    const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+    const [commodityForStatusToggle, setCommodityForStatusToggle] = useState<CommodityType | null>(null);
+
+    // Edit Confirmation State
+    const [isEditConfirmModalOpen, setIsEditConfirmModalOpen] = useState(false);
+
     useEffect(() => {
         fetchCommodities();
     }, []);
@@ -74,6 +85,15 @@ export default function AdminCommoditiesPage() {
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (editingCommodity) {
+            setIsEditConfirmModalOpen(true);
+        } else {
+            executeSave();
+        }
+    };
+
+    const executeSave = async () => {
         try {
             setSaving(true);
             setError("");
@@ -88,6 +108,7 @@ export default function AdminCommoditiesPage() {
             }
 
             setIsModalOpen(false);
+            setIsEditConfirmModalOpen(false);
             fetchCommodities();
         } catch (err: any) {
             setError(err.message || "Failed to save commodity");
@@ -96,26 +117,50 @@ export default function AdminCommoditiesPage() {
         }
     };
 
-    const toggleStatus = async (id: string, currentStatus: boolean) => {
+    const toggleStatusClick = (commodity: CommodityType) => {
+        setCommodityForStatusToggle(commodity);
+        setIsStatusModalOpen(true);
+    };
+
+    const confirmToggleStatus = async () => {
+        if (!commodityForStatusToggle) return;
+
         try {
-            await apiPatch(`/api/v1/gdip/admin/commodities/types/${id}`, { isActive: !currentStatus });
+            setSaving(true);
+            const newStatus = !commodityForStatusToggle.isActive;
+            await apiPatch(`/api/v1/gdip/admin/commodities/types/${commodityForStatusToggle._id}`, { isActive: newStatus });
             setCommodities(prev => prev.map(c =>
-                c._id === id ? { ...c, isActive: !currentStatus } : c
+                c._id === commodityForStatusToggle._id ? { ...c, isActive: newStatus } : c
             ));
+            setSuccess(`Commodity ${newStatus ? "enabled" : "disabled"} successfully`);
+            setIsStatusModalOpen(false);
+            setCommodityForStatusToggle(null);
         } catch (err: any) {
             setError("Failed to toggle status");
+        } finally {
+            setSaving(false);
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this commodity type? This cannot be undone.")) return;
+    const handleDeleteClick = (commodity: CommodityType) => {
+        setCommodityToDelete(commodity);
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!commodityToDelete) return;
 
         try {
-            await apiDelete(`/api/v1/gdip/admin/commodities/types/${id}`);
-            setCommodities(prev => prev.filter(c => c._id !== id));
+            setSaving(true);
+            await apiDelete(`/api/v1/gdip/admin/commodities/types/${commodityToDelete._id}`);
+            setCommodities(prev => prev.filter(c => c._id !== commodityToDelete._id));
             setSuccess("Commodity deleted successfully");
+            setIsDeleteModalOpen(false);
+            setCommodityToDelete(null);
         } catch (err: any) {
             setError("Failed to delete commodity");
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -132,15 +177,15 @@ export default function AdminCommoditiesPage() {
                             <ChevronLeft className="w-4 h-4" />
                             Back to GDIP Admin
                         </button>
-                        <h1 className="text-3xl font-bold text-gray-900">Manage Commodities</h1>
+                        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Manage Commodities</h1>
                         <p className="text-gray-600">Configure commodity types and icons available for partner purchase</p>
                     </div>
                     <button
                         onClick={() => handleOpenModal()}
-                        className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-all shadow-sm font-bold"
+                        className="flex items-center gap-2 bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl hover:bg-blue-700 transition-all shadow-sm font-bold text-sm sm:text-base whitespace-nowrap"
                     >
                         <Plus className="w-5 h-5" />
-                        Add Commodity
+                        <span className="hidden sm:inline">Add Commodity</span><span className="sm:hidden">Add</span>
                     </button>
                 </div>
 
@@ -158,8 +203,8 @@ export default function AdminCommoditiesPage() {
                     </div>
                 )}
 
-                {/* Commodities List */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                {/* Commodities List - Desktop */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden hidden md:block">
                     <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
                         <h2 className="font-bold text-gray-900">Available Commodity Types</h2>
                     </div>
@@ -222,7 +267,7 @@ export default function AdminCommoditiesPage() {
                                                     <Save className="w-5 h-5" />
                                                 </button>
                                                 <button
-                                                    onClick={() => toggleStatus(item._id, item.isActive)}
+                                                    onClick={() => toggleStatusClick(item)}
                                                     className={`p-2 rounded-lg transition-all ${item.isActive
                                                         ? "text-orange-600 hover:bg-orange-50"
                                                         : "text-green-600 hover:bg-green-50"
@@ -232,7 +277,7 @@ export default function AdminCommoditiesPage() {
                                                     {item.isActive ? <XCircle className="w-5 h-5" /> : <CheckCircle className="w-5 h-5" />}
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDelete(item._id)}
+                                                    onClick={() => handleDeleteClick(item)}
                                                     className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all"
                                                     title="Delete"
                                                 >
@@ -245,6 +290,64 @@ export default function AdminCommoditiesPage() {
                             </tbody>
                         </table>
                     </div>
+                </div>
+
+                {/* Commodities List - Mobile */}
+                <div className="md:hidden space-y-4">
+                    {loading ? (
+                        <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                        </div>
+                    ) : commodities.length === 0 ? (
+                        <div className="bg-white rounded-xl shadow-sm p-8 text-center text-gray-500 italic">
+                            No commodity types found.
+                        </div>
+                    ) : (
+                        commodities.map((item) => (
+                            <div key={item._id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="text-2xl bg-gray-100 w-10 h-10 rounded-lg flex items-center justify-center">
+                                            {item.icon}
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-gray-900">{item.name}</p>
+                                            <p className="text-xs text-gray-500">{item.label}</p>
+                                        </div>
+                                    </div>
+                                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${item.isActive
+                                        ? "bg-green-100 text-green-700"
+                                        : "bg-red-100 text-red-700"
+                                        }`}>
+                                        {item.isActive ? "Active" : "Inactive"}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2 pt-3 border-t border-gray-50">
+                                    <button
+                                        onClick={() => handleOpenModal(item)}
+                                        className="flex-1 flex items-center justify-center gap-2 py-2 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold"
+                                    >
+                                        <Save className="w-4 h-4" /> Edit
+                                    </button>
+                                    <button
+                                        onClick={() => toggleStatusClick(item)}
+                                        className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold ${item.isActive
+                                            ? "bg-orange-50 text-orange-600"
+                                            : "bg-green-50 text-green-600"
+                                            }`}
+                                    >
+                                        {item.isActive ? <><XCircle className="w-4 h-4" /> Disable</> : <><CheckCircle className="w-4 h-4" /> Enable</>}
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeleteClick(item)}
+                                        className="p-2 text-red-600 bg-red-50 rounded-lg"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+                    )}
                 </div>
 
                 {/* Add/Edit Modal */}
@@ -261,6 +364,23 @@ export default function AdminCommoditiesPage() {
                                 >
                                     <XCircle className="w-6 h-6" />
                                 </button>
+                            </div>
+
+                            {/* Warning Section in Edit Modal */}
+                            <div className="bg-blue-50/50 border-b border-blue-100 p-4">
+                                <div className="flex items-start gap-3">
+                                    <div className="bg-blue-100 p-1.5 rounded-lg text-blue-600">
+                                        <CheckCircle className="w-4 h-4" />
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-bold text-blue-900 mb-0.5">Configuration Note</p>
+                                        <p className="text-[10px] text-blue-700 leading-relaxed">
+                                            {editingCommodity
+                                                ? "Updating this commodity will change its display across the platform. This affects both current and future view contexts."
+                                                : "New commodities will be immediately available for partner purchase once activated."}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
 
                             <form onSubmit={handleSave} className="p-6 space-y-4">
@@ -325,6 +445,170 @@ export default function AdminCommoditiesPage() {
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                )}
+
+                {/* Delete Confirmation Modal */}
+                {isDeleteModalOpen && commodityToDelete && (
+                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+                        <div className="bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+                            <div className="p-6 text-center">
+                                <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <Trash2 className="w-10 h-10 text-red-500" />
+                                </div>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-2">Delete Commodity?</h3>
+                                <p className="text-gray-600 mb-6">
+                                    Are you sure you want to delete <span className="font-bold text-gray-900">{commodityToDelete.label}</span> ({commodityToDelete.icon})?
+                                    This action cannot be undone.
+                                </p>
+
+                                <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 mb-8 text-left">
+                                    <h4 className="text-amber-800 font-bold text-sm mb-1 flex items-center gap-2">
+                                        <XCircle className="w-4 h-4" />
+                                        Important Note
+                                    </h4>
+                                    <p className="text-amber-700 text-xs">
+                                        Deleting this commodity will remove it from the partner selection list. Existing investments and historic cycles will not be affected.
+                                    </p>
+                                </div>
+
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={() => {
+                                            setIsDeleteModalOpen(false);
+                                            setCommodityToDelete(null);
+                                        }}
+                                        className="flex-1 px-6 py-3 rounded-xl border border-gray-200 font-bold text-gray-600 hover:bg-gray-50 transition-all"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={confirmDelete}
+                                        disabled={saving}
+                                        className="flex-1 px-6 py-3 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                    >
+                                        {saving ? (
+                                            <>
+                                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                                                Deleting...
+                                            </>
+                                        ) : "Delete"}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Status Toggle Modal */}
+                {isStatusModalOpen && commodityForStatusToggle && (
+                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+                        <div className="bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+                            <div className="p-6 text-center">
+                                <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${commodityForStatusToggle.isActive ? "bg-orange-50" : "bg-green-50"
+                                    }`}>
+                                    {commodityForStatusToggle.isActive ? (
+                                        <XCircle className="w-10 h-10 text-orange-500" />
+                                    ) : (
+                                        <CheckCircle className="w-10 h-10 text-green-500" />
+                                    )}
+                                </div>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                                    {commodityForStatusToggle.isActive ? "Disable Category?" : "Enable Category?"}
+                                </h3>
+                                <p className="text-gray-600 mb-6 font-medium text-sm">
+                                    {commodityForStatusToggle.isActive
+                                        ? `Partners will no longer be able to select ${commodityForStatusToggle.label} for new purchases.`
+                                        : `${commodityForStatusToggle.label} will be available for partners to select immediately.`
+                                    }
+                                </p>
+
+                                <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4 mb-8 text-left">
+                                    <h4 className="text-gray-900 font-bold text-sm mb-1">Impact Analysis</h4>
+                                    <ul className="text-gray-600 text-[11px] space-y-1.5 list-disc ml-4">
+                                        {commodityForStatusToggle.isActive ? (
+                                            <>
+                                                <li>Hides from new TPIA purchase options</li>
+                                                <li>Existing active investments will remain active</li>
+                                                <li>Historical data remains visible in reports</li>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <li>Available in partner purchase selection</li>
+                                                <li>Visible in active dashboard filters</li>
+                                                <li>Ready for immediate investment cycles</li>
+                                            </>
+                                        )}
+                                    </ul>
+                                </div>
+
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={() => {
+                                            setIsStatusModalOpen(false);
+                                            setCommodityForStatusToggle(null);
+                                        }}
+                                        className="flex-1 px-6 py-3 rounded-xl border border-gray-200 font-bold text-gray-600 hover:bg-gray-50 transition-all"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={confirmToggleStatus}
+                                        disabled={saving}
+                                        className={`flex-1 px-6 py-3 rounded-xl text-white font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2 ${commodityForStatusToggle.isActive ? "bg-orange-600 hover:bg-orange-700" : "bg-green-600 hover:bg-green-700"
+                                            }`}
+                                    >
+                                        {saving ? (
+                                            <>
+                                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                                                Processing...
+                                            </>
+                                        ) : (
+                                            commodityForStatusToggle.isActive ? "Disable" : "Enable"
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Edit Confirmation Modal */}
+                {isEditConfirmModalOpen && (
+                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+                        <div className="bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+                            <div className="p-6 text-center">
+                                <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <Save className="w-10 h-10 text-blue-500" />
+                                </div>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-2">Save Changes?</h3>
+                                <p className="text-gray-600 mb-8">
+                                    You are about to update <span className="font-bold text-gray-900">{formData.label}</span>.
+                                    These changes will be reflected across the platform immediately.
+                                </p>
+
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={() => setIsEditConfirmModalOpen(false)}
+                                        className="flex-1 px-6 py-3 rounded-xl border border-gray-200 font-bold text-gray-600 hover:bg-gray-50 transition-all font-bold"
+                                    >
+                                        Review
+                                    </button>
+                                    <button
+                                        onClick={executeSave}
+                                        disabled={saving}
+                                        className="flex-1 px-6 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                    >
+                                        {saving ? (
+                                            <>
+                                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                                                Saving...
+                                            </>
+                                        ) : "Confirm Save"}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}

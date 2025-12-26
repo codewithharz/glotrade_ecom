@@ -110,7 +110,7 @@ export default function CreateCyclePage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50/50 p-6">
+        <div className="min-h-screen bg-gray-50/50 p-4 sm:p-6">
             <div className="max-w-3xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
@@ -121,12 +121,12 @@ export default function CreateCyclePage() {
                         <ArrowLeft className="w-5 h-5" />
                         Back to Dashboard
                     </button>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Trade Cycle</h1>
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Create Trade Cycle</h1>
                     <p className="text-gray-600">Schedule a new 37-day commodity trading cycle for a GDC cluster</p>
                 </div>
 
                 {/* Form */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 sm:p-8">
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {error && (
                             <div className="bg-red-50 border border-red-200 rounded-lg p-4 animate-in slide-in-from-top-2">
@@ -234,15 +234,24 @@ export default function CreateCyclePage() {
                         </div>
 
                         {/* Info Box */}
-                        <div className="bg-blue-50 border border-blue-100 rounded-xl p-5">
-                            <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                        <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 sm:p-5">
+                            <h4 className="font-semibold text-blue-900 mb-2.5 flex items-center gap-2">
                                 <Activity className="w-4 h-4" />
                                 Cycle Parameters
                             </h4>
-                            <ul className="text-sm text-blue-800 space-y-2 ml-1">
-                                <li className="flex items-center gap-2">• <span className="font-medium">Duration:</span> 37 days from start date</li>
-                                <li className="flex items-center gap-2">• <span className="font-medium">Target:</span> ~5% ROI per cycle</li>
-                                <li className="flex items-center gap-2">• <span className="font-medium">Automation:</span> Auto-completion & profit distribution enabled</li>
+                            <ul className="text-xs sm:text-sm text-blue-800 space-y-2">
+                                <li className="flex items-start gap-2">
+                                    <span className="mt-1.5 text-blue-400">•</span>
+                                    <span><span className="font-bold">Duration:</span> 37 days from start date</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="mt-1.5 text-blue-400">•</span>
+                                    <span><span className="font-bold">Target:</span> ~5% ROI per cycle</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="mt-1.5 text-blue-400">•</span>
+                                    <span><span className="font-bold">Automation:</span> Auto-completion & profit distribution enabled</span>
+                                </li>
                             </ul>
                         </div>
 

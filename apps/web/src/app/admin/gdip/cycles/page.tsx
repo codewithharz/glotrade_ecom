@@ -154,55 +154,56 @@ export default function AdminCyclesPage() {
                 <div className="mb-8">
                     <button
                         onClick={() => router.back()}
-                        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+                        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors group"
                     >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
                         Back to Dashboard
                     </button>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-4xl font-bold text-gray-900 mb-2">Trade Cycle Management</h1>
-                            <p className="text-gray-600">Monitor and control all 37-day trade cycles</p>
+                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+                        <div className="space-y-1">
+                            <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">Trade Cycle Management</h1>
+                            <p className="text-gray-500 font-medium">Monitor and control all 37-day trade cycles</p>
                         </div>
                         <button
                             onClick={() => router.push("/admin/gdip/cycles/create")}
-                            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl font-medium hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg"
+                            className="bg-blue-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-md shadow-blue-200 text-sm sm:text-base whitespace-nowrap flex items-center justify-center gap-2 active:scale-95"
                         >
-                            + Create Cycle
+                            <span className="text-xl">+</span>
+                            <span>Create New Cycle</span>
                         </button>
                     </div>
                 </div>
 
                 {/* Stats */}
                 {cycles.length > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <p className="text-sm text-gray-600 mb-1">Total</p>
-                            <p className="text-3xl font-bold text-gray-900">{cycles.length}</p>
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4 mb-10">
+                        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm">
+                            <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Total</p>
+                            <p className="text-2xl sm:text-3xl font-black text-gray-900">{cycles.length}</p>
                         </div>
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <p className="text-sm text-gray-600 mb-1">Scheduled</p>
-                            <p className="text-3xl font-bold text-yellow-600">
+                        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm">
+                            <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Scheduled</p>
+                            <p className="text-2xl sm:text-3xl font-black text-amber-500">
                                 {cycles.filter((c) => c.status === "scheduled").length}
                             </p>
                         </div>
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <p className="text-sm text-gray-600 mb-1">Active</p>
-                            <p className="text-3xl font-bold text-green-600">
+                        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm">
+                            <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Active</p>
+                            <p className="text-2xl sm:text-3xl font-black text-green-500">
                                 {cycles.filter((c) => c.status === "active").length}
                             </p>
                         </div>
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <p className="text-sm text-gray-600 mb-1">Processing</p>
-                            <p className="text-3xl font-bold text-purple-600">
+                        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm">
+                            <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Processing</p>
+                            <p className="text-2xl sm:text-3xl font-black text-indigo-500">
                                 {cycles.filter((c) => c.status === "processing").length}
                             </p>
                         </div>
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <p className="text-sm text-gray-600 mb-1">Completed</p>
-                            <p className="text-3xl font-bold text-blue-600">
+                        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 shadow-sm col-span-2 md:col-span-1">
+                            <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Completed</p>
+                            <p className="text-2xl sm:text-3xl font-black text-blue-500">
                                 {cycles.filter((c) => c.status === "completed").length}
                             </p>
                         </div>
@@ -210,101 +211,145 @@ export default function AdminCyclesPage() {
                 )}
 
                 {/* Filters */}
-                <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-                    <div className="flex items-center gap-4">
-                        <label className="text-sm font-medium text-gray-700">Filter by Status:</label>
-                        <select
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                            <option value="all">All Cycles</option>
-                            <option value="scheduled">Scheduled</option>
-                            <option value="active">Active</option>
-                            <option value="processing">Processing</option>
-                            <option value="completed">Completed</option>
-                        </select>
-                        <span className="text-sm text-gray-600 ml-auto">
+                <div className="bg-white rounded-3xl border border-gray-100 p-5 mb-8 shadow-sm">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                            <label className="text-xs font-bold text-gray-400 uppercase tracking-tight whitespace-nowrap">Filter Status:</label>
+                            <select
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                className="px-4 py-2 bg-gray-50 border-none rounded-xl font-bold text-gray-700 focus:ring-2 focus:ring-blue-500 cursor-pointer outline-none transition-all"
+                            >
+                                <option value="all">All Cycles</option>
+                                <option value="scheduled">Scheduled</option>
+                                <option value="active">Active</option>
+                                <option value="processing">Processing</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+                        <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
                             Showing {filteredCycles.length} of {cycles.length} cycles
                         </span>
                     </div>
                 </div>
 
                 {/* Cycles List */}
-                <div className="space-y-4">
+                <div className="space-y-6">
                     {filteredCycles.map((cycle) => (
-                        <div key={cycle._id} className="bg-white rounded-2xl shadow-lg p-6">
-                            <div className="flex items-start justify-between mb-4">
-                                <div>
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <h3 className="text-2xl font-bold text-gray-900">{cycle.cycleId}</h3>
-                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(cycle.status)}`}>
-                                            {cycle.status.toUpperCase()}
-                                        </span>
-                                        {cycle.performanceRating && (
-                                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-                                                {cycle.performanceRating.toUpperCase()}
+                        <div key={cycle._id} className="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden">
+                            <div className="p-5 sm:p-6 border-b border-gray-50 bg-white/50">
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                    <div className="space-y-2">
+                                        <div className="flex flex-wrap items-center gap-3">
+                                            <h3 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">{cycle.cycleId}</h3>
+                                            <span className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${getStatusColor(cycle.status)}`}>
+                                                {cycle.status}
                                             </span>
-                                        )}
+                                            {cycle.performanceRating && (
+                                                <span className="px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-gray-100 text-gray-500 border border-gray-200">
+                                                    {cycle.performanceRating}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="flex items-center gap-4 text-sm font-bold text-gray-400 uppercase tracking-tight">
+                                            <span className="flex items-center gap-1.5"><span className="text-lg opacity-50">#</span> GDC-{cycle.gdcNumber}</span>
+                                            <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+                                            <span>{cycle.tpiaCount} TPIAs Joined</span>
+                                        </div>
                                     </div>
-                                    <p className="text-sm text-gray-600">
-                                        GDC-{cycle.gdcNumber} • {cycle.tpiaCount} TPIAs
-                                    </p>
-                                </div>
-                                <div className="flex gap-2">
-                                    {cycle.status === "active" && (
+
+                                    <div className="flex flex-row gap-3">
+                                        {cycle.status === "active" && (
+                                            <button
+                                                onClick={() => handleCompleteCycle(cycle._id)}
+                                                disabled={processingCycle === cycle._id}
+                                                className="flex-1 sm:flex-none px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-md shadow-blue-100 disabled:opacity-50 text-xs font-black uppercase tracking-widest active:scale-95 whitespace-nowrap"
+                                            >
+                                                {processingCycle === cycle._id ? "Processing..." : "Complete Cycle"}
+                                            </button>
+                                        )}
+                                        {cycle.status === "processing" && !cycle.profitDistributed && (
+                                            <button
+                                                onClick={() => handleDistributeProfits(cycle._id)}
+                                                disabled={processingCycle === cycle._id}
+                                                className="flex-1 sm:flex-none px-6 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all shadow-md shadow-green-100 disabled:opacity-50 text-xs font-black uppercase tracking-widest active:scale-95 whitespace-nowrap"
+                                            >
+                                                {processingCycle === cycle._id ? "Distributing..." : "Distribute Profits"}
+                                            </button>
+                                        )}
                                         <button
-                                            onClick={() => handleCompleteCycle(cycle._id)}
-                                            disabled={processingCycle === cycle._id}
-                                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 text-sm font-medium"
+                                            onClick={() => router.push(`/admin/gdip/gdc/placeholder-id`)} // This would ideally link to GDC details
+                                            className="p-2.5 bg-gray-50 text-gray-400 rounded-xl hover:bg-gray-100 transition-colors border border-gray-100"
+                                            title="View Cluster Details"
                                         >
-                                            Complete Cycle
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                            </svg>
                                         </button>
-                                    )}
-                                    {cycle.status === "processing" && !cycle.profitDistributed && (
-                                        <button
-                                            onClick={() => handleDistributeProfits(cycle._id)}
-                                            disabled={processingCycle === cycle._id}
-                                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 text-sm font-medium"
-                                        >
-                                            Distribute Profits
-                                        </button>
-                                    )}
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                                <div>
-                                    <p className="text-gray-600 mb-1">Period</p>
-                                    <p className="font-medium">
-                                        {formatDate(cycle.startDate)} - {formatDate(cycle.endDate)}
-                                    </p>
-                                </div>
-                                <div>
-                                    <p className="text-gray-600 mb-1">Total Capital</p>
-                                    <p className="font-medium">{formatCurrency(cycle.totalCapital)}</p>
-                                </div>
-                                <div>
-                                    <p className="text-gray-600 mb-1">Target ROI</p>
-                                    <p className="font-medium">{cycle.targetProfitRate}%</p>
-                                </div>
-                                {cycle.status === "completed" && (
-                                    <>
-                                        <div>
-                                            <p className="text-gray-600 mb-1">Actual ROI</p>
-                                            <p className="font-medium text-green-600">{cycle.actualProfitRate.toFixed(2)}%</p>
+                            <div className="p-5 sm:p-6 bg-gray-50/30">
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+                                    <div className="space-y-1.5">
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                                            <span className="text-sm">📅</span> Cycle Period
+                                        </p>
+                                        <p className="text-xs sm:text-sm font-bold text-gray-700 leading-snug">
+                                            {formatDate(cycle.startDate)}<br className="md:hidden" />
+                                            <span className="mx-1 text-gray-300 hidden md:inline">→</span>
+                                            <span className="md:hidden block text-[10px] text-gray-300">to</span>
+                                            {formatDate(cycle.endDate)}
+                                        </p>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                                            <span className="text-sm">💰</span> Total Capital
+                                        </p>
+                                        <p className="text-sm sm:text-base font-black text-gray-900">{formatCurrency(cycle.totalCapital)}</p>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                                            <span className="text-sm">🎯</span> Target ROI
+                                        </p>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm sm:text-base font-black text-gray-900">{cycle.targetProfitRate}%</span>
+                                            <span className="px-1.5 py-0.5 bg-gray-100 text-[10px] text-gray-500 rounded font-bold">EST</span>
                                         </div>
-                                        <div className="md:col-span-2">
-                                            <p className="text-gray-600 mb-1">Total Profit</p>
-                                            <p className="font-medium text-green-600">{formatCurrency(cycle.totalProfitGenerated)}</p>
-                                        </div>
-                                        <div className="md:col-span-2">
-                                            <p className="text-gray-600 mb-1">Profit Status</p>
-                                            <p className={`font-medium ${cycle.profitDistributed ? "text-green-600" : "text-yellow-600"}`}>
-                                                {cycle.profitDistributed ? "✓ Distributed" : "⏳ Pending Distribution"}
+                                    </div>
+
+                                    {cycle.status === "completed" ? (
+                                        <div className="space-y-1.5">
+                                            <p className="text-[10px] font-bold text-green-600/60 uppercase tracking-widest flex items-center gap-1.5">
+                                                <span className="text-sm">📈</span> Actual ROI
                                             </p>
+                                            <div className="flex items-center gap-2">
+                                                <p className="text-sm sm:text-base font-black text-green-600">{cycle.actualProfitRate.toFixed(2)}%</p>
+                                                <span className="px-1.5 py-0.5 bg-green-50 text-[10px] text-green-600 rounded font-bold animate-pulse">FIXED</span>
+                                            </div>
                                         </div>
-                                    </>
+                                    ) : (
+                                        <div className="space-y-1.5 bg-blue-50/50 p-2 rounded-xl border border-blue-50">
+                                            <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Est. Profit Gap</p>
+                                            <p className="text-xs font-bold text-blue-600">Pending Close</p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {cycle.status === "completed" && (
+                                    <div className="mt-6 pt-6 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="flex items-center justify-between p-3 bg-green-50/50 rounded-2xl border border-green-50">
+                                            <span className="text-xs font-bold text-green-700/70 uppercase">Total Profit Generated</span>
+                                            <span className="text-lg font-black text-green-600">{formatCurrency(cycle.totalProfitGenerated)}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-2xl border border-gray-100">
+                                            <span className="text-xs font-bold text-gray-400 uppercase">Profit Status</span>
+                                            <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg ${cycle.profitDistributed ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700 animate-pulse"}`}>
+                                                {cycle.profitDistributed ? "✓ Distributed" : "⏳ Pending"}
+                                            </span>
+                                        </div>
+                                    </div>
                                 )}
                             </div>
                         </div>

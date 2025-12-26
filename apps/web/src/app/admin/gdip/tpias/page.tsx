@@ -118,7 +118,7 @@ export default function AdminTPIAManagementPage() {
                     </button>
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-4xl font-bold text-gray-900 mb-2">TPIA Management</h1>
+                            <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2">TPIA Management</h1>
                             <p className="text-gray-600">Overview of all Insured Partner Investment Blocks</p>
                         </div>
                     </div>
@@ -152,8 +152,8 @@ export default function AdminTPIAManagementPage() {
                     </div>
                 </div>
 
-                {/* TPIA Table */}
-                <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                {/* TPIA Table - Desktop */}
+                <div className="bg-white rounded-2xl shadow-lg overflow-hidden hidden md:block">
                     <table className="w-full">
                         <thead className="bg-gray-50 border-b border-gray-200">
                             <tr>
@@ -203,6 +203,55 @@ export default function AdminTPIAManagementPage() {
                     </table>
                     {filteredTPIAs.length === 0 && (
                         <div className="text-center py-12 text-gray-500">No TPIAs found matching your filters.</div>
+                    )}
+                </div>
+
+                {/* TPIA List - Mobile */}
+                <div className="md:hidden space-y-4">
+                    {filteredTPIAs.map((tpia) => (
+                        <div key={tpia._id} className="bg-white rounded-xl shadow-lg p-5 border border-gray-100">
+                            <div className="flex justify-between items-start mb-4">
+                                <div>
+                                    <p className="font-bold text-lg text-gray-900">{tpia.tpiaId}</p>
+                                    <p className="text-sm text-gray-500">{tpia.partnerName}</p>
+                                </div>
+                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${tpia.status === "active" ? "bg-green-100 text-green-700" :
+                                    tpia.status === "pending" ? "bg-yellow-100 text-yellow-700" :
+                                        "bg-gray-100 text-gray-700"
+                                    }`}>
+                                    {tpia.status.toUpperCase()}
+                                </span>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 py-4 border-t border-b border-gray-100 mb-4">
+                                <div>
+                                    <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Invested</p>
+                                    <p className="font-bold text-gray-900">{formatCurrency(tpia.purchasePrice)}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Est. Profit</p>
+                                    <p className="font-bold text-green-600">+{formatCurrency(tpia.estimatedProfit || 0)}</p>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                                <div className="text-sm text-gray-600">
+                                    <span className="font-medium">GDC-{tpia.gdcNumber}</span> • {formatDate(tpia.purchasedAt)}
+                                </div>
+                                <button
+                                    onClick={() => setSelectedTPIAId(tpia._id)}
+                                    className="text-blue-600 font-bold text-sm"
+                                >
+                                    Details
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+
+                    {filteredTPIAs.length === 0 && (
+                        <div className="text-center py-12 bg-white rounded-xl shadow-lg">
+                            <p className="text-gray-500">No TPIAs found matching your filters.</p>
+                        </div>
                     )}
                 </div>
             </div>
