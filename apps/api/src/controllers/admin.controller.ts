@@ -189,7 +189,7 @@ export class AdminController {
         businessType: req.query.businessType as string
       };
 
-      const result = await this.adminService.getUsersWithFilters(filters);
+      const result = await this.adminService.getUsersWithFilters(filters, req.user);
 
       res.status(200).json({
         status: 'success',
@@ -421,7 +421,7 @@ export class AdminController {
         limit: parseInt(req.query.limit as string) || 20
       };
 
-      const result = await this.adminService.getDeletedUsers(filters);
+      const result = await this.adminService.getDeletedUsers(filters, req.user);
 
       res.status(200).json({
         status: 'success',
@@ -731,7 +731,7 @@ export class AdminController {
         limit: 10000 // Large limit for export
       };
 
-      const result = await this.adminService.getUsersWithFilters(filters);
+      const result = await this.adminService.getUsersWithFilters(filters, req.user);
 
       // Convert to CSV format
       const csvData = this.convertUsersToCSV(result.users);
@@ -1153,7 +1153,7 @@ export class AdminController {
         role: "admin",
         page: 1,
         limit: 1000
-      });
+      }, req.user);
 
       res.status(200).json({
         status: "success",
@@ -1179,8 +1179,8 @@ export class AdminController {
       }
 
       const [allAdmins, superAdmins] = await Promise.all([
-        this.adminService.getUsersWithFilters({ role: "admin", page: 1, limit: 1000 }),
-        this.adminService.getUsersWithFilters({ role: "admin", isSuperAdmin: true, page: 1, limit: 1000 })
+        this.adminService.getUsersWithFilters({ role: "admin", page: 1, limit: 1000 }, req.user),
+        this.adminService.getUsersWithFilters({ role: "admin", isSuperAdmin: true, page: 1, limit: 1000 }, req.user)
       ]);
 
       res.status(200).json({
