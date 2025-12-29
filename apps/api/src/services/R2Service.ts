@@ -32,8 +32,8 @@ export class R2Service {
       accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
       secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
       bucketName: process.env.R2_BUCKET_NAME || '',
-      publicUrl: process.env.R2_PUBLIC_URL || '',
-      endpoint: process.env.R2_ENDPOINT || '',
+      publicUrl: (process.env.R2_PUBLIC_URL || '').replace(/\/+$/, ''),
+      endpoint: (process.env.R2_ENDPOINT || '').replace(/\/+$/, '').replace(new RegExp(`/${process.env.R2_BUCKET_NAME}$`), ''),
       provider: (process.env.STORAGE_PROVIDER as 'r2' | 'local') || 'r2',
     };
 
@@ -43,7 +43,7 @@ export class R2Service {
       if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
       }
-      
+
       // For local provider, use LOCAL_PUBLIC_URL if provided, 
       // otherwise default to localhost. Do NOT use R2_PUBLIC_URL.
       const localUrl = process.env.LOCAL_PUBLIC_URL;
@@ -189,7 +189,7 @@ export class R2Service {
       // Instead of generating a presigned URL, return the public URL directly
       // This eliminates the 404 errors completely
       // Ensure the key includes the full path (e.g., avatars/userId/filename)
-      const fullKey = key.startsWith('avatars/') ? key : `avatars/${key}`;
+      const fullKey = key.startsWith('glotrade/avatars/') ? key : `glotrade/avatars/${key}`;
       return `${this.config.publicUrl}/${fullKey}`;
     } catch (error) {
       console.error('R2 presigned access URL error:', error);
@@ -210,8 +210,8 @@ export class R2Service {
   generateAvatarKey(userId: string, originalName: string): string {
     const timestamp = Date.now();
     const extension = originalName.split('.').pop() || 'jpg';
-    // Ensure the path includes the avatars folder
-    return `avatars/${userId}/${timestamp}.${extension}`;
+    // Ensure the path includes the glotrade/avatars folder
+    return `glotrade/avatars/${userId}/${timestamp}.${extension}`;
   }
 
   /**
@@ -241,7 +241,7 @@ export class R2Service {
   generateProductImageKey(productId: string, originalName: string, index: number = 0): string {
     const timestamp = Date.now();
     const extension = originalName.split('.').pop() || 'jpg';
-    return `products/${productId}/${timestamp}_${index}.${extension}`;
+    return `glotrade/products/${productId}/${timestamp}_${index}.${extension}`;
   }
 
   /**
@@ -251,7 +251,7 @@ export class R2Service {
     const timestamp = Date.now();
     const extension = originalName.split('.').pop() || 'jpg';
     const name = customName || originalName.split('.')[0];
-    return `products/${productId}/${timestamp}_${name}.${extension}`;
+    return `glotrade/products/${productId}/${timestamp}_${name}.${extension}`;
   }
 
   /**
@@ -263,7 +263,7 @@ export class R2Service {
       const { ListObjectsV2Command } = await import('@aws-sdk/client-s3');
       const listCommand = new ListObjectsV2Command({
         Bucket: this.config.bucketName,
-        Prefix: `products/${productId}/`,
+        Prefix: `glotrade/products/${productId}/`,
       });
 
       const listResult = await this.client.send(listCommand);
@@ -291,7 +291,7 @@ export class R2Service {
       const { ListObjectsV2Command } = await import('@aws-sdk/client-s3');
       const listCommand = new ListObjectsV2Command({
         Bucket: this.config.bucketName,
-        Prefix: `products/${productId}/`,
+        Prefix: `glotrade/products/${productId}/`,
       });
 
       const listResult = await this.client.send(listCommand);
@@ -333,7 +333,7 @@ export class R2Service {
     const timestamp = Date.now();
     const extension = filename.split('.').pop() || 'pdf';
     const sanitizedType = documentType.replace(/[^a-zA-Z0-9]/g, '_');
-    return `business-documents/${vendorId}/${sanitizedType}/${timestamp}.${extension}`;
+    return `glotrade/business-documents/${vendorId}/${sanitizedType}/${timestamp}.${extension}`;
   }
 
   /**
@@ -362,7 +362,7 @@ export class R2Service {
       const { ListObjectsV2Command } = await import('@aws-sdk/client-s3');
       const listCommand = new ListObjectsV2Command({
         Bucket: this.config.bucketName,
-        Prefix: `business-documents/${vendorId}/`,
+        Prefix: `glotrade/business-documents/${vendorId}/`,
       });
 
       const listResult = await this.client.send(listCommand);

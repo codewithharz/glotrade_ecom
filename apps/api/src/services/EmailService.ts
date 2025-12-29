@@ -62,14 +62,20 @@ export class EmailService {
      * Send an email using the configured provider
      */
     async sendEmail(options: EmailOptions): Promise<void> {
+        if (process.env.EMAIL_ENABLED === 'false') {
+            console.log(`[EmailService] Skipping email to ${options.to} (EMAIL_ENABLED=false)`);
+            return;
+        }
+
         const from = options.from || process.env.SMTP_FROM || process.env.SMTP_USER || "no-reply@glotrade.online";
+        console.log(`[EmailService] Sending via ${this.provider} to ${options.to} (Subject: ${options.subject})`);
 
         if (this.provider === EmailProvider.SES && this.sesClient) {
             await this.sendViaSES(from, options);
         } else if (this.transporter) {
             await this.sendViaSMTP(from, options);
         } else {
-            console.warn("No email provider initialized. Falling back to Ethereal in non-production.");
+            console.warn("[EmailService] No email provider initialized. Falling back to Ethereal in non-production.");
             if (process.env.NODE_ENV !== "production") {
                 await this.sendViaEthereal(options);
             }

@@ -1,6 +1,6 @@
-# AfriTrade Hub Documentation
+# Glotrade International Documentation
 
-This directory contains comprehensive documentation for the AfriTrade Hub platform. Each document covers specific features, implementations, and guidelines.
+This directory contains comprehensive documentation for the Glotrade International platform. Each document covers specific features, implementations, and guidelines.
 
 ## 📚 Documentation Index
 
@@ -34,8 +34,9 @@ This directory contains comprehensive documentation for the AfriTrade Hub platfo
 - [**WALLET_QUICK_WINS.md**](./WALLET_QUICK_WINS.md) - Immediate implementation guide for CBN-compliant wallet features
 
 ### ☁️ Infrastructure
-- [**R2_SETUP_GUIDE.md**](./R2_SETUP_GUIDE.md) - Cloudflare R2 storage setup
-- [**R2_AVATAR_UPLOAD.md**](./R2_AVATAR_UPLOAD.md) - Avatar upload to R2 storage
+- [**R2_UNIFIED_SETUP.md**](./R2_UNIFIED_SETUP.md) - **START HERE**: One-bucket unified setup guide
+- [**R2_SETUP_GUIDE.md**](./R2_SETUP_GUIDE.md) - Detailed setup troubleshooting
+- [**R2_AVATAR_UPLOAD.md**](./R2_AVATAR_UPLOAD.md) - Avatar upload system details
 - [**PRODUCT_IMAGE_UPLOAD.md**](./PRODUCT_IMAGE_UPLOAD.md) - Product image upload system
 
 ### 🎯 Features & Achievements
@@ -108,4 +109,4 @@ This directory contains comprehensive documentation for the AfriTrade Hub platfo
 
 ---
 
-*This documentation is maintained by the AfriTrade Hub development team. Please keep it updated as the platform evolves.*
+*This documentation is maintained by the Glotrade International development team. Please keep it updated as the platform evolves.*

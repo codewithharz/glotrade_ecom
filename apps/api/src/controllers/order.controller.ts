@@ -138,9 +138,10 @@ export class OrderController {
         });
       }
 
-      // Create notification for order placed
+      // Create notification for order placed (Only for immediate payment methods or if already paid)
       try {
-        if (buyer) {
+        const isImmediatePayment = ['wallet', 'net_terms'].includes(paymentMethod) || req.body.paymentStatus === "completed";
+        if (buyer && isImmediatePayment) {
           const notificationService = new NotificationService();
           await notificationService.createOrderNotification('order_placed', {
             orderId: (created._id as any).toString(),

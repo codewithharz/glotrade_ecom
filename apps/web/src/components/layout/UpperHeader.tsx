@@ -85,7 +85,7 @@ export default function UpperHeader() {
                   Partner Access Required
                 </h3>
                 <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                  Join our Trusted Insured Partners platform. Please login or create an account to continue.
+                  Join our Trusted Insured Trade Partners platform. Please login or create an account to continue.
                 </p>
               </div>
 

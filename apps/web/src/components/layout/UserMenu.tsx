@@ -58,7 +58,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
       try {
         // Try to read a user profile
         const tryKeys = [
-          "afritrade:user",
+          "glotrade:user",
           "user",
           "profile",
           "account",
@@ -133,7 +133,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
     const syncLocalToServer = async () => {
       try {
         const rawUser =
-          localStorage.getItem("afritrade:user") ||
+          localStorage.getItem("glotrade:user") ||
           localStorage.getItem("user");
         if (!rawUser) return; // only sync when logged in
         const obj = JSON.parse(rawUser);
@@ -203,7 +203,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
 
           // Only sync cart/wishlist on actual auth changes (login/logout), not profile updates
           // Check if this is a significant auth change by comparing with previous user data
-          const prevUser = localStorage.getItem("afritrade:user");
+          const prevUser = localStorage.getItem("glotrade:user");
           if (prevUser) {
             try {
               const prev = JSON.parse(prevUser);
@@ -331,10 +331,10 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
 
   const persistPreferences = async (patch: Record<string, any>) => {
     try {
-      const raw = localStorage.getItem("afritrade:prefs");
+      const raw = localStorage.getItem("glotrade:prefs");
       const current = raw ? JSON.parse(raw) : {};
       const merged = { ...current, ...patch };
-      localStorage.setItem("afritrade:prefs", JSON.stringify(merged));
+      localStorage.setItem("glotrade:prefs", JSON.stringify(merged));
       await fetch(new URL(`/api/v1/users/me`, API_BASE_URL).toString(), {
         method: "PUT",
         headers: { "Content-Type": "application/json", ...authHeader() },
@@ -392,7 +392,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
   const Avatar = () => {
     const initials = (firstName?.[0] || "?") + (lastName?.[0] || "");
     return (
-      <div className="inline-flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-blue-700 text-white">
+      <div className="hidden sm:inline-flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-blue-700 text-white">
         <span className="text-xs font-semibold">{initials}</span>
       </div>
     );
@@ -438,18 +438,18 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
         className="inline-flex items-center gap-2 rounded-full px-2 py-1.5 hover:bg-white/10 focus:outline-none"
       >
         <Avatar />
-        <div className="hidden sm:block text-left">
-          <div className="font-semibold">
+        <div className="text-left">
+          <div className="hidden sm:block text-[10px] sm:text-xs font-semibold opacity-80 leading-tight">
             {role === "admin" || role === "superAdmin"
               ? "Admin"
               : guest
                 ? "Hello, Guest"
                 : `Hello, ${firstName}${lastName ? ` ${lastName}` : ""}`}
           </div>
-          <div className="text-[15px] font-bold">
+          <div className="text-[14px] sm:text-[15px] font-bold leading-tight">
             {role === "admin" || role === "superAdmin"
               ? "Dashboard"
-              : "Orders & Account"}
+              : "Account"}
           </div>
         </div>
       </button>

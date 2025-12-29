@@ -36,7 +36,8 @@ export class ProductImageController {
         throw new ValidationError("Product not found");
       }
 
-      if (product.seller.toString() !== req.user.id) {
+      const isAdmin = req.user.role === "admin" || req.user.isSuperAdmin || req.user.isAdmin;
+      if (product.seller.toString() !== req.user.id && !isAdmin) {
         throw new ValidationError("Access denied: Product does not belong to you");
       }
 
@@ -45,7 +46,7 @@ export class ProductImageController {
       // Process each uploaded file
       for (let i = 0; i < req.files.length; i++) {
         const file = req.files[i] as any;
-        
+
         // Validate file
         this.r2Service.validateProductImage(file.buffer, file.mimetype);
 
@@ -90,7 +91,7 @@ export class ProductImageController {
   deleteProductImage = async (req: any, res: any, next: any) => {
     try {
       if (!req.user) throw new ValidationError("Authentication required");
-      
+
       const { productId, imageUrl } = req.body;
       if (!productId || !imageUrl) {
         throw new ValidationError("Product ID and image URL are required");
@@ -102,7 +103,8 @@ export class ProductImageController {
         throw new ValidationError("Product not found");
       }
 
-      if (product.seller.toString() !== req.user.id) {
+      const isAdmin = req.user.role === "admin" || req.user.isSuperAdmin || req.user.isAdmin;
+      if (product.seller.toString() !== req.user.id && !isAdmin) {
         throw new ValidationError("Access denied: Product does not belong to you");
       }
 
@@ -138,7 +140,7 @@ export class ProductImageController {
   deleteAllProductImages = async (req: any, res: any, next: any) => {
     try {
       if (!req.user) throw new ValidationError("Authentication required");
-      
+
       const { productId } = req.params;
       if (!productId) {
         throw new ValidationError("Product ID is required");
@@ -150,7 +152,8 @@ export class ProductImageController {
         throw new ValidationError("Product not found");
       }
 
-      if (product.seller.toString() !== req.user.id) {
+      const isAdmin = req.user.role === "admin" || req.user.isSuperAdmin || req.user.isAdmin;
+      if (product.seller.toString() !== req.user.id && !isAdmin) {
         throw new ValidationError("Access denied: Product does not belong to you");
       }
 
@@ -181,7 +184,7 @@ export class ProductImageController {
   reorderProductImages = async (req: any, res: any, next: any) => {
     try {
       if (!req.user) throw new ValidationError("Authentication required");
-      
+
       const { productId, imageUrls } = req.body;
       if (!productId || !Array.isArray(imageUrls)) {
         throw new ValidationError("Product ID and image URLs array are required");
@@ -193,7 +196,8 @@ export class ProductImageController {
         throw new ValidationError("Product not found");
       }
 
-      if (product.seller.toString() !== req.user.id) {
+      const isAdmin = req.user.role === "admin" || req.user.isSuperAdmin || req.user.isAdmin;
+      if (product.seller.toString() !== req.user.id && !isAdmin) {
         throw new ValidationError("Access denied: Product does not belong to you");
       }
 
@@ -228,7 +232,7 @@ export class ProductImageController {
   getUploadUrl = async (req: any, res: any, next: any) => {
     try {
       if (!req.user) throw new ValidationError("Authentication required");
-      
+
       const { productId, filename, mimeType, index = 0 } = req.body;
       if (!productId || !filename || !mimeType) {
         throw new ValidationError("Product ID, filename, and MIME type are required");
@@ -240,7 +244,8 @@ export class ProductImageController {
         throw new ValidationError("Product not found");
       }
 
-      if (product.seller.toString() !== req.user.id) {
+      const isAdmin = req.user.role === "admin" || req.user.isSuperAdmin || req.user.isAdmin;
+      if (product.seller.toString() !== req.user.id && !isAdmin) {
         throw new ValidationError("Access denied: Product does not belong to you");
       }
 
@@ -267,7 +272,7 @@ export class ProductImageController {
   getProductImageInfo = async (req: any, res: any, next: any) => {
     try {
       if (!req.user) throw new ValidationError("Authentication required");
-      
+
       const { productId } = req.params;
       if (!productId) {
         throw new ValidationError("Product ID is required");
@@ -279,13 +284,14 @@ export class ProductImageController {
         throw new ValidationError("Product not found");
       }
 
-      if (product.seller.toString() !== req.user.id) {
+      const isAdmin = req.user.role === "admin" || req.user.isSuperAdmin || req.user.isAdmin;
+      if (product.seller.toString() !== req.user.id && !isAdmin) {
         throw new ValidationError("Access denied: Product does not belong to you");
       }
 
       // Get image URLs from R2 (in case there are orphaned files)
       const r2ImageUrls = await this.r2Service.getProductImageUrls(productId);
-      
+
       res.json({
         status: "success",
         data: {

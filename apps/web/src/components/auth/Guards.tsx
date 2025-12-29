@@ -79,7 +79,7 @@ export function RequireAdmin({ children }: { children: React.ReactNode }) {
   return authorized ? <>{children}</> : null;
 }
 
-export function RequireDistributor({ children, title = "Partner Access Required", message = "Join our Trusted Insured Partners platform. Only distributors have access to this page.", cancelRedirect = "/" }: { children: React.ReactNode; title?: string; message?: string; cancelRedirect?: string }) {
+export function RequireDistributor({ children, title = "Partner Access Required", message = "Join our Trusted Insured Trade Partners platform. Only distributors have access to this page.", cancelRedirect = "/" }: { children: React.ReactNode; title?: string; message?: string; cancelRedirect?: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const [status, setStatus] = useState<"checking" | "needs-auth" | "needs-distributor" | "authorized">("checking");
@@ -111,7 +111,7 @@ export function RequireDistributor({ children, title = "Partner Access Required"
           <div className="mb-1 text-lg font-semibold">{status === "needs-auth" ? "Partner Access Required" : title}</div>
           <div className="text-sm text-neutral-600 dark:text-neutral-300">
             {status === "needs-auth"
-              ? "Join our Trusted Insured Partners platform. Please login or create an account to continue."
+              ? "Join our Trusted Insured Trade Partners platform. Please login or create an account to continue."
               : message}
             <div className="mt-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
               <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">Contact for Support</span>

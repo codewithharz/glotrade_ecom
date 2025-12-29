@@ -2,7 +2,7 @@
 
 ## Overview
 
-The AfriTrade Hub platform now includes a robust avatar upload system using Cloudflare R2 storage. This allows users to upload, manage, and display their profile pictures with high performance and reliability.
+The Glotrade International platform now includes a robust avatar upload system using Cloudflare R2 storage. This allows users to upload, manage, and display their profile pictures with high performance and reliability.
 
 ## Features
 
@@ -49,7 +49,7 @@ ALLOWED_IMAGE_TYPES=image/jpeg,image/png,image/webp,image/gif
 
 1. **Create R2 Bucket**:
    - Go to Cloudflare Dashboard → R2 Object Storage
-   - Create a new bucket (e.g., `afritrade-avatars`)
+   - Create a new bucket (e.g., `glotrade-assets`)
    - Set bucket to public
 
 2. **Generate API Tokens**:
@@ -235,18 +235,19 @@ const uploadWithPresignedUrl = async (file: File) => {
 
 ### Storage Structure
 ```
-avatars/
-├── userId1/
-│   ├── 1703123456789.jpg
-│   └── 1703123567890.png
-├── userId2/
-│   └── 1703123678901.webp
-└── userId3/
-    └── 1703123789012.gif
+glotrade/
+├── avatars/
+│   ├── userId1/
+│   │   ├── 1703123456789.jpg
+│   │   └── 1703123567890.png
+│   ├── userId2/
+│   │   └── 1703123678901.webp
+│   └── userId3/
+│       └── 1703123789012.gif
 ```
 
 ### Naming Convention
-- **Format**: `avatars/{userId}/{timestamp}.{extension}`
+- **Format**: `glotrade/avatars/{userId}/{timestamp}.{extension}`
 - **Timestamp**: Unix timestamp for uniqueness
 - **Extension**: Original file extension preserved
 
@@ -358,6 +359,6 @@ avatars/
 - **Bulk Operations**: Multiple avatar management
 - **Analytics**: Upload and usage statistics
 
----
+*This system is maintained by the Glotrade International development team.*
 
-**Note**: This system provides a robust foundation for user avatar management with automatic cleanup and error-free operation. Always test thoroughly in development before deploying to production. 
+**Note**: This system provides a robust foundation for user avatar management with automatic cleanup and error-free operation. Always test thoroughly in development before deploying to production.

@@ -4,7 +4,7 @@
 
 1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/11c59324aa996dcaa879444ac86cd84e/r2/overview)
 2. Click **"Create bucket"**
-3. Enter bucket name: `afritrade-avatars`
+3. Enter bucket name: `glotrade-assets`
 4. Set **Public bucket** to **ON**
 5. Click **"Create bucket"**
 
@@ -29,16 +29,16 @@ Create `apps/api/.env` with:
 R2_ACCOUNT_ID=11c59324aa996dcaa879444ac86cd84e
 R2_ACCESS_KEY_ID=YOUR_ACCESS_KEY_ID_HERE
 R2_SECRET_ACCESS_KEY=YOUR_SECRET_ACCESS_KEY_HERE
-R2_BUCKET_NAME=afritrade-avatars
-R2_PUBLIC_URL=https://pub-933ea5269afc4fa1ac618b3a1d0d7f16.r2.dev
-R2_ENDPOINT=https://11c59324aa996dcaa879444ac86cd84e.r2.cloudflarestorage.com
+R2_BUCKET_NAME=glotrade-assets
+R2_PUBLIC_URL=https://your-public-url.r2.dev
+R2_ENDPOINT=https://your-account-id.r2.cloudflarestorage.com
 
 # File Upload Configuration
 MAX_FILE_SIZE=5242880
 ALLOWED_IMAGE_TYPES=image/jpeg,image/png,image/webp,image/gif
 
 # Database Configuration
-MONGODB_URI=mongodb://localhost:27017/afritrade-hub
+MONGODB_URI=mongodb://localhost:27017/glotrade_ecom
 PORT=8080
 
 # JWT Configuration
@@ -119,7 +119,7 @@ After setup, verify these URLs work:
 ## ❓ **Need Help?**
 
 - **Account ID**: Already correct (11c59324aa996dcaa879444ac86cd84e)
-- **Bucket Name**: Use `afritrade-avatars`
+- **Bucket Name**: Use `glotrade-assets`
 - **Public URL**: Use the R2 endpoint for now
 - **Support**: Check Cloudflare R2 documentation for advanced features
 

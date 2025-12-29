@@ -2,7 +2,7 @@
 
 ## Overview
 
-The AfriTrade Hub platform now includes a comprehensive product image upload system using Cloudflare R2 storage. This system allows vendors to upload, manage, and organize product images with a modern drag-and-drop interface.
+The Glotrade International platform now includes a comprehensive product image upload system using Cloudflare R2 storage. This system allows vendors to upload, manage, and organize product images with a modern drag-and-drop interface.
 
 ## Features
 
@@ -129,7 +129,7 @@ Content-Type: application/json
 
 ### **Storage Structure**
 ```
-products/
+glotrade/products/
 ├── productId1/
 │   ├── timestamp_0.jpg
 │   ├── timestamp_1.png
@@ -142,7 +142,7 @@ products/
 ```
 
 ### **Naming Convention**
-- **Format**: `products/{productId}/{timestamp}_{index}.{extension}`
+- **Format**: `glotrade/products/{productId}/{timestamp}_{index}.{extension}`
 - **Timestamp**: Unix timestamp for uniqueness
 - **Index**: Sequential number for ordering
 - **Extension**: Original file extension preserved

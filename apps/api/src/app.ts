@@ -1,9 +1,11 @@
 // yarn dev
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
 import { RedisStore } from "rate-limit-redis";
 import { connectDB } from "./config/db";
@@ -41,7 +43,7 @@ import { errorHandler } from "./middleware/errorHandler";
 import { initScheduledJobs } from "./jobs/scheduler";
 
 // Load environment variables
-dotenv.config();
+// Configured at top of file
 
 const app = express();
 

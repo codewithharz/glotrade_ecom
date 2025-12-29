@@ -6,6 +6,7 @@ import { PaystackProvider } from "../services/providers/PaystackProvider";
 import { FlutterwaveProvider } from "../services/providers/FlutterwaveProvider";
 import { OrangeMoneyProvider } from "../services/providers/OrangeMoneyProvider";
 import { InventoryService } from "../services/InventoryService";
+import { NotificationService } from "../services/NotificationService";
 
 // Configure supported providers
 const providers: Record<string, IPaymentProvider> = {
@@ -15,6 +16,7 @@ const providers: Record<string, IPaymentProvider> = {
 } as any;
 const service = new PaymentService(providers as any);
 const inventoryService = new InventoryService();
+const notificationService = new NotificationService();
 
 const router = Router();
 
@@ -74,6 +76,25 @@ router.get("/verify", async (req: any, res: any, next: any) => {
           } catch (inventoryError) {
             console.error('Failed to confirm stock deduction:', inventoryError);
             // Continue with payment processing even if inventory update fails
+          }
+
+          // Trigger "Order Placed" notification for card/external payments
+          try {
+            const fullOrder = await Order.findById(payment.orderId).lean();
+            if (fullOrder && fullOrder.buyer) {
+              await notificationService.createOrderNotification('order_placed', {
+                orderId: fullOrder._id.toString(),
+                orderNumber: fullOrder._id.toString().slice(-6),
+                totalAmount: fullOrder.totalPrice,
+                currency: fullOrder.currency || "NGN",
+                buyerId: fullOrder.buyer.toString(),
+                sellerId: fullOrder.lineItems?.[0]?.vendorId?.toString() || "",
+                productTitle: fullOrder.lineItems?.[0]?.productTitle || "Order",
+                quantity: fullOrder.lineItems?.[0]?.qty || 1
+              });
+            }
+          } catch (notifError) {
+            console.error('Failed to send order placed notification after verification:', notifError);
           }
         } else if (payment.status === "failed") {
           await Order.updateOne({ _id: payment.orderId }, { $set: { paymentStatus: "failed" } });
@@ -196,6 +217,25 @@ router.post("/webhook/paystack", bodyParser.raw({ type: "*/*" }), async (req: an
           }
         } catch (inventoryError) {
           console.error('Failed to confirm stock deduction in webhook:', inventoryError);
+        }
+
+        // Trigger "Order Placed" notification for card/external payments via webhook
+        try {
+          const fullOrder = await Order.findById(payment.orderId).lean();
+          if (fullOrder && fullOrder.buyer) {
+            await notificationService.createOrderNotification('order_placed', {
+              orderId: fullOrder._id.toString(),
+              orderNumber: fullOrder._id.toString().slice(-6),
+              totalAmount: fullOrder.totalPrice,
+              currency: fullOrder.currency || "NGN",
+              buyerId: fullOrder.buyer.toString(),
+              sellerId: fullOrder.lineItems?.[0]?.vendorId?.toString() || "",
+              productTitle: fullOrder.lineItems?.[0]?.productTitle || "Order",
+              quantity: fullOrder.lineItems?.[0]?.qty || 1
+            });
+          }
+        } catch (notifError) {
+          console.error('Failed to send order placed notification after webhook:', notifError);
         }
       } else if (payment.status === "failed") {
         await Order.updateOne({ _id: payment.orderId }, { $set: { paymentStatus: "failed" } });

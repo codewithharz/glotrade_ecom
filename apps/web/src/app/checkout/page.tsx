@@ -1272,8 +1272,17 @@ export default function CheckoutPage() {
                   const res = await initiatePayment(payload);
                   const url = res?.data?.url;
                   if (url) window.location.href = url;
-                } catch (e) {
+                } catch (e: any) {
                   console.error("init payment error", e);
+                  // Cleanup the pending order if payment initialization fails
+                  if (orderId) {
+                    try {
+                      await apiDelete(`/api/v1/orders/${orderId}`);
+                      console.log("Cleaned up pending order after payment failure:", orderId);
+                    } catch (cleanupError) {
+                      console.error("Failed to cleanup order:", cleanupError);
+                    }
+                  }
                   alert("Payment failed. Please try again. Error: " + (e as Error).message);
                 } finally {
                   setIsProcessing(false);

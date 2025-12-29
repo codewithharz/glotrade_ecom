@@ -43,7 +43,7 @@ export class InvoiceService {
                 doc
                     .fillColor('#444444')
                     .fontSize(20)
-                    .text('AfriTrade Hub', 50, 57)
+                    .text('Glotrade International', 50, 57)
                     .fontSize(10)
                     .text('123 Business Street', 200, 65, { align: 'right' })
                     .text('Lagos, Nigeria', 200, 80, { align: 'right' })
