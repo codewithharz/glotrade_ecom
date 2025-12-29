@@ -3,6 +3,7 @@ import { Model } from "mongoose";
 import { BaseService } from "./BaseService";
 import { NotificationTemplates } from "./NotificationTemplates";
 import { realTimeNotificationService } from "./RealTimeNotificationService";
+import EmailService from "./EmailService";
 import {
   INotification,
   NotificationType,
@@ -66,7 +67,37 @@ export class NotificationService extends BaseService<INotification> {
       console.error('Failed to send real-time notification:', error);
     }
 
+    // Send email if channel is enabled
+    if (channels.includes('email') && process.env.EMAIL_ENABLED !== 'false') {
+      this.sendEmailNotification(options.userId.toString(), title, message).catch(err => {
+        console.error('Failed to send notification email:', err);
+      });
+    }
+
     return notification;
+  }
+
+  /**
+   * Helper to send email notification
+   */
+  private async sendEmailNotification(userId: string, subject: string, html: string): Promise<void> {
+    try {
+      const user = await this.model.db.model('User').findById(userId);
+      if (user && user.email) {
+        await EmailService.sendEmail({
+          to: user.email,
+          subject,
+          html: `<div style="font-family: sans-serif; line-height: 1.6; color: #333;">
+            <h2>${subject}</h2>
+            <p>${html}</p>
+            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+            <p style="font-size: 12px; color: #777;">This is an automated notification from Glotrade International.</p>
+          </div>`
+        });
+      }
+    } catch (error) {
+      console.error(`Error sending email notification to user ${userId}:`, error);
+    }
   }
 
   /**
@@ -148,7 +179,7 @@ export class NotificationService extends BaseService<INotification> {
   ): Promise<INotification> {
     // Generate orderNumber from orderId (last 6 characters for user-friendliness)
     const orderNumber = paymentData.orderId.slice(-6);
-    
+
     return await this.createNotification({
       userId: paymentData.userId,
       type,
@@ -265,7 +296,7 @@ export class NotificationService extends BaseService<INotification> {
   async markAsRead(notificationId: string, userId: string): Promise<INotification> {
     const notification = await this.model.findOneAndUpdate(
       { _id: notificationId, userId },
-      { 
+      {
         status: 'read',
         readAt: new Date()
       },
@@ -285,7 +316,7 @@ export class NotificationService extends BaseService<INotification> {
   async markAllAsRead(userId: string): Promise<{ modifiedCount: number }> {
     const result = await this.model.updateMany(
       { userId, status: 'unread' },
-      { 
+      {
         status: 'read',
         readAt: new Date()
       }
@@ -316,7 +347,7 @@ export class NotificationService extends BaseService<INotification> {
    */
   async deleteNotification(notificationId: string, userId: string): Promise<void> {
     const result = await this.model.deleteOne({ _id: notificationId, userId });
-    
+
     if (result.deletedCount === 0) {
       throw new Error('Notification not found or access denied');
     }
@@ -354,7 +385,7 @@ export class NotificationService extends BaseService<INotification> {
     }
 
     const stat = stats[0];
-    
+
     // Count by type
     const byType: Record<string, number> = {};
     stat.byType.forEach((type: string) => {

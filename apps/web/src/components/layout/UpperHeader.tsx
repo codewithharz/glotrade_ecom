@@ -41,7 +41,7 @@ export default function UpperHeader() {
           <Link
             href="/gdip"
             onClick={handleGDIPClick}
-            className="hover:underline whitespace-nowrap inline-flex items-center gap-1.5 transition-all hover:scale-105"
+            className="bg-[#F9A407] text-white px-3 py-1 rounded-full whitespace-nowrap inline-flex items-center gap-1.5 transition-all hover:scale-105 font-bold shadow-sm hover:shadow-md"
           >
             <ShieldCheck size={16} className="md:w-[18px] md:h-[18px]" /> {translate(locale, "navInsuredPartners")}
           </Link>

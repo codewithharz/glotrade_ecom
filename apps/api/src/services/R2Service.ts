@@ -2,6 +2,8 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { ValidationError } from '../utils/errors';
+import fs from 'fs';
+import path from 'path';
 
 export interface R2Config {
   accountId: string;
@@ -10,6 +12,7 @@ export interface R2Config {
   bucketName: string;
   publicUrl: string;
   endpoint: string;
+  provider: 'r2' | 'local';
 }
 
 export interface UploadResult {
@@ -31,24 +34,48 @@ export class R2Service {
       bucketName: process.env.R2_BUCKET_NAME || '',
       publicUrl: process.env.R2_PUBLIC_URL || '',
       endpoint: process.env.R2_ENDPOINT || '',
+      provider: (process.env.STORAGE_PROVIDER as 'r2' | 'local') || 'r2',
     };
 
-    // Validate configuration
-    if (!this.config.accountId || !this.config.accessKeyId || !this.config.secretAccessKey || !this.config.bucketName) {
-      throw new Error('R2 configuration incomplete. Please check environment variables.');
-    }
+    // If local provider, ensure uploads directory exists
+    if (this.config.provider === 'local') {
+      const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+      
+      // For local provider, use LOCAL_PUBLIC_URL if provided, 
+      // otherwise default to localhost. Do NOT use R2_PUBLIC_URL.
+      const localUrl = process.env.LOCAL_PUBLIC_URL;
+      if (localUrl) {
+        this.config.publicUrl = localUrl;
+      } else {
+        const port = process.env.PORT || 8080;
+        this.config.publicUrl = `http://localhost:${port}/uploads`;
+      }
+    } else {
+      // Validate R2 configuration if provider is R2
+      if (!this.config.accountId || !this.config.accessKeyId || !this.config.secretAccessKey || !this.config.bucketName) {
+        console.warn('⚠️ R2 configuration incomplete. Falling back to LOCAL storage.');
+        this.config.provider = 'local';
+        const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+        if (!fs.existsSync(uploadDir)) {
+          fs.mkdirSync(uploadDir, { recursive: true });
+        }
+      }
 
-    // Ensure we have the correct public URL
-    if (!this.config.publicUrl) {
-      throw new Error('R2_PUBLIC_URL is required for public access');
+      // Ensure we have the correct public URL for R2
+      if (!this.config.publicUrl && this.config.provider === 'r2') {
+        throw new Error('R2_PUBLIC_URL is required for public access');
+      }
     }
 
     this.client = new S3Client({
       region: 'auto',
-      endpoint: this.config.endpoint,
+      endpoint: this.config.endpoint || 'https://dummy-endpoint.com', // Dummy for local bypass
       credentials: {
-        accessKeyId: this.config.accessKeyId,
-        secretAccessKey: this.config.secretAccessKey,
+        accessKeyId: this.config.accessKeyId || 'dummy',
+        secretAccessKey: this.config.secretAccessKey || 'dummy',
       },
     });
   }
@@ -63,6 +90,21 @@ export class R2Service {
     metadata?: Record<string, string>
   ): Promise<UploadResult> {
     try {
+      if (this.config.provider === 'local') {
+        const filePath = path.join(process.cwd(), 'public', 'uploads', key);
+        const dir = path.dirname(filePath);
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
+        fs.writeFileSync(filePath, file);
+        return {
+          url: `${this.config.publicUrl}/${key}`,
+          key,
+          size: file.length,
+          mimeType,
+        };
+      }
+
       const command = new PutObjectCommand({
         Bucket: this.config.bucketName,
         Key: key,
@@ -83,8 +125,8 @@ export class R2Service {
         mimeType,
       };
     } catch (error) {
-      console.error('R2 upload error:', error);
-      throw new ValidationError('Failed to upload file to R2');
+      console.error('File upload error:', error);
+      throw new ValidationError('Failed to upload file');
     }
   }
 
@@ -93,6 +135,14 @@ export class R2Service {
    */
   async deleteFile(key: string): Promise<void> {
     try {
+      if (this.config.provider === 'local') {
+        const filePath = path.join(process.cwd(), 'public', 'uploads', key);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+        return;
+      }
+
       const command = new DeleteObjectCommand({
         Bucket: this.config.bucketName,
         Key: key,
@@ -100,8 +150,8 @@ export class R2Service {
 
       await this.client.send(command);
     } catch (error) {
-      console.error('R2 delete error:', error);
-      throw new ValidationError('Failed to delete file from R2');
+      console.error('File delete error:', error);
+      throw new ValidationError('Failed to delete file');
     }
   }
 
@@ -217,13 +267,13 @@ export class R2Service {
       });
 
       const listResult = await this.client.send(listCommand);
-      
+
       if (listResult.Contents && listResult.Contents.length > 0) {
         // Delete all objects in the product folder
-        const deletePromises = listResult.Contents.map(obj => 
+        const deletePromises = listResult.Contents.map(obj =>
           this.deleteFile(obj.Key!)
         );
-        
+
         await Promise.all(deletePromises);
         console.log(`Deleted ${listResult.Contents.length} images for product ${productId}`);
       }
@@ -245,13 +295,13 @@ export class R2Service {
       });
 
       const listResult = await this.client.send(listCommand);
-      
+
       if (listResult.Contents && listResult.Contents.length > 0) {
         return listResult.Contents
           .map(obj => `${this.config.publicUrl}/${obj.Key}`)
           .sort(); // Sort for consistent ordering
       }
-      
+
       return [];
     } catch (error) {
       console.error('Failed to get product image URLs:', error);
@@ -292,15 +342,15 @@ export class R2Service {
   validateBusinessDocument(file: any): { isValid: boolean; error?: string } {
     const maxSize = 10 * 1024 * 1024; // 10MB
     const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
-    
+
     if (file.size > maxSize) {
       return { isValid: false, error: 'File size exceeds 10MB limit' };
     }
-    
+
     if (!allowedTypes.includes(file.mimetype)) {
       return { isValid: false, error: 'Only PDF, JPEG, and PNG files are allowed' };
     }
-    
+
     return { isValid: true };
   }
 
@@ -316,13 +366,13 @@ export class R2Service {
       });
 
       const listResult = await this.client.send(listCommand);
-      
+
       if (listResult.Contents && listResult.Contents.length > 0) {
         // Delete all objects in the vendor's business documents folder
-        const deletePromises = listResult.Contents.map(obj => 
+        const deletePromises = listResult.Contents.map(obj =>
           this.deleteFile(obj.Key!)
         );
-        
+
         await Promise.all(deletePromises);
         console.log(`Deleted ${listResult.Contents.length} business documents for vendor ${vendorId}`);
       }

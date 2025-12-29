@@ -1,7 +1,6 @@
 // Express types handled by any
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import { User } from "../models";
 import { ValidationError } from "../utils/errors";
@@ -9,46 +8,8 @@ import { WalletService } from "../services/WalletService";
 import { UserService } from "../services/UserService";
 import ReferralService from "../services/ReferralService";
 import CommissionService from "../services/CommissionService";
+import EmailService from "../services/EmailService";
 
-const resolvedPort = Number(process.env.SMTP_PORT || 587);
-const resolvedSecure = String(process.env.SMTP_SECURE || '').toLowerCase() === 'true' || resolvedPort === 465;
-const transporter = nodemailer.createTransport({
-  service: process.env.SMTP_SERVICE || undefined, // e.g., 'gmail'
-  host: process.env.SMTP_HOST,
-  port: resolvedPort,
-  secure: resolvedSecure,
-  requireTLS: String(process.env.SMTP_REQUIRE_TLS || '').toLowerCase() === 'true' || (!resolvedSecure && resolvedPort === 587),
-  auth: process.env.SMTP_USER && process.env.SMTP_PASS ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined,
-  pool: true,
-  connectionTimeout: 12000,
-  socketTimeout: 12000,
-  greetingTimeout: 12000,
-});
-
-async function sendViaEthereal(to: string, url: string): Promise<string | null> {
-  try {
-    const testAccount = await nodemailer.createTestAccount();
-    const etherealTransporter = nodemailer.createTransport({
-      host: testAccount.smtp.host,
-      port: testAccount.smtp.port,
-      secure: testAccount.smtp.secure,
-      auth: { user: testAccount.user, pass: testAccount.pass },
-    });
-    const info = await etherealTransporter.sendMail({
-      from: 'AfriTrade <no-reply@ethereal.email>',
-      to,
-      subject: 'Verify your email',
-      text: `Verify: ${url}`,
-      html: `<p>Verify your account:</p><p><a href="${url}">${url}</a></p>`,
-    });
-    const preview = nodemailer.getTestMessageUrl(info);
-    if (preview) console.log('Ethereal preview URL:', preview);
-    return preview || null;
-  } catch (e) {
-    console.warn('Ethereal fallback failed', e);
-    return null;
-  }
-}
 
 export class AuthController {
   private walletService: WalletService;
@@ -195,28 +156,11 @@ export class AuthController {
       const origin = process.env.APP_ORIGIN || "http://localhost:3000";
       const url = `${origin}/auth/verify?token=${verifyToken}`;
 
-      // Fire-and-forget email sending; do not block registration response
+      // Fire-and-forget email sending
       if (process.env.NODE_ENV !== 'test') {
-        (async () => {
-          if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
-            try {
-              await transporter.sendMail({
-                from: process.env.SMTP_FROM || process.env.SMTP_USER || "no-reply@example.com",
-                to: email,
-                subject: "Verify your email",
-                text: `Verify: ${url}`,
-                html: `<p>Verify your account:</p><p><a href=\"${url}\">${url}</a></p>`
-              });
-            } catch (mailErr) {
-              console.warn("Email send failed (registration will still succeed)", mailErr);
-              if (process.env.NODE_ENV !== 'production') {
-                await sendViaEthereal(email, url);
-              }
-            }
-          } else if (process.env.NODE_ENV !== 'production') {
-            await sendViaEthereal(email, url);
-          }
-        })();
+        EmailService.sendVerificationEmail(normalizedEmail, url).catch(err =>
+          console.warn("Verification email failed to send:", err)
+        );
       }
 
       const token = jwt.sign(
@@ -277,25 +221,9 @@ export class AuthController {
         const origin = process.env.APP_ORIGIN || "http://localhost:3000";
         const reactivationUrl = `${origin}/auth/reactivate?token=${reactivationToken}`;
 
-        if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
-          try {
-            await transporter.sendMail({
-              from: process.env.SMTP_FROM || process.env.SMTP_USER || "no-reply@example.com",
-              to: user.email, // Use user's email from database, not input
-              subject: "Account Reactivation Required",
-              text: `Your account was marked for deletion. Click here to reactivate: ${reactivationUrl}`,
-              html: `
-                <p>Your account was marked for deletion and requires reactivation.</p>
-                <p>This is deletion attempt #${(user as any).deletionCount || 1}.</p>
-                <p>Click the link below to reactivate your account:</p>
-                <p><a href="${reactivationUrl}">${reactivationUrl}</a></p>
-                <p>This link expires in 24 hours.</p>
-              `,
-            });
-          } catch (emailError) {
-            console.error('Failed to send reactivation email:', emailError);
-          }
-        }
+        EmailService.sendReactivationEmail(user.email, reactivationUrl, (user as any).deletionCount || 1).catch(err =>
+          console.error('Failed to send reactivation email:', err)
+        );
 
         await user.save();
         throw new ValidationError("Account is marked for deletion. A reactivation email has been sent to your email address.");
@@ -464,9 +392,9 @@ export class AuthController {
       await user.save();
       const origin = process.env.APP_ORIGIN || "http://localhost:3000";
       const url = `${origin}/auth/verify?token=${verifyToken}`;
-      if (process.env.SMTP_HOST) {
-        await transporter.sendMail({ from: process.env.SMTP_FROM || "no-reply@example.com", to: email, subject: "Verify your email", text: `Verify: ${url}`, html: `<p>Verify your account:</p><p><a href="${url}">${url}</a></p>` });
-      }
+      EmailService.sendVerificationEmail(email, url).catch(err =>
+        console.error('Failed to resend verification email:', err)
+      );
       res.json({ status: "success", data: { ok: true } });
     } catch (e) { next(e); }
   };
@@ -517,23 +445,9 @@ export class AuthController {
       const origin = process.env.APP_ORIGIN || "http://localhost:3000";
       const url = `${origin}/auth/reset?token=${resetToken}`;
       // Fire-and-forget email
-      (async () => {
-        try {
-          if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
-            await transporter.sendMail({
-              from: process.env.SMTP_FROM || process.env.SMTP_USER || "no-reply@example.com",
-              to: email,
-              subject: "Reset your password",
-              text: `Reset link: ${url}`,
-              html: `<p>Click to reset your password:</p><p><a href="${url}">${url}</a></p>`,
-            });
-          } else if (process.env.NODE_ENV !== 'production') {
-            await sendViaEthereal(email, url);
-          }
-        } catch (e) {
-          console.warn("Password reset email failed", e);
-        }
-      })();
+      EmailService.sendPasswordResetEmail(email, url).catch(err =>
+        console.warn("Password reset email failed", err)
+      );
       res.json({ status: "success", data: { ok: true } });
     } catch (e) { next(e); }
   };

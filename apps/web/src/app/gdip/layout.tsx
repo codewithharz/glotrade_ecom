@@ -1,5 +1,5 @@
 "use client";
-import { RequireAuth } from "@/components/auth/Guards";
+import { RequireDistributor } from "@/components/auth/Guards";
 
 export default function GDIPLayout({
     children,
@@ -7,12 +7,12 @@ export default function GDIPLayout({
     children: React.ReactNode;
 }) {
     return (
-        <RequireAuth
-            title="Partner Access Required"
-            message="Please login to access the Trusted Insured Partners platform and manage your TPIAs."
+        <RequireDistributor
+            title="Distributor Access Restricted"
+            message="This area is exclusively for authenticated distributors. Please contact support if you believe this is an error."
             cancelRedirect="/"
         >
             {children}
-        </RequireAuth>
+        </RequireDistributor>
     );
 }

@@ -5,7 +5,9 @@ import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
+import { RedisStore } from "rate-limit-redis";
 import { connectDB } from "./config/db";
+import { cacheService } from "./services/CacheService";
 import userRoutes from "./routes/user.routes";
 import authRoutes from "./routes/auth.routes";
 import adminRoutes from "./routes/admin.routes";
@@ -110,6 +112,8 @@ app.use(helmet());
 
 // Rate limiting (skip in development to avoid 429s during SSR/HMR and local testing)
 const IS_PROD = process.env.NODE_ENV === "production";
+const redisClient = cacheService.getClient();
+
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: IS_PROD ? 300 : 100000, // generous in dev; higher headroom in prod
@@ -117,6 +121,13 @@ const limiter = rateLimit({
   legacyHeaders: false,
   skip: () => !IS_PROD,
   message: "Too many requests, please try again shortly.",
+  store: redisClient
+    ? new RedisStore({
+      // @ts-expect-error - ioredis types mismatch with rate-limit-redis but it works
+      sendCommand: (...args: string[]) => redisClient.call(...args),
+      prefix: "rl:", // Rate Limiter prefix
+    })
+    : undefined, // Falls back to default MemoryStore
 });
 
 // Apply global rate limiter
