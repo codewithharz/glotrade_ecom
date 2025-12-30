@@ -9,7 +9,6 @@
   "search": "Nema",
   "allCategories": "Duk Rukunoni",
   "myAccount": "Asusuna",
-  "wishlist": "Jerin Burina",
   "cart": {
     "title": "Kwando",
     "success": {
@@ -36,6 +35,7 @@
   "securePrivacy": "Sirri Amintacce",
   "securityCertification": "Takardar Shaidar Tsaro",
   "home": {
+    "title": "Gida",
     "featuredForYou": "Zaɓaɓɓu don ku",
     "seeMore": "Duba ƙari",
     "shopNow": "Sayi yanzu",
@@ -690,29 +690,31 @@
   },
   "auth": {
     "login": {
-      "title": "Shiga",
-      "subtitle": "Shiga asusun kasuwancin ku",
+      "title": "Barka da Dawowa",
+      "subtitle": "Shiga don ci gaba da asusun ku",
       "loginInputLabel": "Imel ko Sunan mai amfani",
       "loginInputPlaceholder": "Shigar da imel ko sunan mai amfani",
       "passwordLabel": "Kalmar sirri",
-      "passwordPlaceholder": "••••••••",
-      "rememberMe": "Tuna ni",
+      "passwordPlaceholder": "Shigar da kalmar sirri",
       "forgotPassword": "Ka manta kalmar sirri?",
-      "signInButton": "Shiga",
       "signingIn": "Ana shiga...",
+      "signInButton": "Shiga",
       "dontHaveAccount": "Ba ku da asusu?",
       "createOne": "Ƙirƙiri ɗaya",
       "deletionModal": {
-        "title": "Asusu yana jiran goge wa",
-        "description": "An tsara asusun ku don goge wa. Don ci gaba da amfani da GloTrade, dole ne ku sake kunna asusun ku da farko.",
-        "emailSent": "An aika imel din sake kunnawa",
-        "emailSentDetail": "Da fatan za a duba akwatin saƙon ku ({email}) don hanyar sake kunnawa.",
-        "nextSteps": "Abin da za a yi na gaba:",
-        "step1": "Duba babban fayil ɗin spam ɗin ku idan ba ku ga imel ɗin ba",
-        "step2": "Hanyar za ta ƙare a cikin sa'o'i 24",
-        "step3": "Danna hanyar haɗi a cikin imel don dawo da damar ku",
-        "needHelp": "Kuna buƙatar taimako?",
-        "supportHint": "Idan kuna fuskantar matsaloli, tuntuɓi ƙungiyar tallafawa."
+        "title": "Ana Bukatar Sake Kunna Asusun",
+        "description": "An sanya alamar goge asusun ku kuma ana buƙatar sake kunna shi",
+        "toastAlreadySent": "An riga an aika imel ɗin sake kunna asusu. Da fatan za a duba babban fayil ɗin saƙon ku.",
+        "emailSentTitle": "An Aika Imel ɗin Sake Kunnawa",
+        "emailSentDesc": "Mun aika hanyar sake kunna asusun zuwa:",
+        "todoTitle": "Abin da za a yi na gaba:",
+        "todoStep1": "Duba akwatin saƙon imel (da babban fayil ɗin spam)",
+        "todoStep2": "Danna hanyar sake kunna asusun a cikin imel ɗin",
+        "todoStep3": "Za a maido da asusun ku nan take",
+        "todoStep4": "Daga nan za ku iya shiga kamar yadda kuka saba",
+        "helpTitle": "Kuna buƙatar taimako?",
+        "helpDesc": "Idan ba ku sami imel ɗin ba a cikin 'yan mintoci kaɗan, duba babban fayil ɗin spam ko tuntuɓi tallafi.",
+        "yourRegisteredEmail": "imel ɗin ku da kuka yi rajista da shi"
       }
     },
     "register": {
@@ -754,8 +756,7 @@
       "signIn": "Shiga",
       "successMsg": "An ƙirƙiri asusun kasuwanci! Da fatan za a duba imel ɗin ku don tabbatar da asusun ku.",
       "verificationEmailSent": "An aika imel ɗin tabbatarwa",
-      "errorFillAll": "Da fatan za a cika dukkan bayanan asusu",
-      "redirecting": "Ana tura ku zuwa rajistar kasuwanci..."
+      "errorFillAll": "Da fatan za a cika dukkan bayanan asusu"
     },
     "forgot": {
       "title": "Manta kalmar sirri",
@@ -780,11 +781,7 @@
       "titleFailed": "Sake kunnawa ya gaza",
       "titleSuccess": "An sake kunna asusu!",
       "returnToLogin": "Koma shiga",
-      "contactSupport": "Tuntuɓi tallafi",
-      "deletionAttempt": "Wannan shine ƙoƙarin goge wa na {count}",
-      "deletionWarning": "Da fatan za a kiyaye goge asusu a nan gaba.",
-      "continueToLogin": "Ci gaba da shiga",
-      "redirecting": "Ana tura ku kai tsaye..."
+      "contactSupport": "Tuntuɓi tallafi"
     },
     "reset": {
       "title": "Sake saita kalmar sirri",
@@ -922,6 +919,325 @@
       "title": "Tafiyar sayayyar ku",
       "subtitle": "Ci gaba da bincike don gano ƙarin samfuran ban mamaki!",
       "totalItems": "Jimlar abubuwa"
+    }
+  },
+  "wishlist": {
+    "title": "Abubuwan da ake so",
+    "clearAll": "Share Duka",
+    "exploreMore": "Binciko Ƙari",
+    "freeShippingBanner": "Kyautar jigilar kaya akan oda sama da $50",
+    "limitedTimeOffer": "Tayin lokaci kaɗan",
+    "loading": "Ana lodi...",
+    "empty": {
+      "title": "Jerin abubuwan da kuke so yana da komai",
+      "desc": "Da alama ba ku ƙara komai ba tukuna.",
+      "cta": "Binciko Kasuwa"
+    },
+    "picks": {
+      "title": "Zaɓaɓɓu don ku",
+      "noPicks": "Babu shawarwari a halin yanzu."
+    }
+  },
+  "vouchers": {
+    "title": "Takardun Shaida Na (Vouchers)",
+    "subtitle": "Lambobin ragi da tayi na tallata kaya",
+    "back": "Koma baya",
+    "tabs": {
+      "available": "Akwai ({count})",
+      "used": "An yi amfani da shi ({count})",
+      "history": "Tarihi ({count})"
+    },
+    "types": {
+      "percentage": "Ragi na kashi dari",
+      "fixed": "Kafaffen ragi na kuɗi",
+      "free_shipping": "Sufuri Kyauta"
+    },
+    "status": {
+      "upcoming": "Mai zuwa nan kusa",
+      "expired": "Ya ƙare",
+      "exhausted": "An yi amfani da duka",
+      "active": "Yana aiki"
+    },
+    "card": {
+      "codeLabel": "Lambar Voucher",
+      "copy": "Kwafa",
+      "copied": "An kwafa!",
+      "minOrder": "Mafi ƙarancin oda: {amount} {currency}",
+      "maxDiscount": "Mafi yawan ragi: {amount} {currency}",
+      "usage": "Amfani: {count}/{total}",
+      "expires": "Zai ƙare: {date}",
+      "terms": "Sharuɗɗa da Ka'idoji",
+      "instructions": "Yi amfani da wannan lambar lokacin biyan kuɗi don samun ragi",
+      "saved": "An tara: {amount} {currency}",
+      "appliedSuccessfully": "An yi amfani da shi cikin nasara akan odar ku"
+    },
+    "history": {
+      "orderTotal": "Jimillar Oda",
+      "discountApplied": "An yi amfani da ragi",
+      "finalAmount": "Adadin Ƙarshe"
+    },
+    "empty": {
+      "availableTitle": "Babu voucher da take akwai",
+      "availableDesc": "Ba ku da wani voucher da take aiki a halin yanzu. Sake duba an jima don sabbin tayi!",
+      "usedTitle": "Ba a yi amfani da kowane voucher ba tukunna",
+      "usedDesc": "Ba ku yi amfani da kowane voucher ba tukunna. Fara sayayya don cin gajiyar manyan tayi!",
+      "historyTitle": "Babu tarihin amfani",
+      "historyDesc": "Ba ku yi amfani da kowane voucher ba tukunna. Fara sayayya don ganin tarihin amfani ku!"
+    },
+    "footer": "Ana amfani da voucher kai tsaye lokacin biyan kuɗi. Ana iya samun wasu ƙuntatawa.",
+    "toasts": {
+      "copySuccess": "An kwafi lambar voucher!",
+      "copyError": "An kasa kwafin lambar",
+      "loadError": "An sami matsala wajen loda vouchers"
+    }
+  },
+  "wallet": {
+    "title": "Aljihun Kuɗina",
+    "subtitle": "Sarrafa kuɗin ku da ma'amaloli",
+    "notAvailableTitle": "Aljihun Kuɗi Babu Shi",
+    "notAvailableDesc": "Nau'in asusun ku ba shi da damar amfani da aljihun kuɗi.",
+    "returnProfile": "Koma Bayanan Martaba",
+    "successMessage": {
+      "title": "An Yi Nasarar Saka Kuɗi!",
+      "desc": "An yi nasarar saka kuɗi a aljihun ku. Za a sabunta ragowar kwanan nan."
+    },
+    "balance": {
+      "label": "Ragowar Aljihun Kuɗi",
+      "currency": "Naira Najeriya (NGN)",
+      "total": "Jimlar Ragowa",
+      "available": "Ragowar Da Za A Iya Amfani Da Ita",
+      "frozen": "An Toshe",
+      "credit": "Kiredit Da Akwai",
+      "creditUsed": "Kiredit Da Aka Yi Amfani Da Shi",
+      "of": "daga cikin",
+      "hide": "Boye Ragowa",
+      "show": "Nuna Ragowa"
+    },
+    "actions": {
+      "topUp": "Saka Kuɗi",
+      "withdraw": "Cire Kuɗi",
+      "requestCredit": "Nemi Kiredit",
+      "export": "Fitar Da Bayani",
+      "refresh": "Sabunta",
+      "analytics": "Nazari",
+      "history": "Tarihi",
+      "settings": "Saituna"
+    },
+    "tabs": {
+      "transactions": "Ma'amaloli",
+      "withdrawals": "Tarihin Cire Kuɗi",
+      "creditRequests": "Bukatar Kiredit"
+    },
+    "transactions": {
+      "title": "Ma'amaloli Na Kwanan Nan",
+      "subtitle": "Duba ayyukan aljihun kuɗin ku",
+      "empty": "Ba a sami ma'amaloli ba",
+      "filters": {
+        "title": "Matatun Bayani",
+        "clear": "Share Matatu",
+        "type": "Nau'i",
+        "status": "Hali",
+        "dateRange": "Kwanakin Wata",
+        "allTypes": "Duk Nau'ikan",
+        "deposit": "Saka Kuɗi",
+        "withdrawal": "Cire Kuɗi",
+        "payment": "Biya",
+        "refund": "Maido Da Kuɗi",
+        "allStatuses": "Duk Halaye",
+        "completed": "An Kammala",
+        "pending": "Ana Jira",
+        "failed": "Ya Gaza"
+      },
+      "pagination": {
+        "pageOffset": "Shafi na {page} daga cikin {pages}"
+      },
+      "details": {
+        "title": "Bayanin Ma'amala",
+        "reference": "Lambar Shaida",
+        "date": "Kwanan Wata",
+        "type": "Nau'i",
+        "description": "Bayani",
+        "close": "Rufe"
+      }
+    },
+    "analytics": {
+      "title": "Nazarin Aljihun Kuɗi",
+      "subtitle": "Duba yadda kuke kashe kuɗi",
+      "refresh": "Sabunta",
+      "export": "Fitar Da Bayani",
+      "filters": {
+        "title": "Matatu",
+        "period": "Lokaci",
+        "currency": "Kuɗi",
+        "type": "Nau'i",
+        "category": "Rukuni",
+        "granularity": "Bayani filla-filla",
+        "allCurrencies": "Duk Kuɗaɗe",
+        "allTypes": "Duk Nau'ikan",
+        "user": "Mai Amfani",
+        "vendor": "Mai Siyarwa",
+        "allCategories": "Duk Rukunoni",
+        "daily": "Kullum",
+        "weekly": "Mako-mako",
+        "monthly": "Wata-wata"
+      },
+      "periods": {
+        "7d": "Kwanaki 7 Da Suka Wuce",
+        "30d": "Kwanaki 30 Da Suka Wuce",
+        "90d": "Kwanaki 90 Da Suka Wuce",
+        "1y": "Shekarar Da Ta Wuce"
+      },
+      "metrics": {
+        "totalTransactions": "Jimlar Ma'amaloli",
+        "totalVolume": "Jimlar Kuɗin Da Aka Kashe",
+        "avgTransaction": "Matsakaicin Ma'amala",
+        "dailyAverage": "Matsakaicin Kullum"
+      },
+      "patterns": {
+        "title": "Yadda Kuke Kashewa",
+        "mostActiveDay": "Ranar Da Aka Fi Aiki",
+        "mostActiveHour": "Sa'ar Da Aka Fi Aiki",
+        "largestTransaction": "Ma'amala Mafi Girma",
+        "smallestTransaction": "Ma'amala Mafi Ƙanƙanta"
+      },
+      "breakdown": {
+        "title": "Rabe-raben Ma'amaloli",
+        "totalDeposits": "Jimlar Saka Kuɗi",
+        "totalWithdrawals": "Jimlar Cire Kuɗi",
+        "totalTransfers": "Jimlar Canje-canje"
+      },
+      "earnings": {
+        "title": "Kuɗin Shigar Mai Siyarwa",
+        "totalPayments": "Jimlar Biyan Mai Siyarwa",
+        "desc": "Kuɗaɗen da aka karɓa na ododin da aka kai"
+      },
+      "spendingByCategory": "Kashewa Ta Rukuni",
+      "spendingByDay": "Kashewa Ta Rana",
+      "empty": {
+        "title": "Babu Bayanai Tukuna",
+        "desc": "Ba a sami ma'amaloli na lokacin da aka zaɓa ba.",
+        "reset": "Sake Saita Matatu"
+      }
+    },
+    "modals": {
+      "topUp": {
+        "title": "Saka Kuɗi A Aljihu",
+        "amountLabel": "Adadi (₦)",
+        "placeholder": "0.00",
+        "processing": "Ana sarrafawa...",
+        "submit": "Ci gaba da Biya"
+      },
+      "withdrawal": {
+        "title": "Cire Kuɗi",
+        "amountLabel": "Adadi (₦)",
+        "available": "Akwai: ₦{amount}",
+        "bankTitle": "Bayanin Banki",
+        "bankName": "Sunan Banki",
+        "accountNumber": "Lambar Asusun",
+        "accountName": "Sunan Asusun",
+        "selectBank": "Zaɓi Banki",
+        "loadingBanks": "Ana loda bankuna...",
+        "resolving": "Ana tabbatar da asusu...",
+        "cancel": "Soke",
+        "submit": "Cire Kuɗi",
+        "history": "Tarihin Cire Kuɗi"
+      },
+      "creditRequest": {
+        "title": "Nemi Kiredit",
+        "subtitle": "Nemi bashin kiredit don yin siyayya",
+        "guidelines": "Ka'idojin Neman Kiredit:",
+        "guidelinesItems": [
+          "Adadi: ₦50,000 - ₦10,000,000",
+          "Nema ɗaya duk bayan kwanaki 30",
+          "Dole Admin ya amince",
+          "Bayar da ƙwaƙƙwarar hujja ta kasuwanci"
+        ],
+        "amountLabel": "Adadin Da Ake Bukata (₦)",
+        "amountRange": "Mafi ƙanƙanta: 50,000 ₦ • Mafi girma: 10,000,000 ₦",
+        "reasonLabel": "Hujja Ta Kasuwanci",
+        "reasonPlaceholder": "Bayyana dalilin da ya sa kake bukatar wannan kiredit...",
+        "minChars": "Mafi ƙanƙanta: haruffa {count}",
+        "cancel": "Soke",
+        "submit": "Aika Bukata",
+        "submitting": "Ana aikawa...",
+        "alreadySubmitted": "Kun taɓa aika bukatar kiredit kwanan nan. Da fatan za a jira kwanaki 30 tsakanin buƙatu.",
+        "pendingRequest": "Kuna da bukatar kiredit da ake jira. Da fatan za a jira duba shi."
+      },
+      "export": {
+        "title": "Fitar Da Bayanan Ma'amaloli",
+        "format": "Tsari",
+        "dateRange": "Kwanakin Wata (Na zaɓi)",
+        "download": "Sauke",
+        "cancel": "Soke"
+      }
+    },
+    "toasts": {
+      "topUpSuccess": "An yi nasarar saka kuɗi a aljihu!",
+      "topUpError": "An kasa fara saka kuɗi",
+      "withdrawSuccess": "An aika bukatar cire kuɗi cikin nasara",
+      "withdrawError": "An kasa aika bukatar cire kuɗi",
+      "creditSuccess": "An aika bukatar kiredit cikin nasara! Za a sanar da ku idan an duba.",
+      "creditError": "An kasa aika bukatar kiredit",
+      "exportSuccess": "An fitar da bayanan ma'amaloli cikin nasara!",
+      "exportError": "An kasa fitar da bayanan ma'amaloli",
+      "loadError": "An kasa loda ma'amaloli",
+      "analyticsError": "An kasa loda bayanan nazari",
+      "walletDataError": "An kasa loda bayanan aljihun kuɗi",
+      "newTransaction": "Sabuwar ma'amala {type}: {description}",
+      "walletFrozen": "An toshe aljihun kuɗin ku: {reason}",
+      "walletUnfrozen": "An buɗe aljihun kuɗin ku"
+    },
+    "distributor": {
+      "title": "Ladan Masu Rarrabawa",
+      "subtitle": "Karin Kuɗin Kwazo Na Watan Guda Uku",
+      "nextDate": "Rana Ta Gaba Ta Karɓar Lada",
+      "calculating": "Ana lissafawa...",
+      "desc": "Ana ba da ladan duk bayan watanni 3",
+      "estimated": "Ladan Da Ake Sa Rai",
+      "estimatedDesc": "{percent}% na jimlar ragowar ku ta yanzu",
+      "totalEarned": "Jimlar Ladan Da Aka Samu",
+      "lastReward": "Na ƙarshe: {amount} a ranar {date}"
+    },
+    "commission": {
+      "title": "Kwamishon Wakilin Tallace-tallace",
+      "subtitle": "Kuɗin shigar ku na mutanen da kuka kawo",
+      "dashboard": "Duba Dashboard",
+      "totalEarned": "Jimlar Kuɗin Da Aka Samu",
+      "commissionsCount": "Kwamishon guda {count}",
+      "pending": "Ana jira",
+      "awaiting": "Jiran amincewa",
+      "approved": "An amince",
+      "ready": "An shirya don biya",
+      "payoutPending": "{amount} na jiran amincewa",
+      "requestPayout": "Nemi Biya",
+      "breakdown": "Rabe-raben Shiga",
+      "registration": "Rajista",
+      "purchase": "Siyayya",
+      "bonus": "Ƙarin Lada",
+      "viewReferrals": "Duba Mutanen Da Aka Kawo",
+      "history": "Tarihin Kwamishon",
+      "bankMissing": {
+        "title": "Babu Bayanan Banki",
+        "desc": "Muna bukatar bayanan bankin ku don biyan kwamishon.",
+        "instruction": "Da fatan za a sabunta bayanan bankin ku a bayanan martaba kafin neman biya.",
+        "cancel": "Soke",
+        "update": "Sabunta Bayanan Martaba"
+      }
+    },
+    "callback": {
+      "verifying": "Ana Tabbatar Da Biyan Kuɗi",
+      "verifyingDesc": "Da fatan za a jira muna tabbatar da saka kuɗin ku...",
+      "processing": "Ana aiwatar da biyan kuɗin ku...",
+      "success": "An Yi Nasara!",
+      "successDesc": "An yi nasarar saka kuɗi a aljihun ku.",
+      "updatedBalance": "Sabon Ragowar Aljihun Kuɗi",
+      "availableBalance": "Ragowar Da Za A Iya Amfani Da Ita",
+      "continue": "Ci gaba zuwa Aljihun Kuɗi",
+      "autoRedirect": "Za a koma kai tsaye cikin sakan {seconds}...",
+      "failed": "Saka Kuɗi Ya Gaza",
+      "failedDesc": "Ba mu iya tabbatar da biyan kuɗin ku ba. Da fatan za a sake gwadawa ko tuntuɓi tallafi.",
+      "retry": "Sake Gwadawa",
+      "back": "Koma Aljihun Kuɗi"
     }
   }
 }

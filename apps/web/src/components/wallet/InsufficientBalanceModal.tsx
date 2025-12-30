@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { X, AlertTriangle, Wallet, CreditCard } from 'lucide-react';
+import { translate } from '@/utils/translate';
 
 interface InsufficientBalanceModalProps {
   isOpen: boolean;
@@ -36,7 +37,7 @@ const InsufficientBalanceModal: React.FC<InsufficientBalanceModalProps> = ({
               <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
             </div>
             <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
-              Insufficient Balance
+              {translate("wallet.modals.insufficientBalance.title")}
             </h3>
           </div>
           <button
@@ -55,7 +56,7 @@ const InsufficientBalanceModal: React.FC<InsufficientBalanceModalProps> = ({
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                    Required Amount
+                    {translate("wallet.modals.insufficientBalance.required")}
                   </span>
                   <span className="text-lg font-semibold text-gray-900 dark:text-white">
                     ₦{requiredAmount.toLocaleString()}
@@ -64,7 +65,7 @@ const InsufficientBalanceModal: React.FC<InsufficientBalanceModalProps> = ({
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                    Available Balance
+                    {translate("wallet.modals.insufficientBalance.available")}
                   </span>
                   <span className="text-lg font-semibold text-gray-900 dark:text-white">
                     ₦{availableAmount.toLocaleString()}
@@ -74,7 +75,7 @@ const InsufficientBalanceModal: React.FC<InsufficientBalanceModalProps> = ({
                 <div className="border-t border-gray-200 dark:border-gray-600 pt-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-red-600 dark:text-red-400">
-                      Shortfall
+                      {translate("wallet.modals.insufficientBalance.shortfall")}
                     </span>
                     <span className="text-lg font-semibold text-red-600 dark:text-red-400">
                       ₦{shortfall.toLocaleString()}
@@ -87,7 +88,7 @@ const InsufficientBalanceModal: React.FC<InsufficientBalanceModalProps> = ({
             {/* Message */}
             <div className="text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Your wallet doesn't have enough funds to complete this payment.
+                {translate("wallet.modals.insufficientBalance.message")}
               </p>
             </div>
           </div>
@@ -102,7 +103,7 @@ const InsufficientBalanceModal: React.FC<InsufficientBalanceModalProps> = ({
                 className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
               >
                 <Wallet className="w-4 h-4" />
-                Add Funds to Wallet
+                {translate("wallet.modals.insufficientBalance.addFunds")}
               </button>
             )}
 
@@ -112,7 +113,7 @@ const InsufficientBalanceModal: React.FC<InsufficientBalanceModalProps> = ({
                 className="w-full flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-medium py-3 px-4 rounded-lg transition-colors"
               >
                 <CreditCard className="w-4 h-4" />
-                Use Other Payment Method
+                {translate("wallet.modals.insufficientBalance.useOther")}
               </button>
             )}
 
@@ -120,7 +121,7 @@ const InsufficientBalanceModal: React.FC<InsufficientBalanceModalProps> = ({
               onClick={onClose}
               className="w-full text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 font-medium py-2 px-4 rounded-lg transition-colors"
             >
-              Cancel
+              {translate("wallet.modals.insufficientBalance.cancel")}
             </button>
           </div>
         </div>

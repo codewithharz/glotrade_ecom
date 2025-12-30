@@ -4,6 +4,7 @@ import { RequireAuth } from "@/components/auth/Guards";
 import { apiGet } from "@/utils/api";
 import { getUserId } from "@/utils/auth";
 import { toast } from "@/components/common/Toast";
+import { translate } from "@/utils/translate";
 import {
   BarChart3,
   TrendingUp,
@@ -132,7 +133,7 @@ export default function WalletAnalyticsPage() {
       }
     } catch (error) {
       console.error("Error loading analytics:", error);
-      toast("Failed to load analytics data", "error");
+      toast(translate("wallet.toasts.analyticsError"), "error");
     } finally {
       setIsLoading(false);
     }
@@ -155,11 +156,11 @@ export default function WalletAnalyticsPage() {
 
   const formatPeriod = (period: string) => {
     switch (period) {
-      case "7d": return "Last 7 days";
-      case "30d": return "Last 30 days";
-      case "90d": return "Last 90 days";
-      case "1y": return "Last year";
-      default: return "Last 30 days";
+      case "7d": return translate("wallet.analytics.periods.7d");
+      case "30d": return translate("wallet.analytics.periods.30d");
+      case "90d": return translate("wallet.analytics.periods.90d");
+      case "1y": return translate("wallet.analytics.periods.1y");
+      default: return translate("wallet.analytics.periods.30d");
     }
   };
 
@@ -187,10 +188,10 @@ export default function WalletAnalyticsPage() {
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2 sm:gap-3">
                   <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500" />
-                  Wallet Analytics
+                  {translate("wallet.analytics.title")}
                 </h1>
                 <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1 sm:mt-2">
-                  Insights into your wallet activity and spending patterns
+                  {translate("wallet.analytics.subtitle")}
                 </p>
               </div>
               <div className="flex gap-2">
@@ -199,11 +200,11 @@ export default function WalletAnalyticsPage() {
                   className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm"
                 >
                   <RefreshCw className="w-4 h-4" />
-                  <span className="hidden sm:inline">Refresh</span>
+                  <span className="hidden sm:inline">{translate("wallet.analytics.refresh")}</span>
                 </button>
                 <button className="px-3 sm:px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-2 text-sm">
                   <Download className="w-4 h-4" />
-                  <span className="hidden sm:inline">Export</span>
+                  <span className="hidden sm:inline">{translate("wallet.analytics.export")}</span>
                 </button>
               </div>
             </div>
@@ -217,7 +218,7 @@ export default function WalletAnalyticsPage() {
             >
               <div className="flex items-center gap-2">
                 <Filter className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Filters</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">{translate("wallet.analytics.filters.title")}</h3>
               </div>
               {isFiltersExpanded ? (
                 <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
@@ -230,57 +231,57 @@ export default function WalletAnalyticsPage() {
               }`}>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Time Period
+                  {translate("wallet.analytics.filters.period")}
                 </label>
                 <select
                   value={filters.period}
                   onChange={(e) => handleFilterChange('period', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-sm"
                 >
-                  <option value="7d">Last 7 days</option>
-                  <option value="30d">Last 30 days</option>
-                  <option value="90d">Last 90 days</option>
-                  <option value="1y">Last year</option>
+                  <option value="7d">{translate("wallet.analytics.periods.7d")}</option>
+                  <option value="30d">{translate("wallet.analytics.periods.30d")}</option>
+                  <option value="90d">{translate("wallet.analytics.periods.90d")}</option>
+                  <option value="1y">{translate("wallet.analytics.periods.1y")}</option>
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Currency
+                  {translate("wallet.analytics.filters.currency")}
                 </label>
                 <select
                   value={filters.currency}
                   onChange={(e) => handleFilterChange('currency', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-sm"
                 >
-                  <option value="all">All Currencies</option>
+                  <option value="all">{translate("wallet.analytics.filters.allCurrencies")}</option>
                   <option value="NGN">NGN</option>
                   <option value="ATH">ATH</option>
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Type
+                  {translate("wallet.analytics.filters.type")}
                 </label>
                 <select
                   value={filters.type}
                   onChange={(e) => handleFilterChange('type', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-sm"
                 >
-                  <option value="all">All Types</option>
-                  <option value="user">User</option>
-                  <option value="vendor">Vendor</option>
+                  <option value="all">{translate("wallet.analytics.filters.allTypes")}</option>
+                  <option value="user">{translate("wallet.analytics.filters.user")}</option>
+                  <option value="vendor">{translate("wallet.analytics.filters.vendor")}</option>
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Category
+                  {translate("wallet.analytics.filters.category")}
                 </label>
                 <select
                   value={filters.category}
                   onChange={(e) => handleFilterChange('category', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-sm"
                 >
-                  <option value="all">All Categories</option>
+                  <option value="all">{translate("wallet.analytics.filters.allCategories")}</option>
                   <option value="shopping">Shopping</option>
                   <option value="food">Food</option>
                   <option value="transport">Transport</option>
@@ -289,16 +290,16 @@ export default function WalletAnalyticsPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Granularity
+                  {translate("wallet.analytics.filters.granularity")}
                 </label>
                 <select
                   value={filters.granularity}
                   onChange={(e) => handleFilterChange('granularity', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-sm"
                 >
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="monthly">Monthly</option>
+                  <option value="daily">{translate("wallet.analytics.filters.daily")}</option>
+                  <option value="weekly">{translate("wallet.analytics.filters.weekly")}</option>
+                  <option value="monthly">{translate("wallet.analytics.filters.monthly")}</option>
                 </select>
               </div>
             </div>
@@ -310,7 +311,7 @@ export default function WalletAnalyticsPage() {
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">Total Transactions</p>
+                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">{translate("wallet.analytics.metrics.totalTransactions")}</p>
                     <p className="text-lg sm:text-3xl font-bold text-gray-900 dark:text-white">{analytics.summary.totalTransactions}</p>
                   </div>
                   <div className="p-2 sm:p-3 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
@@ -322,7 +323,7 @@ export default function WalletAnalyticsPage() {
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">Total Volume</p>
+                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">{translate("wallet.analytics.metrics.totalVolume")}</p>
                     <p className="text-lg sm:text-3xl font-bold text-gray-900 dark:text-white">
                       {formatCurrency(analytics.summary.totalVolume, filters.currency === 'all' ? 'NGN' : filters.currency)}
                     </p>
@@ -336,7 +337,7 @@ export default function WalletAnalyticsPage() {
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">Avg Transaction</p>
+                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">{translate("wallet.analytics.metrics.avgTransaction")}</p>
                     <p className="text-lg sm:text-3xl font-bold text-gray-900 dark:text-white">
                       {formatCurrency(analytics.summary.avgTransactionAmount, filters.currency === 'all' ? 'NGN' : filters.currency)}
                     </p>
@@ -350,7 +351,7 @@ export default function WalletAnalyticsPage() {
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">Daily Average</p>
+                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">{translate("wallet.analytics.metrics.dailyAverage")}</p>
                     <p className="text-lg sm:text-3xl font-bold text-gray-900 dark:text-white">
                       {formatCurrency(analytics.summary.avgDailyVolume, filters.currency === 'all' ? 'NGN' : filters.currency)}
                     </p>
@@ -369,25 +370,25 @@ export default function WalletAnalyticsPage() {
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 dark:border-gray-700">
                 <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
-                  Spending Patterns
+                  {translate("wallet.analytics.patterns.title")}
                 </h3>
                 <div className="space-y-3 sm:space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Most Active Day</span>
+                    <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">{translate("wallet.analytics.patterns.mostActiveDay")}</span>
                     <span className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white">{analytics.spendingPatterns.mostActiveDay}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Most Active Hour</span>
+                    <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">{translate("wallet.analytics.patterns.mostActiveHour")}</span>
                     <span className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white">{analytics.spendingPatterns.mostActiveHour}:00</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Largest Transaction</span>
+                    <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">{translate("wallet.analytics.patterns.largestTransaction")}</span>
                     <span className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white">
                       {formatCurrency(analytics.spendingPatterns.largestTransaction, filters.currency === 'all' ? 'NGN' : filters.currency)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Smallest Transaction</span>
+                    <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">{translate("wallet.analytics.patterns.smallestTransaction")}</span>
                     <span className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white">
                       {formatCurrency(analytics.spendingPatterns.smallestTransaction, filters.currency === 'all' ? 'NGN' : filters.currency)}
                     </span>
@@ -398,23 +399,23 @@ export default function WalletAnalyticsPage() {
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 dark:border-gray-700">
                 <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <PieChart className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
-                  Transaction Breakdown
+                  {translate("wallet.analytics.breakdown.title")}
                 </h3>
                 <div className="space-y-3 sm:space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Total Deposits</span>
+                    <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">{translate("wallet.analytics.breakdown.totalDeposits")}</span>
                     <span className="font-semibold text-sm sm:text-base text-green-600 dark:text-green-400">
                       {formatCurrency(analytics.summary.totalDeposits, filters.currency === 'all' ? 'NGN' : filters.currency)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Total Withdrawals</span>
+                    <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">{translate("wallet.analytics.breakdown.totalWithdrawals")}</span>
                     <span className="font-semibold text-sm sm:text-base text-red-600 dark:text-red-400">
                       {formatCurrency(analytics.summary.totalWithdrawals, filters.currency === 'all' ? 'NGN' : filters.currency)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Total Transfers</span>
+                    <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">{translate("wallet.analytics.breakdown.totalTransfers")}</span>
                     <span className="font-semibold text-sm sm:text-base text-blue-600 dark:text-blue-400">
                       {formatCurrency(analytics.summary.totalTransfers, filters.currency === 'all' ? 'NGN' : filters.currency)}
                     </span>
@@ -431,17 +432,17 @@ export default function WalletAnalyticsPage() {
                 <div className="p-2 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg">
                   <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-400" />
                 </div>
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Vendor Earnings</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">{translate("wallet.analytics.earnings.title")}</h3>
               </div>
               <div className="space-y-3 sm:space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Total Vendor Payments</span>
+                  <span className="text-sm sm:text-base text-gray-600 dark:text-gray-400">{translate("wallet.analytics.earnings.totalPayments")}</span>
                   <span className="font-semibold text-sm sm:text-base text-emerald-600 dark:text-emerald-400">
                     {formatCurrency(analytics.summary.totalDeposits, filters.currency === 'all' ? 'NGN' : filters.currency)}
                   </span>
                 </div>
                 <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                  Payments received from delivered orders
+                  {translate("wallet.analytics.earnings.desc")}
                 </div>
               </div>
             </div>
@@ -452,7 +453,7 @@ export default function WalletAnalyticsPage() {
             <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 dark:border-gray-700 mb-6 sm:mb-8">
               <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500" />
-                Spending by Category
+                {translate("wallet.analytics.spendingByCategory")}
               </h3>
               <div className="space-y-3">
                 {spendingInsights.categorySpending.slice(0, 5).map((item, index) => (
@@ -472,7 +473,7 @@ export default function WalletAnalyticsPage() {
             <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 dark:border-gray-700 mb-6 sm:mb-8">
               <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-500" />
-                Spending by Day of Week
+                {translate("wallet.analytics.spendingByDay")}
               </h3>
               <div className="space-y-3">
                 {spendingInsights.dayOfWeekSpending.map((item, index) => (
@@ -491,15 +492,15 @@ export default function WalletAnalyticsPage() {
           {analytics && analytics.summary.totalTransactions === 0 && (
             <div className="bg-white dark:bg-gray-800 rounded-xl p-8 sm:p-12 shadow-sm border border-gray-200 dark:border-gray-700 text-center">
               <BarChart3 className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-2">No Data Available</h3>
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-2">{translate("wallet.analytics.empty.title")}</h3>
               <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-6">
-                No transactions found for the selected period and filters.
+                {translate("wallet.analytics.empty.desc")}
               </p>
               <button
                 onClick={() => setFilters(prev => ({ ...prev, period: "30d", currency: "all", type: "all" }))}
                 className="px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
               >
-                Reset Filters
+                {translate("wallet.analytics.empty.reset")}
               </button>
             </div>
           )}

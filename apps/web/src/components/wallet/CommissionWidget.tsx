@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { apiGet, apiPost } from "@/utils/api";
 import { DollarSign, TrendingUp, Clock, CheckCircle2, ChevronRight, Award, AlertTriangle } from "lucide-react";
 import { toast } from "@/components/common/Toast";
+import { translate } from "@/utils/translate";
 import Modal from "@/components/common/Modal";
 import Link from "next/link";
 
@@ -59,7 +60,7 @@ export default function CommissionWidget() {
 
             // Refresh summary
             // Assuming toast is available globally or I should import it
-            toast("Payout request submitted successfully!", "success");
+            toast(translate("wallet.toasts.payoutSuccess"), "success");
             const summaryRes = await apiGet('/api/v1/commissions/summary') as { data: CommissionSummary };
             setSummary(summaryRes.data);
         } catch (err: any) {
@@ -70,7 +71,7 @@ export default function CommissionWidget() {
             if (msg.includes("bank details") || apiMsg.includes("bank details")) {
                 setShowBankErrorModal(true);
             } else {
-                const errorMessage = err.response?.data?.message || err.message || "Failed to request payout";
+                const errorMessage = err.response?.data?.message || err.message || translate("wallet.toasts.payoutError");
                 toast(errorMessage, "error");
             }
         } finally {
@@ -98,10 +99,10 @@ export default function CommissionWidget() {
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                            Sales Agent Commissions
+                            {translate("wallet.commission.title")}
                         </h3>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Your referral earnings
+                            {translate("wallet.commission.subtitle")}
                         </p>
                     </div>
                 </div>
@@ -109,7 +110,7 @@ export default function CommissionWidget() {
                     onClick={() => router.push("/agent/dashboard")}
                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm"
                 >
-                    View Dashboard
+                    {translate("wallet.commission.dashboard")}
                     <ChevronRight className="h-4 w-4" />
                 </button>
             </div>
@@ -120,14 +121,14 @@ export default function CommissionWidget() {
                     <div className="flex items-center gap-2 mb-2">
                         <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
                         <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                            Total Earned
+                            {translate("wallet.commission.totalEarned")}
                         </span>
                     </div>
                     <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                         {formatCurrency(summary.totalEarned)}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                        {summary.totalCommissions} commissions
+                        {translate("wallet.commission.commissionsCount", { count: summary.totalCommissions })}
                     </p>
                 </div>
 
@@ -136,14 +137,14 @@ export default function CommissionWidget() {
                     <div className="flex items-center gap-2 mb-2">
                         <Clock className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
                         <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                            Pending
+                            {translate("wallet.commission.pending")}
                         </span>
                     </div>
                     <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                         {formatCurrency(summary.pending)}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                        Awaiting approval
+                        {translate("wallet.commission.awaiting")}
                     </p>
                 </div>
 
@@ -152,21 +153,21 @@ export default function CommissionWidget() {
                     <div className="flex items-center gap-2 mb-2">
                         <TrendingUp className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                         <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                            Approved
+                            {translate("wallet.commission.approved")}
                         </span>
                     </div>
                     <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                         {formatCurrency(summary.approved)}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                        Ready for payout
+                        {translate("wallet.commission.ready")}
                     </p>
 
                     {summary.payoutPending > 0 && (
                         <div className="mt-2 flex items-center gap-1.5 py-1 px-2 bg-orange-50 dark:bg-orange-900/20 rounded border border-orange-100 dark:border-orange-800">
                             <Clock className="w-3 h-3 text-orange-600 dark:text-orange-400" />
                             <span className="text-[10px] font-medium text-orange-700 dark:text-orange-300">
-                                {formatCurrency(summary.payoutPending)} pending approval
+                                {translate("wallet.commission.payoutPending", { amount: formatCurrency(summary.payoutPending) })}
                             </span>
                         </div>
                     )}
@@ -184,7 +185,7 @@ export default function CommissionWidget() {
                         ) : (
                             <DollarSign className="w-4 h-4" />
                         )}
-                        Request Payout
+                        {translate("wallet.commission.requestPayout")}
                     </button>
                 </div>
             </div>
@@ -192,12 +193,12 @@ export default function CommissionWidget() {
             {/* Commission Breakdown */}
             <div className="mt-4 pt-4 border-t border-blue-200 dark:border-blue-800">
                 <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-3">
-                    Earnings Breakdown
+                    {translate("wallet.commission.breakdown")}
                 </p>
                 <div className="grid grid-cols-3 gap-3">
                     <div className="text-center">
                         <p className="text-xs text-gray-500 dark:text-gray-500 mb-1">
-                            Registration
+                            {translate("wallet.commission.registration")}
                         </p>
                         <p className="text-sm font-bold text-gray-900 dark:text-white">
                             {formatCurrency(summary.byType.registration)}
@@ -205,7 +206,7 @@ export default function CommissionWidget() {
                     </div>
                     <div className="text-center">
                         <p className="text-xs text-gray-500 dark:text-gray-500 mb-1">
-                            Purchase
+                            {translate("wallet.commission.purchase")}
                         </p>
                         <p className="text-sm font-bold text-gray-900 dark:text-white">
                             {formatCurrency(summary.byType.purchase)}
@@ -213,7 +214,7 @@ export default function CommissionWidget() {
                     </div>
                     <div className="text-center">
                         <p className="text-xs text-gray-500 dark:text-gray-500 mb-1">
-                            Bonuses
+                            {translate("wallet.commission.bonus")}
                         </p>
                         <p className="text-sm font-bold text-gray-900 dark:text-white">
                             {formatCurrency(summary.byType.bonus)}
@@ -228,20 +229,20 @@ export default function CommissionWidget() {
                     onClick={() => router.push("/agent/referrals")}
                     className="flex-1 px-3 py-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-lg font-medium transition-colors text-sm border border-gray-200 dark:border-gray-700"
                 >
-                    View Referrals
+                    {translate("wallet.commission.viewReferrals")}
                 </button>
                 <button
                     onClick={() => router.push("/agent/commissions")}
                     className="flex-1 px-3 py-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-lg font-medium transition-colors text-sm border border-gray-200 dark:border-gray-700"
                 >
-                    Commission History
+                    {translate("wallet.commission.history")}
                 </button>
             </div>
             {/* Bank details missing modal */}
             <Modal
                 open={showBankErrorModal}
                 onClose={() => setShowBankErrorModal(false)}
-                title={<span className="flex items-center gap-2 text-orange-600"><AlertTriangle size={18} /> Bank Details Missing</span>}
+                title={<span className="flex items-center gap-2 text-orange-600"><AlertTriangle size={18} /> {translate("wallet.commission.bankMissing.title")}</span>}
                 size="sm"
                 footer={(
                     <div className="flex gap-3 w-full">
@@ -249,24 +250,24 @@ export default function CommissionWidget() {
                             onClick={() => setShowBankErrorModal(false)}
                             className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600"
                         >
-                            Cancel
+                            {translate("wallet.commission.bankMissing.cancel")}
                         </button>
                         <Link
                             href="/profile#bank-account"
                             onClick={() => setShowBankErrorModal(false)}
                             className="flex-1 px-4 py-2 text-sm font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 shadow-sm"
                         >
-                            Update Profile
+                            {translate("wallet.commission.bankMissing.update")}
                         </Link>
                     </div>
                 )}
             >
                 <div className="space-y-3">
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                        We need your bank account information to process commission payouts.
+                        {translate("wallet.commission.bankMissing.desc")}
                     </p>
                     <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Please update your bank details in your profile before requesting a payout.
+                        {translate("wallet.commission.bankMissing.instruction")}
                     </p>
                 </div>
             </Modal>

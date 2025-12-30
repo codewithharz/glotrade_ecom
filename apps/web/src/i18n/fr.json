@@ -9,7 +9,25 @@
   "navCart": "Panier",
   "navCategories": "Catégories",
   "language": "Français",
-  "home": "Accueil",
+  "home": {
+    "title": "Accueil",
+    "featuredForYou": "Sélectionné pour vous",
+    "seeMore": "Voir plus"
+  },
+  "header": {
+    "categories": "Catégories",
+    "dashboard": "Tableau de bord",
+    "wallet": "Portefeuille",
+    "adminPanel": "Panneau d'administration",
+    "loadingCategories": "Chargement des catégories...",
+    "noCategories": "Aucune catégorie trouvée",
+    "allDepartments": "Tous les départements",
+    "hoverForCategories": "Survolez un département pour voir les catégories",
+    "noCategoriesInDepartment": "Aucune catégorie dans ce département",
+    "search": "Rechercher",
+    "needHelp": "Besoin d'aide ?",
+    "callUs": "Appelez-nous :"
+  },
   "explorePicks": "Découvrir les sélections du Marketplace",
   "freeShippingBanner": "Livraison gratuite pour vous",
   "limitedTimeOffer": "Offre limitée",
@@ -422,19 +440,6 @@
     "commonFraudCases": "cas de fraude courants",
     "forReference": "pour référence.",
     "reportSuspicious": "Si vous rencontrez quelque chose de suspect, veuillez le signaler rapidement"
-  },
-  "header": {
-    "adminPanel": "Panneau Admin",
-    "dashboard": "Tableau de Bord",
-    "wallet": "Portefeuille",
-    "allDepartments": "Tous les Départements",
-    "loadingCategories": "Chargement des catégories...",
-    "noCategories": "Aucune catégorie disponible",
-    "hoverForCategories": "Survolez un département pour voir ses catégories",
-    "noCategoriesInDepartment": "Aucune catégorie dans ce département",
-    "search": "Rechercher",
-    "needHelp": "Besoin d'aide ?",
-    "callUs": "Appelez-nous :"
   },
   "usermenu": {
     "welcome": "Bienvenue",
@@ -1021,6 +1026,325 @@
       "title": "Votre parcours d'achat",
       "subtitle": "Continuez à explorer pour découvrir plus de produits incroyables !",
       "totalItems": "Total d'articles"
+    }
+  },
+  "wishlist": {
+    "title": "Liste de souhaits",
+    "clearAll": "Tout effacer",
+    "exploreMore": "Explorer",
+    "freeShippingBanner": "Livraison gratuite pour les commandes de plus de 50 $",
+    "limitedTimeOffer": "Offre limitée",
+    "loading": "Chargement...",
+    "empty": {
+      "title": "Votre liste de souhaits est vide",
+      "desc": "Vous n'avez pas encore ajouté d'articles.",
+      "cta": "Explorer le marché"
+    },
+    "picks": {
+      "title": "Meilleures Sélections pour Vous",
+      "noPicks": "Aucune recommandation disponible pour le moment."
+    }
+  },
+  "vouchers": {
+    "title": "Mes Bons de Réduction",
+    "subtitle": "Codes de réduction disponibles et offres promotionnelles",
+    "back": "Retour",
+    "tabs": {
+      "available": "Disponible ({count})",
+      "used": "Utilisé ({count})",
+      "history": "Historique ({count})"
+    },
+    "types": {
+      "percentage": "Réduction en Pourcentage",
+      "fixed": "Montant Fixe de Réduction",
+      "free_shipping": "Livraison Gratuite"
+    },
+    "status": {
+      "upcoming": "À venir",
+      "expired": "Expiré",
+      "exhausted": "Entièrement utilisé",
+      "active": "Actif"
+    },
+    "card": {
+      "codeLabel": "Code du Bon",
+      "copy": "Copier",
+      "copied": "Copié !",
+      "minOrder": "Mini. commande : {amount} {currency}",
+      "maxDiscount": "Remise maxi : {amount} {currency}",
+      "usage": "Utilisation : {count}/{total}",
+      "expires": "Expire le : {date}",
+      "terms": "Conditions Générales",
+      "instructions": "Utilisez ce code lors du paiement pour appliquer votre réduction",
+      "saved": "Économisé : {amount} {currency}",
+      "appliedSuccessfully": "Appliqué avec succès à votre commande"
+    },
+    "history": {
+      "orderTotal": "Total de la Commande",
+      "discountApplied": "Remise Appliquée",
+      "finalAmount": "Montant Final"
+    },
+    "empty": {
+      "availableTitle": "Aucun bon disponible",
+      "availableDesc": "Vous n'avez pas de bons actifs pour le moment. Revenez plus tard pour de nouvelles offres !",
+      "usedTitle": "Aucun bon utilisé pour le moment",
+      "usedDesc": "Vous n'avez pas encore utilisé de bons de réduction. Commencez vos achats pour profiter de super offres !",
+      "historyTitle": "Aucun historique d'utilisation",
+      "historyDesc": "Vous n'avez pas encore utilisé de bons. Commencez vos achats pour voir votre historique d'utilisation !"
+    },
+    "footer": "Les bons sont automatiquement appliqués lors du paiement. Certaines restrictions peuvent s'appliquer.",
+    "toasts": {
+      "copySuccess": "Code du bon copié !",
+      "copyError": "Échec de la copie du code",
+      "loadError": "Erreur lors du chargement des bons"
+    }
+  },
+  "wallet": {
+    "title": "Mon Portefeuille",
+    "subtitle": "Gérez vos fonds et transactions",
+    "notAvailableTitle": "Portefeuille Non Disponible",
+    "notAvailableDesc": "Votre type de compte n'a pas accès à la fonctionnalité de portefeuille.",
+    "returnProfile": "Retour au Profil",
+    "successMessage": {
+      "title": "Rechargement Réussi !",
+      "desc": "Votre portefeuille a été rechargé avec succès. Le solde sera mis à jour sous peu."
+    },
+    "balance": {
+      "label": "Solde du Portefeuille",
+      "currency": "Naira Nigérian (NGN)",
+      "total": "Solde Total",
+      "available": "Solde Disponible",
+      "frozen": "Gelé",
+      "credit": "Crédit Disponible",
+      "creditUsed": "Crédit Utilisé",
+      "of": "sur",
+      "hide": "Masquer le Solde",
+      "show": "Afficher le Solde"
+    },
+    "actions": {
+      "topUp": "Recharger",
+      "withdraw": "Retirer",
+      "requestCredit": "Demander un Crédit",
+      "export": "Exporter",
+      "refresh": "Actualiser",
+      "analytics": "Analyses",
+      "history": "Historique",
+      "settings": "Paramètres"
+    },
+    "tabs": {
+      "transactions": "Transactions",
+      "withdrawals": "Historique des Retraits",
+      "creditRequests": "Demandes de Crédit"
+    },
+    "transactions": {
+      "title": "Transactions Récentes",
+      "subtitle": "Consultez votre activité récente du portefeuille",
+      "empty": "Aucune transaction trouvée",
+      "filters": {
+        "title": "Filtres",
+        "clear": "Effacer les Filtres",
+        "type": "Type",
+        "status": "Statut",
+        "dateRange": "Plage de Dates",
+        "allTypes": "Tous les Types",
+        "deposit": "Dépôt",
+        "withdrawal": "Retrait",
+        "payment": "Paiement",
+        "refund": "Remboursement",
+        "allStatuses": "Tous les Statuts",
+        "completed": "Terminé",
+        "pending": "En attente",
+        "failed": "Échoué"
+      },
+      "pagination": {
+        "pageOffset": "Page {page} sur {pages}"
+      },
+      "details": {
+        "title": "Détails de la Transaction",
+        "reference": "Référence",
+        "date": "Date",
+        "type": "Type",
+        "description": "Description",
+        "close": "Fermer"
+      }
+    },
+    "analytics": {
+      "title": "Analyses du Portefeuille",
+      "subtitle": "Aperçu de votre activité et de vos habitudes de dépense",
+      "refresh": "Actualiser",
+      "export": "Exporter",
+      "filters": {
+        "title": "Filtres",
+        "period": "Période",
+        "currency": "Devise",
+        "type": "Type",
+        "category": "Catégorie",
+        "granularity": "Granularité",
+        "allCurrencies": "Toutes les Devises",
+        "allTypes": "Tous les Types",
+        "user": "Utilisateur",
+        "vendor": "Vendeur",
+        "allCategories": "Toutes les Catégories",
+        "daily": "Quotidien",
+        "weekly": "Hebdomadaire",
+        "monthly": "Mensuel"
+      },
+      "periods": {
+        "7d": "7 derniers jours",
+        "30d": "30 derniers jours",
+        "90d": "90 derniers jours",
+        "1y": "L'année dernière"
+      },
+      "metrics": {
+        "totalTransactions": "Total des Transactions",
+        "totalVolume": "Volume Total",
+        "avgTransaction": "Transaction Moyenne",
+        "dailyAverage": "Moyenne Quotidienne"
+      },
+      "patterns": {
+        "title": "Habitudes de Dépense",
+        "mostActiveDay": "Jour le Plus Actif",
+        "mostActiveHour": "Heure la Plus Active",
+        "largestTransaction": "Plus Grosse Transaction",
+        "smallestTransaction": "Plus Petite Transaction"
+      },
+      "breakdown": {
+        "title": "Répartition des Transactions",
+        "totalDeposits": "Total des Dépôts",
+        "totalWithdrawals": "Total des Retraits",
+        "totalTransfers": "Total des Transferts"
+      },
+      "earnings": {
+        "title": "Gains du Vendeur",
+        "totalPayments": "Total des Paiements Vendeur",
+        "desc": "Paiements reçus pour les commandes livrées"
+      },
+      "spendingByCategory": "Dépenses par Catégorie",
+      "spendingByDay": "Dépenses par Jour de la Semaine",
+      "empty": {
+        "title": "Aucune Donnée Disponible",
+        "desc": "Aucune transaction trouvée pour la période et les filtres sélectionnés.",
+        "reset": "Réinitialiser les Filtres"
+      }
+    },
+    "modals": {
+      "topUp": {
+        "title": "Recharger le Portefeuille",
+        "amountLabel": "Montant (₦)",
+        "placeholder": "0.00",
+        "processing": "Traitement...",
+        "submit": "Procéder au Paiement"
+      },
+      "withdrawal": {
+        "title": "Retirer des Fonds",
+        "amountLabel": "Montant (₦)",
+        "available": "Disponible : ₦{amount}",
+        "bankTitle": "Coordonnées Bancaires",
+        "bankName": "Nom de la Banque",
+        "accountNumber": "Numéro de Compte",
+        "accountName": "Nom du Titulaire",
+        "selectBank": "Sélectionner la Banque",
+        "loadingBanks": "Chargement des banques...",
+        "resolving": "Vérification du compte...",
+        "cancel": "Annuler",
+        "submit": "Retirer les Fonds",
+        "history": "Historique des Retraits"
+      },
+      "creditRequest": {
+        "title": "Demander une Limite de Crédit",
+        "subtitle": "Demandez une ligne de crédit pour effectuer des achats",
+        "guidelines": "Directives de Demande de Crédit :",
+        "guidelinesItems": [
+          "Plage de montant : 50 000 ₦ - 10 000 000 ₦",
+          "Une demande tous les 30 jours",
+          "Approbation de l'administrateur requise",
+          "Fournir une justification commerciale détaillée"
+        ],
+        "amountLabel": "Montant Demandé (₦)",
+        "amountRange": "Min : 50 000 ₦ • Max : 10 000 000 ₦",
+        "reasonLabel": "Justification Commerciale",
+        "reasonPlaceholder": "Expliquez pourquoi vous avez besoin de cette limite de crédit...",
+        "minChars": "Min : {count} caractères",
+        "cancel": "Annuler",
+        "submit": "Soumettre la Demande",
+        "submitting": "Envoi...",
+        "alreadySubmitted": "Vous avez déjà soumis une demande de crédit récemment. Veuillez attendre 30 jours entre les demandes.",
+        "pendingRequest": "Vous avez déjà une demande de crédit en attente. Veuillez attendre son examen."
+      },
+      "export": {
+        "title": "Exporter les Transactions",
+        "format": "Format",
+        "dateRange": "Plage de Dates (Optionnel)",
+        "download": "Télécharger",
+        "cancel": "Annuler"
+      }
+    },
+    "toasts": {
+      "topUpSuccess": "Rechargement du portefeuille réussi !",
+      "topUpError": "Échec de l'initialisation du rechargement",
+      "withdrawSuccess": "Demande de retrait soumise avec succès",
+      "withdrawError": "Échec de la soumission de la demande de retrait",
+      "creditSuccess": "Demande de crédit soumise avec succès ! Vous serez informé lors de son examen.",
+      "creditError": "Échec de la soumission de la demande de crédit",
+      "exportSuccess": "Transactions exportées avec succès !",
+      "exportError": "Échec de l'exportation des transactions",
+      "loadError": "Échec du chargement des transactions",
+      "analyticsError": "Échec du chargement des données analytiques",
+      "walletDataError": "Échec du chargement des données du portefeuille",
+      "newTransaction": "Nouvelle transaction {type} : {description}",
+      "walletFrozen": "Votre portefeuille a été gelé : {reason}",
+      "walletUnfrozen": "Votre portefeuille a été dégelé"
+    },
+    "distributor": {
+      "title": "Récompenses Distributeur",
+      "subtitle": "Bonus de Performance Trimestriel",
+      "nextDate": "Prochaine Date de Récompense",
+      "calculating": "Calcul...",
+      "desc": "Les récompenses sont traitées tous les 3 mois",
+      "estimated": "Récompense Estimée",
+      "estimatedDesc": "{percent}% de votre solde total actuel",
+      "totalEarned": "Total des Récompenses Gagnées",
+      "lastReward": "Dernière : {amount} le {date}"
+    },
+    "commission": {
+      "title": "Commissions Agent Commercial",
+      "subtitle": "Vos gains de parrainage",
+      "dashboard": "Voir le Tableau de Bord",
+      "totalEarned": "Total Gagné",
+      "commissionsCount": "{count} commissions",
+      "pending": "En attente",
+      "awaiting": "En attente d'approbation",
+      "approved": "Approuvé",
+      "ready": "Prêt pour le paiement",
+      "payoutPending": "{amount} en attente d'approbation",
+      "requestPayout": "Demander le Paiement",
+      "breakdown": "Répartition des Gains",
+      "registration": "Inscription",
+      "purchase": "Achat",
+      "bonus": "Bonus",
+      "viewReferrals": "Voir les Parrainages",
+      "history": "Historique des Commissions",
+      "bankMissing": {
+        "title": "Coordonnées Bancaires Manquantes",
+        "desc": "Nous avons besoin de vos coordonnées bancaires pour traiter les paiements de commission.",
+        "instruction": "Veuillez mettre à jour vos coordonnées bancaires dans votre profil avant de demander un paiement.",
+        "cancel": "Annuler",
+        "update": "Mettre à jour le Profil"
+      }
+    },
+    "callback": {
+      "verifying": "Vérification du Paiement",
+      "verifyingDesc": "Veuillez patienter pendant que nous vérifions votre rechargement...",
+      "processing": "Traitement de votre paiement...",
+      "success": "Rechargement Réussi !",
+      "successDesc": "Votre portefeuille a été rechargé avec succès.",
+      "updatedBalance": "Solde du Portefeuille Mis à Jour",
+      "availableBalance": "Solde Disponible",
+      "continue": "Continuer vers le Portefeuille",
+      "autoRedirect": "Redirection automatique dans {seconds} secondes...",
+      "failed": "Échec du Rechargement",
+      "failedDesc": "Nous n'avons pas pu vérifier votre paiement. Veuillez réessayer ou contacter le support.",
+      "retry": "Réessayer",
+      "back": "Retour au Portefeuille"
     }
   }
 }

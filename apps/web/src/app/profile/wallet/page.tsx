@@ -40,6 +40,7 @@ import WithdrawalHistory from "@/components/wallet/WithdrawalHistory";
 import CreditRequestModal from "@/components/wallet/CreditRequestModal";
 import TopUpModal from "@/components/wallet/TopUpModal";
 import CommissionWidget from "@/components/wallet/CommissionWidget";
+import { translate } from "@/utils/translate";
 
 // Interfaces
 interface WalletBalance {
@@ -225,7 +226,7 @@ function WalletPageContent() {
       }
     } catch (error) {
       console.error("Error loading transactions:", error);
-      toast("Failed to load transactions", "error");
+      toast(translate("wallet.toasts.loadError"), "error");
     }
   };
 
@@ -274,7 +275,7 @@ function WalletPageContent() {
       if (error?.message?.includes("Wallet not found") || error?.message?.includes("not enabled")) {
         setWalletSummary(null);
       } else {
-        toast("Failed to load wallet data", "error");
+        toast(translate("wallet.toasts.walletDataError"), "error");
       }
     } finally {
       setIsLoading(false);
@@ -301,7 +302,7 @@ function WalletPageContent() {
     const success = searchParams.get('success');
     if (success === 'true') {
       setShowSuccessMessage(true);
-      toast("Wallet top-up successful!", "success");
+      toast(translate("wallet.toasts.topUpSuccess"), "success");
 
       // Refresh wallet data and transactions after successful top-up
       const refreshData = async () => {
@@ -374,16 +375,16 @@ function WalletPageContent() {
         a.click();
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
-        toast("Transactions exported successfully!", "success");
+        toast(translate("wallet.toasts.exportSuccess"), "success");
         setShowExportModal(false);
       } else {
         const errorText = await response.text();
         console.error("Export failed:", response.status, errorText);
-        toast("Failed to export transactions", "error");
+        toast(translate("wallet.toasts.exportError"), "error");
       }
     } catch (error) {
       console.error("Export error:", error);
-      toast("Failed to export transactions", "error");
+      toast(translate("wallet.toasts.exportError"), "error");
     }
   };
 
@@ -490,12 +491,12 @@ function WalletPageContent() {
               <div className="mx-auto w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
                 <Wallet className="w-8 h-8 text-gray-400" />
               </div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Wallet Not Available</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{translate("wallet.notAvailableTitle")}</h2>
               <p className="text-gray-600 dark:text-gray-400 mb-6">
-                Your account type does not have access to the wallet feature.
+                {translate("wallet.notAvailableDesc")}
               </p>
               <Link href="/profile" className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
-                Return to Profile
+                {translate("wallet.returnProfile")}
               </Link>
             </div>
           </div>
@@ -515,10 +516,10 @@ function WalletPageContent() {
                 <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
                 <div>
                   <h3 className="text-sm font-semibold text-green-800 dark:text-green-200">
-                    Top-up Successful!
+                    {translate("wallet.successMessage.title")}
                   </h3>
                   <p className="text-sm text-green-700 dark:text-green-300">
-                    Your wallet has been successfully topped up. The balance will be updated shortly.
+                    {translate("wallet.successMessage.desc")}
                   </p>
                 </div>
                 <button
@@ -536,10 +537,10 @@ function WalletPageContent() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  My Wallet
+                  {translate("wallet.title")}
                 </h1>
                 <p className="text-gray-600 dark:text-gray-400 mt-1">
-                  Manage your funds and transactions
+                  {translate("wallet.subtitle")}
                 </p>
               </div>
               <div className="mt-4 sm:mt-0 flex items-center gap-3">
@@ -548,7 +549,7 @@ function WalletPageContent() {
                   className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
                   {showBalance ? <EyeOff size={16} /> : <Eye size={16} />}
-                  {showBalance ? 'Hide' : 'Show'} Balance
+                  {showBalance ? translate("wallet.balance.hide") : translate("wallet.balance.show")} {translate("wallet.balance.label")}
                 </button>
               </div>
             </div>
@@ -563,7 +564,7 @@ function WalletPageContent() {
                   <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-lg mb-3">
                     <Wallet className="w-5 h-5 text-blue-600" />
                   </div>
-                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Total Balance</p>
+                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">{translate("wallet.balance.total")}</p>
                   <p className="text-lg font-bold text-gray-900 dark:text-white break-all">
                     {showBalance ? formatWalletBalance(walletSummary.ngnWallet.total, "NGN") : "••••••"}
                   </p>
@@ -576,7 +577,7 @@ function WalletPageContent() {
                   <div className="p-3 bg-green-100 dark:bg-green-900/20 rounded-lg mb-3">
                     <CheckCircle className="w-5 h-5 text-green-600" />
                   </div>
-                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Available</p>
+                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">{translate("wallet.balance.available")}</p>
                   <p className="text-lg font-bold text-green-600 break-all">
                     {showBalance ? formatWalletBalance(walletSummary.ngnWallet.available, "NGN") : "••••••"}
                   </p>
@@ -589,7 +590,7 @@ function WalletPageContent() {
                   <div className="p-3 bg-orange-100 dark:bg-orange-900/20 rounded-lg mb-3">
                     <AlertCircle className="w-5 h-5 text-orange-600" />
                   </div>
-                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Frozen</p>
+                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">{translate("wallet.balance.frozen")}</p>
                   <p className="text-lg font-bold text-orange-600 break-all">
                     {showBalance ? formatWalletBalance(walletSummary.ngnWallet.frozen, "NGN") : "••••"}
                   </p>
@@ -602,7 +603,7 @@ function WalletPageContent() {
                   <div className="p-3 bg-purple-100 dark:bg-purple-900/20 rounded-lg mb-3">
                     <CreditCard className="w-5 h-5 text-purple-600" />
                   </div>
-                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Available Credit</p>
+                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">{translate("wallet.balance.credit")}</p>
                   <p className="text-lg font-bold text-purple-600 break-all">
                     {showBalance ? formatWalletBalance((walletSummary.ngnWallet.creditLimit || 0) - (walletSummary.ngnWallet.creditUsed || 0), "NGN") : "••••"}
                   </p>
@@ -621,8 +622,8 @@ function WalletPageContent() {
               <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">Wallet Balance</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-500">Nigerian Naira (NGN)</p>
+                    <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">{translate("wallet.balance.label")}</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-500">{translate("wallet.balance.currency")}</p>
                   </div>
                   <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
                     <Wallet className="w-5 h-5 text-green-600 dark:text-green-400" />
@@ -632,13 +633,13 @@ function WalletPageContent() {
 
               {/* Main Balance */}
               <div className="px-6 py-8 text-center border-b border-gray-200 dark:border-gray-700">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Available Balance</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">{translate("wallet.balance.available")}</p>
                 <p className="text-4xl font-bold text-gray-900 dark:text-white">
                   {showBalance ? formatWalletBalance(walletSummary.ngnWallet.available, "NGN") : "••••••"}
                 </p>
                 {walletSummary.ngnWallet.frozen > 0 && (
                   <p className="text-sm text-orange-600 dark:text-orange-400 mt-3">
-                    {showBalance ? formatWalletBalance(walletSummary.ngnWallet.frozen, "NGN") : "••••"} frozen
+                    {showBalance ? formatWalletBalance(walletSummary.ngnWallet.frozen, "NGN") : "••••"} {translate("wallet.balance.frozen").toLowerCase()}
                   </p>
                 )}
               </div>
@@ -649,18 +650,18 @@ function WalletPageContent() {
                   <div className="grid grid-cols-2 gap-4">
                     {/* Credit Used */}
                     <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4">
-                      <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Credit Used</p>
+                      <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{translate("wallet.balance.creditUsed")}</p>
                       <p className="text-lg font-bold text-gray-900 dark:text-white">
                         {showBalance ? formatWalletBalance(walletSummary.ngnWallet.creditUsed || 0, "NGN") : "••••"}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                        of {showBalance ? formatWalletBalance(walletSummary.ngnWallet.creditLimit || 0, "NGN") : "••••"}
+                        {translate("wallet.balance.of")} {showBalance ? formatWalletBalance(walletSummary.ngnWallet.creditLimit || 0, "NGN") : "••••"}
                       </p>
                     </div>
 
                     {/* Available Credit */}
                     <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
-                      <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-1">Available Credit</p>
+                      <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-1">{translate("wallet.balance.credit")}</p>
                       <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
                         {showBalance ? formatWalletBalance((walletSummary.ngnWallet.creditLimit || 0) - (walletSummary.ngnWallet.creditUsed || 0), "NGN") : "••••"}
                       </p>
@@ -686,8 +687,8 @@ function WalletPageContent() {
               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">Distributor Rewards</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-500">Quarterly Performance Bonus</p>
+                    <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">{translate("wallet.distributor.title")}</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-500">{translate("wallet.distributor.subtitle")}</p>
                   </div>
                   <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                     <TrendingUp className="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -699,7 +700,7 @@ function WalletPageContent() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {/* Next Reward Date */}
                   <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4">
-                    <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Next Reward Date</p>
+                    <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{translate("wallet.distributor.nextDate")}</p>
                     <p className="text-lg font-bold text-gray-900 dark:text-white">
                       {user.businessInfo.distributorStats.nextRewardDate
                         ? new Date(user.businessInfo.distributorStats.nextRewardDate).toLocaleDateString(undefined, {
@@ -707,29 +708,29 @@ function WalletPageContent() {
                           month: 'long',
                           day: 'numeric'
                         })
-                        : "Calculating..."}
+                        : translate("wallet.distributor.calculating")}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                      Rewards are processed every 3 months
+                      {translate("wallet.distributor.desc")}
                     </p>
                   </div>
 
                   {/* Estimated Reward */}
                   <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4">
-                    <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Estimated Reward</p>
+                    <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{translate("wallet.distributor.estimated")}</p>
                     <p className="text-lg font-bold text-green-600 dark:text-green-400">
                       {showBalance
                         ? formatWalletBalance(Math.floor((walletSummary?.ngnWallet.total || 0) * 0.02), "NGN")
                         : "••••••"}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                      2% of your current total balance
+                      {translate("wallet.distributor.estimatedDesc", { percent: 2 })}
                     </p>
                   </div>
 
                   {/* Total Rewards Earned */}
                   <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4">
-                    <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Total Rewards Earned</p>
+                    <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{translate("wallet.distributor.totalEarned")}</p>
                     <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
                       {showBalance
                         ? formatWalletBalance(user.businessInfo.distributorStats.totalRewardsEarned || 0, "NGN")
@@ -737,7 +738,10 @@ function WalletPageContent() {
                     </p>
                     {user.businessInfo.distributorStats.lastRewardDate && (
                       <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                        Last: {formatWalletBalance(user.businessInfo.distributorStats.lastRewardAmount || 0, "NGN")} on {new Date(user.businessInfo.distributorStats.lastRewardDate).toLocaleDateString()}
+                        {translate("wallet.distributor.lastReward", {
+                          amount: formatWalletBalance(user.businessInfo.distributorStats.lastRewardAmount || 0, "NGN"),
+                          date: new Date(user.businessInfo.distributorStats.lastRewardDate).toLocaleDateString()
+                        })}
                       </p>
                     )}
                   </div>
@@ -755,7 +759,7 @@ function WalletPageContent() {
               <div className="p-4 bg-green-100 dark:bg-green-900/30 rounded-lg group-hover:bg-green-200 dark:group-hover:bg-green-800/40 transition-colors">
                 <Plus className="w-4 h-4 text-green-600 dark:text-green-400" />
               </div>
-              <span className="text-sm font-medium text-gray-900 dark:text-white text-center">Top Up</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white text-center">{translate("wallet.actions.topUp")}</span>
             </button>
 
             {user?.businessInfo?.businessType === "Sales Agent" && (() => {
@@ -765,10 +769,10 @@ function WalletPageContent() {
                 (walletSummary?.ngnWallet?.available || 0) >= 100000;
 
               const getTitle = () => {
-                if (!commissionSummary) return "Loading...";
-                if (commissionSummary.approved < 100000) return "Commission approved amount must be at least ₦100,000";
-                if (commissionSummary.totalEarned < 100000) return "Total lifetime earned must be at least ₦100,000";
-                if ((walletSummary?.ngnWallet?.available || 0) < 100000) return "Available balance must be at least ₦100,000";
+                if (!commissionSummary) return translate("common.loading");
+                if (commissionSummary.approved < 100000) return translate("wallet.actions.withdrawThresholdApproved", { amount: "₦100,000" });
+                if (commissionSummary.totalEarned < 100000) return translate("wallet.actions.withdrawThresholdTotal", { amount: "₦100,000" });
+                if ((walletSummary?.ngnWallet?.available || 0) < 100000) return translate("wallet.actions.withdrawThresholdAvailable", { amount: "₦100,000" });
                 return "";
               };
 
@@ -788,7 +792,7 @@ function WalletPageContent() {
                     }`}>
                     <DollarSign className={`w-4 h-4 ${!thresholdMet ? "text-gray-400" : "text-red-600 dark:text-red-400"}`} />
                   </div>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white text-center">Withdraw</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white text-center">{translate("wallet.actions.withdraw")}</span>
                 </button>
               );
             })()}
@@ -800,7 +804,7 @@ function WalletPageContent() {
               <div className="p-4 bg-purple-100 dark:bg-purple-900/30 rounded-lg group-hover:bg-purple-200 dark:group-hover:bg-purple-800/40 transition-colors">
                 <CreditCard className="w-4 h-4 text-purple-600 dark:text-purple-400" />
               </div>
-              <span className="text-sm font-medium text-gray-900 dark:text-white text-center">Request Credit</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white text-center">{translate("wallet.actions.requestCredit")}</span>
             </button>
 
             <button
@@ -810,7 +814,7 @@ function WalletPageContent() {
               <div className="p-4 bg-blue-100 dark:bg-blue-900/30 rounded-lg group-hover:bg-blue-200 dark:group-hover:bg-blue-800/40 transition-colors">
                 <Download className="w-4 h-4 text-blue-600 dark:text-blue-400" />
               </div>
-              <span className="text-sm font-medium text-gray-900 dark:text-white text-center">Export</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white text-center">{translate("wallet.actions.export")}</span>
             </button>
 
             <button
@@ -820,7 +824,7 @@ function WalletPageContent() {
               <div className="p-4 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg group-hover:bg-indigo-200 dark:group-hover:bg-indigo-800/40 transition-colors">
                 <RefreshCw className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
               </div>
-              <span className="text-sm font-medium text-gray-900 dark:text-white text-center">Refresh</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white text-center">{translate("wallet.actions.refresh")}</span>
             </button>
 
             <Link
@@ -830,7 +834,7 @@ function WalletPageContent() {
               <div className="p-4 bg-teal-100 dark:bg-teal-900/30 rounded-lg group-hover:bg-teal-200 dark:group-hover:bg-teal-800/40 transition-colors">
                 <BarChart3 className="w-4 h-4 text-teal-600 dark:text-teal-400" />
               </div>
-              <span className="text-sm font-medium text-gray-900 dark:text-white text-center">Analytics</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white text-center">{translate("wallet.actions.analytics")}</span>
             </Link>
 
             <button
@@ -840,7 +844,7 @@ function WalletPageContent() {
               <div className="p-4 bg-pink-100 dark:bg-pink-900/30 rounded-lg group-hover:bg-pink-200 dark:group-hover:bg-pink-800/40 transition-colors">
                 <HistoryIcon className="w-4 h-4 text-pink-600 dark:text-pink-400" />
               </div>
-              <span className="text-sm font-medium text-gray-900 dark:text-white text-center">History</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white text-center">{translate("wallet.actions.history")}</span>
             </button>
 
             <button
@@ -850,7 +854,7 @@ function WalletPageContent() {
               <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg group-hover:bg-gray-200 dark:group-hover:bg-gray-600 transition-colors">
                 <User className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </div>
-              <span className="text-sm font-medium text-gray-900 dark:text-white text-center">Settings</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white text-center">{translate("wallet.actions.settings")}</span>
             </button>
           </div>
 
@@ -864,7 +868,7 @@ function WalletPageContent() {
                   : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
                   }`}
               >
-                Transactions
+                {translate("wallet.tabs.transactions")}
                 {activeTab === 'transactions' && (
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-400 rounded-t-full" />
                 )}
@@ -877,7 +881,7 @@ function WalletPageContent() {
                     : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
                     }`}
                 >
-                  Withdrawal History
+                  {translate("wallet.tabs.withdrawals")}
                   {activeTab === 'withdrawals' && (
                     <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-400 rounded-t-full" />
                   )}
@@ -890,7 +894,7 @@ function WalletPageContent() {
                   : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
                   }`}
               >
-                Credit Requests
+                {translate("wallet.tabs.credit")}
                 {activeTab === 'credit-requests' && (
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-400 rounded-t-full" />
                 )}
@@ -905,10 +909,10 @@ function WalletPageContent() {
                 <div>
                   <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                     <HistoryIcon className="w-5 h-5 text-gray-500" />
-                    Recent Transactions
+                    {translate("wallet.transactions.title")}
                   </h2>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    View your recent wallet activity
+                    {translate("wallet.transactions.subtitle")}
                   </p>
                 </div>
                 <button
@@ -919,7 +923,7 @@ function WalletPageContent() {
                     }`}
                 >
                   <Filter className="w-4 h-4" />
-                  Filters
+                  {translate("wallet.transactions.filters")}
                   <ChevronDown className={`w-4 h-4 transition-transform ${showTransactionFilters ? "rotate-180" : ""}`} />
                 </button>
               </div>
@@ -929,38 +933,38 @@ function WalletPageContent() {
                 <div className="p-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div>
                     <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                      Type
+                      {translate("wallet.filters.type")}
                     </label>
                     <select
                       value={transactionFilters.transactionType}
                       onChange={(e) => handleFilterChange("transactionType", e.target.value)}
                       className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                     >
-                      <option value="all">All Types</option>
-                      <option value="deposit">Deposit</option>
-                      <option value="withdrawal">Withdrawal</option>
-                      <option value="payment">Payment</option>
-                      <option value="refund">Refund</option>
+                      <option value="all">{translate("wallet.filters.allTypes")}</option>
+                      <option value="deposit">{translate("wallet.filters.deposit")}</option>
+                      <option value="withdrawal">{translate("wallet.filters.withdrawal")}</option>
+                      <option value="payment">{translate("wallet.filters.payment")}</option>
+                      <option value="refund">{translate("wallet.filters.refund")}</option>
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                      Status
+                      {translate("wallet.filters.status")}
                     </label>
                     <select
                       value={transactionFilters.status}
                       onChange={(e) => handleFilterChange("status", e.target.value)}
                       className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                     >
-                      <option value="all">All Statuses</option>
-                      <option value="completed">Completed</option>
-                      <option value="pending">Pending</option>
-                      <option value="failed">Failed</option>
+                      <option value="all">{translate("wallet.filters.allStatuses")}</option>
+                      <option value="completed">{translate("wallet.status.completed")}</option>
+                      <option value="pending">{translate("wallet.status.pending")}</option>
+                      <option value="failed">{translate("wallet.status.failed")}</option>
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                      Date Range
+                      {translate("wallet.filters.dateRange")}
                     </label>
                     <div className="flex gap-2">
                       <input
@@ -982,7 +986,7 @@ function WalletPageContent() {
                       onClick={clearFilters}
                       className="w-full px-3 py-2 text-sm text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                     >
-                      Clear Filters
+                      {translate("wallet.filters.clear")}
                     </button>
                   </div>
                 </div>
@@ -1037,7 +1041,7 @@ function WalletPageContent() {
                 ) : (
                   <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                     <HistoryIcon className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                    <p>No transactions found</p>
+                    <p>{translate("wallet.transactions.noTransactions")}</p>
                   </div>
                 )}
               </div>
@@ -1053,7 +1057,7 @@ function WalletPageContent() {
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <span className="text-sm text-gray-600 dark:text-gray-300">
-                    Page {transactionPagination.page} of {transactionPagination.pages}
+                    {translate("common.pagination.pageOf", { current: transactionPagination.page, total: transactionPagination.pages })}
                   </span>
                   <button
                     onClick={() => handlePageChange(transactionPagination.page + 1)}
@@ -1067,7 +1071,7 @@ function WalletPageContent() {
             </div>
           ) : activeTab === 'withdrawals' ? (
             <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden p-6">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Withdrawal Requests</h2>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">{translate("wallet.withdrawals.title")}</h2>
               <WithdrawalHistory />
             </div>
           ) : (
@@ -1075,10 +1079,10 @@ function WalletPageContent() {
               <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
                 <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                   <CreditCard className="w-5 h-5 text-gray-500" />
-                  Credit Requests
+                  {translate("wallet.creditRequests.title")}
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  View your credit limit requests and their status
+                  {translate("wallet.creditRequests.subtitle")}
                 </p>
               </div>
 
@@ -1097,29 +1101,29 @@ function WalletPageContent() {
                                 request.status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' :
                                   'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400'
                               }`}>
-                              {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                              {translate(`wallet.status.${request.status}`)}
                             </span>
                           </div>
                           <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
                             {request.businessReason}
                           </p>
                           <div className="text-xs text-gray-500 dark:text-gray-400">
-                            Submitted: {new Date(request.createdAt).toLocaleDateString()} at {new Date(request.createdAt).toLocaleTimeString()}
+                            {translate("wallet.creditRequests.submitted", { date: new Date(request.createdAt).toLocaleDateString(), time: new Date(request.createdAt).toLocaleTimeString() })}
                           </div>
                           {request.reviewedAt && (
                             <div className="text-xs text-gray-500 dark:text-gray-400">
-                              Reviewed: {new Date(request.reviewedAt).toLocaleDateString()}
+                              {translate("wallet.creditRequests.reviewed", { date: new Date(request.reviewedAt).toLocaleDateString() })}
                             </div>
                           )}
                           {request.approvedAmount && request.status === 'approved' && (
                             <div className="mt-2 p-2 bg-green-50 dark:bg-green-900/20 rounded text-sm text-green-800 dark:text-green-400">
-                              ✓ Approved Amount: ₦{request.approvedAmount.toLocaleString()}
-                              {request.adminNotes && <p className="text-xs mt-1">Note: {request.adminNotes}</p>}
+                              ✓ {translate("wallet.creditRequests.approvedAmount")}: ₦{request.approvedAmount.toLocaleString()}
+                              {request.adminNotes && <p className="text-xs mt-1">{translate("wallet.creditRequests.note")}: {request.adminNotes}</p>}
                             </div>
                           )}
                           {request.rejectionReason && request.status === 'rejected' && (
                             <div className="mt-2 p-2 bg-red-50 dark:bg-red-900/20 rounded text-sm text-red-800 dark:text-red-400">
-                              ✗ Reason: {request.rejectionReason}
+                              ✗ {translate("wallet.creditRequests.rejectionReason")}: {request.rejectionReason}
                             </div>
                           )}
                         </div>
@@ -1129,8 +1133,8 @@ function WalletPageContent() {
                 ) : (
                   <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                     <CreditCard className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                    <p className="mb-2">No credit requests yet</p>
-                    <p className="text-sm">Click "Request Credit" to apply for a credit limit</p>
+                    <p className="mb-2">{translate("wallet.creditRequests.noRequests")}</p>
+                    <p className="text-sm">{translate("wallet.creditRequests.clickToRequest")}</p>
                   </div>
                 )}
               </div>
@@ -1146,12 +1150,12 @@ function WalletPageContent() {
           <Modal
             open={showExportModal}
             onClose={() => setShowExportModal(false)}
-            title="Export Transactions"
+            title={translate("wallet.export.title")}
           >
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Format
+                  {translate("wallet.export.format")}
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
@@ -1176,7 +1180,7 @@ function WalletPageContent() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Date Range (Optional)
+                  {translate("wallet.export.dateRange")}
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   <input
@@ -1199,13 +1203,13 @@ function WalletPageContent() {
                   className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
                 >
                   <Download className="w-4 h-4" />
-                  Download
+                  {translate("wallet.export.download")}
                 </button>
                 <button
                   onClick={() => setShowExportModal(false)}
                   className="px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
-                  Cancel
+                  {translate("common.cancel")}
                 </button>
               </div>
             </div>
@@ -1232,7 +1236,7 @@ function WalletPageContent() {
           <Modal
             open={showTransactionDetails}
             onClose={() => setShowTransactionDetails(false)}
-            title="Transaction Details"
+            title={translate("wallet.transactionDetails.title")}
           >
             {selectedTransaction && (
               <div className="space-y-6">
@@ -1257,25 +1261,25 @@ function WalletPageContent() {
 
                 <div className="space-y-3 border-t border-gray-200 dark:border-gray-700 pt-4">
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-500 dark:text-gray-400">Reference</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{translate("wallet.transactionDetails.reference")}</span>
                     <span className="text-sm font-medium text-gray-900 dark:text-white font-mono">
                       {selectedTransaction.reference}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-500 dark:text-gray-400">Date</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{translate("wallet.transactionDetails.date")}</span>
                     <span className="text-sm font-medium text-gray-900 dark:text-white">
                       {new Date(selectedTransaction.createdAt).toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-500 dark:text-gray-400">Type</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{translate("wallet.transactionDetails.type")}</span>
                     <span className="text-sm font-medium text-gray-900 dark:text-white capitalize">
-                      {selectedTransaction.type}
+                      {translate(`wallet.filters.${selectedTransaction.type}`)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-500 dark:text-gray-400">Description</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{translate("wallet.transactionDetails.description")}</span>
                     <span className="text-sm font-medium text-gray-900 dark:text-white text-right max-w-[60%]">
                       {selectedTransaction.description}
                     </span>
@@ -1286,7 +1290,7 @@ function WalletPageContent() {
                   onClick={() => setShowTransactionDetails(false)}
                   className="w-full py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                 >
-                  Close
+                  {translate("common.close")}
                 </button>
               </div>
             )}

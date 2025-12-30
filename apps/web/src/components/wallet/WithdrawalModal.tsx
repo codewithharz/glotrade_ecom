@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { X, AlertCircle, Building, CreditCard, User, Loader2 } from "lucide-react";
 import { apiPost, apiGet } from "@/utils/api";
 import { toast } from "@/components/common/Toast";
+import { translate } from "@/utils/translate";
 
 interface WithdrawalModalProps {
     isOpen: boolean;
@@ -49,7 +50,7 @@ export default function WithdrawalModal({ isOpen, onClose, onSuccess, availableB
             setBanks(res.data);
         } catch (err) {
             console.error("Error fetching banks:", err);
-            toast("Failed to load banks", "error");
+            toast(translate("wallet.modals.withdrawal.loadingBanksError"), "error");
         } finally {
             setLoadingBanks(false);
         }
@@ -64,7 +65,7 @@ export default function WithdrawalModal({ isOpen, onClose, onSuccess, availableB
         } catch (err: any) {
             console.error("Error resolving account:", err);
             setAccountName("");
-            setError(err.message || "Could not resolve account details");
+            setError(err.message || translate("wallet.modals.withdrawal.resolveError"));
         } finally {
             setIsResolving(false);
         }
@@ -77,17 +78,17 @@ export default function WithdrawalModal({ isOpen, onClose, onSuccess, availableB
         setError("");
 
         if (!amount || parseFloat(amount) <= 0) {
-            setError("Please enter a valid amount");
+            setError(translate("wallet.modals.withdrawal.invalidAmount"));
             return;
         }
 
         if (parseFloat(amount) > availableBalance) {
-            setError("Insufficient balance");
+            setError(translate("wallet.modals.withdrawal.insufficientBalance"));
             return;
         }
 
         if (!bankCode || !accountNumber || !accountName) {
-            setError("Please fill in all bank details");
+            setError(translate("wallet.modals.withdrawal.missingDetails"));
             return;
         }
 
@@ -106,12 +107,12 @@ export default function WithdrawalModal({ isOpen, onClose, onSuccess, availableB
                 }
             });
 
-            toast("Withdrawal request submitted successfully", "success");
+            toast(translate("wallet.toasts.withdrawSuccess"), "success");
             onSuccess();
             onClose();
         } catch (err: any) {
             console.error("Withdrawal error:", err);
-            setError(err.message || "Failed to submit withdrawal request");
+            setError(err.message || translate("wallet.toasts.withdrawError"));
         } finally {
             setIsLoading(false);
         }
@@ -123,7 +124,7 @@ export default function WithdrawalModal({ isOpen, onClose, onSuccess, availableB
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
                     <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        Withdraw Funds
+                        {translate("wallet.modals.withdrawal.title")}
                     </h2>
                     <button
                         onClick={onClose}
@@ -145,7 +146,7 @@ export default function WithdrawalModal({ isOpen, onClose, onSuccess, availableB
                     {/* Amount Input */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Amount (₦)
+                            {translate("wallet.modals.withdrawal.amountLabel")}
                         </label>
                         <div className="relative">
                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₦</span>
@@ -160,18 +161,18 @@ export default function WithdrawalModal({ isOpen, onClose, onSuccess, availableB
                             />
                         </div>
                         <p className="text-xs text-gray-500 mt-1">
-                            Available: ₦{availableBalance.toLocaleString()}
+                            {translate("wallet.modals.withdrawal.available", { amount: availableBalance.toLocaleString() })}
                         </p>
                     </div>
 
                     {/* Bank Details */}
                     <div className="space-y-3">
                         <h3 className="text-sm font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
-                            Bank Details
+                            {translate("wallet.modals.withdrawal.bankTitle")}
                         </h3>
 
                         <div>
-                            <label className="block text-xs text-gray-500 mb-1">Bank Name</label>
+                            <label className="block text-xs text-gray-500 mb-1">{translate("wallet.modals.withdrawal.bankName")}</label>
                             <div className="relative">
                                 <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
                                 <select
@@ -180,7 +181,7 @@ export default function WithdrawalModal({ isOpen, onClose, onSuccess, availableB
                                     className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
                                     disabled={loadingBanks}
                                 >
-                                    <option value="">{loadingBanks ? "Loading banks..." : "Select Bank"}</option>
+                                    <option value="">{loadingBanks ? translate("wallet.modals.withdrawal.loadingBanks") : translate("wallet.modals.withdrawal.selectBank")}</option>
                                     {banks.map((bank, index) => (
                                         <option key={`${index}-${bank.code}`} value={bank.code}>
                                             {bank.name}
@@ -191,7 +192,7 @@ export default function WithdrawalModal({ isOpen, onClose, onSuccess, availableB
                         </div>
 
                         <div>
-                            <label className="block text-xs text-gray-500 mb-1">Account Number</label>
+                            <label className="block text-xs text-gray-500 mb-1">{translate("wallet.modals.withdrawal.accountNumber")}</label>
                             <div className="relative">
                                 <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                 <input
@@ -206,7 +207,7 @@ export default function WithdrawalModal({ isOpen, onClose, onSuccess, availableB
                         </div>
 
                         <div>
-                            <label className="block text-xs text-gray-500 mb-1">Account Name</label>
+                            <label className="block text-xs text-gray-500 mb-1">{translate("wallet.modals.withdrawal.accountName")}</label>
                             <div className="relative">
                                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                 <input
@@ -214,7 +215,7 @@ export default function WithdrawalModal({ isOpen, onClose, onSuccess, availableB
                                     value={accountName}
                                     readOnly
                                     className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed"
-                                    placeholder={isResolving ? "Resolving account..." : "Account Name"}
+                                    placeholder={isResolving ? translate("wallet.modals.withdrawal.resolving") : translate("wallet.modals.withdrawal.accountName")}
                                 />
                                 {isResolving && (
                                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -233,7 +234,7 @@ export default function WithdrawalModal({ isOpen, onClose, onSuccess, availableB
                             className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
                             disabled={isLoading}
                         >
-                            Cancel
+                            {translate("wallet.modals.withdrawal.cancel")}
                         </button>
                         <button
                             type="submit"
@@ -243,10 +244,10 @@ export default function WithdrawalModal({ isOpen, onClose, onSuccess, availableB
                             {isLoading ? (
                                 <>
                                     <Loader2 className="w-4 h-4 animate-spin" />
-                                    Processing...
+                                    {translate("wallet.modals.withdrawal.processing")}
                                 </>
                             ) : (
-                                "Withdraw Funds"
+                                translate("wallet.modals.withdrawal.submit")
                             )}
                         </button>
                     </div>

@@ -5,6 +5,7 @@ import { X, CreditCard, AlertCircle, CheckCircle, FileText } from "lucide-react"
 import Modal from "@/components/common/Modal";
 import { apiPost } from "@/utils/api";
 import { toast } from "@/components/common/Toast";
+import { translate } from "@/utils/translate";
 
 interface CreditRequestModalProps {
     isOpen: boolean;
@@ -34,18 +35,21 @@ export default function CreditRequestModal({
         // Validate amount
         const amount = parseFloat(requestedAmount);
         if (isNaN(amount) || amount < MIN_AMOUNT || amount > MAX_AMOUNT) {
-            setError(`Amount must be between ₦${MIN_AMOUNT.toLocaleString()} and ₦${MAX_AMOUNT.toLocaleString()}`);
+            setError(translate("wallet.modals.creditRequest.amountError", {
+                min: `₦${MIN_AMOUNT.toLocaleString()}`,
+                max: `₦${MAX_AMOUNT.toLocaleString()}`
+            }));
             return;
         }
 
         // Validate business reason
         if (businessReason.length < MIN_REASON_LENGTH) {
-            setError(`Business reason must be at least ${MIN_REASON_LENGTH} characters`);
+            setError(translate("wallet.modals.creditRequest.minCharsError", { count: MIN_REASON_LENGTH }));
             return;
         }
 
         if (businessReason.length > MAX_REASON_LENGTH) {
-            setError(`Business reason must not exceed ${MAX_REASON_LENGTH} characters`);
+            setError(translate("wallet.modals.creditRequest.maxCharsError", { count: MAX_REASON_LENGTH }));
             return;
         }
 
@@ -57,7 +61,7 @@ export default function CreditRequestModal({
                 businessReason: businessReason.trim()
             });
 
-            toast("Credit request submitted successfully! You'll be notified when it's reviewed.", "success");
+            toast(translate("wallet.toasts.creditSuccess"), "success");
 
             // Reset form
             setRequestedAmount("");
@@ -69,13 +73,13 @@ export default function CreditRequestModal({
 
             onClose();
         } catch (err: any) {
-            const errorMessage = err?.response?.data?.message || err?.message || "Failed to submit credit request";
+            const errorMessage = err?.response?.data?.message || err?.message || translate("wallet.toasts.creditError");
 
             // Check for specific error types to show more helpful messages
             if (errorMessage.includes("one credit request per 30 days")) {
-                setError("You have already submitted a credit request recently. Please wait 30 days between requests.");
+                setError(translate("wallet.modals.creditRequest.alreadySubmitted"));
             } else if (errorMessage.includes("pending")) {
-                setError("You already have a pending credit request. Please wait for it to be reviewed.");
+                setError(translate("wallet.modals.creditRequest.pendingRequest"));
             } else {
                 setError(errorMessage);
             }
@@ -106,10 +110,10 @@ export default function CreditRequestModal({
                         </div>
                         <div>
                             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                                Request Credit Limit
+                                {translate("wallet.modals.creditRequest.title")}
                             </h2>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
-                                Apply for a credit line to make purchases
+                                {translate("wallet.modals.creditRequest.subtitle")}
                             </p>
                         </div>
                     </div>
@@ -127,12 +131,12 @@ export default function CreditRequestModal({
                     <div className="flex gap-3">
                         <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                         <div className="text-sm text-blue-800 dark:text-blue-200">
-                            <p className="font-semibold mb-1">Credit Request Guidelines:</p>
+                            <p className="font-semibold mb-1">{translate("wallet.modals.creditRequest.guidelines")}</p>
                             <ul className="list-disc list-inside space-y-1 text-blue-700 dark:text-blue-300">
-                                <li>Amount range: ₦50,000 - ₦10,000,000</li>
-                                <li>One request per 30 days</li>
-                                <li>Admin approval required</li>
-                                <li>Provide detailed business justification</li>
+                                <li>{translate("wallet.modals.creditRequest.guidelinesItems.0")}</li>
+                                <li>{translate("wallet.modals.creditRequest.guidelinesItems.1")}</li>
+                                <li>{translate("wallet.modals.creditRequest.guidelinesItems.2")}</li>
+                                <li>{translate("wallet.modals.creditRequest.guidelinesItems.3")}</li>
                             </ul>
                         </div>
                     </div>
@@ -153,7 +157,7 @@ export default function CreditRequestModal({
                     {/* Requested Amount */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Requested Amount (₦)
+                            {translate("wallet.modals.creditRequest.amountLabel")}
                         </label>
                         <input
                             type="number"
@@ -168,19 +172,22 @@ export default function CreditRequestModal({
                             className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                         />
                         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                            Min: ₦{MIN_AMOUNT.toLocaleString()} • Max: ₦{MAX_AMOUNT.toLocaleString()}
+                            {translate("wallet.modals.creditRequest.amountRange", {
+                                min: MIN_AMOUNT.toLocaleString(),
+                                max: MAX_AMOUNT.toLocaleString()
+                            })}
                         </p>
                     </div>
 
                     {/* Business Reason */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Business Justification
+                            {translate("wallet.modals.creditRequest.reasonLabel")}
                         </label>
                         <textarea
                             value={businessReason}
                             onChange={(e) => setBusinessReason(e.target.value)}
-                            placeholder="Explain why you need this credit limit and how you plan to use it. Include details about your business needs, expected sales, and repayment plan..."
+                            placeholder={translate("wallet.modals.creditRequest.reasonPlaceholder")}
                             rows={6}
                             minLength={MIN_REASON_LENGTH}
                             maxLength={MAX_REASON_LENGTH}
@@ -193,7 +200,7 @@ export default function CreditRequestModal({
                                 ? "text-red-500"
                                 : "text-gray-500 dark:text-gray-400"
                                 }`}>
-                                Min: {MIN_REASON_LENGTH} characters
+                                {translate("wallet.modals.creditRequest.minChars", { count: MIN_REASON_LENGTH })}
                             </span>
                             <span className={`${businessReason.length > MAX_REASON_LENGTH
                                 ? "text-red-500"
@@ -214,7 +221,7 @@ export default function CreditRequestModal({
                             disabled={isSubmitting}
                             className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                         >
-                            Cancel
+                            {translate("wallet.modals.creditRequest.cancel")}
                         </button>
                         <button
                             type="submit"
@@ -224,12 +231,12 @@ export default function CreditRequestModal({
                             {isSubmitting ? (
                                 <>
                                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                    Submitting...
+                                    {translate("wallet.modals.creditRequest.submitting")}
                                 </>
                             ) : (
                                 <>
                                     <CheckCircle className="w-5 h-5" />
-                                    Submit Request
+                                    {translate("wallet.modals.creditRequest.submit")}
                                 </>
                             )}
                         </button>

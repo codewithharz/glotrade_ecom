@@ -9,7 +9,25 @@
   "navCart": "Cart",
   "navCategories": "Categories",
   "language": "English",
-  "home": "Home",
+  "home": {
+    "title": "Home",
+    "featuredForYou": "Featured for you",
+    "seeMore": "See more"
+  },
+  "header": {
+    "categories": "Categories",
+    "dashboard": "Dashboard",
+    "wallet": "Wallet",
+    "adminPanel": "Admin Panel",
+    "loadingCategories": "Loading categories...",
+    "noCategories": "No categories found",
+    "allDepartments": "All Departments",
+    "hoverForCategories": "Hover over a department to see categories",
+    "noCategoriesInDepartment": "No categories in this department",
+    "search": "Search",
+    "needHelp": "Need help?",
+    "callUs": "Call Us:"
+  },
   "explorePicks": "Explore Marketplace's picks",
   "freeShippingBanner": "Free shipping special for you",
   "limitedTimeOffer": "Limited-time offer",
@@ -277,19 +295,6 @@
     "commonFraudCases": "common fraud cases",
     "forReference": "for reference.",
     "reportSuspicious": "If you come across anything suspicious, please report it in time"
-  },
-  "header": {
-    "adminPanel": "Admin Panel",
-    "dashboard": "Dashboard",
-    "wallet": "Wallet",
-    "allDepartments": "All Departments",
-    "loadingCategories": "Loading categories...",
-    "noCategories": "No categories available",
-    "hoverForCategories": "Hover over a department to see categories",
-    "noCategoriesInDepartment": "No categories in this department",
-    "search": "Search",
-    "needHelp": "Need help?",
-    "callUs": "Call Us:"
   },
   "usermenu": {
     "welcome": "Welcome",
@@ -1034,6 +1039,411 @@
       "title": "Your Shopping Journey",
       "subtitle": "Keep exploring to discover more amazing products!",
       "totalItems": "Total Items"
+    }
+  },
+  "wishlist": {
+    "title": "Wishlist",
+    "clearAll": "Clear All",
+    "exploreMore": "Explore More",
+    "freeShippingBanner": "Free shipping on orders over $50",
+    "limitedTimeOffer": "Limited time offer",
+    "loading": "Loading your wishlist...",
+    "empty": {
+      "title": "Your wishlist is empty",
+      "desc": "Looks like you haven't added any items to your wishlist yet.",
+      "cta": "Explore Marketplace"
+    },
+    "picks": {
+      "title": "Top Picks for You",
+      "noPicks": "No recommendations available at the moment."
+    }
+  },
+  "vouchers": {
+    "title": "My Vouchers",
+    "subtitle": "Available discount codes and promotional offers",
+    "back": "Back",
+    "tabs": {
+      "available": "Available",
+      "used": "Used",
+      "history": "History"
+    },
+    "types": {
+      "percentage": "Percentage Off",
+      "fixed": "Fixed Amount Off",
+      "free_shipping": "Free Shipping"
+    },
+    "status": {
+      "upcoming": "Coming Soon",
+      "expired": "Expired",
+      "exhausted": "Fully Used",
+      "active": "Active"
+    },
+    "card": {
+      "codeLabel": "Voucher Code",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "minOrder": "Min. order: {amount} {currency}",
+      "maxDiscount": "Max. discount: {amount} {currency}",
+      "usage": "Usage: {count}/{total}",
+      "expires": "Expires: {date}",
+      "terms": "Terms & Conditions",
+      "instructions": "Use this code during checkout to apply your discount",
+      "saved": "Saved: {amount} {currency}",
+      "appliedSuccessfully": "Successfully applied to your order"
+    },
+    "history": {
+      "orderTotal": "Order Total",
+      "discountApplied": "Discount Applied",
+      "finalAmount": "Final Amount"
+    },
+    "empty": {
+      "availableTitle": "No vouchers available",
+      "availableDesc": "You don't have any active vouchers at the moment. Check back later for new offers!",
+      "usedTitle": "No vouchers used yet",
+      "usedDesc": "You haven't used any vouchers yet. Start shopping to take advantage of great deals!",
+      "historyTitle": "No usage history",
+      "historyDesc": "You haven't used any vouchers yet. Start shopping to see your usage history!"
+    },
+    "footer": "Vouchers are automatically applied during checkout. Some restrictions may apply.",
+    "toasts": {
+      "copySuccess": "Voucher code copied!",
+      "copyError": "Failed to copy code",
+      "loadError": "Error loading vouchers"
+    }
+  },
+  "wallet": {
+    "title": "My Wallet",
+    "subtitle": "Manage your funds and transactions",
+    "notAvailableTitle": "Wallet Not Available",
+    "notAvailableDesc": "Your account type does not have access to the wallet feature.",
+    "returnProfile": "Return to Profile",
+    "successMessage": {
+      "title": "Top-up Successful!",
+      "desc": "Your wallet has been successfully topped up. The balance will be updated shortly."
+    },
+    "balance": {
+      "label": "Wallet Balance",
+      "currency": "Nigerian Naira (NGN)",
+      "total": "Total Balance",
+      "available": "Available Balance",
+      "frozen": "Frozen",
+      "credit": "Available Credit",
+      "creditUsed": "Credit Used",
+      "of": "of",
+      "hide": "Hide Balance",
+      "show": "Show Balance"
+    },
+    "actions": {
+      "topUp": "Top Up",
+      "withdraw": "Withdraw",
+      "requestCredit": "Request Credit",
+      "export": "Export",
+      "refresh": "Refresh",
+      "analytics": "Analytics",
+      "history": "History",
+      "settings": "Settings"
+    },
+    "tabs": {
+      "transactions": "Transactions",
+      "withdrawals": "Withdrawal History",
+      "creditRequests": "Credit Requests"
+    },
+    "withdrawals": {
+      "title": "Withdrawal Requests",
+      "noHistory": "No withdrawal history found.",
+      "loadError": "Failed to load history",
+      "table": {
+        "date": "Date",
+        "reference": "Reference",
+        "amount": "Amount",
+        "bank": "Bank",
+        "status": "Status"
+      },
+      "status": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "processing": "Processing",
+        "completed": "Completed",
+        "failed": "Failed"
+      }
+    },
+    "transactions": {
+      "title": "Recent Transactions",
+      "subtitle": "View your recent wallet activity",
+      "empty": "No transactions found",
+      "filters": {
+        "title": "Filters",
+        "clear": "Clear Filters",
+        "type": "Type",
+        "status": "Status",
+        "dateRange": "Date Range",
+        "allTypes": "All Types",
+        "deposit": "Deposit",
+        "withdrawal": "Withdrawal",
+        "payment": "Payment",
+        "refund": "Refund",
+        "allStatuses": "All Statuses",
+        "completed": "Completed",
+        "pending": "Pending",
+        "failed": "Failed"
+      },
+      "pagination": {
+        "pageOffset": "Page {page} of {pages}"
+      },
+      "details": {
+        "title": "Transaction Details",
+        "reference": "Reference",
+        "date": "Date",
+        "type": "Type",
+        "description": "Description",
+        "close": "Close"
+      }
+    },
+    "analytics": {
+      "title": "Wallet Analytics",
+      "subtitle": "Insights into your wallet activity and spending patterns",
+      "refresh": "Refresh",
+      "export": "Export",
+      "filters": {
+        "title": "Filters",
+        "period": "Time Period",
+        "currency": "Currency",
+        "type": "Type",
+        "category": "Category",
+        "granularity": "Granularity",
+        "allCurrencies": "All Currencies",
+        "allTypes": "All Types",
+        "user": "User",
+        "vendor": "Vendor",
+        "allCategories": "All Categories",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "monthly": "Monthly"
+      },
+      "periods": {
+        "7d": "Last 7 days",
+        "30d": "Last 30 days",
+        "90d": "Last 90 days",
+        "1y": "Last year"
+      },
+      "metrics": {
+        "totalTransactions": "Total Transactions",
+        "totalVolume": "Total Volume",
+        "avgTransaction": "Avg Transaction",
+        "dailyAverage": "Daily Average"
+      },
+      "patterns": {
+        "title": "Spending Patterns",
+        "mostActiveDay": "Most Active Day",
+        "mostActiveHour": "Most Active Hour",
+        "largestTransaction": "Largest Transaction",
+        "smallestTransaction": "Smallest Transaction"
+      },
+      "breakdown": {
+        "title": "Transaction Breakdown",
+        "totalDeposits": "Total Deposits",
+        "totalWithdrawals": "Total Withdrawals",
+        "totalTransfers": "Total Transfers"
+      },
+      "earnings": {
+        "title": "Vendor Earnings",
+        "totalPayments": "Total Vendor Payments",
+        "desc": "Payments received from delivered orders"
+      },
+      "spendingByCategory": "Spending by Category",
+      "spendingByDay": "Spending by Day of Week",
+      "empty": {
+        "title": "No Data Available",
+        "desc": "No transactions found for the selected period and filters.",
+        "reset": "Reset Filters"
+      }
+    },
+    "modals": {
+      "topUp": {
+        "title": "Top Up Wallet",
+        "amountLabel": "Amount (₦)",
+        "placeholder": "0.00",
+        "processing": "Processing...",
+        "submit": "Proceed to Payment"
+      },
+      "withdrawal": {
+        "title": "Withdraw Funds",
+        "amountLabel": "Amount (₦)",
+        "available": "Available: ₦{amount}",
+        "bankTitle": "Bank Details",
+        "bankName": "Bank Name",
+        "accountNumber": "Account Number",
+        "accountName": "Account Name",
+        "selectBank": "Select Bank",
+        "loadingBanks": "Loading banks...",
+        "resolving": "Resolving account...",
+        "cancel": "Cancel",
+        "submit": "Withdraw Funds",
+        "history": "Withdrawal History"
+      },
+      "creditRequest": {
+        "title": "Request Credit Limit",
+        "subtitle": "Apply for a credit line to make purchases",
+        "guidelines": "Credit Request Guidelines:",
+        "guidelinesItems": [
+          "Amount range: ₦50,000 - ₦10,000,000",
+          "One request per 30 days",
+          "Admin approval required",
+          "Provide detailed business justification"
+        ],
+        "amountLabel": "Requested Amount (₦)",
+        "amountRange": "Min: ₦{min} • Max: ₦{max}",
+        "reasonLabel": "Business Justification",
+        "reasonPlaceholder": "Explain why you need this credit limit and how you plan to use it...",
+        "minChars": "Min: {count} characters",
+        "cancel": "Cancel",
+        "submit": "Submit Request",
+        "submitting": "Submitting...",
+        "alreadySubmitted": "You have already submitted a credit request recently. Please wait 30 days between requests.",
+        "pendingRequest": "You already have a pending credit request. Please wait for it to be reviewed."
+      },
+      "export": {
+        "title": "Export Transactions",
+        "format": "Format",
+        "dateRange": "Date Range (Optional)",
+        "download": "Download",
+        "cancel": "Cancel"
+      },
+      "insufficientBalance": {
+        "title": "Insufficient Balance",
+        "required": "Required Amount",
+        "available": "Available Balance",
+        "shortfall": "Shortfall",
+        "message": "Your wallet doesn't have enough funds to complete this payment.",
+        "addFunds": "Add Funds to Wallet",
+        "useOther": "Use Other Payment Method",
+        "cancel": "Cancel"
+      }
+    },
+    "toasts": {
+      "topUpSuccess": "Wallet top-up successful!",
+      "topUpError": "Failed to initiate top-up",
+      "withdrawSuccess": "Withdrawal request submitted successfully",
+      "withdrawError": "Failed to submit withdrawal request",
+      "creditSuccess": "Credit request submitted successfully! You'll be notified when it's reviewed.",
+      "creditError": "Failed to submit credit request",
+      "exportSuccess": "Transactions exported successfully!",
+      "exportError": "Failed to export transactions",
+      "loadError": "Failed to load transactions",
+      "analyticsError": "Failed to load analytics data",
+      "walletDataError": "Failed to load wallet data",
+      "newTransaction": "New {type} transaction: {description}",
+      "walletFrozen": "Your wallet has been frozen: {reason}",
+      "walletUnfrozen": "Your wallet has been unfrozen"
+    },
+    "distributor": {
+      "title": "Distributor Rewards",
+      "subtitle": "Quarterly Performance Bonus",
+      "nextDate": "Next Reward Date",
+      "calculating": "Calculating...",
+      "desc": "Rewards are processed every 3 months",
+      "estimated": "Estimated Reward",
+      "estimatedDesc": "{percent}% of your current total balance",
+      "totalEarned": "Total Rewards Earned",
+      "lastReward": "Last: {amount} on {date}"
+    },
+    "commission": {
+      "title": "Sales Agent Commissions",
+      "subtitle": "Your referral earnings",
+      "dashboard": "View Dashboard",
+      "totalEarned": "Total Earned",
+      "commissionsCount": "{count} commissions",
+      "pending": "Pending",
+      "awaiting": "Awaiting approval",
+      "approved": "Approved",
+      "ready": "Ready for payout",
+      "payoutPending": "{amount} pending approval",
+      "requestPayout": "Request Payout",
+      "breakdown": "Earnings Breakdown",
+      "registration": "Registration",
+      "purchase": "Purchase",
+      "bonus": "Bonuses",
+      "viewReferrals": "View Referrals",
+      "history": "Commission History",
+      "bankMissing": {
+        "title": "Bank Details Missing",
+        "desc": "We need your bank account information to process commission payouts.",
+        "instruction": "Please update your bank details in your profile before requesting a payout.",
+        "cancel": "Cancel",
+        "update": "Update Profile"
+      }
+    },
+    "callback": {
+      "verifying": "Verifying Payment",
+      "verifyingDesc": "Please wait while we verify your wallet top-up...",
+      "processing": "Processing your payment...",
+      "success": "Top-up Successful!",
+      "successDesc": "Your wallet has been successfully topped up.",
+      "updatedBalance": "Updated Wallet Balance",
+      "availableBalance": "Available Balance",
+      "continue": "Continue to Wallet",
+      "autoRedirect": "Redirecting automatically in {seconds} seconds...",
+      "failed": "Top-up Failed",
+      "failedDesc": "We couldn't verify your payment. Please try again or contact support if the issue persists.",
+      "retry": "Try Again",
+      "back": "Back to Wallet"
+    },
+    "contacts": {
+      "title": "My Contacts",
+      "count": "{count} contact",
+      "count_plural": "{count} contacts",
+      "searchPlaceholder": "Search contacts...",
+      "favoritesOnly": "Show favorites only",
+      "allContacts": "Show all contacts",
+      "sortBy": "Sort By",
+      "sortOptions": {
+        "lastTransferred": "Last Transferred",
+        "name": "Name",
+        "totalTransferred": "Total Transferred",
+        "transferCount": "Transfer Count"
+      },
+      "sortAsc": "Sort ascending",
+      "sortDesc": "Sort descending",
+      "noContacts": "No contacts found",
+      "adjustSearch": "Try adjusting your search",
+      "addHint": "Add contacts to make transfers easier",
+      "send": "Send",
+      "edit": "Edit",
+      "favorite": "Add to favorites",
+      "unfavorite": "Remove from favorites",
+      "deleteConfirm": "Are you sure you want to delete this contact?",
+      "editTitle": "Edit Contact",
+      "notes": "Notes",
+      "notesPlaceholder": "Add notes about this contact...",
+      "tags": "Tags",
+      "tagPlaceholder": "Add tag...",
+      "add": "Add",
+      "saveChanges": "Save Changes",
+      "cancel": "Cancel"
+    },
+    "share": {
+      "title": "Share Wallet",
+      "walletId": "Wallet ID",
+      "copyWalletId": "Copy Wallet ID",
+      "includeAmount": "Include Amount in QR Code",
+      "amountLabel": "Amount: {amount} {currency}",
+      "shareLinkTitle": "Share Wallet Link",
+      "copyLink": "Copy Link",
+      "shareLink": "Share Link",
+      "copy": "Copy",
+      "share": "Share",
+      "copied": "Copied!",
+      "downloadQR": "Download QR",
+      "shareQR": "Share QR",
+      "download": "Download",
+      "howToUse": "How to use:",
+      "howToQR": "QR Code: Others can scan this QR code to send you money",
+      "howToLink": "Deep Link: Share the wallet link via messaging apps or social media",
+      "howToId": "Wallet ID: Others can search for your Wallet ID manually",
+      "howToCompatible": "Compatible: Works with the AfriTrade app and web platform",
+      "shareText": "Send money to {name} via AfriTrade",
+      "shareTitle": "AfriTrade Wallet - {name}"
     }
   }
 }

@@ -9,7 +9,25 @@
   "navCart": "Carrito",
   "navCategories": "Categorías",
   "language": "Español",
-  "home": "Inicio",
+  "home": {
+    "title": "Inicio",
+    "featuredForYou": "Destacado para ti",
+    "seeMore": "Ver más"
+  },
+  "header": {
+    "categories": "Categorías",
+    "dashboard": "Panel",
+    "wallet": "Billetera",
+    "adminPanel": "Panel de administración",
+    "loadingCategories": "Cargando categorías...",
+    "noCategories": "No se encontraron categorías",
+    "allDepartments": "Todos los departamentos",
+    "hoverForCategories": "Pasa el mouse sobre un departamento para ver categorías",
+    "noCategoriesInDepartment": "No hay categorías en este departamento",
+    "search": "Buscar",
+    "needHelp": "¿Necesitas ayuda?",
+    "callUs": "Llámanos:"
+  },
   "explorePicks": "Explorar selecciones del mercado",
   "freeShippingBanner": "Envío gratis especial para ti",
   "limitedTimeOffer": "Oferta por tiempo limitado",
@@ -421,19 +439,6 @@
     "fraudCasesIntro": "Aquí hay algunos",
     "commonFraudCases": "casos de fraude comunes",
     "forReference": "para referencia."
-  },
-  "header": {
-    "adminPanel": "Panel de Administración",
-    "dashboard": "Tablero",
-    "wallet": "Billetera",
-    "allDepartments": "Todos los Departamentos",
-    "loadingCategories": "Cargando categorías...",
-    "noCategories": "No hay categorías disponibles",
-    "hoverForCategories": "Pasa el cursor sobre un departamento para ver las categorías",
-    "noCategoriesInDepartment": "No hay categorías en este departamento",
-    "search": "Buscar",
-    "needHelp": "¿Necesita ayuda?",
-    "callUs": "Llámenos:"
   },
   "usermenu": {
     "welcome": "Bienvenido",
@@ -987,6 +992,325 @@
       "title": "Su viaje de compras",
       "subtitle": "¡Siga explorando para descubrir más productos increíbles!",
       "totalItems": "Total de artículos"
+    }
+  },
+  "wishlist": {
+    "title": "Lista de deseos",
+    "clearAll": "Borrar todo",
+    "exploreMore": "Explorar más",
+    "freeShippingBanner": "Envío gratis en pedidos superiores a $50",
+    "limitedTimeOffer": "Oferta limitada",
+    "loading": "Cargando...",
+    "empty": {
+      "title": "Tu lista de deseos está vacía",
+      "desc": "Aún no has añadido artículos.",
+      "cta": "Explorar mercado"
+    },
+    "picks": {
+      "title": "Mejores Selecciones para Ti",
+      "noPicks": "No hay recomendaciones disponibles en este momento."
+    }
+  },
+  "vouchers": {
+    "title": "Mis Cupones",
+    "subtitle": "Códigos de descuento disponibles y ofertas promocionales",
+    "back": "Volver",
+    "tabs": {
+      "available": "Disponible ({count})",
+      "used": "Usado ({count})",
+      "history": "Historial ({count})"
+    },
+    "types": {
+      "percentage": "Porcentaje de Descuento",
+      "fixed": "Monto Fijo de Descuento",
+      "free_shipping": "Envío Gratis"
+    },
+    "status": {
+      "upcoming": "Próximamente",
+      "expired": "Expirado",
+      "exhausted": "Agotado",
+      "active": "Activo"
+    },
+    "card": {
+      "codeLabel": "Código del Cupón",
+      "copy": "Copiar",
+      "copied": "¡Copiado!",
+      "minOrder": "Pedido mín.: {amount} {currency}",
+      "maxDiscount": "Descuento máx.: {amount} {currency}",
+      "usage": "Uso: {count}/{total}",
+      "expires": "Expira: {date}",
+      "terms": "Términos y Condiciones",
+      "instructions": "Usa este código durante el pago para aplicar tu descuento",
+      "saved": "Ahorrado: {amount} {currency}",
+      "appliedSuccessfully": "Aplicado con éxito a tu pedido"
+    },
+    "history": {
+      "orderTotal": "Total del Pedido",
+      "discountApplied": "Descuento Aplicado",
+      "finalAmount": "Monto Final"
+    },
+    "empty": {
+      "availableTitle": "No hay cupones disponibles",
+      "availableDesc": "No tienes cupones activos en este momento. ¡Vuelve más tarde para ver nuevas ofertas!",
+      "usedTitle": "Aún no has usado cupones",
+      "usedDesc": "Aún no has usado ningún cupón. ¡Empieza a comprar para aprovechar grandes ofertas!",
+      "historyTitle": "Sin historial de uso",
+      "historyDesc": "Aún no has usado ningún cupón. ¡Empieza a comprar para ver tu historial de uso!"
+    },
+    "footer": "Los cupones se aplican automáticamente durante el pago. Pueden aplicar algunas restricciones.",
+    "toasts": {
+      "copySuccess": "¡Código de cupón copiado!",
+      "copyError": "Error al copiar el código",
+      "loadError": "Error al cargar cupones"
+    }
+  },
+  "wallet": {
+    "title": "Mi Billetera",
+    "subtitle": "Gestione sus fondos y transacciones",
+    "notAvailableTitle": "Billetera No Disponible",
+    "notAvailableDesc": "Su tipo de cuenta no tiene acceso a la función de billetera.",
+    "returnProfile": "Volver al Perfil",
+    "successMessage": {
+      "title": "¡Recarga Exitosa!",
+      "desc": "Su billetera ha sido recargada con éxito. El saldo se actualizará en breve."
+    },
+    "balance": {
+      "label": "Saldo de la Billetera",
+      "currency": "Naira Nigeriana (NGN)",
+      "total": "Saldo Total",
+      "available": "Saldo Disponible",
+      "frozen": "Congelado",
+      "credit": "Crédito Disponible",
+      "creditUsed": "Crédito Utilizado",
+      "of": "de",
+      "hide": "Ocultar Saldo",
+      "show": "Mostrar Saldo"
+    },
+    "actions": {
+      "topUp": "Recargar",
+      "withdraw": "Retirar",
+      "requestCredit": "Solicitar Crédito",
+      "export": "Exportar",
+      "refresh": "Actualizar",
+      "analytics": "Análisis",
+      "history": "Historial",
+      "settings": "Ajustes"
+    },
+    "tabs": {
+      "transactions": "Transacciones",
+      "withdrawals": "Historial de Retiros",
+      "creditRequests": "Solicitudes de Crédito"
+    },
+    "transactions": {
+      "title": "Transacciones Recientes",
+      "subtitle": "Vea su actividad reciente en la billetera",
+      "empty": "No se encontraron transacciones",
+      "filters": {
+        "title": "Filtros",
+        "clear": "Limpiar Filtros",
+        "type": "Tipo",
+        "status": "Estado",
+        "dateRange": "Rango de Fechas",
+        "allTypes": "Todos los Tipos",
+        "deposit": "Depósito",
+        "withdrawal": "Retiro",
+        "payment": "Pago",
+        "refund": "Reembolso",
+        "allStatuses": "Todos los Estados",
+        "completed": "Completado",
+        "pending": "Pendiente",
+        "failed": "Fallido"
+      },
+      "pagination": {
+        "pageOffset": "Página {page} de {pages}"
+      },
+      "details": {
+        "title": "Detalles de la Transaction",
+        "reference": "Referencia",
+        "date": "Fecha",
+        "type": "Tipo",
+        "description": "Descripción",
+        "close": "Cerrar"
+      }
+    },
+    "analytics": {
+      "title": "Análisis de la Billetera",
+      "subtitle": "Información sobre su actividad y patrones de gasto",
+      "refresh": "Actualizar",
+      "export": "Exportar",
+      "filters": {
+        "title": "Filtros",
+        "period": "Período",
+        "currency": "Moneda",
+        "type": "Type",
+        "category": "Categoría",
+        "granularity": "Granularidad",
+        "allCurrencies": "Todas las Monedas",
+        "allTypes": "Todos los Tipos",
+        "user": "Usuario",
+        "vendor": "Vendedor",
+        "allCategories": "Todas las Categorías",
+        "daily": "Diario",
+        "weekly": "Semanal",
+        "monthly": "Mensual"
+      },
+      "periods": {
+        "7d": "Últimos 7 días",
+        "30d": "Últimos 30 días",
+        "90d": "Últimos 90 días",
+        "1y": "Último año"
+      },
+      "metrics": {
+        "totalTransactions": "Total de Transacciones",
+        "totalVolume": "Volumen Total",
+        "avgTransaction": "Transacción Promedio",
+        "dailyAverage": "Promedio Diario"
+      },
+      "patterns": {
+        "title": "Patrones de Gasto",
+        "mostActiveDay": "Día Más Activo",
+        "mostActiveHour": "Hora Más Activa",
+        "largestTransaction": "Transacción Más Grande",
+        "smallestTransaction": "Transacción Más Pequeña"
+      },
+      "breakdown": {
+        "title": "Desglose de Transacciones",
+        "totalDeposits": "Total de Depósitos",
+        "totalWithdrawals": "Total de Retiros",
+        "totalTransfers": "Total de Transferencias"
+      },
+      "earnings": {
+        "title": "Ganancias del Vendedor",
+        "totalPayments": "Total de Pagos al Vendedor",
+        "desc": "Pagos recibidos por pedidos entregados"
+      },
+      "spendingByCategory": "Gasto por Categoría",
+      "spendingByDay": "Gasto por Día de la Semana",
+      "empty": {
+        "title": "No Hay Datos Disponibles",
+        "desc": "No se encontraron transacciones para el período y los filtros seleccionados.",
+        "reset": "Restablecer Filtros"
+      }
+    },
+    "modals": {
+      "topUp": {
+        "title": "Recargar Billetera",
+        "amountLabel": "Monto (₦)",
+        "placeholder": "0.00",
+        "processing": "Procesando...",
+        "submit": "Proceder al Pago"
+      },
+      "withdrawal": {
+        "title": "Retirar Fondos",
+        "amountLabel": "Monto (₦)",
+        "available": "Disponible: ₦{amount}",
+        "bankTitle": "Detalles Bancarios",
+        "bankName": "Nombre del Banco",
+        "accountNumber": "Número de Cuenta",
+        "accountName": "Nombre de la Cuenta",
+        "selectBank": "Seleccionar Banco",
+        "loadingBanks": "Cargando bancos...",
+        "resolving": "Verificando cuenta...",
+        "cancel": "Cancelar",
+        "submit": "Retirar Fondos",
+        "history": "Historial de Retiros"
+      },
+      "creditRequest": {
+        "title": "Solicitar Límite de Crédito",
+        "subtitle": "Solicite una línea de crédito para realizar compras",
+        "guidelines": "Pautas de Solicitud de Crédito:",
+        "guidelinesItems": [
+          "Rango de monto: 50,000 ₦ - 10,000,000 ₦",
+          "Una solicitud cada 30 días",
+          "Se requiere aprobación del administrador",
+          "Proporcione una justificación comercial detallada"
+        ],
+        "amountLabel": "Monto Solicitado (₦)",
+        "amountRange": "Min: 50,000 ₦ • Max: 10,000,000 ₦",
+        "reasonLabel": "Justificación Comercial",
+        "reasonPlaceholder": "Explique por qué necesita este límite de crédito...",
+        "minChars": "Min: {count} caracteres",
+        "cancel": "Cancelar",
+        "submit": "Enviar Solicitud",
+        "submitting": "Enviando...",
+        "alreadySubmitted": "Ya ha enviado una solicitud de crédito recientemente. Espere 30 días entre solicitudes.",
+        "pendingRequest": "Ya tiene una solicitud de crédito pendiente. Espere a que sea revisada."
+      },
+      "export": {
+        "title": "Exportar Transacciones",
+        "format": "Formato",
+        "dateRange": "Rango de Fechas (Opcional)",
+        "download": "Descargar",
+        "cancel": "Cancelar"
+      }
+    },
+    "toasts": {
+      "topUpSuccess": "¡Recarga de billetera exitosa!",
+      "topUpError": "Error al iniciar la recarga",
+      "withdrawSuccess": "Solicitud de retiro enviada con éxito",
+      "withdrawError": "Error al enviar la solicitud de retiro",
+      "creditSuccess": "¡Solicitud de crédito enviada con éxito! Se le notificará cuando sea revisada.",
+      "creditError": "Error al enviar la solicitud de crédito",
+      "exportSuccess": "¡Transacciones exportadas con éxito!",
+      "exportError": "Error al exportar transacciones",
+      "loadError": "Error al cargar transacciones",
+      "analyticsError": "Error al cargar datos analíticos",
+      "walletDataError": "Error al cargar datos de la billetera",
+      "newTransaction": "Nueva transacción de {type}: {description}",
+      "walletFrozen": "Su billetera ha sido congelada: {reason}",
+      "walletUnfrozen": "Su billetera ha sido descongelada"
+    },
+    "distributor": {
+      "title": "Recompensas del Distribuidor",
+      "subtitle": "Bono de Desempeño Trimestral",
+      "nextDate": "Próxima Fecha de Recompensa",
+      "calculating": "Calculando...",
+      "desc": "Las recompensas se procesan cada 3 meses",
+      "estimated": "Recompensa Estimada",
+      "estimatedDesc": "{percent}% de su saldo total actual",
+      "totalEarned": "Total de Recompensas Ganadas",
+      "lastReward": "Última: {amount} el {date}"
+    },
+    "commission": {
+      "title": "Comisiones de Agente de Ventas",
+      "subtitle": "Sus ganancias por referidos",
+      "dashboard": "Ver Tablero",
+      "totalEarned": "Total Ganado",
+      "commissionsCount": "{count} comisiones",
+      "pending": "Pendiente",
+      "awaiting": "Esperando aprobación",
+      "approved": "Aprobado",
+      "ready": "Listo para el pago",
+      "payoutPending": "{amount} pendiente de aprobación",
+      "requestPayout": "Solicitar Pago",
+      "breakdown": "Desglose de Ganancias",
+      "registration": "Registro",
+      "purchase": "Compra",
+      "bonus": "Bonos",
+      "viewReferrals": "Ver Referidos",
+      "history": "Historial de Comisiones",
+      "bankMissing": {
+        "title": "Faltan Detalles Bancarios",
+        "desc": "Necesitamos su información bancaria para procesar los pagos de comisiones.",
+        "instruction": "Actualice sus datos bancarios en su perfil antes de solicitar un pago.",
+        "cancel": "Cancelar",
+        "update": "Actualizar Perfil"
+      }
+    },
+    "callback": {
+      "verifying": "Verificando Pago",
+      "verifyingDesc": "Espere mientras verificamos su recarga de billetera...",
+      "processing": "Procesando su pago...",
+      "success": "¡Recarga Exitosa!",
+      "successDesc": "Su billetera ha sido recargada con éxito.",
+      "updatedBalance": "Saldo de Billetera Actualizado",
+      "availableBalance": "Saldo Disponible",
+      "continue": "Continuar a la Billetera",
+      "autoRedirect": "Redireccionando automáticamente en {seconds} segundos...",
+      "failed": "Recarga Fallida",
+      "failedDesc": "No pudimos verificar su pago. Inténtelo de nuevo o contacte al soporte.",
+      "retry": "Reintentar",
+      "back": "Volver a la Billetera"
     }
   }
 }

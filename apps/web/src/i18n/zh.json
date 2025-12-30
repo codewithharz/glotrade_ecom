@@ -9,7 +9,25 @@
   "navCart": "购物车",
   "navCategories": "所有分类",
   "language": "简体中文",
-  "home": "首页",
+  "home": {
+    "title": "首页",
+    "featuredForYou": "为您推荐",
+    "seeMore": "查看更多"
+  },
+  "header": {
+    "categories": "分类",
+    "dashboard": "仪表板",
+    "wallet": "钱包",
+    "adminPanel": "管理面板",
+    "loadingCategories": "正在加载分类...",
+    "noCategories": "未找到分类",
+    "allDepartments": "所有部门",
+    "hoverForCategories": "悬停在部门上以查看分类",
+    "noCategoriesInDepartment": "该部门没有分类",
+    "search": "搜索",
+    "needHelp": "需要帮助？",
+    "callUs": "致电我们："
+  },
   "explorePicks": "探索市场精选",
   "freeShippingBanner": "专享免运费优惠",
   "limitedTimeOffer": "限时优惠",
@@ -421,19 +439,6 @@
     "fraudCasesIntro": "以下是一些",
     "commonFraudCases": "常见的欺诈案例",
     "forReference": "供参考。"
-  },
-  "header": {
-    "adminPanel": "管理面板",
-    "dashboard": "仪表板",
-    "wallet": "钱包",
-    "allDepartments": "所有部门",
-    "loadingCategories": "正在加载类别...",
-    "noCategories": "暂无类别",
-    "hoverForCategories": "悬停在部门上以查看类别",
-    "noCategoriesInDepartment": "此部门暂无类别",
-    "search": "搜索",
-    "needHelp": "需要帮助吗？",
-    "callUs": "致电我们："
   },
   "usermenu": {
     "welcome": "欢迎",
@@ -960,6 +965,325 @@
       "title": "您的购物之旅",
       "subtitle": "继续探索以发现更多令人惊叹的产品！",
       "totalItems": "总商品数"
+    }
+  },
+  "wishlist": {
+    "title": "愿望清单",
+    "clearAll": "全部清除",
+    "exploreMore": "探索更多",
+    "freeShippingBanner": "满$50免运费",
+    "limitedTimeOffer": "限时优惠",
+    "loading": "加载中...",
+    "empty": {
+      "title": "您的愿望清单为空",
+      "desc": "您还没有添加任何商品。",
+      "cta": "浏览市场"
+    },
+    "picks": {
+      "title": "为您精心挑选",
+      "noPicks": "目前没有推荐内容。"
+    }
+  },
+  "vouchers": {
+    "title": "我的优惠券",
+    "subtitle": "可用的折扣码和促销优惠",
+    "back": "返回",
+    "tabs": {
+      "available": "可用 ({count})",
+      "used": "已使用 ({count})",
+      "history": "历史记录 ({count})"
+    },
+    "types": {
+      "percentage": "打折",
+      "fixed": "固定金额抵扣",
+      "free_shipping": "免运费"
+    },
+    "status": {
+      "upcoming": "即将开始",
+      "expired": "已过期",
+      "exhausted": "已用完",
+      "active": "生效中"
+    },
+    "card": {
+      "codeLabel": "优惠码",
+      "copy": "复制",
+      "copied": "已复制！",
+      "minOrder": "最低金额: {amount} {currency}",
+      "maxDiscount": "最高折扣: {amount} {currency}",
+      "usage": "使用情况: {count}/{total}",
+      "expires": "过期时间: {date}",
+      "terms": "条款与条件",
+      "instructions": "在结账时使用此代码以应用折扣",
+      "saved": "已节省: {amount} {currency}",
+      "appliedSuccessfully": "已成功应用于您的订单"
+    },
+    "history": {
+      "orderTotal": "订单总额",
+      "discountApplied": "已应用折扣",
+      "finalAmount": "最终金额"
+    },
+    "empty": {
+      "availableTitle": "没有可用的优惠券",
+      "availableDesc": "您目前没有任何生效的优惠券。请稍后再来查看新优惠！",
+      "usedTitle": "尚未使用过优惠券",
+      "usedDesc": "您尚未使用过任何优惠券。开始购物以享受超值优惠！",
+      "historyTitle": "暂无使用记录",
+      "historyDesc": "您尚未使用过任何优惠券。开始购物后即可查看使用记录！"
+    },
+    "footer": "优惠券将在结账时自动应用。可能存在某些限制条件。",
+    "toasts": {
+      "copySuccess": "优惠码已复制！",
+      "copyError": "复制失败",
+      "loadError": "加载优惠券出错"
+    }
+  },
+  "wallet": {
+    "title": "我的钱包",
+    "subtitle": "管理您的资金和交易记录",
+    "notAvailableTitle": "钱包不可用",
+    "notAvailableDesc": "您的账户类型无权访问钱包功能。",
+    "returnProfile": "返回个人资料",
+    "successMessage": {
+      "title": "充值成功！",
+      "desc": "您的钱包已成功充值。余额将很快更新。"
+    },
+    "balance": {
+      "label": "钱包余额",
+      "currency": "尼日利亚奈拉 (NGN)",
+      "total": "总余额",
+      "available": "可用余额",
+      "frozen": "已冻结",
+      "credit": "可用信用额度",
+      "creditUsed": "已用信用额度",
+      "of": "/",
+      "hide": "隐藏余额",
+      "show": "显示余额"
+    },
+    "actions": {
+      "topUp": "充值",
+      "withdraw": "提现",
+      "requestCredit": "申请信用额度",
+      "export": "导出",
+      "refresh": "刷新",
+      "analytics": "分析",
+      "history": "历史记录",
+      "settings": "设置"
+    },
+    "tabs": {
+      "transactions": "交易记录",
+      "withdrawals": "提现历史记录",
+      "creditRequests": "信用申请"
+    },
+    "transactions": {
+      "title": "最近交易记录",
+      "subtitle": "查看您最近的钱包活动",
+      "empty": "未找到交易记录",
+      "filters": {
+        "title": "筛选",
+        "clear": "清除筛选",
+        "type": "类型",
+        "status": "状态",
+        "dateRange": "日期范围",
+        "allTypes": "所有类型",
+        "deposit": "充值",
+        "withdrawal": "提现",
+        "payment": "付款",
+        "refund": "退款",
+        "allStatuses": "所有状态",
+        "completed": "已完成",
+        "pending": "进行中",
+        "failed": "失败"
+      },
+      "pagination": {
+        "pageOffset": "第 {page} 页，共 {pages} 页"
+      },
+      "details": {
+        "title": "交易详情",
+        "reference": "交易单号",
+        "date": "日期",
+        "type": "类型",
+        "description": "描述",
+        "close": "关闭"
+      }
+    },
+    "analytics": {
+      "title": "钱包分析",
+      "subtitle": "洞察您的钱包活动和消费习惯",
+      "refresh": "刷新",
+      "export": "导出",
+      "filters": {
+        "title": "筛选",
+        "period": "时间周期",
+        "currency": "货币",
+        "type": "类型",
+        "category": "类别",
+        "granularity": "粒度",
+        "allCurrencies": "所有货币",
+        "allTypes": "所有类型",
+        "user": "用户",
+        "vendor": "供应商",
+        "allCategories": "所有类别",
+        "daily": "按日",
+        "weekly": "按周",
+        "monthly": "按月"
+      },
+      "periods": {
+        "7d": "最近 7 天",
+        "30d": "最近 30 天",
+        "90d": "最近 90 天",
+        "1y": "最近 1 年"
+      },
+      "metrics": {
+        "totalTransactions": "总交易数",
+        "totalVolume": "总交易额",
+        "avgTransaction": "平均交易额",
+        "dailyAverage": "日均交易额"
+      },
+      "patterns": {
+        "title": "消费习惯",
+        "mostActiveDay": "最活跃日期",
+        "mostActiveHour": "最活跃时段",
+        "largestTransaction": "最大单笔交易",
+        "smallestTransaction": "最小单笔交易"
+      },
+      "breakdown": {
+        "title": "交易分类统计",
+        "totalDeposits": "总充值",
+        "totalWithdrawals": "总提现",
+        "totalTransfers": "总转账"
+      },
+      "earnings": {
+        "title": "供应商收入",
+        "totalPayments": "总供应商款项",
+        "desc": "已交付订单收到的款项"
+      },
+      "spendingByCategory": "按类别消费",
+      "spendingByDay": "按星期消费",
+      "empty": {
+        "title": "无可用数据",
+        "desc": "所选周期和筛选条件下未找到交易记录。",
+        "reset": "重置筛选"
+      }
+    },
+    "modals": {
+      "topUp": {
+        "title": "钱包充值",
+        "amountLabel": "金额 (₦)",
+        "placeholder": "0.00",
+        "processing": "处理中...",
+        "submit": "前往支付"
+      },
+      "withdrawal": {
+        "title": "提现资金",
+        "amountLabel": "金额 (₦)",
+        "available": "可用余额: ₦{amount}",
+        "bankTitle": "银行详情",
+        "bankName": "银行名称",
+        "accountNumber": "银行账号",
+        "accountName": "账户姓名",
+        "selectBank": "选择银行",
+        "loadingBanks": "正在加载银行...",
+        "resolving": "正在验证账户...",
+        "cancel": "取消",
+        "submit": "确认提现",
+        "history": "提现历史记录"
+      },
+      "creditRequest": {
+        "title": "申请信用额度",
+        "subtitle": "申请信用额度用于购物支付",
+        "guidelines": "信用申请指南：",
+        "guidelinesItems": [
+          "申请范围：₦50,000 - ₦10,000,000",
+          "每 30 天限申请一次",
+          "需要管理员审核",
+          "请提供详细的业务理由"
+        ],
+        "amountLabel": "申请金额 (₦)",
+        "amountRange": "最低: ₦{min} • 最高: ₦{max}",
+        "reasonLabel": "业务理由",
+        "reasonPlaceholder": "解释您为什么需要此信用额度以及您的使用计划...",
+        "minChars": "最少 {count} 个字符",
+        "cancel": "取消",
+        "submit": "提交申请",
+        "submitting": "正在提交...",
+        "alreadySubmitted": "您最近已提交过信用申请。两次申请之间请间隔 30 天。",
+        "pendingRequest": "您已有待处理的信用申请。请等待审核。"
+      },
+      "export": {
+        "title": "导出交易记录",
+        "format": "格式",
+        "dateRange": "日期范围 (可选)",
+        "download": "下载",
+        "cancel": "取消"
+      }
+    },
+    "toasts": {
+      "topUpSuccess": "钱包充值成功！",
+      "topUpError": "发起充值失败",
+      "withdrawSuccess": "提现申请已成功提交",
+      "withdrawError": "提现申请提交失败",
+      "creditSuccess": "信用申请已成功提交！审核结果将通知您。",
+      "creditError": "信用申请提交失败",
+      "exportSuccess": "交易记录导出成功！",
+      "exportError": "交易记录导出失败",
+      "loadError": "加载交易记录失败",
+      "analyticsError": "加载分析数据失败",
+      "walletDataError": "加载钱包数据失败",
+      "newTransaction": "新{type}交易：{description}",
+      "walletFrozen": "您的钱包已被冻结：{reason}",
+      "walletUnfrozen": "您的钱包已解冻"
+    },
+    "distributor": {
+      "title": "分销商奖励",
+      "subtitle": "季度绩效奖金",
+      "nextDate": "下次奖励日期",
+      "calculating": "计算中...",
+      "desc": "奖励每 3 个月结算一次",
+      "estimated": "预计奖励",
+      "estimatedDesc": "当前总余额的 {percent}%",
+      "totalEarned": "累计已获奖励",
+      "lastReward": "上次奖励：{amount}，日期：{date}"
+    },
+    "commission": {
+      "title": "销售代理佣金",
+      "subtitle": "您的推荐收益",
+      "dashboard": "查看控制面板",
+      "totalEarned": "累计收益",
+      "commissionsCount": "{count} 笔佣金",
+      "pending": "处理中",
+      "awaiting": "等待审核",
+      "approved": "已批准",
+      "ready": "可提现",
+      "payoutPending": "{amount} 待审核",
+      "requestPayout": "申请结算",
+      "breakdown": "收益明细",
+      "registration": "注册奖励",
+      "purchase": "购物佣金",
+      "bonus": "额外奖金",
+      "viewReferrals": "查看推荐人",
+      "history": "佣金历史记录",
+      "bankMissing": {
+        "title": "缺少银行详情",
+        "desc": "我们需要您的银行账户信息来处理佣金结算。",
+        "instruction": "请在申请结算前更新您的个人资料中的银行详情。",
+        "cancel": "取消",
+        "update": "更新资料"
+      }
+    },
+    "callback": {
+      "verifying": "正在验证支付",
+      "verifyingDesc": "请稍候，我们正在验证您的钱包充值...",
+      "processing": "正在处理您的支付...",
+      "success": "充值成功！",
+      "successDesc": "您的钱包已成功充值。",
+      "updatedBalance": "更新后的钱包余额",
+      "availableBalance": "可用余额",
+      "continue": "返回钱包",
+      "autoRedirect": "{seconds} 秒后自动跳转...",
+      "failed": "充值失败",
+      "failedDesc": "我们无法验证您的支付。请重试或在问题持续存在时联系客服。",
+      "retry": "重试",
+      "back": "返回钱包"
     }
   }
 }

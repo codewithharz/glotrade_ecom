@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { apiGet } from "@/utils/api";
 import { Loader2, AlertCircle, CheckCircle, Clock, XCircle, ArrowUpRight } from "lucide-react";
+import { translate } from "@/utils/translate";
 
 interface WithdrawalRequest {
     _id: string;
@@ -28,7 +29,7 @@ export default function WithdrawalHistory() {
             setRequests(res.data);
         } catch (err) {
             console.error("Error loading withdrawal history:", err);
-            setError("Failed to load history");
+            setError(translate("wallet.withdrawals.loadError"));
         } finally {
             setIsLoading(false);
         }
@@ -43,26 +44,26 @@ export default function WithdrawalHistory() {
             case "completed":
                 return (
                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                        <CheckCircle className="w-3 h-3" /> Completed
+                        <CheckCircle className="w-3 h-3" /> {translate("wallet.withdrawals.status.completed")}
                     </span>
                 );
             case "pending":
                 return (
                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
-                        <Clock className="w-3 h-3" /> Pending
+                        <Clock className="w-3 h-3" /> {translate("wallet.withdrawals.status.pending")}
                     </span>
                 );
             case "processing":
                 return (
                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
-                        <Loader2 className="w-3 h-3 animate-spin" /> Processing
+                        <Loader2 className="w-3 h-3 animate-spin" /> {translate("wallet.withdrawals.status.processing")}
                     </span>
                 );
             case "rejected":
             case "failed":
                 return (
                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                        <XCircle className="w-3 h-3" /> {status.charAt(0).toUpperCase() + status.slice(1)}
+                        <XCircle className="w-3 h-3" /> {translate(`wallet.withdrawals.status.${status}`)}
                     </span>
                 );
             default:
@@ -89,7 +90,7 @@ export default function WithdrawalHistory() {
     if (requests.length === 0) {
         return (
             <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                No withdrawal history found.
+                {translate("wallet.withdrawals.noHistory")}
             </div>
         );
     }
@@ -99,11 +100,11 @@ export default function WithdrawalHistory() {
             <table className="w-full text-sm text-left">
                 <thead className="text-xs text-gray-500 uppercase bg-gray-50 dark:bg-gray-800/50">
                     <tr>
-                        <th className="px-4 py-3">Date</th>
-                        <th className="px-4 py-3">Reference</th>
-                        <th className="px-4 py-3">Amount</th>
-                        <th className="px-4 py-3">Bank</th>
-                        <th className="px-4 py-3">Status</th>
+                        <th className="px-4 py-3">{translate("wallet.withdrawals.table.date")}</th>
+                        <th className="px-4 py-3">{translate("wallet.withdrawals.table.reference")}</th>
+                        <th className="px-4 py-3">{translate("wallet.withdrawals.table.amount")}</th>
+                        <th className="px-4 py-3">{translate("wallet.withdrawals.table.bank")}</th>
+                        <th className="px-4 py-3">{translate("wallet.withdrawals.table.status")}</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">

@@ -9,7 +9,25 @@
   "navCart": "السلة",
   "navCategories": "الفئات",
   "language": "العربية",
-  "home": "الرئيسية",
+  "home": {
+    "title": "الرئيسية",
+    "featuredForYou": "موصى به لك",
+    "seeMore": "شاهد المزيد"
+  },
+  "header": {
+    "categories": "الفئات",
+    "dashboard": "لوحة القيادة",
+    "wallet": "المحفظة",
+    "adminPanel": "لوحة الإدارة",
+    "loadingCategories": "جاري تحميل الفئات...",
+    "noCategories": "لم يتم العثور على فئات",
+    "allDepartments": "جميع الأقسام",
+    "hoverForCategories": "مرر فوق القسم لرؤية الفئات",
+    "noCategoriesInDepartment": "لا توجد فئات في هذا القسم",
+    "search": "بحث",
+    "needHelp": "تحتاج مساعدة؟",
+    "callUs": "اتصل بنا:"
+  },
   "explorePicks": "استكشف اختيارات السوق",
   "freeShippingBanner": "شحن مجاني خاص لك",
   "limitedTimeOffer": "عرض لفترة محدودة",
@@ -421,19 +439,6 @@
     "fraudCasesIntro": "إليك بعض",
     "commonFraudCases": "حالات الاحتيال الشائعة",
     "forReference": "كمرجع."
-  },
-  "header": {
-    "adminPanel": "لوحة المسؤول",
-    "dashboard": "لوحة القيادة",
-    "wallet": "المحفظة",
-    "allDepartments": "جميع الأقسام",
-    "loadingCategories": "جاري تحميل الفئات...",
-    "noCategories": "لا توجد فئات متاحة",
-    "hoverForCategories": "حرك المؤشر فوق القسم لرؤية الفئات",
-    "noCategoriesInDepartment": "لا توجد فئات في هذا القسم",
-    "search": "بحث",
-    "needHelp": "هل تحتاج إلى مساعدة؟",
-    "callUs": "اتصل بنا:"
   },
   "usermenu": {
     "welcome": "مرحبًا",
@@ -958,6 +963,325 @@
       "title": "رحلة التسوق الخاصة بك",
       "subtitle": "استمر في الاستكشاف لاكتشاف المزيد من المنتجات المذهلة!",
       "totalItems": "إجمالي العناصر"
+    }
+  },
+  "wishlist": {
+    "title": "قائمة الأمنيات",
+    "clearAll": "مسح الكل",
+    "exploreMore": "استكشاف المزيد",
+    "freeShippingBanner": "شحن مجاني للطلبات التي تزيد عن 50 دولارًا",
+    "limitedTimeOffer": "عرض لفترة محدودة",
+    "loading": "جارٍ التحميل...",
+    "empty": {
+      "title": "قائمة أمنياتك فارغة",
+      "desc": "يبدو أنك لم تضف أي عناصر بعد.",
+      "cta": "استكشاف السوق"
+    },
+    "picks": {
+      "title": "أفضل الاختيارات لك",
+      "noPicks": "لا توجد توصيات متاحة حاليًا."
+    }
+  },
+  "vouchers": {
+    "title": "قسائمي",
+    "subtitle": "أكواد الخصم المتاحة والعروض الترويجية",
+    "back": "رجوع",
+    "tabs": {
+      "available": "المتاحة ({count})",
+      "used": "المستخدمة ({count})",
+      "history": "السجل ({count})"
+    },
+    "types": {
+      "percentage": "نسبة خصم",
+      "fixed": "مبلغ خصم ثابت",
+      "free_shipping": "شحن مجاني"
+    },
+    "status": {
+      "upcoming": "قادم قريبًا",
+      "expired": "منتهي الصلاحية",
+      "exhausted": "مستخدم بالكامل",
+      "active": "نشط"
+    },
+    "card": {
+      "codeLabel": "كود القسيمة",
+      "copy": "نسخ",
+      "copied": "تم النسخ!",
+      "minOrder": "الحد الأدنى للطلب: {amount} {currency}",
+      "maxDiscount": "أقصى خصم: {amount} {currency}",
+      "usage": "الاستخدام: {count}/{total}",
+      "expires": "ينتهي في: {date}",
+      "terms": "الشروط والأحكام",
+      "instructions": "استخدم هذا الكود عند الدفع لتطبيق الخصم",
+      "saved": "تم توفير: {amount} {currency}",
+      "appliedSuccessfully": "تم التطبيق بنجاح على طلبك"
+    },
+    "history": {
+      "orderTotal": "إجمالي الطلب",
+      "discountApplied": "الخصم المطبق",
+      "finalAmount": "المبلغ النهائي"
+    },
+    "empty": {
+      "availableTitle": "لا توجد قسائم متاحة",
+      "availableDesc": "ليس لديك أي قسائم نشطة في الوقت الحالي. تحقق مرة أخرى لاحقًا للحصول على عروض جديدة!",
+      "usedTitle": "لم يتم استخدام أي قسائم بعد",
+      "usedDesc": "لم تستخدم أي قسائم بعد. ابدأ التسوق للاستفادة من العروض الرائعة!",
+      "historyTitle": "لا يوجد سجل استخدام",
+      "historyDesc": "لم تستخدم أي قسائم بعد. ابدأ التسوق لرؤية سجل الاستخدام الخاص بك!"
+    },
+    "footer": "يتم تطبيق القسائم تلقائيًا أثناء الدفع. قد تطبق بعض القيود.",
+    "toasts": {
+      "copySuccess": "تم نسخ كود القسيمة!",
+      "copyError": "فشل نسخ الكود",
+      "loadError": "خطأ في تحميل القسائم"
+    }
+  },
+  "wallet": {
+    "title": "محفظتي",
+    "subtitle": "إدارة أموالك ومعاملاتك",
+    "notAvailableTitle": "المحفظة غير متاحة",
+    "notAvailableDesc": "نوع حسابك لا يملك صلاحية الوصول إلى ميزة المحفظة.",
+    "returnProfile": "العودة إلى الملف الشخصي",
+    "successMessage": {
+      "title": "تم الشحن بنجاح!",
+      "desc": "تم شحن محفظتك بنجاح. سيتم تحديث الرصيد قريباً."
+    },
+    "balance": {
+      "label": "رصيد المحفظة",
+      "currency": "نايرا نيجيري (NGN)",
+      "total": "إجمالي الرصيد",
+      "available": "الرصيد المتاح",
+      "frozen": "مجمد",
+      "credit": "الائتمان المتاح",
+      "creditUsed": "الائتمان المستخدم",
+      "of": "من",
+      "hide": "إخفاء الرصيد",
+      "show": "إظهار الرصيد"
+    },
+    "actions": {
+      "topUp": "شحن",
+      "withdraw": "سحب",
+      "requestCredit": "طلب ائتمان",
+      "export": "تصدير",
+      "refresh": "تحديث",
+      "analytics": "تحليلات",
+      "history": "السجل",
+      "settings": "الإعدادات"
+    },
+    "tabs": {
+      "transactions": "المعاملات",
+      "withdrawals": "سجل السحوبات",
+      "creditRequests": "طلبات الائتمان"
+    },
+    "transactions": {
+      "title": "المعاملات الأخيرة",
+      "subtitle": "عرض نشاط محفظتك الأخير",
+      "empty": "لم يتم العثور على معاملات",
+      "filters": {
+        "title": "الفلاتر",
+        "clear": "مسح الفلاتر",
+        "type": "النوع",
+        "status": "الحالة",
+        "dateRange": "نطاق التاريخ",
+        "allTypes": "جميع الأنواع",
+        "deposit": "إيداع",
+        "withdrawal": "سحب",
+        "payment": "دفع",
+        "refund": "استرداد",
+        "allStatuses": "جميع الحالات",
+        "completed": "مكتمل",
+        "pending": "قيد الانتظار",
+        "failed": "فاشل"
+      },
+      "pagination": {
+        "pageOffset": "صفحة {page} من {pages}"
+      },
+      "details": {
+        "title": "تفاصيل المعاملة",
+        "reference": "المرجع",
+        "date": "التاريخ",
+        "type": "النوع",
+        "description": "الوصف",
+        "close": "إغلاق"
+      }
+    },
+    "analytics": {
+      "title": "تحليلات المحفظة",
+      "subtitle": "نظرة على نشاطك وأنماط إنفاقك",
+      "refresh": "تحديث",
+      "export": "تصدير",
+      "filters": {
+        "title": "الفلاتر",
+        "period": "الفترة",
+        "currency": "العملة",
+        "type": "النوع",
+        "category": "الفئة",
+        "granularity": "التفصيل",
+        "allCurrencies": "جميع العملات",
+        "allTypes": "جميع الأنواع",
+        "user": "مستخدم",
+        "vendor": "بائع",
+        "allCategories": "جميع الفئات",
+        "daily": "يومي",
+        "weekly": "أسبوعي",
+        "monthly": "شهري"
+      },
+      "periods": {
+        "7d": "آخر 7 أيام",
+        "30d": "آخر 30 يوم",
+        "90d": "آخر 90 يوم",
+        "1y": "آخر سنة"
+      },
+      "metrics": {
+        "totalTransactions": "إجمالي المعاملات",
+        "totalVolume": "إجمالي الحجم",
+        "avgTransaction": "متوسط المعاملة",
+        "dailyAverage": "المتوسط اليومي"
+      },
+      "patterns": {
+        "title": "أنماط الإنفاق",
+        "mostActiveDay": "اليوم الأكثر نشاطاً",
+        "mostActiveHour": "الساعة الأكثر نشاطاً",
+        "largestTransaction": "أكبر معاملة",
+        "smallestTransaction": "أصغر معاملة"
+      },
+      "breakdown": {
+        "title": "تفصيل المعاملات",
+        "totalDeposits": "إجمالي الإيداعات",
+        "totalWithdrawals": "إجمالي السحوبات",
+        "totalTransfers": "إجمالي التحويلات"
+      },
+      "earnings": {
+        "title": "أرباح البائع",
+        "totalPayments": "إجمالي مدفوعات البائع",
+        "desc": "المدفوعات المستلمة للطلبات المسلمة"
+      },
+      "spendingByCategory": "الإنفاق حسب الفئة",
+      "spendingByDay": "الإنفاق حسب يوم الأسبوع",
+      "empty": {
+        "title": "لا توجد بيانات متاحة",
+        "desc": "لم يتم العثور على معاملات للفترة والفلاتر المختارة.",
+        "reset": "إعادة تعيين الفلاتر"
+      }
+    },
+    "modals": {
+      "topUp": {
+        "title": "شحن المحفظة",
+        "amountLabel": "المبلغ (₦)",
+        "placeholder": "0.00",
+        "processing": "جاري المعالجة...",
+        "submit": "المتابعة للدفع"
+      },
+      "withdrawal": {
+        "title": "سحب الأموال",
+        "amountLabel": "المبلغ (₦)",
+        "available": "المتاح: ₦{amount}",
+        "bankTitle": "تفاصيل البنك",
+        "bankName": "اسم البنك",
+        "accountNumber": "رقم الحساب",
+        "accountName": "اسم الحساب",
+        "selectBank": "اختر البنك",
+        "loadingBanks": "جاري تحميل البنوك...",
+        "resolving": "جاري التحقق من الحساب...",
+        "cancel": "إلغاء",
+        "submit": "سحب الأموال",
+        "history": "سجل السحوبات"
+      },
+      "creditRequest": {
+        "title": "طلب حد ائتماني",
+        "subtitle": "تقدم بطلب لخط ائتمان لإجراء المشتريات",
+        "guidelines": "إرشادات طلب الائتمان:",
+        "guidelinesItems": [
+          "نطاق المبلغ: 50,000 ₦ - 10,000,000 ₦",
+          "طلب واحد كل 30 يومًا",
+          "مطلوب موافقة المسؤول",
+          "قدم تبريرًا تجاريًا مفصلاً"
+        ],
+        "amountLabel": "المبلغ المطلوب (₦)",
+        "amountRange": "الأدنى: 50,000 ₦ • الأقصى: 10,000,000 ₦",
+        "reasonLabel": "التبرير التجاري",
+        "reasonPlaceholder": "اشرح لماذا تحتاج إلى هذا الحد الائتماني...",
+        "minChars": "الأدنى: {count} حرفًا",
+        "cancel": "إلغاء",
+        "submit": "إرسال الطلب",
+        "submitting": "جاري الإرسال...",
+        "alreadySubmitted": "لقد قمت بإرسال طلب ائتمان مؤخرًا. يرجى الانتظار 30 يومًا بين الطلبات.",
+        "pendingRequest": "لديك بالفعل طلب ائتمان قيد الانتظار. يرجى انتظار المراجعة."
+      },
+      "export": {
+        "title": "تصدير المعاملات",
+        "format": "التنسيق",
+        "dateRange": "نطاق التاريخ (اختياري)",
+        "download": "تحميل",
+        "cancel": "إلغاء"
+      }
+    },
+    "toasts": {
+      "topUpSuccess": "تم شحن المحفظة بنجاح!",
+      "topUpError": "فشل بدء الشحن",
+      "withdrawSuccess": "تم تقديم طلب السحب بنجاح",
+      "withdrawError": "فشل تقديم طلب السحب",
+      "creditSuccess": "تم تقديم طلب الائتمان بنجاح! سيتم إخطارك عند المراجعة.",
+      "creditError": "فشل تقديم طلب الائتمان",
+      "exportSuccess": "تم تصدير المعاملات بنجاح!",
+      "exportError": "فشل تصدير المعاملات",
+      "loadError": "فشل تحميل المعاملات",
+      "analyticsError": "فشل تحميل بيانات التحليلات",
+      "walletDataError": "فشل تحميل بيانات المحفظة",
+      "newTransaction": "معاملة {type} جديدة: {description}",
+      "walletFrozen": "تم تجميد محفظتك: {reason}",
+      "walletUnfrozen": "تم إلغاء تجميد محفظتك"
+    },
+    "distributor": {
+      "title": "مكافآت الموزع",
+      "subtitle": "مكافأة الأداء الربع سنوية",
+      "nextDate": "تاريخ المكافأة القادم",
+      "calculating": "جاري الحساب...",
+      "desc": "تتم معالجة المكافآت كل 3 أشهر",
+      "estimated": "المكافأة المقدرة",
+      "estimatedDesc": "{percent}% من إجمالي رصيدك الحالي",
+      "totalEarned": "إجمالي المكافآت المكتسبة",
+      "lastReward": "الأخيرة: {amount} في {date}"
+    },
+    "commission": {
+      "title": "عمولات وكيل المبيعات",
+      "subtitle": "أرباح الإحالة الخاصة بك",
+      "dashboard": "عرض لوحة القيادة",
+      "totalEarned": "إجمالي المكتسب",
+      "commissionsCount": "{count} عمولات",
+      "pending": "قيد الانتظار",
+      "awaiting": "بانتظار الموافقة",
+      "approved": "موافق عليه",
+      "ready": "جاهز للصرف",
+      "payoutPending": "{amount} بانتظار الموافقة",
+      "requestPayout": "طلب الصرف",
+      "breakdown": "تفصيل الأرباح",
+      "registration": "تسجيل",
+      "purchase": "شراء",
+      "bonus": "مكافأة",
+      "viewReferrals": "عرض الإحالات",
+      "history": "سجل العمولات",
+      "bankMissing": {
+        "title": "تفاصيل البنك مفقودة",
+        "desc": "نحتاج إلى معلوماتك البنكية لمعالجة مدفوعات العمولات.",
+        "instruction": "يرجى تحديث تفاصيل البنك في ملفك الشخصي قبل طلب الصرف.",
+        "cancel": "إلغاء",
+        "update": "تحديث الملف الشخصي"
+      }
+    },
+    "callback": {
+      "verifying": "جاري التحقق من الدفع",
+      "verifyingDesc": "يرجى الانتظار بينما نتحقق من شحن محفظتك...",
+      "processing": "جاري معالجة دفعك...",
+      "success": "تم الشحن بنجاح!",
+      "successDesc": "تم شحن محفظتك بنجاح.",
+      "updatedBalance": "رصيد المحفظة المحدث",
+      "availableBalance": "الرصيد المتاح",
+      "continue": "المتابعة إلى المحفظة",
+      "autoRedirect": "إعادة توجيه تلقائي خلال {seconds} ثوانٍ...",
+      "failed": "فشل الشحن",
+      "failedDesc": "لم نتمكن من التحقق من دفعك. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
+      "retry": "إعادة المحاولة",
+      "back": "العودة إلى المحفظة"
     }
   }
 }
