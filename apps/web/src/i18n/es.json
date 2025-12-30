@@ -99,7 +99,144 @@
     "callback": {
       "verifying": "Verificando pago...",
       "success": "¡Pago exitoso! Redirigiendo...",
-      "failed": "Verificación de pago fallida."
+      "failed": "Verificación de pago fallida.",
+      "loading": "Cargando..."
+    }
+  },
+  "bestSelling": {
+    "title": "Más Vendidos",
+    "filterByCategory": "Filtrer por categoría",
+    "clear": "Borrar",
+    "noProducts": "No hay productos disponibles.",
+    "filters": {
+      "last30Days": "Últimos 30 días",
+      "last14Days": "Últimos 14 días",
+      "last7Days": "Últimos 7 días",
+      "30d": "30d",
+      "14d": "14d",
+      "7d": "7d",
+      "recommended": "Recomendado"
+    }
+  },
+  "orders": {
+    "title": "Mis pedidos",
+    "breadcrumb": {
+      "home": "Inicio",
+      "profile": "Perfil",
+      "orders": "Pedidos",
+      "back": "Volver",
+      "orderDetails": "Pedido {id}"
+    },
+    "filters": {
+      "from": "Desde",
+      "to": "Hasta",
+      "searchPlaceholder": "Buscar por ID de pedido",
+      "clear": "Borrar",
+      "all": "Todos",
+      "results": "resultados"
+    },
+    "stats": {
+      "orders": "Pedidos",
+      "delivered": "Entregados",
+      "spend": "Gastos",
+      "avgValue": "Val. medio"
+    },
+    "charts": {
+      "ordersOverTime": "Pedidos a lo largo del tiempo",
+      "statusBreakdown": "Desglose por estado",
+      "noData": "No hay datos disponibles",
+      "noStatusData": "No hay datos de estado"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "processing": "En proceso",
+      "shipped": "Enviado",
+      "delivered": "Entregado",
+      "cancelled": "Cancelado",
+      "disputed": "Disputado"
+    },
+    "paymentStatus": {
+      "pending": "Pendiente",
+      "completed": "Completado",
+      "failed": "Fallido",
+      "refunded": "Reembolsado"
+    },
+    "list": {
+      "noOrdersTitle": "No se encontraron pedidos",
+      "noOrdersDesc": "Aún no has realizado ningún pedido.",
+      "order": "Pedido",
+      "item": "artículo",
+      "items": "artículos",
+      "view": "Ver"
+    },
+    "details": {
+      "title": "Pedido {id}",
+      "notFound": "Pedido no encontrado",
+      "backToOrders": "Volver a pedidos",
+      "po": "OC: {number}",
+      "actions": {
+        "track": "Rastrear",
+        "reorder": "Volver a pedir",
+        "invoice": "Factura",
+        "print": "Imprimir",
+        "cancel": "Cancelar pedido",
+        "markReceived": "Marcar como recibido"
+      },
+      "tracking": {
+        "title": "Rastreo",
+        "status": "Su paquete se está preparando. Rastreo en vivo próximamente.",
+        "close": "Cerrar"
+      },
+      "reorder": {
+        "confirmTitle": "¿Añadir al carrito?",
+        "successTitle": "Añadido al carrito",
+        "desc": "Fusionaremos los artículos de este pedido con su carrito (sin duplicar en pedidos repetidos).",
+        "confirm": "Aceptar",
+        "added": "Añadido",
+        "close": "Cerrar"
+      },
+      "cancel": {
+        "modalTitle": "¿Cancelar pedido #{id}?",
+        "confirm": "¿Está seguro de que desea cancelar este pedido? Esta acción no se puede deshacer.",
+        "consequencesTitle": "Qué sucede cuando cancela:",
+        "consequences": {
+          "marked": "El pedido se marcará como cancelado",
+          "refunded": "El pago será reembolsado (si ya se pagó)",
+          "notified": "El vendedor será notificado",
+          "restored": "El inventario de productos será restaurado"
+        },
+        "keep": "Mantener pedido",
+        "yesCancel": "Sí, cancelar pedido"
+      },
+      "invoice": {
+        "preview": "Vista previa de factura",
+        "number": "Número de factura",
+        "date": "Fecha",
+        "status": "Estado",
+        "paymentStatus": "Estado de pago",
+        "shippingAddress": "Dirección de envío",
+        "items": "Artículos",
+        "totalAmount": "Monto total",
+        "download": "Descargar PDF",
+        "generating": "Generando factura...",
+        "success": "Factura descargada con éxito",
+        "error": "Error al descargar la factura"
+      },
+      "items": {
+        "qty": "Cant.",
+        "reviewed": "Opinado",
+        "review": "Opinar"
+      },
+      "summary": {
+        "title": "Resumen",
+        "subtotal": "Total del pedido",
+        "shipping": "Envío"
+      },
+      "messages": {
+        "updated": "Pedido actualizado",
+        "updateFailed": "Error al actualizar",
+        "reviewSubmitted": "¡Opinión enviada con éxito!"
+      }
     }
   },
   "youWillNotBeCharged": "No se le cobrará hasta que revise este pedido en la página siguiente.",

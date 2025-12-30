@@ -22,6 +22,7 @@ import {
   ArcElement
 } from 'chart.js';
 import { Line, Doughnut } from 'react-chartjs-2';
+import { getStoredLocale, Locale, translate } from "@/utils/i18n";
 
 // Register Chart.js components
 ChartJS.register(
@@ -56,6 +57,14 @@ export default function OrdersPage() {
   const [productMeta, setProductMeta] = useState<Record<string, { title?: string; image?: string }>>({});
   const loadingMetaRef = useRef<Set<string>>(new Set());
   const autoCloseTimersRef = useRef<Record<string, number>>({});
+  const [locale, setLocale] = useState<Locale>("en");
+
+  useEffect(() => {
+    setLocale(getStoredLocale());
+    const handleLangChange = () => setLocale(getStoredLocale());
+    window.addEventListener("language-change", handleLangChange);
+    return () => window.removeEventListener("language-change", handleLangChange);
+  }, []);
 
   const toggleExpanded = (orderId: string) => {
     setExpanded(prev => {
@@ -156,22 +165,22 @@ export default function OrdersPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb Navigation */}
         <nav className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-4">
-          <Link href="/" className="hover:text-gray-900 dark:hover:text-white transition-colors">Home</Link>
+          <Link href="/" className="hover:text-gray-900 dark:hover:text-white transition-colors">{translate(locale, "orders.breadcrumb.home")}</Link>
           <ChevronRight className="w-4 h-4 mx-2" />
-          <Link href="/profile" className="hover:text-gray-900 dark:hover:text-white transition-colors">Profile</Link>
+          <Link href="/profile" className="hover:text-gray-900 dark:hover:text-white transition-colors">{translate(locale, "orders.breadcrumb.profile")}</Link>
           <ChevronRight className="w-4 h-4 mx-2" />
-          <span className="text-gray-900 dark:text-white font-medium">Orders</span>
+          <span className="text-gray-900 dark:text-white font-medium">{translate(locale, "orders.breadcrumb.orders")}</span>
         </nav>
 
         {/* Back Button */}
         <Link href="/profile" className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium mb-6 text-sm transition-colors">
           <ArrowLeft className="w-4 h-4" />
-          Back
+          {translate(locale, "orders.breadcrumb.back")}
         </Link>
 
         {/* Header */}
         <div className="mb-4">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Orders</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{translate(locale, "orders.title")}</h1>
         </div>
 
         {/* Filters */}
@@ -179,18 +188,18 @@ export default function OrdersPage() {
           {/* From date */}
           <div className="group relative inline-flex items-center rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm shadow-sm transition">
             <CalendarDays className="mr-2 w-4 h-4 text-gray-500" />
-            <button type="button" onClick={() => { setShowFromPicker((v) => !v); setShowToPicker(false); }} className="w-[9.5rem] text-left text-gray-800 dark:text-gray-100 outline-none">{formatDisplay(range.from) || 'From'}</button>
+            <button type="button" onClick={() => { setShowFromPicker((v) => !v); setShowToPicker(false); }} className="w-[9.5rem] text-left text-gray-800 dark:text-gray-100 outline-none">{formatDisplay(range.from) || translate(locale, "orders.filters.from")}</button>
           </div>
           {/* To date */}
           <div className="group relative inline-flex items-center rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm shadow-sm transition">
             <CalendarDays className="mr-2 w-4 h-4 text-gray-500" />
-            <button type="button" onClick={() => { setShowToPicker((v) => !v); setShowFromPicker(false); }} className="w-[9.5rem] text-left text-gray-800 dark:text-gray-100 outline-none">{formatDisplay(range.to) || 'To'}</button>
+            <button type="button" onClick={() => { setShowToPicker((v) => !v); setShowFromPicker(false); }} className="w-[9.5rem] text-left text-gray-800 dark:text-gray-100 outline-none">{formatDisplay(range.to) || translate(locale, "orders.filters.to")}</button>
           </div>
           {/* Search */}
           <div className="relative w-full sm:w-[14rem]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
             <input
-              placeholder="Search by Order ID"
+              placeholder={translate(locale, "orders.filters.searchPlaceholder")}
               value={q}
               onChange={(e) => setQ(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') fetchOrders(); }}
@@ -202,7 +211,7 @@ export default function OrdersPage() {
                 onClick={() => { setQ(""); fetchOrders(); }}
                 className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-0.5 text-xs text-gray-700 dark:text-gray-300 shadow-sm transition hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95"
               >
-                Clear
+                {translate(locale, "orders.filters.clear")}
               </button>
             ) : null}
           </div>
@@ -213,28 +222,28 @@ export default function OrdersPage() {
           <div className={`${card} p-6`}>
             <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
               <ShoppingBag className="w-4 h-4" />
-              <span>Orders</span>
+              <span>{translate(locale, "orders.stats.orders")}</span>
             </div>
             <div className="text-2xl font-bold text-gray-900 dark:text-white">{kpi.totalOrders}</div>
           </div>
           <div className={`${card} p-6`}>
             <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
               <CheckCircle className="w-4 h-4" />
-              <span>Delivered</span>
+              <span>{translate(locale, "orders.stats.delivered")}</span>
             </div>
             <div className="text-2xl font-bold text-gray-900 dark:text-white">{kpi.delivered}</div>
           </div>
           <div className={`${card} p-6`}>
             <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
               <CircleDollarSign className="w-4 h-4" />
-              <span>Spend</span>
+              <span>{translate(locale, "orders.stats.spend")}</span>
             </div>
             <div className="text-2xl font-bold text-gray-900 dark:text-white">NGN {kpi.spendTotal.toLocaleString()}</div>
           </div>
           <div className={`${card} p-6`}>
             <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
               <BarChart2 className="w-4 h-4" />
-              <span>Avg Value</span>
+              <span>{translate(locale, "orders.stats.avgValue")}</span>
             </div>
             <div className="text-2xl font-bold text-gray-900 dark:text-white">NGN {Math.round(kpi.avgOrderValue).toLocaleString()}</div>
           </div>
@@ -243,14 +252,14 @@ export default function OrdersPage() {
         {/* Charts */}
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-2 mb-4">
           <div className={`lg:col-span-2 ${card} p-6`}>
-            <div className="mb-4 text-sm font-semibold text-gray-900 dark:text-white">Orders over time</div>
+            <div className="mb-4 text-sm font-semibold text-gray-900 dark:text-white">{translate(locale, "orders.charts.ordersOverTime")}</div>
             <div className="h-80">
-              <OrdersChart data={analytics.timeSeries} />
+              <OrdersChart data={analytics.timeSeries} locale={locale} />
             </div>
           </div>
           <div className={`${card} p-6`}>
-            <div className="mb-4 text-sm font-semibold text-gray-900 dark:text-white">Status breakdown</div>
-            <StatusDoughnutChart data={analytics.statusBreakdown} />
+            <div className="mb-4 text-sm font-semibold text-gray-900 dark:text-white">{translate(locale, "orders.charts.statusBreakdown")}</div>
+            <StatusDoughnutChart data={analytics.statusBreakdown} locale={locale} />
           </div>
         </section>
 
@@ -265,10 +274,10 @@ export default function OrdersPage() {
                 : 'border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                 }`}
             >
-              {s || 'All'}
+              {s ? translate(locale, `orders.status.${s}`) : translate(locale, "orders.filters.all")}
             </button>
           ))}
-          <div className="ml-auto text-sm text-gray-500">{total} results</div>
+          <div className="ml-auto text-sm text-gray-500">{total} {translate(locale, "orders.filters.results")}</div>
         </div>
 
         {/* Orders List */}
@@ -280,8 +289,8 @@ export default function OrdersPage() {
               <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
                 <ShoppingBag className="w-8 h-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No orders found</h3>
-              <p className="text-gray-600 dark:text-gray-400">You haven't placed any orders yet.</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{translate(locale, "orders.list.noOrdersTitle")}</h3>
+              <p className="text-gray-600 dark:text-gray-400">{translate(locale, "orders.list.noOrdersDesc")}</p>
             </div>
           ) : (
             <div className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -303,22 +312,23 @@ export default function OrdersPage() {
                       <div className="flex items-center gap-2 min-w-0 flex-1">
                         {hasMany ? (
                           <button aria-label="Toggle items" onClick={() => toggleExpanded(o._id)} className="rounded-full p-1 hover:bg-gray-100 dark:hover:bg-gray-700 flex-shrink-0">
-                            <ChevronRight className="w-4 h-4 ${isOpen ? 'rotate-90' : ''} transition-transform" />
+                            <ChevronRight className={`w-4 h-4 ${isOpen ? 'rotate-90' : ''} transition-transform`} />
                           </button>
                         ) : null}
                         <div className="min-w-0 flex-1">
-                          <div className="text-sm font-semibold text-gray-900 dark:text-white">Order {o._id.slice(-6)}</div>
+                          <div className="text-sm font-semibold text-gray-900 dark:text-white">{translate(locale, "orders.list.order")} {o._id.slice(-6)}</div>
                           <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 mt-1">
                             <span>{new Date(o.createdAt || '').toLocaleDateString()}</span>
-                            <span className={`inline-flex items-center rounded-full border px-2 py-0.5 font-medium capitalize ${statusColor[o.status] || 'border-gray-300'}`}>{o.status}</span>
-                            <span className="capitalize">{o.paymentStatus}</span>
-                            {itemCount ? <span>{itemCount} item{itemCount > 1 ? 's' : ''}</span> : null}
+                            <span className={`inline-flex items-center rounded-full border px-2 py-0.5 font-medium capitalize ${statusColor[o.status] || 'border-gray-300'}`}>{translate(locale, `orders.status.${o.status}`)}</span>
+                            {/* Payment status might not be in all orders */}
+                            {o.paymentStatus && <span className="capitalize">{translate(locale, `orders.paymentStatus.${o.paymentStatus}`) || o.paymentStatus}</span>}
+                            {itemCount ? <span>{itemCount} {itemCount > 1 ? translate(locale, "orders.list.items") : translate(locale, "orders.list.item")}</span> : null}
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-3 flex-shrink-0">
                         <div className="text-sm font-semibold text-gray-900 dark:text-white">{(o.totalPrice || 0).toLocaleString()} {o.currency || 'NGN'}</div>
-                        <Link href={`/orders/${o._id}`} className="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">View</Link>
+                        <Link href={`/orders/${o._id}`} className="rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">{translate(locale, "orders.list.view")}</Link>
                       </div>
                     </div>
                     {isOpen ? (
@@ -380,7 +390,7 @@ export default function OrdersPage() {
 }
 
 // Chart.js Line Chart for Orders over time
-function OrdersChart({ data }: { data: { bucket: string; count: number }[] }) {
+function OrdersChart({ data, locale }: { data: { bucket: string; count: number }[], locale: Locale }) {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -399,7 +409,7 @@ function OrdersChart({ data }: { data: { bucket: string; count: number }[] }) {
     }) : [],
     datasets: [
       {
-        label: 'Orders',
+        label: translate(locale, "orders.stats.orders"),
         data: data.length > 0 ? data.map(item => item.count) : [],
         borderColor: 'rgb(59, 130, 246)',
         backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -437,7 +447,7 @@ function OrdersChart({ data }: { data: { bucket: string; count: number }[] }) {
         },
         callbacks: {
           label: function (context: any) {
-            return `Orders: ${context.parsed.y}`;
+            return `${translate(locale, "orders.stats.orders")}: ${context.parsed.y}`;
           }
         }
       },
@@ -479,7 +489,7 @@ function OrdersChart({ data }: { data: { bucket: string; count: number }[] }) {
       <div className="h-full flex items-center justify-center text-gray-400">
         <div className="text-center">
           <BarChart2 className="w-12 h-12 mx-auto mb-2 opacity-50" />
-          <p className="text-sm">No data available</p>
+          <p className="text-sm">{translate(locale, "orders.charts.noData")}</p>
         </div>
       </div>
     );
@@ -489,7 +499,7 @@ function OrdersChart({ data }: { data: { bucket: string; count: number }[] }) {
 }
 
 // Doughnut Chart for Status Breakdown
-function StatusDoughnutChart({ data }: { data: Record<string, number> }) {
+function StatusDoughnutChart({ data, locale }: { data: Record<string, number>, locale: Locale }) {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -514,7 +524,7 @@ function StatusDoughnutChart({ data }: { data: Record<string, number> }) {
   };
 
   const chartData = {
-    labels: entries.map(([k]) => k.charAt(0).toUpperCase() + k.slice(1)),
+    labels: entries.map(([k]) => translate(locale, `orders.status.${k}`)),
     datasets: [
       {
         data: entries.map(([, v]) => v),
@@ -564,7 +574,7 @@ function StatusDoughnutChart({ data }: { data: Record<string, number> }) {
       <div className="h-full flex items-center justify-center text-gray-400">
         <div className="text-center">
           <BarChart2 className="w-12 h-12 mx-auto mb-2 opacity-50" />
-          <p className="text-sm">No status data</p>
+          <p className="text-sm">{translate(locale, "orders.charts.noStatusData")}</p>
         </div>
       </div>
     );
@@ -588,7 +598,7 @@ function StatusDoughnutChart({ data }: { data: Record<string, number> }) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-1">
                   <span className="text-xs font-medium text-gray-700 dark:text-gray-300 capitalize truncate">
-                    {k}
+                    {translate(locale, `orders.status.${k}`)}
                   </span>
                   <span className="text-xs font-semibold text-gray-900 dark:text-white whitespace-nowrap">
                     {v}
@@ -641,4 +651,5 @@ function Calendar({ value, onChange }: { value?: string; onChange: (v: string) =
     </div>
   );
 }
+
 

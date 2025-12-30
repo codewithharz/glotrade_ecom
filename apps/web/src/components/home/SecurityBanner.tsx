@@ -34,6 +34,7 @@ export default function SecurityBanner() {
         className="hidden md:block mb-6 rounded-lg border border-emerald-200 overflow-hidden"
         data-security-banner
       >
+
         {/* Top Section - Dark Green Background */}
         <div className="bg-emerald-700 text-white px-4 py-3">
           {/* Desktop Layout */}

@@ -99,7 +99,144 @@
     "callback": {
       "verifying": "Verifying payment...",
       "success": "Payment successful! Redirecting...",
-      "failed": "Payment verification failed."
+      "failed": "Payment verification failed.",
+      "loading": "Loading..."
+    }
+  },
+  "bestSelling": {
+    "title": "Best-Selling",
+    "filterByCategory": "Filter by category",
+    "clear": "Clear",
+    "noProducts": "No products available.",
+    "filters": {
+      "last30Days": "Within last 30 days",
+      "last14Days": "Within last 14 days",
+      "last7Days": "Within last 7 days",
+      "30d": "30d",
+      "14d": "14d",
+      "7d": "7d",
+      "recommended": "Recommended"
+    }
+  },
+  "orders": {
+    "title": "My Orders",
+    "breadcrumb": {
+      "home": "Home",
+      "profile": "Profile",
+      "orders": "Orders",
+      "back": "Back",
+      "orderDetails": "Order {id}"
+    },
+    "filters": {
+      "from": "From",
+      "to": "To",
+      "searchPlaceholder": "Search by Order ID",
+      "clear": "Clear",
+      "all": "All",
+      "results": "results"
+    },
+    "stats": {
+      "orders": "Orders",
+      "delivered": "Delivered",
+      "spend": "Spend",
+      "avgValue": "Avg Value"
+    },
+    "charts": {
+      "ordersOverTime": "Orders over time",
+      "statusBreakdown": "Status breakdown",
+      "noData": "No data available",
+      "noStatusData": "No status data"
+    },
+    "status": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled",
+      "disputed": "Disputed"
+    },
+    "paymentStatus": {
+      "pending": "Pending",
+      "completed": "Completed",
+      "failed": "Failed",
+      "refunded": "Refunded"
+    },
+    "list": {
+      "noOrdersTitle": "No orders found",
+      "noOrdersDesc": "You haven't placed any orders yet.",
+      "order": "Order",
+      "item": "item",
+      "items": "items",
+      "view": "View"
+    },
+    "details": {
+      "title": "Order {id}",
+      "notFound": "Order not found",
+      "backToOrders": "Back to Orders",
+      "po": "PO: {number}",
+      "actions": {
+        "track": "Track",
+        "reorder": "Reorder",
+        "invoice": "Invoice",
+        "print": "Print",
+        "cancel": "Cancel order",
+        "markReceived": "Mark received"
+      },
+      "tracking": {
+        "title": "Tracking",
+        "status": "Your package is being prepared. Live tracking coming soon.",
+        "close": "Close"
+      },
+      "reorder": {
+        "confirmTitle": "Add items to cart?",
+        "successTitle": "Added to cart",
+        "desc": "We will merge items from this order with your cart (won't duplicate on repeated reorders).",
+        "confirm": "OK",
+        "added": "Added",
+        "close": "Close"
+      },
+      "cancel": {
+        "modalTitle": "Cancel Order #{id}?",
+        "confirm": "Are you sure you want to cancel this order? This action cannot be undone.",
+        "consequencesTitle": "What happens when you cancel:",
+        "consequences": {
+          "marked": "Order will be marked as cancelled",
+          "refunded": "Payment will be refunded (if already paid)",
+          "notified": "Seller will be notified",
+          "restored": "Product inventory will be restored"
+        },
+        "keep": "Keep Order",
+        "yesCancel": "Yes, Cancel Order"
+      },
+      "invoice": {
+        "preview": "Invoice Preview",
+        "number": "Invoice Number",
+        "date": "Date",
+        "status": "Status",
+        "paymentStatus": "Payment Status",
+        "shippingAddress": "Shipping Address",
+        "items": "Items",
+        "totalAmount": "Total Amount",
+        "download": "Download PDF",
+        "generating": "Generating invoice...",
+        "success": "Invoice downloaded successfully",
+        "error": "Failed to download invoice"
+      },
+      "items": {
+        "qty": "Qty",
+        "reviewed": "Reviewed",
+        "review": "Review"
+      },
+      "summary": {
+        "title": "Summary",
+        "subtotal": "Order total",
+        "shipping": "Shipping"
+      },
+      "messages": {
+        "updated": "Order updated",
+        "updateFailed": "Update failed",
+        "reviewSubmitted": "Review submitted successfully!"
+      }
     }
   },
   "youWillNotBeCharged": "You will not be charged until you review this order on the next page.",
@@ -187,6 +324,7 @@
     "orderNotFound": "Order not found",
     "administration": "Administration",
     "dashboardTitle": "Dashboard",
+    "orderTitle": "Order",
     "shoppingTitle": "Shopping"
   },
   "notifications": {

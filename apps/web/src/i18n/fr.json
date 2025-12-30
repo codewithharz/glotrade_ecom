@@ -99,7 +99,144 @@
     "callback": {
       "verifying": "Vérification du paiement...",
       "success": "Paiement réussi ! Redirection...",
-      "failed": "La vérification du paiement a échoué."
+      "failed": "La vérification du paiement a échoué.",
+      "loading": "Chargement..."
+    }
+  },
+  "bestSelling": {
+    "title": "Meilleures Ventes",
+    "filterByCategory": "Filtrer par catégorie",
+    "clear": "Effacer",
+    "noProducts": "Aucun produit disponible.",
+    "filters": {
+      "last30Days": "Derniers 30 jours",
+      "last14Days": "Derniers 14 jours",
+      "last7Days": "Derniers 7 jours",
+      "30d": "30j",
+      "14d": "14j",
+      "7d": "7j",
+      "recommended": "Recommandé"
+    }
+  },
+  "orders": {
+    "title": "Mes commandes",
+    "breadcrumb": {
+      "home": "Accueil",
+      "profile": "Profil",
+      "orders": "Commandes",
+      "back": "Retour",
+      "orderDetails": "Commande {id}"
+    },
+    "filters": {
+      "from": "De",
+      "to": "À",
+      "searchPlaceholder": "Rechercher par ID commande",
+      "clear": "Effacer",
+      "all": "Tout",
+      "results": "résultats"
+    },
+    "stats": {
+      "orders": "Commandes",
+      "delivered": "Livre",
+      "spend": "Dépensé",
+      "avgValue": "Val. moy."
+    },
+    "charts": {
+      "ordersOverTime": "Commandes au fil du temps",
+      "statusBreakdown": "Répartition par statut",
+      "noData": "Aucune donnée disponible",
+      "noStatusData": "Aucune donnée de statut"
+    },
+    "status": {
+      "pending": "En attente",
+      "processing": "En cours",
+      "shipped": "Expédié",
+      "delivered": "Livré",
+      "cancelled": "Annulé",
+      "disputed": "Contesté"
+    },
+    "paymentStatus": {
+      "pending": "En attente",
+      "completed": "Complété",
+      "failed": "Échoué",
+      "refunded": "Remboursé"
+    },
+    "list": {
+      "noOrdersTitle": "Aucune commande trouvée",
+      "noOrdersDesc": "Vous n'avez pas encore passé de commande.",
+      "order": "Commande",
+      "item": "article",
+      "items": "articles",
+      "view": "Voir"
+    },
+    "details": {
+      "title": "Commande {id}",
+      "notFound": "Commande introuvable",
+      "backToOrders": "Retour aux commandes",
+      "po": "PO : {number}",
+      "actions": {
+        "track": "Suivre",
+        "reorder": "Commander à nouveau",
+        "invoice": "Facture",
+        "print": "Imprimer",
+        "cancel": "Annuler la commande",
+        "markReceived": "Marquer comme reçu"
+      },
+      "tracking": {
+        "title": "Suivi",
+        "status": "Votre colis est en cours de préparation. Suivi en direct bientôt disponible.",
+        "close": "Fermer"
+      },
+      "reorder": {
+        "confirmTitle": "Ajouter au panier ?",
+        "successTitle": "Ajouté au panier",
+        "desc": "Nous allons fusionner les articles de cette commande avec votre panier (sans duplication lors de commandes répétées).",
+        "confirm": "OK",
+        "added": "Ajouté",
+        "close": "Fermer"
+      },
+      "cancel": {
+        "modalTitle": "Annuler la commande #{id} ?",
+        "confirm": "Êtes-vous sûr de vouloir annuler cette commande ? Cette action est irréversible.",
+        "consequencesTitle": "Ce qui se passe lorsque vous annulez :",
+        "consequences": {
+          "marked": "La commande sera marquée comme annulée",
+          "refunded": "Le paiement sera remboursé (si déjà payé)",
+          "notified": "Le vendeur sera informé",
+          "restored": "Le stock du produit sera restauré"
+        },
+        "keep": "Garder la commande",
+        "yesCancel": "Oui, annuler la commande"
+      },
+      "invoice": {
+        "preview": "Aperçu de la facture",
+        "number": "Numéro de facture",
+        "date": "Date",
+        "status": "Statut",
+        "paymentStatus": "Statut de paiement",
+        "shippingAddress": "Adresse de livraison",
+        "items": "Articles",
+        "totalAmount": "Montant total",
+        "download": "Télécharger PDF",
+        "generating": "Génération de la facture...",
+        "success": "Facture téléchargée avec succès",
+        "error": "Échec du téléchargement de la facture"
+      },
+      "items": {
+        "qty": "Qté",
+        "reviewed": "Avis donné",
+        "review": "Donner un avis"
+      },
+      "summary": {
+        "title": "Résumé",
+        "subtotal": "Total commande",
+        "shipping": "Livraison"
+      },
+      "messages": {
+        "updated": "Commande mise à jour",
+        "updateFailed": "Mise à jour échouée",
+        "reviewSubmitted": "Avis soumis avec succès !"
+      }
     }
   },
   "youWillNotBeCharged": "Vous ne serez pas débité avant de vérifier cette commande sur la page suivante.",

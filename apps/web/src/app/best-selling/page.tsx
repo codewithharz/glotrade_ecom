@@ -4,7 +4,7 @@ import { apiGet } from "@/utils/api";
 import Link from "next/link";
 import CategorySelect from "@/components/best-selling/CategorySelect";
 import { cookies } from "next/headers";
-import { Locale } from "@/utils/i18n";
+import { getStoredLocale, translate, Locale } from "@/utils/i18n";
 
 type Product = {
   _id: string;
@@ -33,16 +33,22 @@ export default async function BestSellingPage({ searchParams }: { searchParams: 
     items = Array.isArray(res.data?.products) ? res.data.products : [];
   } catch { }
 
+  const categories = await fetchCategories();
+  const options = [
+    { label: translate(locale, "bestSelling.filters.recommended"), value: "Recommended" },
+    ...categories.map(c => ({ label: c, value: c }))
+  ];
+
   return (
     <main className="mx-auto md:w-[95%] w-full px-2 py-4">
       <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
-          <h1 className="text-lg md:text-2xl font-semibold whitespace-nowrap shrink-0">Best‑Selling</h1>
+          <h1 className="text-lg md:text-2xl font-semibold whitespace-nowrap shrink-0">{translate(locale, "bestSelling.title")}</h1>
           <div className="flex items-center gap-2 sm:ml-2 overflow-x-auto w-full min-w-0 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden mt-2 sm:mt-0">
             {[
-              { label: "Within last 30 days", short: "30d", value: 30 },
-              { label: "Within last 14 days", short: "14d", value: 14 },
-              { label: "Within last 7 days", short: "7d", value: 7 },
+              { label: translate(locale, "bestSelling.filters.last30Days"), short: translate(locale, "bestSelling.filters.30d"), value: 30 },
+              { label: translate(locale, "bestSelling.filters.last14Days"), short: translate(locale, "bestSelling.filters.14d"), value: 14 },
+              { label: translate(locale, "bestSelling.filters.last7Days"), short: translate(locale, "bestSelling.filters.7d"), value: 7 },
             ].map((opt) => {
               const active = String(opt.value) === (params?.days || "30");
               const href = `/best-selling?days=${opt.value}${params?.category ? `&category=${encodeURIComponent(params.category)}` : ""}`;
@@ -60,11 +66,16 @@ export default async function BestSellingPage({ searchParams }: { searchParams: 
           </div>
         </div>
         <div className="w-full sm:w-auto">
-          <CategorySelect current={params?.category || "Recommended"} days={params?.days || "30"} options={["Recommended", ...await fetchCategories()]} />
+          <CategorySelect
+            current={params?.category || "Recommended"}
+            days={params?.days || "30"}
+            options={options}
+            locale={locale}
+          />
         </div>
       </div>
       {items.length === 0 ? (
-        <div className="text-sm text-neutral-500">No products available.</div>
+        <div className="text-sm text-neutral-500">{translate(locale, "bestSelling.noProducts")}</div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
           {items.map((p) => (

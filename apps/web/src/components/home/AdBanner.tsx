@@ -53,7 +53,8 @@ export default function AdBanner({ banners }: AdBannerProps) {
     // If less than 5 banners
     if (displayBanners.length < 5) {
         return (
-            <div className="hidden md:block w-full mb-8">
+            <div className="w-full mb-8">
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {displayBanners.map((banner, index) => (
                         <BannerItem
@@ -69,7 +70,8 @@ export default function AdBanner({ banners }: AdBannerProps) {
 
     // Grid layout for exactly 5 banners
     return (
-        <div className="hidden md:block w-full mb-8">
+        <div className="w-full mb-8">
+
             <div className="flex flex-col md:grid md:grid-cols-4 gap-2 h-auto">
                 {/* First banner - Visible on mobile as a full-width block with aspect ratio, on desktop as a grid span */}
                 <BannerItem

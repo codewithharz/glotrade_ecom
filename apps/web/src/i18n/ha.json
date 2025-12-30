@@ -24,7 +24,6 @@
     }
   },
   "logout": "Fita",
-  "orders": "Ododi",
   "freeShipping": "Isarwa Kyauta",
   "easyReturns": "Mayarwa Mai Sauƙi",
   "securePayment": "Biyan Kuɗi Amintacce",
@@ -248,6 +247,12 @@
     "pickupFree": "Dauko: KYAUTA",
     "delivery": "Isarwa",
     "courierCompany": "Kamfanin aikawa",
+    "callback": {
+      "verifying": "Ana tantance biyan kuɗi...",
+      "success": "Biyan kuɗi ya yi nasara! Ana tura ku...",
+      "failed": "Tantance biyan kuɗi ya gaza.",
+      "loading": "Ana ɗauka..."
+    },
     "vouchers": "Bauca da Rangwame",
     "purchaseOrder": "Odar Siye (Na zaɓi)",
     "enterPoNumber": "Shigar da Lambar Oda don bayanan ku",
@@ -299,11 +304,142 @@
       "securePrivacyDesc": "Kare sirrin ku yana da mahimmanci a gare mu. Da fatan za a tabbatar cewa bayanan ku za a kiyaye su kuma ba za a yi musu barazana ba. Ba mu sayar da bayanan sirrin ku don kuɗi kuma za mu yi amfani da bayanan ku ne kawai bisa ga manufar sirrin mu don samarwa da inganta ayyukanmu a gare ku.",
       "purchaseProtection": "Kariya ga Siyayya na Marketplace",
       "purchaseProtectionDesc": "Yi siyayya da ƙarfin gwiwa akan Marketplace sanin cewa idan wani abu ya tafi ba daidai ba, koyaushe muna tare da ku."
+    }
+  },
+  "bestSelling": {
+    "title": "Mafi Sayarwa",
+    "filterByCategory": "Tacewa ta nau'i",
+    "clear": "Share",
+    "noProducts": "Babu samfura.",
+    "filters": {
+      "last30Days": "A cikin kwanaki 30 da suka gabata",
+      "last14Days": "A cikin kwanaki 14 da suka gabata",
+      "last7Days": "A cikin kwanaki 7 da suka gabata",
+      "30d": "30d",
+      "14d": "14d",
+      "7d": "7d",
+      "recommended": "Nagartacce"
+    }
+  },
+  "orders": {
+    "title": "Umarnina",
+    "breadcrumb": {
+      "home": "Gida",
+      "profile": "Bayani",
+      "orders": "Umarni",
+      "back": "Baya",
+      "orderDetails": "Umarni {id}"
     },
-    "callback": {
-      "verifying": "Tabbatar da biya...",
-      "success": "Biyan kuɗi yayi nasara! Ana tura ku...",
-      "failed": "Tabbatar da biya ya gaza."
+    "filters": {
+      "from": "Daga",
+      "to": "Zuwa",
+      "searchPlaceholder": "Bincika da ID na Umarni",
+      "clear": "Share",
+      "all": "Duka",
+      "results": "sakamako"
+    },
+    "stats": {
+      "orders": "Umarni",
+      "delivered": "An aika",
+      "spend": "Kashewa",
+      "avgValue": "Matsakaici"
+    },
+    "charts": {
+      "ordersOverTime": "Umarni na zamani",
+      "statusBreakdown": "Rabe-raben halin",
+      "noData": "Babu bayanai",
+      "noStatusData": "Babu bayanan hali"
+    },
+    "status": {
+      "pending": "Ana jira",
+      "processing": "Ana sarrafawa",
+      "shipped": "An aika",
+      "delivered": "An karba",
+      "cancelled": "An soke",
+      "disputed": "Ana jayayya"
+    },
+    "paymentStatus": {
+      "pending": "Ana jira",
+      "completed": "An kammala",
+      "failed": "Ya gaza",
+      "refunded": "An mayar da kuɗi"
+    },
+    "list": {
+      "noOrdersTitle": "Ba a sami umarni ba",
+      "noOrdersDesc": "Baku sanya umarni ba tukuna.",
+      "order": "Umarni",
+      "item": "abu",
+      "items": "abubuwa",
+      "view": "Duba"
+    },
+    "details": {
+      "title": "Umarni {id}",
+      "notFound": "Ba a sami umarni ba",
+      "backToOrders": "Komawa zuwa Umarni",
+      "po": "PO: {number}",
+      "actions": {
+        "track": "Biya",
+        "reorder": " sake yin oda",
+        "invoice": "Rasit",
+        "print": "Buga",
+        "cancel": "Soke oda",
+        "markReceived": "Alama an karɓa"
+      },
+      "tracking": {
+        "title": "Biyan sawu",
+        "status": "Ana shirya kunshin ku. Biyan sawu na kai tsaye yana zuwa nan ba da jimawa ba.",
+        "close": "Rufe"
+      },
+      "reorder": {
+        "confirmTitle": "Ƙara zuwa kwando?",
+        "successTitle": "An ƙara zuwa kwando",
+        "desc": "Za mu haɗa abubuwa daga wannan oda da kwandon ku.",
+        "confirm": "TO",
+        "added": "An ƙara",
+        "close": "Rufe"
+      },
+      "cancel": {
+        "modalTitle": "Soke Oda #{id}?",
+        "confirm": "Shin kun tabbata kuna son soke wannan oda? Wannan aikin ba za a iya juyawa ba.",
+        "consequencesTitle": "Abin da ke faruwa idan kuka soke:",
+        "consequences": {
+          "marked": "Za a yi alama oda a matsayin an soke",
+          "refunded": "Za a mayar da biyan kuɗi (idan an riga an biya)",
+          "notified": "Za a sanar da mai siyarwa",
+          "restored": "Za a dawo da kayan masarufi"
+        },
+        "keep": "Rike Umarni",
+        "yesCancel": "Eh, Soke Umarni"
+      },
+      "invoice": {
+        "preview": "Ganin Rasit",
+        "number": "Lambar Rasit",
+        "date": "Kwanan wata",
+        "status": "Matsayi",
+        "paymentStatus": "Matsayin Biya",
+        "shippingAddress": "Adireshin Aikawa",
+        "items": "Abubuwa",
+        "totalAmount": "Jimlar Kuɗi",
+        "download": "Sauke PDF",
+        "generating": "Ana samar da rasit...",
+        "success": "An sauke rasit cikin nasara",
+        "error": "An kasa sauke rasit"
+      },
+      "items": {
+        "qty": "Adadi",
+        "reviewed": "An duba",
+        "review": "Duba"
+      },
+      "summary": {
+        "title": "Takaitawa",
+        "subtotal": "Jimlar Oda",
+        "shipping": "Jigilar kaya"
+      },
+      "messages": {
+        "updated": "An sabunta oda",
+        "updateFailed": "Sabuntawa ya gaza",
+        "reviewSubmitted": "An tura bita cikin nasara!"
+      }
     }
   },
   "voucher": {

@@ -99,7 +99,144 @@
     "callback": {
       "verifying": "正在验证付款...",
       "success": "付款成功！正在重定向...",
-      "failed": "付款验证失败。"
+      "failed": "付款验证失败。",
+      "loading": "加载中..."
+    }
+  },
+  "bestSelling": {
+    "title": "热销商品",
+    "filterByCategory": "按类别过滤",
+    "clear": "清除",
+    "noProducts": "暂无商品。",
+    "filters": {
+      "last30Days": "最近30天",
+      "last14Days": "最近14天",
+      "last7Days": "最近7天",
+      "30d": "30天",
+      "14d": "14天",
+      "7d": "7天",
+      "recommended": "推荐"
+    }
+  },
+  "orders": {
+    "title": "我的订单",
+    "breadcrumb": {
+      "home": "首页",
+      "profile": "个人中心",
+      "orders": "订单",
+      "back": "返回",
+      "orderDetails": "订单 {id}"
+    },
+    "filters": {
+      "from": "从",
+      "to": "至",
+      "searchPlaceholder": "按订单ID搜索",
+      "clear": "清除",
+      "all": "全部",
+      "results": "结果"
+    },
+    "stats": {
+      "orders": "订单",
+      "delivered": "已送达",
+      "spend": "花费",
+      "avgValue": "平均值"
+    },
+    "charts": {
+      "ordersOverTime": "订单趋势",
+      "statusBreakdown": "状态细分",
+      "noData": "暂无数据",
+      "noStatusData": "暂无状态数据"
+    },
+    "status": {
+      "pending": "待处理",
+      "processing": "处理中",
+      "shipped": "已发货",
+      "delivered": "已送达",
+      "cancelled": "已取消",
+      "disputed": "有争议"
+    },
+    "paymentStatus": {
+      "pending": "待处理",
+      "completed": "已完成",
+      "failed": "失败",
+      "refunded": "已退款"
+    },
+    "list": {
+      "noOrdersTitle": "未找到订单",
+      "noOrdersDesc": "您尚未下过订单。",
+      "order": "订单",
+      "item": "件商品",
+      "items": "件商品",
+      "view": "查看"
+    },
+    "details": {
+      "title": "订单 {id}",
+      "notFound": "未找到订单",
+      "backToOrders": "返回订单列表",
+      "po": "采购单: {number}",
+      "actions": {
+        "track": "追踪",
+        "reorder": "重新下单",
+        "invoice": "发票",
+        "print": "打印",
+        "cancel": "取消订单",
+        "markReceived": "确认收货"
+      },
+      "tracking": {
+        "title": "追踪",
+        "status": "您的包裹正在准备中。实时追踪即将上线。",
+        "close": "关闭"
+      },
+      "reorder": {
+        "confirmTitle": "添加到购物车？",
+        "successTitle": "已加入购物车",
+        "desc": "我们将把此订单的商品合并到您的购物车（重复重新下单不会重复添加）。",
+        "confirm": "确定",
+        "added": "已添加",
+        "close": "关闭"
+      },
+      "cancel": {
+        "modalTitle": "取消订单 #{id}？",
+        "confirm": "您确定要取消此订单吗？此操作无法撤销。",
+        "consequencesTitle": "取消后的后果：",
+        "consequences": {
+          "marked": "订单将被标记为已取消",
+          "refunded": "款项将退回（如已支付）",
+          "notified": "卖家将收到通知",
+          "restored": "商品库存将恢复"
+        },
+        "keep": "保留订单",
+        "yesCancel": "是的，取消订单"
+      },
+      "invoice": {
+        "preview": "发票预览",
+        "number": "发票号码",
+        "date": "日期",
+        "status": "状态",
+        "paymentStatus": "支付状态",
+        "shippingAddress": "收货地址",
+        "items": "商品",
+        "totalAmount": "总金额",
+        "download": "下载PDF",
+        "generating": "正在生成发票...",
+        "success": "发票下载成功",
+        "error": "下载发票失败"
+      },
+      "items": {
+        "qty": "数量",
+        "reviewed": "已评价",
+        "review": "评价"
+      },
+      "summary": {
+        "title": "摘要",
+        "subtotal": "订单总计",
+        "shipping": "运费"
+      },
+      "messages": {
+        "updated": "订单已更新",
+        "updateFailed": "更新失败",
+        "reviewSubmitted": "评价已提交！"
+      }
     }
   },
   "youWillNotBeCharged": "在下一页查看订单之前，我们不会扣款。",

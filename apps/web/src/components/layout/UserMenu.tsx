@@ -593,8 +593,9 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
 
                     <div className="my-1 h-px w-full bg-neutral-200 dark:bg-neutral-800" />
                     <div className="px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-                      Order
+                      {translate(language, "usermenu.orderTitle")}
                     </div>
+
                     <Link
                       href="/orders"
                       onClick={() => setOpen(false)}
