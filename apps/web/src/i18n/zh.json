@@ -734,5 +734,95 @@
         }
       }
     }
+  },
+  "dashboard": {
+    "greeting": {
+      "morning": "早上好",
+      "afternoon": "下午好",
+      "evening": "晚上好",
+      "guest": "访客"
+    },
+    "welcome": {
+      "subtitle": "准备好发现令人惊叹的产品了吗？",
+      "quickStats": "快速统计"
+    },
+    "stats": {
+      "orders": "订单",
+      "wishlist": "愿望清单",
+      "items": "商品"
+    },
+    "search": {
+      "placeholder": "搜索产品、品牌或类别...",
+      "pressEnter": "按回车键",
+      "try": "试试：",
+      "suggestions": {
+        "iphone": "iPhone",
+        "nikeShoes": "耐克鞋",
+        "laptop": "笔记本电脑",
+        "fashion": "时尚",
+        "electronics": "电子产品"
+      }
+    },
+    "quickActions": {
+      "search": "搜索",
+      "findProducts": "查找产品",
+      "categories": "类别",
+      "browseByType": "按类型浏览",
+      "wishlist": "愿望清单",
+      "orders": "订单"
+    },
+    "trending": {
+      "title": "当前热门",
+      "viewAll": "查看全部",
+      "hot": "热门",
+      "views": "浏览",
+      "sold": "已售"
+    },
+    "recommended": {
+      "title": "为您推荐",
+      "by": "由",
+      "off": "折扣"
+    },
+    "community": {
+      "title": "其他人正在购买",
+      "popular": "热门"
+    },
+    "categories": {
+      "title": "探索类别",
+      "electronics": "电子产品",
+      "fashion": "时尚",
+      "homeGarden": "家居与园艺",
+      "sports": "体育",
+      "books": "图书",
+      "beauty": "美容"
+    },
+    "vendors": {
+      "title": "新卖家",
+      "discover": "发现新卖家及其产品",
+      "support": "支持本地企业并找到独特商品",
+      "explore": "探索"
+    },
+    "activity": {
+      "title": "最近活动",
+      "signInPrompt": "登录以查看您的订单历史",
+      "trackPrompt": "跟踪您的订单并获得个性化推荐",
+      "signIn": "登录",
+      "ordersHistory": "您的历史记录中有 {count} 个订单",
+      "trackOrders": "跟踪您的订单并查看详情",
+      "viewOrders": "查看订单",
+      "wishlistItems": "您的愿望清单中有 {count} 个商品",
+      "checkSaved": "查看您保存的商品",
+      "viewWishlist": "查看愿望清单",
+      "newFeatures": "新功能可用！",
+      "discoverTrending": "发现热门产品和个性化推荐",
+      "new": "新",
+      "proTip": "专业提示：使用搜索栏查找特定产品",
+      "searchTip": "尝试搜索品牌、类别或产品名称"
+    },
+    "summary": {
+      "title": "您的购物之旅",
+      "subtitle": "继续探索以发现更多令人惊叹的产品！",
+      "totalItems": "总商品数"
+    }
   }
 }

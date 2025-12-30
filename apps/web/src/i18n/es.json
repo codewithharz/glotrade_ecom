@@ -761,5 +761,95 @@
       "dark": "Oscuro",
       "system": "Sistema"
     }
+  },
+  "dashboard": {
+    "greeting": {
+      "morning": "Buenos días",
+      "afternoon": "Buenas tardes",
+      "evening": "Buenas noches",
+      "guest": "Invitado"
+    },
+    "welcome": {
+      "subtitle": "¿Listo para descubrir productos increíbles?",
+      "quickStats": "Estadísticas rápidas"
+    },
+    "stats": {
+      "orders": "pedidos",
+      "wishlist": "lista de deseos",
+      "items": "artículos"
+    },
+    "search": {
+      "placeholder": "Buscar productos, marcas o categorías...",
+      "pressEnter": "Presione Enter",
+      "try": "Pruebe:",
+      "suggestions": {
+        "iphone": "iPhone",
+        "nikeShoes": "Zapatos Nike",
+        "laptop": "Computadora portátil",
+        "fashion": "Moda",
+        "electronics": "Electrónica"
+      }
+    },
+    "quickActions": {
+      "search": "Buscar",
+      "findProducts": "Encontrar productos",
+      "categories": "Categorías",
+      "browseByType": "Navegar por tipo",
+      "wishlist": "Lista de deseos",
+      "orders": "Pedidos"
+    },
+    "trending": {
+      "title": "Tendencias actuales",
+      "viewAll": "Ver todo",
+      "hot": "CALIENTE",
+      "views": "vistas",
+      "sold": "vendidos"
+    },
+    "recommended": {
+      "title": "Recomendado para ti",
+      "by": "por",
+      "off": "de descuento"
+    },
+    "community": {
+      "title": "Lo que otros están comprando",
+      "popular": "Popular"
+    },
+    "categories": {
+      "title": "Explorar categorías",
+      "electronics": "Electrónica",
+      "fashion": "Moda",
+      "homeGarden": "Hogar y Jardín",
+      "sports": "Deportes",
+      "books": "Libros",
+      "beauty": "Belleza"
+    },
+    "vendors": {
+      "title": "Nuevos vendedores",
+      "discover": "Descubra nuevos vendedores y sus productos",
+      "support": "Apoye a las empresas locales y encuentre artículos únicos",
+      "explore": "Explorar"
+    },
+    "activity": {
+      "title": "Actividad reciente",
+      "signInPrompt": "Inicie sesión para ver su historial de pedidos",
+      "trackPrompt": "Rastree sus pedidos y obtenga recomendaciones personalizadas",
+      "signIn": "Iniciar sesión",
+      "ordersHistory": "Tiene {count} pedido{plural} en su historial",
+      "trackOrders": "Rastree sus pedidos y vea los detalles",
+      "viewOrders": "Ver pedidos",
+      "wishlistItems": "{count} artículo{plural} en su lista de deseos",
+      "checkSaved": "Consulte sus artículos guardados",
+      "viewWishlist": "Ver lista de deseos",
+      "newFeatures": "¡Nuevas funciones disponibles!",
+      "discoverTrending": "Descubra productos en tendencia y recomendaciones personalizadas",
+      "new": "Nuevo",
+      "proTip": "Consejo: Use la barra de búsqueda para encontrar productos específicos",
+      "searchTip": "Intente buscar marcas, categorías o nombres de productos"
+    },
+    "summary": {
+      "title": "Su viaje de compras",
+      "subtitle": "¡Siga explorando para descubrir más productos increíbles!",
+      "totalItems": "Total de artículos"
+    }
   }
 }

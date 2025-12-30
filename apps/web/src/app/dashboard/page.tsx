@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { 
-  Search, 
-  Heart, 
-  ShoppingBag, 
-  Star, 
-  TrendingUp, 
-  Clock, 
-  MapPin, 
+import {
+  Search,
+  Heart,
+  ShoppingBag,
+  Star,
+  TrendingUp,
+  Clock,
+  MapPin,
   Bell,
   ChevronRight,
   Sparkles,
@@ -26,6 +26,7 @@ import {
 import { RequireAuth } from "@/components/auth/Guards";
 import { apiGet } from "@/utils/api";
 import { getUserId, authHeader } from "@/utils/auth";
+import { translate, getStoredLocale } from "@/utils/i18n";
 
 // Types
 interface Product {
@@ -66,13 +67,14 @@ export default function DashboardPage() {
   const [userName, setUserName] = useState("Guest");
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const locale = getStoredLocale();
 
   // Get time-based greeting
   const getGreeting = () => {
     const hour = currentTime.getHours();
-    if (hour < 12) return "Good morning";
-    if (hour < 17) return "Good afternoon";
-    return "Good evening";
+    if (hour < 12) return translate(locale, "dashboard.greeting.morning");
+    if (hour < 17) return translate(locale, "dashboard.greeting.afternoon");
+    return translate(locale, "dashboard.greeting.evening");
   };
 
   // Load user data
@@ -86,7 +88,7 @@ export default function DashboardPage() {
         const userRaw = localStorage.getItem("afritrade:user");
         if (userRaw) {
           const user = JSON.parse(userRaw);
-          setUserName(user.username || user.firstName || "Guest");
+          setUserName(user.username || user.firstName || translate(locale, "dashboard.greeting.guest"));
         }
 
         // Load user stats with error handling
@@ -129,7 +131,7 @@ export default function DashboardPage() {
         try {
           const trendingRes = await apiGet("/api/v1/market/products?limit=8&sort=-views") as { data?: { products?: Product[] } };
           const products = trendingRes.data?.products || [];
-          
+
           // Get analytics for these products
           let analytics: any[] = [];
           if (products.length > 0) {
@@ -141,7 +143,7 @@ export default function DashboardPage() {
               console.warn("Failed to load product analytics:", analyticsError);
             }
           }
-          
+
           setTrendingProducts(products.map((p: Product) => {
             const productAnalytics = analytics.find(a => a.productId === p._id);
             return {
@@ -161,7 +163,7 @@ export default function DashboardPage() {
         try {
           const recommendedRes = await apiGet("/api/v1/market/products?limit=6&sort=-rating") as { data?: { products?: Product[] } };
           const products = recommendedRes.data?.products || [];
-          
+
           // Get analytics for these products
           let analytics: any[] = [];
           if (products.length > 0) {
@@ -173,7 +175,7 @@ export default function DashboardPage() {
               console.warn("Failed to load product analytics:", analyticsError);
             }
           }
-          
+
           setRecommendedProducts(products.map((p: Product) => {
             const productAnalytics = analytics.find(a => a.productId === p._id);
             return {
@@ -192,7 +194,7 @@ export default function DashboardPage() {
         try {
           const recentRes = await apiGet("/api/v1/market/products?limit=4&sort=-createdAt") as { data?: { products?: Product[] } };
           const products = recentRes.data?.products || [];
-          
+
           // Get analytics for these products
           let analytics: any[] = [];
           if (products.length > 0) {
@@ -204,7 +206,7 @@ export default function DashboardPage() {
               console.warn("Failed to load product analytics:", analyticsError);
             }
           }
-          
+
           setRecentProducts(products.map((p: Product) => {
             const productAnalytics = analytics.find(a => a.productId === p._id);
             return {
@@ -265,15 +267,15 @@ export default function DashboardPage() {
                   {getGreeting()}, {userName}! 👋
                 </h1>
                 <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">
-                  Ready to discover amazing products?
+                  {translate(locale, "dashboard.welcome.subtitle")}
                 </p>
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-left sm:text-right">
-                  <div className="text-xs text-gray-500 dark:text-gray-400">Quick Stats</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">{translate(locale, "dashboard.welcome.quickStats")}</div>
                   <div className="flex items-center gap-4 text-sm">
-                    <span className="text-gray-700 dark:text-gray-300">{userStats.orders} orders</span>
-                    <span className="text-gray-700 dark:text-gray-300">{userStats.wishlist} wishlist</span>
+                    <span className="text-gray-700 dark:text-gray-300">{userStats.orders} {translate(locale, "dashboard.stats.orders")}</span>
+                    <span className="text-gray-700 dark:text-gray-300">{userStats.wishlist} {translate(locale, "dashboard.stats.wishlist")}</span>
                   </div>
                 </div>
               </div>
@@ -286,7 +288,7 @@ export default function DashboardPage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search for products, brands, or categories..."
+                placeholder={translate(locale, "dashboard.search.placeholder")}
                 className="w-full pl-10 pr-12 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') {
@@ -295,20 +297,20 @@ export default function DashboardPage() {
                       // Smart search with multiple query strategies
                       const searchQuery = query.trim();
                       const searchParams = new URLSearchParams();
-                      
+
                       // Check if it's a category search
                       const categoryKeywords = ['electronics', 'fashion', 'home', 'sports', 'books', 'beauty', 'clothing', 'shoes', 'phones', 'laptops'];
-                      const matchedCategory = categoryKeywords.find(cat => 
+                      const matchedCategory = categoryKeywords.find(cat =>
                         searchQuery.toLowerCase().includes(cat.toLowerCase())
                       );
-                      
+
                       if (matchedCategory) {
                         searchParams.set('category', matchedCategory);
                         searchParams.set('q', searchQuery);
                       } else {
                         searchParams.set('q', searchQuery);
                       }
-                      
+
                       window.location.href = `/marketplace?${searchParams.toString()}`;
                     }
                   }
@@ -316,25 +318,31 @@ export default function DashboardPage() {
               />
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                 <div className="flex items-center gap-1 text-xs text-gray-400">
-                  <span>Press Enter</span>
+                  <span>{translate(locale, "dashboard.search.pressEnter")}</span>
                 </div>
               </div>
             </div>
-            
+
             {/* Search Suggestions */}
             <div className="mt-2 flex flex-wrap gap-2">
-              <span className="text-xs text-gray-500 dark:text-gray-400">Try:</span>
-              {['iPhone', 'Nike shoes', 'Laptop', 'Fashion', 'Electronics'].map((suggestion) => (
+              <span className="text-xs text-gray-500 dark:text-gray-400">{translate(locale, "dashboard.search.try")}</span>
+              {[
+                { label: translate(locale, "dashboard.search.suggestions.iphone"), value: 'iPhone' },
+                { label: translate(locale, "dashboard.search.suggestions.nikeShoes"), value: 'Nike shoes' },
+                { label: translate(locale, "dashboard.search.suggestions.laptop"), value: 'Laptop' },
+                { label: translate(locale, "dashboard.search.suggestions.fashion"), value: 'Fashion' },
+                { label: translate(locale, "dashboard.search.suggestions.electronics"), value: 'Electronics' }
+              ].map((suggestion) => (
                 <button
-                  key={suggestion}
+                  key={suggestion.label}
                   onClick={() => {
                     const searchParams = new URLSearchParams();
-                    searchParams.set('q', suggestion);
+                    searchParams.set('q', suggestion.value);
                     window.location.href = `/marketplace?${searchParams.toString()}`;
                   }}
                   className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                 >
-                  {suggestion}
+                  {suggestion.label}
                 </button>
               ))}
             </div>
@@ -342,8 +350,8 @@ export default function DashboardPage() {
 
           {/* Quick Actions Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <Link 
-              href="/marketplace" 
+            <Link
+              href="/marketplace"
               className="group bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105"
             >
               <div className="flex items-center gap-3">
@@ -351,14 +359,14 @@ export default function DashboardPage() {
                   <Search className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900 dark:text-white text-sm">Search</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">Find products</div>
+                  <div className="font-semibold text-gray-900 dark:text-white text-sm">{translate(locale, "dashboard.quickActions.search")}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">{translate(locale, "dashboard.quickActions.findProducts")}</div>
                 </div>
               </div>
             </Link>
 
-            <Link 
-              href="/marketplace?category=electronics" 
+            <Link
+              href="/marketplace?category=electronics"
               className="group bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105"
             >
               <div className="flex items-center gap-3">
@@ -366,14 +374,14 @@ export default function DashboardPage() {
                   <Grid3X3 className="w-5 h-5 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900 dark:text-white text-sm">Categories</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">Browse by type</div>
+                  <div className="font-semibold text-gray-900 dark:text-white text-sm">{translate(locale, "dashboard.quickActions.categories")}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">{translate(locale, "dashboard.quickActions.browseByType")}</div>
                 </div>
               </div>
             </Link>
 
-            <Link 
-              href="/wishlist" 
+            <Link
+              href="/wishlist"
               className="group bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105"
             >
               <div className="flex items-center gap-3">
@@ -381,14 +389,14 @@ export default function DashboardPage() {
                   <Heart className="w-5 h-5 text-red-600 dark:text-red-400" />
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900 dark:text-white text-sm">Wishlist</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">{userStats.wishlist} items</div>
+                  <div className="font-semibold text-gray-900 dark:text-white text-sm">{translate(locale, "dashboard.quickActions.wishlist")}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">{userStats.wishlist} {translate(locale, "dashboard.stats.items")}</div>
                 </div>
               </div>
             </Link>
 
-            <Link 
-              href="/orders" 
+            <Link
+              href="/orders"
               className="group bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105"
             >
               <div className="flex items-center gap-3">
@@ -396,8 +404,8 @@ export default function DashboardPage() {
                   <ShoppingBag className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900 dark:text-white text-sm">Orders</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">{userStats.orders} orders</div>
+                  <div className="font-semibold text-gray-900 dark:text-white text-sm">{translate(locale, "dashboard.quickActions.orders")}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">{userStats.orders} {translate(locale, "dashboard.stats.orders")}</div>
                 </div>
               </div>
             </Link>
@@ -408,33 +416,33 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 <Flame className="w-5 h-5 text-orange-500" />
-                Trending Now
+                {translate(locale, "dashboard.trending.title")}
               </h2>
-              <Link 
-                href="/marketplace?sort=trending" 
+              <Link
+                href="/marketplace?sort=trending"
                 className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1"
               >
-                View all <ChevronRight className="w-4 h-4" />
+                {translate(locale, "dashboard.trending.viewAll")} <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
-            
+
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4">
               {trendingProducts.slice(0, 8).map((product) => (
-                <Link 
-                  key={product._id} 
+                <Link
+                  key={product._id}
                   href={`/marketplace/${product._id}`}
                   className="group bg-white dark:bg-gray-800 rounded-lg p-2 sm:p-3 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105 active:scale-95"
                 >
                   <div className="relative">
                     {product.isHot && (
                       <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">
-                        HOT
+                        {translate(locale, "dashboard.trending.hot")}
                       </div>
                     )}
                     <div className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg mb-2 overflow-hidden">
                       {product.images?.[0] ? (
-                        <img 
-                          src={product.images[0]} 
+                        <img
+                          src={product.images[0]}
                           alt={product.title}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200"
                         />
@@ -462,9 +470,9 @@ export default function DashboardPage() {
                         )}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">
-                        {product.views > 0 && `${product.views} views`}
+                        {product.views > 0 && `${product.views} ${translate(locale, "dashboard.trending.views")}`}
                         {product.views > 0 && product.purchases > 0 && ' • '}
-                        {product.purchases > 0 && `${product.purchases} sold`}
+                        {product.purchases > 0 && `${product.purchases} ${translate(locale, "dashboard.trending.sold")}`}
                       </div>
                     </div>
                   </div>
@@ -478,27 +486,27 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-purple-500" />
-                Recommended for You
+                {translate(locale, "dashboard.recommended.title")}
               </h2>
-              <Link 
-                href="/marketplace?sort=recommended" 
+              <Link
+                href="/marketplace?sort=recommended"
                 className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1"
               >
-                View all <ChevronRight className="w-4 h-4" />
+                {translate(locale, "dashboard.trending.viewAll")} <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {recommendedProducts.map((product) => (
-                <Link 
-                  key={product._id} 
+                <Link
+                  key={product._id}
                   href={`/marketplace/${product._id}`}
                   className="group bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105 active:scale-95"
                 >
                   <div className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg mb-3 overflow-hidden">
                     {product.images?.[0] ? (
-                      <img 
-                        src={product.images[0]} 
+                      <img
+                        src={product.images[0]}
                         alt={product.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200"
                       />
@@ -514,7 +522,7 @@ export default function DashboardPage() {
                     </h3>
                     {product.vendor && (
                       <p className="text-xs text-gray-500 dark:text-gray-400">
-                        by {product.vendor.storeName}
+                        {translate(locale, "dashboard.recommended.by")} {product.vendor.storeName}
                       </p>
                     )}
                     <div className="flex items-center justify-between">
@@ -532,7 +540,7 @@ export default function DashboardPage() {
                     </div>
                     {product.discount && (
                       <div className="text-xs text-green-600 dark:text-green-400 font-medium">
-                        {product.discount}% off
+                        {product.discount}% {translate(locale, "dashboard.recommended.off")}
                       </div>
                     )}
                   </div>
@@ -545,20 +553,20 @@ export default function DashboardPage() {
           <div className="mb-8">
             <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <Users className="w-5 h-5 text-green-500" />
-              What Others Are Buying
+              {translate(locale, "dashboard.community.title")}
             </h2>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {recentProducts.map((product) => (
-                <Link 
-                  key={product._id} 
+                <Link
+                  key={product._id}
                   href={`/marketplace/${product._id}`}
                   className="group bg-white dark:bg-gray-800 rounded-lg p-2 sm:p-3 shadow-sm hover:shadow-md transition-all duration-200 active:scale-95"
                 >
                   <div className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg mb-2 overflow-hidden">
                     {product.images?.[0] ? (
-                      <img 
-                        src={product.images[0]} 
+                      <img
+                        src={product.images[0]}
                         alt={product.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200"
                       />
@@ -578,7 +586,7 @@ export default function DashboardPage() {
                       </span>
                       <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                         <Eye className="w-3 h-3" />
-                        <span>Popular</span>
+                        <span>{translate(locale, "dashboard.community.popular")}</span>
                       </div>
                     </div>
                   </div>
@@ -591,17 +599,17 @@ export default function DashboardPage() {
           <div className="mb-8">
             <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <Grid3X3 className="w-5 h-5 text-indigo-500" />
-              Explore Categories
+              {translate(locale, "dashboard.categories.title")}
             </h2>
-            
+
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
               {[
-                { name: "Electronics", icon: "📱", color: "bg-blue-500", href: "/marketplace?category=electronics" },
-                { name: "Fashion", icon: "👗", color: "bg-pink-500", href: "/marketplace?category=fashion" },
-                { name: "Home & Garden", icon: "🏠", color: "bg-green-500", href: "/marketplace?category=home" },
-                { name: "Sports", icon: "⚽", color: "bg-orange-500", href: "/marketplace?category=sports" },
-                { name: "Books", icon: "📚", color: "bg-purple-500", href: "/marketplace?category=books" },
-                { name: "Beauty", icon: "💄", color: "bg-rose-500", href: "/marketplace?category=beauty" }
+                { name: translate(locale, "dashboard.categories.electronics"), icon: "📱", color: "bg-blue-500", href: "/marketplace?category=electronics" },
+                { name: translate(locale, "dashboard.categories.fashion"), icon: "👗", color: "bg-pink-500", href: "/marketplace?category=fashion" },
+                { name: translate(locale, "dashboard.categories.homeGarden"), icon: "🏠", color: "bg-green-500", href: "/marketplace?category=home" },
+                { name: translate(locale, "dashboard.categories.sports"), icon: "⚽", color: "bg-orange-500", href: "/marketplace?category=sports" },
+                { name: translate(locale, "dashboard.categories.books"), icon: "📚", color: "bg-purple-500", href: "/marketplace?category=books" },
+                { name: translate(locale, "dashboard.categories.beauty"), icon: "💄", color: "bg-rose-500", href: "/marketplace?category=beauty" }
               ].map((category) => (
                 <Link
                   key={category.name}
@@ -622,7 +630,7 @@ export default function DashboardPage() {
             <div className="mt-6">
               <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                 <Users className="w-4 h-4 text-emerald-500" />
-                New Vendors
+                {translate(locale, "dashboard.vendors.title")}
               </h3>
               <div className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-lg p-4 border border-emerald-200 dark:border-emerald-800/30">
                 <div className="flex items-center gap-3">
@@ -631,17 +639,17 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      Discover new sellers and their products
+                      {translate(locale, "dashboard.vendors.discover")}
                     </p>
                     <p className="text-xs text-gray-600 dark:text-gray-400">
-                      Support local businesses and find unique items
+                      {translate(locale, "dashboard.vendors.support")}
                     </p>
                   </div>
-                  <Link 
+                  <Link
                     href="/marketplace?sort=new-vendors"
                     className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-sm font-medium"
                   >
-                    Explore
+                    {translate(locale, "dashboard.vendors.explore")}
                   </Link>
                 </div>
               </div>
@@ -652,9 +660,9 @@ export default function DashboardPage() {
           <div className="mb-8">
             <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <Bell className="w-5 h-5 text-blue-500" />
-              Recent Activity
+              {translate(locale, "dashboard.activity.title")}
             </h2>
-            
+
             <div className="space-y-3">
               {/* Authentication Status */}
               {!isAuthenticated && (
@@ -665,17 +673,17 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Sign in to see your order history
+                        {translate(locale, "dashboard.activity.signInPrompt")}
                       </p>
                       <p className="text-xs text-gray-600 dark:text-gray-400">
-                        Track your orders and get personalized recommendations
+                        {translate(locale, "dashboard.activity.trackPrompt")}
                       </p>
                     </div>
-                    <Link 
+                    <Link
                       href="/auth/login"
                       className="text-yellow-600 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 text-sm font-medium"
                     >
-                      Sign In
+                      {translate(locale, "dashboard.activity.signIn")}
                     </Link>
                   </div>
                 </div>
@@ -690,17 +698,17 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        You have {userStats.orders} order{userStats.orders !== 1 ? 's' : ''} in your history
+                        {translate(locale, "dashboard.activity.ordersHistory", { count: userStats.orders, plural: userStats.orders !== 1 ? 's' : '' })}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Track your orders and view order details
+                        {translate(locale, "dashboard.activity.trackOrders")}
                       </p>
                     </div>
-                    <Link 
+                    <Link
                       href="/orders"
                       className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
                     >
-                      View Orders
+                      {translate(locale, "dashboard.activity.viewOrders")}
                     </Link>
                   </div>
                 </div>
@@ -715,17 +723,17 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        {userStats.wishlist} item{userStats.wishlist !== 1 ? 's' : ''} in your wishlist
+                        {translate(locale, "dashboard.activity.wishlistItems", { count: userStats.wishlist, plural: userStats.wishlist !== 1 ? 's' : '' })}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Check out your saved items
+                        {translate(locale, "dashboard.activity.checkSaved")}
                       </p>
                     </div>
-                    <Link 
+                    <Link
                       href="/wishlist"
                       className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm font-medium"
                     >
-                      View Wishlist
+                      {translate(locale, "dashboard.activity.viewWishlist")}
                     </Link>
                   </div>
                 </div>
@@ -739,14 +747,14 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      New features available!
+                      {translate(locale, "dashboard.activity.newFeatures")}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Discover trending products and personalized recommendations
+                      {translate(locale, "dashboard.activity.discoverTrending")}
                     </p>
                   </div>
                   <span className="text-green-600 dark:text-green-400 text-xs font-medium">
-                    New
+                    {translate(locale, "dashboard.activity.new")}
                   </span>
                 </div>
               </div>
@@ -759,10 +767,10 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      Pro tip: Use the search bar to find specific products
+                      {translate(locale, "dashboard.activity.proTip")}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Try searching for brands, categories, or product names
+                      {translate(locale, "dashboard.activity.searchTip")}
                     </p>
                   </div>
                 </div>
@@ -774,14 +782,14 @@ export default function DashboardPage() {
           <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-4 sm:p-6 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base sm:text-lg font-bold mb-2">Your Shopping Journey</h3>
+                <h3 className="text-base sm:text-lg font-bold mb-2">{translate(locale, "dashboard.summary.title")}</h3>
                 <p className="text-blue-100 text-xs sm:text-sm">
-                  Keep exploring to discover more amazing products!
-      </p>
-    </div>
+                  {translate(locale, "dashboard.summary.subtitle")}
+                </p>
+              </div>
               <div className="text-right">
                 <div className="text-xl sm:text-2xl font-bold">{userStats.orders + userStats.wishlist}</div>
-                <div className="text-blue-100 text-xs sm:text-sm">Total Items</div>
+                <div className="text-blue-100 text-xs sm:text-sm">{translate(locale, "dashboard.summary.totalItems")}</div>
               </div>
             </div>
           </div>

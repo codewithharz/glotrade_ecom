@@ -697,5 +697,95 @@
       "registrationFailed": "Gaza yin rajista",
       "requestFailed": "Buƙatar ta gaza"
     }
+  },
+  "dashboard": {
+    "greeting": {
+      "morning": "Barka da safe",
+      "afternoon": "Barka da rana",
+      "evening": "Barka da yamma",
+      "guest": "Baƙo"
+    },
+    "welcome": {
+      "subtitle": "Kuna shirye don gano samfuran ban mamaki?",
+      "quickStats": "Ƙididdiga masu sauri"
+    },
+    "stats": {
+      "orders": "oda",
+      "wishlist": "jerin abubuwan da ake so",
+      "items": "abubuwa"
+    },
+    "search": {
+      "placeholder": "Nemo samfura, alamomi ko nau'ikan...",
+      "pressEnter": "Danna Enter",
+      "try": "Gwada:",
+      "suggestions": {
+        "iphone": "iPhone",
+        "nikeShoes": "Takalman Nike",
+        "laptop": "Laptop",
+        "fashion": "Kayan ado",
+        "electronics": "Na'urorin lantarki"
+      }
+    },
+    "quickActions": {
+      "search": "Nema",
+      "findProducts": "Nemo samfura",
+      "categories": "Nau'ikan",
+      "browseByType": "Bincika ta nau'i",
+      "wishlist": "Jerin abubuwan da ake so",
+      "orders": "Oda"
+    },
+    "trending": {
+      "title": "Abin da ke yau yanzu",
+      "viewAll": "Duba duka",
+      "hot": "MAI ZAFI",
+      "views": "kallo",
+      "sold": "an sayar"
+    },
+    "recommended": {
+      "title": "An ba da shawarar ku",
+      "by": "ta",
+      "off": "rangwame"
+    },
+    "community": {
+      "title": "Abin da wasu ke saya",
+      "popular": "Shahararru"
+    },
+    "categories": {
+      "title": "Bincika nau'ikan",
+      "electronics": "Na'urorin lantarki",
+      "fashion": "Kayan ado",
+      "homeGarden": "Gida da Lambun",
+      "sports": "Wasanni",
+      "books": "Littattafai",
+      "beauty": "Kyau"
+    },
+    "vendors": {
+      "title": "Sabbin masu siyarwa",
+      "discover": "Gano sabbin masu siyarwa da samfuransu",
+      "support": "Tallafa wa kasuwancin gida kuma nemo abubuwa na musamman",
+      "explore": "Bincika"
+    },
+    "activity": {
+      "title": "Ayyukan kwanan nan",
+      "signInPrompt": "Shiga don ganin tarihin odar ku",
+      "trackPrompt": "Bi diddigin odar ku kuma samun shawarwarin da aka keɓance",
+      "signIn": "Shiga",
+      "ordersHistory": "Kuna da oda {count} a cikin tarihin ku",
+      "trackOrders": "Bi diddigin odar ku kuma duba cikakkun bayanai",
+      "viewOrders": "Duba oda",
+      "wishlistItems": "Abu {count} a cikin jerin abubuwan da kuke so",
+      "checkSaved": "Duba abubuwan da aka adana",
+      "viewWishlist": "Duba jerin abubuwan da ake so",
+      "newFeatures": "Sabbin fasaloli suna samuwa!",
+      "discoverTrending": "Gano samfuran da ke yau da shawarwarin da aka keɓance",
+      "new": "Sabon",
+      "proTip": "Shawarar ƙwararru: Yi amfani da mashigin bincike don nemo takamaiman samfura",
+      "searchTip": "Gwada neman alamomi, nau'ikan ko sunayen samfura"
+    },
+    "summary": {
+      "title": "Tafiyar sayayyar ku",
+      "subtitle": "Ci gaba da bincike don gano ƙarin samfuran ban mamaki!",
+      "totalItems": "Jimlar abubuwa"
+    }
   }
 }

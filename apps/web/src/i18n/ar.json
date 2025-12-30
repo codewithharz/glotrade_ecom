@@ -732,5 +732,95 @@
         }
       }
     }
+  },
+  "dashboard": {
+    "greeting": {
+      "morning": "صباح الخير",
+      "afternoon": "مساء الخير",
+      "evening": "مساء الخير",
+      "guest": "ضيف"
+    },
+    "welcome": {
+      "subtitle": "هل أنت مستعد لاكتشاف منتجات مذهلة؟",
+      "quickStats": "إحصائيات سريعة"
+    },
+    "stats": {
+      "orders": "طلبات",
+      "wishlist": "قائمة الأمنيات",
+      "items": "عناصر"
+    },
+    "search": {
+      "placeholder": "ابحث عن المنتجات أو العلامات التجارية أو الفئات...",
+      "pressEnter": "اضغط Enter",
+      "try": "جرب:",
+      "suggestions": {
+        "iphone": "آيفون",
+        "nikeShoes": "أحذية نايك",
+        "laptop": "لابتوب",
+        "fashion": "أزياء",
+        "electronics": "إلكترونيات"
+      }
+    },
+    "quickActions": {
+      "search": "بحث",
+      "findProducts": "البحث عن المنتجات",
+      "categories": "الفئات",
+      "browseByType": "تصفح حسب النوع",
+      "wishlist": "قائمة الأمنيات",
+      "orders": "الطلبات"
+    },
+    "trending": {
+      "title": "الأكثر رواجاً الآن",
+      "viewAll": "عرض الكل",
+      "hot": "ساخن",
+      "views": "مشاهدات",
+      "sold": "مباع"
+    },
+    "recommended": {
+      "title": "موصى به لك",
+      "by": "بواسطة",
+      "off": "خصم"
+    },
+    "community": {
+      "title": "ما يشتريه الآخرون",
+      "popular": "شائع"
+    },
+    "categories": {
+      "title": "استكشف الفئات",
+      "electronics": "الإلكترونيات",
+      "fashion": "الأزياء",
+      "homeGarden": "المنزل والحديقة",
+      "sports": "الرياضة",
+      "books": "الكتب",
+      "beauty": "الجمال"
+    },
+    "vendors": {
+      "title": "بائعون جدد",
+      "discover": "اكتشف البائعين الجدد ومنتجاتهم",
+      "support": "ادعم الشركات المحلية واعثر على عناصر فريدة",
+      "explore": "استكشف"
+    },
+    "activity": {
+      "title": "النشاط الأخير",
+      "signInPrompt": "سجل الدخول لرؤية سجل طلباتك",
+      "trackPrompt": "تتبع طلباتك واحصل على توصيات مخصصة",
+      "signIn": "تسجيل الدخول",
+      "ordersHistory": "لديك {count} طلب في سجلك",
+      "trackOrders": "تتبع طلباتك واعرض التفاصيل",
+      "viewOrders": "عرض الطلبات",
+      "wishlistItems": "{count} عنصر في قائمة أمنياتك",
+      "checkSaved": "تحقق من العناصر المحفوظة",
+      "viewWishlist": "عرض قائمة الأمنيات",
+      "newFeatures": "ميزات جديدة متاحة!",
+      "discoverTrending": "اكتشف المنتجات الرائجة والتوصيات المخصصة",
+      "new": "جديد",
+      "proTip": "نصيحة: استخدم شريط البحث للعثور على منتجات محددة",
+      "searchTip": "جرب البحث عن العلامات التجارية أو الفئات أو أسماء المنتجات"
+    },
+    "summary": {
+      "title": "رحلة التسوق الخاصة بك",
+      "subtitle": "استمر في الاستكشاف لاكتشاف المزيد من المنتجات المذهلة!",
+      "totalItems": "إجمالي العناصر"
+    }
   }
 }

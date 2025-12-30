@@ -807,5 +807,95 @@
       "registrationFailed": "Registration failed",
       "requestFailed": "Request failed"
     }
+  },
+  "dashboard": {
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening",
+      "guest": "Guest"
+    },
+    "welcome": {
+      "subtitle": "Ready to discover amazing products?",
+      "quickStats": "Quick Stats"
+    },
+    "stats": {
+      "orders": "orders",
+      "wishlist": "wishlist",
+      "items": "items"
+    },
+    "search": {
+      "placeholder": "Search for products, brands, or categories...",
+      "pressEnter": "Press Enter",
+      "try": "Try:",
+      "suggestions": {
+        "iphone": "iPhone",
+        "nikeShoes": "Nike shoes",
+        "laptop": "Laptop",
+        "fashion": "Fashion",
+        "electronics": "Electronics"
+      }
+    },
+    "quickActions": {
+      "search": "Search",
+      "findProducts": "Find products",
+      "categories": "Categories",
+      "browseByType": "Browse by type",
+      "wishlist": "Wishlist",
+      "orders": "Orders"
+    },
+    "trending": {
+      "title": "Trending Now",
+      "viewAll": "View all",
+      "hot": "HOT",
+      "views": "views",
+      "sold": "sold"
+    },
+    "recommended": {
+      "title": "Recommended for You",
+      "by": "by",
+      "off": "off"
+    },
+    "community": {
+      "title": "What Others Are Buying",
+      "popular": "Popular"
+    },
+    "categories": {
+      "title": "Explore Categories",
+      "electronics": "Electronics",
+      "fashion": "Fashion",
+      "homeGarden": "Home & Garden",
+      "sports": "Sports",
+      "books": "Books",
+      "beauty": "Beauty"
+    },
+    "vendors": {
+      "title": "New Vendors",
+      "discover": "Discover new sellers and their products",
+      "support": "Support local businesses and find unique items",
+      "explore": "Explore"
+    },
+    "activity": {
+      "title": "Recent Activity",
+      "signInPrompt": "Sign in to see your order history",
+      "trackPrompt": "Track your orders and get personalized recommendations",
+      "signIn": "Sign In",
+      "ordersHistory": "You have {count} order{plural} in your history",
+      "trackOrders": "Track your orders and view order details",
+      "viewOrders": "View Orders",
+      "wishlistItems": "{count} item{plural} in your wishlist",
+      "checkSaved": "Check out your saved items",
+      "viewWishlist": "View Wishlist",
+      "newFeatures": "New features available!",
+      "discoverTrending": "Discover trending products and personalized recommendations",
+      "new": "New",
+      "proTip": "Pro tip: Use the search bar to find specific products",
+      "searchTip": "Try searching for brands, categories, or product names"
+    },
+    "summary": {
+      "title": "Your Shopping Journey",
+      "subtitle": "Keep exploring to discover more amazing products!",
+      "totalItems": "Total Items"
+    }
   }
 }
