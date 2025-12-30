@@ -2,6 +2,8 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import { translate, Locale } from "@/utils/i18n";
+
 type Category = { _id: string; name: string; slug: string; parentId?: string };
 
 function withParams(
@@ -26,11 +28,13 @@ export default function DesktopCategoryTree({
   params,
   selectedCategoryName,
   basePath = "/marketplace",
+  locale
 }: {
   categories: Category[];
   params: Record<string, string>;
   selectedCategoryName?: string;
   basePath?: string;
+  locale: Locale;
 }) {
   const base = basePath;
   const level1 = useMemo(() => categories.filter((c) => !c.parentId), [categories]);
@@ -60,16 +64,15 @@ export default function DesktopCategoryTree({
 
   return (
     <div className="space-y-6">
-      <div className="text-sm font-semibold mb-1">Categories</div>
+      <div className="text-sm font-semibold mb-1">{translate(locale, "market.categories")}</div>
       <Link
         href={withParams(base, params, { category: undefined })}
-        className={`block text-sm px-2 py-1 rounded ${
-          !selectedCategoryName
+        className={`block text-sm px-2 py-1 rounded ${!selectedCategoryName
             ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black"
             : "hover:bg-neutral-100 dark:hover:bg-neutral-900"
-        }`}
+          }`}
       >
-        All
+        {translate(locale, "market.all")}
       </Link>
 
       {level1.map((l1) => (
@@ -99,11 +102,10 @@ export default function DesktopCategoryTree({
                     <Link
                       key={l3._id}
                       href={withParams(base, params, { category: l3.name })}
-                      className={`block text-sm px-2 py-1 rounded ${
-                        selectedCategoryName === l3.name
+                      className={`block text-sm px-2 py-1 rounded ${selectedCategoryName === l3.name
                           ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black"
                           : "hover:bg-neutral-100 dark:hover:bg-neutral-900"
-                      }`}
+                        }`}
                     >
                       {l3.name}
                     </Link>

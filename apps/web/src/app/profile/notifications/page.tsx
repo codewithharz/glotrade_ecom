@@ -6,6 +6,7 @@ import { Bell, Check, Archive, Trash2, Search, Settings, ArrowLeft } from 'lucid
 // No useAuth hook needed - using localStorage directly like other components
 import { API_BASE_URL } from '@/utils/api';
 import NotificationPreferencesModal from '@/components/common/NotificationPreferencesModal';
+import { getStoredLocale, Locale } from "@/utils/i18n";
 
 interface Notification {
   _id: string;
@@ -32,9 +33,11 @@ export default function NotificationsPage() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [showPreferences, setShowPreferences] = useState(false);
   const [userPreferences, setUserPreferences] = useState<any>(null);
+  const [locale, setLocale] = useState<Locale>("en");
 
   const notificationsPerPage = 20;
 
+  // Get user from localStorage
   // Get user from localStorage
   useEffect(() => {
     try {
@@ -46,6 +49,16 @@ export default function NotificationsPage() {
     } catch (error) {
       console.error('Failed to parse user data:', error);
     }
+  }, []);
+
+  useEffect(() => {
+    setLocale(getStoredLocale());
+    const onLocale = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { locale: Locale };
+      setLocale(detail.locale);
+    };
+    window.addEventListener("i18n:locale", onLocale as EventListener);
+    return () => window.removeEventListener("i18n:locale", onLocale as EventListener);
   }, []);
 
   // Fetch notifications
@@ -68,12 +81,12 @@ export default function NotificationsPage() {
       if (typeFilter !== 'all') params.append('type', typeFilter);
       if (priorityFilter !== 'all') params.append('priority', priorityFilter);
 
-              const response = await fetch(`${API_BASE_URL}/api/v1/notifications?${params}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('afritrade:auth')}`,
-            'Content-Type': 'application/json'
-          }
-        });
+      const response = await fetch(`${API_BASE_URL}/api/v1/notifications?${params}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('afritrade:auth')}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setNotifications(data.data.notifications || []);
@@ -89,12 +102,12 @@ export default function NotificationsPage() {
 
   const fetchUnreadCount = async () => {
     try {
-              const response = await fetch(`${API_BASE_URL}/api/v1/notifications/unread-count`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('afritrade:auth')}`,
-            'Content-Type': 'application/json'
-          }
-        });
+      const response = await fetch(`${API_BASE_URL}/api/v1/notifications/unread-count`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('afritrade:auth')}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setUnreadCount(data.data.unreadCount || 0);
@@ -106,16 +119,16 @@ export default function NotificationsPage() {
 
   const markAsRead = async (notificationId: string) => {
     try {
-              const response = await fetch(`${API_BASE_URL}/api/v1/notifications/${notificationId}/read`, {
-          method: 'PATCH',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('afritrade:auth')}`,
-            'Content-Type': 'application/json'
-          }
-        });
+      const response = await fetch(`${API_BASE_URL}/api/v1/notifications/${notificationId}/read`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('afritrade:auth')}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (response.ok) {
-        setNotifications(prev => 
-          prev.map(n => 
+        setNotifications(prev =>
+          prev.map(n =>
             n._id === notificationId ? { ...n, status: 'read' as const } : n
           )
         );
@@ -128,15 +141,15 @@ export default function NotificationsPage() {
 
   const markAllAsRead = async () => {
     try {
-              const response = await fetch(`${API_BASE_URL}/api/v1/notifications/mark-all-read`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('afritrade:auth')}`,
-            'Content-Type': 'application/json'
-          }
-        });
+      const response = await fetch(`${API_BASE_URL}/api/v1/notifications/mark-all-read`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('afritrade:auth')}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (response.ok) {
-        setNotifications(prev => 
+        setNotifications(prev =>
           prev.map(n => ({ ...n, status: 'read' as const }))
         );
         setUnreadCount(0);
@@ -148,13 +161,13 @@ export default function NotificationsPage() {
 
   const archiveNotification = async (notificationId: string) => {
     try {
-              const response = await fetch(`${API_BASE_URL}/api/v1/notifications/${notificationId}/archive`, {
-          method: 'PATCH',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('afritrade:auth')}`,
-            'Content-Type': 'application/json'
-          }
-        });
+      const response = await fetch(`${API_BASE_URL}/api/v1/notifications/${notificationId}/archive`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('afritrade:auth')}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (response.ok) {
         setNotifications(prev => prev.filter(n => n._id !== notificationId));
         const notification = notifications.find(n => n._id === notificationId);
@@ -169,13 +182,13 @@ export default function NotificationsPage() {
 
   const deleteNotification = async (notificationId: string) => {
     try {
-              const response = await fetch(`${API_BASE_URL}/api/v1/notifications/${notificationId}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('afritrade:auth')}`,
-            'Content-Type': 'application/json'
-          }
-        });
+      const response = await fetch(`${API_BASE_URL}/api/v1/notifications/${notificationId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('afritrade:auth')}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (response.ok) {
         setNotifications(prev => prev.filter(n => n._id !== notificationId));
         const notification = notifications.find(n => n._id === notificationId);
@@ -218,7 +231,7 @@ export default function NotificationsPage() {
   const handleSavePreferences = async (preferences: any) => {
     try {
       console.log('Saving preferences:', preferences);
-      
+
       const response = await fetch(`${API_BASE_URL}/api/v1/user-preferences`, {
         method: 'POST',
         headers: {
@@ -264,8 +277,8 @@ export default function NotificationsPage() {
   };
 
   const filteredNotifications = notifications.filter(notification => {
-    if (searchTerm && !notification.title.toLowerCase().includes(searchTerm.toLowerCase()) && 
-        !notification.message.toLowerCase().includes(searchTerm.toLowerCase())) {
+    if (searchTerm && !notification.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      !notification.message.toLowerCase().includes(searchTerm.toLowerCase())) {
       return false;
     }
     return true;
@@ -301,7 +314,7 @@ export default function NotificationsPage() {
             <span>Back to Profile</span>
           </button>
         </div>
-        
+
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -448,9 +461,8 @@ export default function NotificationsPage() {
                 {filteredNotifications.map((notification) => (
                   <div
                     key={notification._id}
-                    className={`p-4 sm:p-6 hover:bg-gray-50 transition-colors ${
-                      notification.status === 'unread' ? 'bg-blue-50' : ''
-                    }`}
+                    className={`p-4 sm:p-6 hover:bg-gray-50 transition-colors ${notification.status === 'unread' ? 'bg-blue-50' : ''
+                      }`}
                   >
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
                       <div className="flex-1">
@@ -556,6 +568,7 @@ export default function NotificationsPage() {
         onClose={() => setShowPreferences(false)}
         onSave={handleSavePreferences}
         initialPreferences={userPreferences}
+        locale={locale}
       />
     </div>
   );

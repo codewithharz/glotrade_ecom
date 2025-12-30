@@ -36,8 +36,8 @@ export default async function Home() {
 
   return (
     <main className="mx-auto md:w-[95%] w-full px-2 md:px-6 py-6">
-      <SecurityBanner />
       <AdBanner banners={banners} />
+      <SecurityBanner />
       <FeaturedRail />
       <HomeCategoryCascade items={items} />
     </main>

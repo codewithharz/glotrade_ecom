@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import ProductCard from "@/app/marketplace/ProductCard";
 import type { ProductCardData } from "@/types/product";
+import { getStoredLocale, Locale, translate } from "@/utils/i18n";
 
 type Product = {
   _id: string;
@@ -19,6 +20,17 @@ type Product = {
 export default function FeaturedRail() {
   const [items, setItems] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [locale, setLocale] = useState<Locale>("en");
+
+  useEffect(() => {
+    setLocale(getStoredLocale());
+    const onLocale = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { locale: Locale };
+      setLocale(detail.locale);
+    };
+    window.addEventListener("i18n:locale", onLocale as EventListener);
+    return () => window.removeEventListener("i18n:locale", onLocale as EventListener);
+  }, []);
 
   // lightweight interest hints from localStorage
   const hints = useMemo(() => {
@@ -106,13 +118,13 @@ export default function FeaturedRail() {
   return (
     <section className="mb-4 sm:mb-6">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-base sm:text-lg md:text-xl font-semibold">Featured for you</h2>
-        <Link href="/marketplace?sort=-views" className="text-xs sm:text-sm text-neutral-600 hover:underline">See more</Link>
+        <h2 className="text-base sm:text-lg md:text-xl font-semibold">{translate(locale, "home.featuredForYou")}</h2>
+        <Link href="/marketplace?sort=-views" className="text-xs sm:text-sm text-neutral-600 hover:underline">{translate(locale, "home.seeMore")}</Link>
       </div>
       <div ref={railRef} className="flex gap-3 sm:gap-4 overflow-x-auto pb-2 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {items.map((p) => (
           <div key={p._id} className="min-w-[160px] max-w-[160px] sm:min-w-[200px] sm:max-w-[200px] md:min-w-[220px] md:max-w-[220px] snap-start">
-            <ProductCard product={p as unknown as ProductCardData} />
+            <ProductCard product={p as unknown as ProductCardData} locale={locale} />
           </div>
         ))}
       </div>

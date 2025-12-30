@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
+import { translate, Locale } from "@/utils/i18n";
 
-export default function DescriptionClamp({ text, clampLines = 2 }: { text: string; clampLines?: number }) {
+export default function DescriptionClamp({ text, clampLines = 2, locale }: { text: string; clampLines?: number; locale: Locale }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -25,7 +26,7 @@ export default function DescriptionClamp({ text, clampLines = 2 }: { text: strin
           onClick={() => setExpanded((v) => !v)}
           className="mt-2 text-sm font-semibold text-neutral-700 underline"
         >
-          {expanded ? "View less" : "View more"}
+          {expanded ? translate(locale, "common.viewLess") : translate(locale, "common.viewMore")}
         </button>
       </div>
 

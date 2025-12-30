@@ -3,17 +3,26 @@ import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
 
 import { useSearchParams } from "next/navigation";
+import { getStoredLocale, translate, Locale, defaultLocale } from "@/utils/i18n";
 
 import { CheckCircle, ShoppingBag, Package } from "lucide-react";
 
 function CheckoutSuccessForm() {
   const params = useSearchParams();
   const orderId = params.get("orderId");
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [locale, setLocale] = useState<Locale>(defaultLocale);
 
   useEffect(() => {
+    setLocale(getStoredLocale());
     setIsLoggedIn(!!localStorage.getItem("afritrade:auth"));
+
+    // Listen for locale changes
+    const handleLocaleChange = (e: CustomEvent) => {
+      setLocale(e.detail.locale);
+    };
+    window.addEventListener('i18n:locale', handleLocaleChange as EventListener);
+    return () => window.removeEventListener('i18n:locale', handleLocaleChange as EventListener);
   }, []);
 
   // Clear cart on successful checkout
@@ -36,9 +45,9 @@ function CheckoutSuccessForm() {
             </div>
           </div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent mb-2">
-            Order Successful!
+            {translate(locale, "cart.success.title")}
           </h1>
-          <p className="text-neutral-600 dark:text-neutral-400">Your order has been placed successfully</p>
+          <p className="text-neutral-600 dark:text-neutral-400">{translate(locale, "cart.success.description")}</p>
         </div>
 
         {/* Card */}
@@ -49,7 +58,7 @@ function CheckoutSuccessForm() {
               <div className="flex items-center gap-3">
                 <Package className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
                 <div className="flex-1">
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">Order ID</p>
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">{translate(locale, "cart.success.orderId")}</p>
                   <p className="font-mono text-sm font-semibold text-blue-600 dark:text-blue-400">{orderId}</p>
                 </div>
               </div>
@@ -59,7 +68,7 @@ function CheckoutSuccessForm() {
           {/* Success Message */}
           <div className="mb-6 text-center">
             <p className="text-sm text-neutral-600 dark:text-neutral-400">
-              Thank you for your purchase! We've sent a confirmation email with your order details.
+              {translate(locale, "cart.success.message")}
             </p>
           </div>
 
@@ -71,7 +80,7 @@ function CheckoutSuccessForm() {
                 className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2"
               >
                 <Package className="h-5 w-5" />
-                <span>View Order Details</span>
+                <span>{translate(locale, "cart.success.viewOrder")}</span>
               </Link>
             )}
 
@@ -80,7 +89,7 @@ function CheckoutSuccessForm() {
               className="w-full bg-white dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 font-semibold py-3 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all duration-200 flex items-center justify-center gap-2"
             >
               <ShoppingBag className="h-5 w-5" />
-              <span>Continue Shopping</span>
+              <span>{translate(locale, "cart.success.continueShopping")}</span>
             </Link>
           </div>
         </div>
@@ -88,9 +97,9 @@ function CheckoutSuccessForm() {
         {/* Additional Info */}
         <div className="mt-6 text-center">
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            Need help?{" "}
+            {translate(locale, "cart.success.needHelp")}{" "}
             <Link href="/support" className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
-              Contact support
+              {translate(locale, "cart.success.contactSupport")}
             </Link>
           </p>
         </div>

@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Ticket, X, Check, AlertCircle } from "lucide-react";
 import { validateVoucher, recordVoucherUsage, AppliedVoucher, Voucher } from "@/utils/voucherApi";
+import { getStoredLocale, translate, Locale } from "@/utils/i18n";
 
 interface VoucherInputProps {
   onVoucherApplied: (voucher: AppliedVoucher) => void;
@@ -22,16 +23,27 @@ export default function VoucherInput({
   const [isValidating, setIsValidating] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [locale, setLocale] = useState<Locale>("en");
+
+  useEffect(() => {
+    setLocale(getStoredLocale());
+    const onLocale = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { locale: Locale };
+      setLocale(detail.locale);
+    };
+    window.addEventListener("i18n:locale", onLocale as EventListener);
+    return () => window.removeEventListener("i18n:locale", onLocale as EventListener);
+  }, []);
 
   const handleApplyVoucher = async () => {
     if (!voucherCode.trim()) {
-      setError("Please enter a voucher code");
+      setError(translate(locale, "voucher.errors.empty"));
       return;
     }
 
     // Check if voucher is already applied
     if (appliedVouchers.some(v => v.code.toLowerCase() === voucherCode.toLowerCase())) {
-      setError("This voucher is already applied");
+      setError(translate(locale, "voucher.errors.alreadyApplied"));
       return;
     }
 
@@ -41,7 +53,7 @@ export default function VoucherInput({
 
     try {
       const result = await validateVoucher(voucherCode.trim(), orderAmount, productIds);
-      
+
       if (result.isValid && result.voucher) {
         const discountAmount = result.discountAmount || 0;
         const appliedVoucher: AppliedVoucher = {
@@ -64,15 +76,15 @@ export default function VoucherInput({
 
         onVoucherApplied(appliedVoucher);
         setVoucherCode("");
-        setSuccess(`Voucher applied! ${discountAmount > 0 ? `$${discountAmount.toFixed(2)} off` : 'Discount applied'}`);
-        
+        setSuccess(`${translate(locale, "voucher.applied")} ${discountAmount > 0 ? `$${discountAmount.toFixed(2)} ${translate(locale, "voucher.off")}` : 'Discount applied'}`);
+
         // Clear success message after 3 seconds
         setTimeout(() => setSuccess(""), 3000);
       } else {
-        setError(result.error || "Invalid voucher code");
+        setError(result.error || translate(locale, "voucher.errors.invalid"));
       }
     } catch (error) {
-      setError("Failed to validate voucher. Please try again.");
+      setError(translate(locale, "voucher.errors.failed"));
     } finally {
       setIsValidating(false);
     }
@@ -84,10 +96,10 @@ export default function VoucherInput({
 
   const getVoucherTypeLabel = (type: string) => {
     switch (type) {
-      case 'percentage': return '% OFF';
-      case 'fixed': return 'OFF';
-      case 'free_shipping': return 'FREE SHIPPING';
-      default: return 'OFF';
+      case 'percentage': return `% ${translate(locale, "voucher.off")}`;
+      case 'fixed': return translate(locale, "voucher.off");
+      case 'free_shipping': return translate(locale, "voucher.freeShipping");
+      default: return translate(locale, "voucher.off");
     }
   };
 
@@ -95,7 +107,7 @@ export default function VoucherInput({
     switch (voucher.type) {
       case 'percentage': return `${voucher.value}%`;
       case 'fixed': return `$${voucher.value}`;
-      case 'free_shipping': return 'FREE';
+      case 'free_shipping': return translate(locale, "voucher.free");
       default: return voucher.value;
     }
   };
@@ -112,7 +124,7 @@ export default function VoucherInput({
             type="text"
             value={voucherCode}
             onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
-            placeholder="Enter voucher code"
+            placeholder={translate(locale, "voucher.placeholder")}
             className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-neutral-800 dark:border-neutral-600 dark:text-white"
             disabled={isValidating}
           />
@@ -125,12 +137,12 @@ export default function VoucherInput({
           {isValidating ? (
             <>
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              Applying...
+              {translate(locale, "voucher.applying")}
             </>
           ) : (
             <>
               <Check size={16} />
-              Apply
+              {translate(locale, "voucher.apply")}
             </>
           )}
         </button>
@@ -143,7 +155,7 @@ export default function VoucherInput({
           {error}
         </div>
       )}
-      
+
       {success && (
         <div className="flex items-center gap-2 text-green-600 text-sm">
           <Check size={16} />
@@ -155,7 +167,7 @@ export default function VoucherInput({
       {appliedVouchers.length > 0 && (
         <div className="space-y-2">
           <h4 className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-            Applied Vouchers ({appliedVouchers.length})
+            {translate(locale, "voucher.appliedHeader")} ({appliedVouchers.length})
           </h4>
           {appliedVouchers.map((voucher) => (
             <div

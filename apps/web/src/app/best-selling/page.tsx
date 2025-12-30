@@ -3,6 +3,8 @@ import type { ProductCardData } from "@/types/product";
 import { apiGet } from "@/utils/api";
 import Link from "next/link";
 import CategorySelect from "@/components/best-selling/CategorySelect";
+import { cookies } from "next/headers";
+import { Locale } from "@/utils/i18n";
 
 type Product = {
   _id: string;
@@ -20,6 +22,8 @@ type SearchResponse = { status: string; data: { products: Product[]; total: numb
 
 export default async function BestSellingPage({ searchParams }: { searchParams: Promise<{ days?: string; category?: string }> }) {
   const params = await searchParams;
+  const cookieStore = await cookies();
+  const locale = (cookieStore.get("locale")?.value || "en") as Locale;
   let items: Product[] = [];
   try {
     const query: Record<string, string | number> = { limit: 48, sort: "-views" };
@@ -27,7 +31,7 @@ export default async function BestSellingPage({ searchParams }: { searchParams: 
     if (params?.category && params.category !== "Recommended") query.category = params.category;
     const res = await apiGet<SearchResponse>("/api/v1/market/products", { query });
     items = Array.isArray(res.data?.products) ? res.data.products : [];
-  } catch {}
+  } catch { }
 
   return (
     <main className="mx-auto md:w-[95%] w-full px-2 py-4">
@@ -64,7 +68,7 @@ export default async function BestSellingPage({ searchParams }: { searchParams: 
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
           {items.map((p) => (
-            <ProductCard key={p._id} product={p as unknown as ProductCardData} />
+            <ProductCard key={p._id} product={p as unknown as ProductCardData} locale={locale} />
           ))}
         </div>
       )}
@@ -80,7 +84,7 @@ async function fetchCategories(): Promise<string[]> {
     const res = await fetch(new URL(`/api/v1/market/categories`, base).toString(), { cache: "no-store" });
     const json: { status: string; data: Category[] } = await res.json();
     if (Array.isArray(json.data)) return json.data.map((c: Category) => c.name);
-  } catch {}
+  } catch { }
   return [];
 }
 

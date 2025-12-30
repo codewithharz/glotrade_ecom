@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import DualRangeSlider from "./DualRangeSlider";
 import MobileSheet from "@/components/ui/MobileSheet";
 
+import { translate, Locale } from "@/utils/i18n";
+
 type Props = {
   params: Record<string, string>;
   basePath?: string;
@@ -13,6 +15,7 @@ type Props = {
   condition?: string;
   sort?: string;
   variant: "desktop" | "mobile";
+  locale?: Locale;
 };
 
 function withParams(
@@ -41,6 +44,7 @@ export default function ProductFilters({
   condition,
   sort,
   variant,
+  locale = "en"
 }: Props) {
   const base = basePath;
   const minDefault = Number(minPrice || 0);
@@ -51,7 +55,7 @@ export default function ProductFilters({
   // Derived helpers
   const ratingMin = params["ratingMin"];
   const verifiedSeller = params["verifiedSeller"] === "true";
-  const freeShipping = params["freeShipping"] === "true";
+  const freeShipping = params["freeShippingsss"] === "true";
   const etaMaxDays = params["etaMaxDays"];
   const discountMin = params["discountMin"];
   const attrKeys = Object.keys(params).filter((k) => k.startsWith("attr_"));
@@ -84,7 +88,7 @@ export default function ProductFilters({
         name="minPrice"
         value={range.min}
         onChange={(e) => setRange({ ...range, min: Number(e.target.value) })}
-        placeholder="Min"
+        placeholder={translate(locale, "filters.min")}
         className="w-24 rounded border border-neutral-300 bg-transparent px-2 py-1 text-sm"
       />
       <span className="text-neutral-400">-</span>
@@ -93,7 +97,7 @@ export default function ProductFilters({
         name="maxPrice"
         value={range.max}
         onChange={(e) => setRange({ ...range, max: Number(e.target.value) })}
-        placeholder="Max"
+        placeholder={translate(locale, "filters.max")}
         className="w-24 rounded border border-neutral-300 bg-transparent px-2 py-1 text-sm"
       />
       {selectedCategory ? (
@@ -105,7 +109,7 @@ export default function ProductFilters({
         type="submit"
         className="rounded bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black text-sm px-3 py-1"
       >
-        Apply
+        {translate(locale, "filters.apply")}
       </button>
     </form>
   );
@@ -124,18 +128,17 @@ export default function ProductFilters({
   const conditionChips = (
     <div className="flex flex-wrap gap-2">
       {[
-        { label: "New", value: "new" },
-        { label: "Used", value: "used" },
-        { label: "Refurbished", value: "refurbished" },
+        { label: translate(locale, "condition.new"), value: "new" },
+        { label: translate(locale, "condition.used"), value: "used" },
+        { label: translate(locale, "condition.refurbished"), value: "refurbished" },
       ].map((c) => (
         <Link
           key={c.value}
           href={withParams(base, params, { condition: c.value })}
-          className={`px-3 py-1 rounded-full border text-sm ${
-            condition === c.value
-              ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black"
-              : "border-neutral-300 dark:border-neutral-700"
-          }`}
+          className={`px-3 py-1 rounded-full border text-sm ${condition === c.value
+            ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black"
+            : "border-neutral-300 dark:border-neutral-700"
+            }`}
         >
           {c.label}
         </Link>
@@ -145,7 +148,7 @@ export default function ProductFilters({
           href={withParams(base, params, { condition: undefined })}
           className="text-sm text-neutral-500 hover:underline"
         >
-          Clear
+          {translate(locale, "filters.clear")}
         </Link>
       ) : null}
     </div>
@@ -154,19 +157,18 @@ export default function ProductFilters({
   const sortChips = (
     <div className="flex flex-wrap gap-2">
       {[
-        { label: "Popular", value: "-views" },
-        { label: "Price ↑", value: "price" },
-        { label: "Price ↓", value: "-price" },
-        { label: "Newest", value: "-createdAt" },
+        { label: translate(locale, "market.sortPopular"), value: "-views" },
+        { label: translate(locale, "market.sortPriceLowHigh"), value: "price" },
+        { label: translate(locale, "market.sortPriceHighLow"), value: "-price" },
+        { label: translate(locale, "market.sortNewest"), value: "-createdAt" },
       ].map((s) => (
         <Link
           key={s.value}
           href={withParams(base, params, { sort: s.value })}
-          className={`px-3 py-1 rounded-full border text-sm ${
-            sort === s.value
-              ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black"
-              : "border-neutral-300 dark:border-neutral-700"
-          }`}
+          className={`px-3 py-1 rounded-full border text-sm ${sort === s.value
+            ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black"
+            : "border-neutral-300 dark:border-neutral-700"
+            }`}
         >
           {s.label}
         </Link>
@@ -211,7 +213,7 @@ export default function ProductFilters({
         </Link>
       ))}
       {ratingMin ? (
-        <Link href={withParams(base, params, { ratingMin: undefined })} className="text-sm text-neutral-500 hover:underline">Clear</Link>
+        <Link href={withParams(base, params, { ratingMin: undefined })} className="text-sm text-neutral-500 hover:underline">{translate(locale, "filters.clear")}</Link>
       ) : null}
     </div>
   );
@@ -219,18 +221,18 @@ export default function ProductFilters({
   // Seller / Shipping / Deals
   const sellerChips = (
     <div className="flex flex-wrap gap-2">
-      <Link href={withParams(base, params, { verifiedSeller: (!verifiedSeller).toString() })} className={`px-3 py-1 rounded-full border text-sm ${verifiedSeller ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black" : "border-neutral-300 dark:border-neutral-700"}`}>Verified seller</Link>
+      <Link href={withParams(base, params, { verifiedSeller: (!verifiedSeller).toString() })} className={`px-3 py-1 rounded-full border text-sm ${verifiedSeller ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black" : "border-neutral-300 dark:border-neutral-700"}`}>{translate(locale, "filters.verifiedSeller")}</Link>
     </div>
   );
 
   const shippingChips = (
     <div className="flex flex-wrap gap-2">
-      <Link href={withParams(base, params, { freeShipping: (!freeShipping).toString() })} className={`px-3 py-1 rounded-full border text-sm ${freeShipping ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black" : "border-neutral-300 dark:border-neutral-700"}`}>Free shipping</Link>
+      <Link href={withParams(base, params, { freeShipping: (!freeShipping).toString() })} className={`px-3 py-1 rounded-full border text-sm ${freeShipping ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black" : "border-neutral-300 dark:border-neutral-700"}`}>{translate(locale, "market.filterFreeShipping")}</Link>
       {["2", "3", "7"].map((d) => (
-        <Link key={d} href={withParams(base, params, { etaMaxDays: d })} className={`px-3 py-1 rounded-full border text-sm ${etaMaxDays === d ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black" : "border-neutral-300 dark:border-neutral-700"}`}>≤ {d} days</Link>
+        <Link key={d} href={withParams(base, params, { etaMaxDays: d })} className={`px-3 py-1 rounded-full border text-sm ${etaMaxDays === d ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black" : "border-neutral-300 dark:border-neutral-700"}`}>≤ {d} {translate(locale, "filters.days")}</Link>
       ))}
       {etaMaxDays ? (
-        <Link href={withParams(base, params, { etaMaxDays: undefined })} className="text-sm text-neutral-500 hover:underline">Clear ETA</Link>
+        <Link href={withParams(base, params, { etaMaxDays: undefined })} className="text-sm text-neutral-500 hover:underline">{translate(locale, "filters.clearETA")}</Link>
       ) : null}
     </div>
   );
@@ -238,10 +240,10 @@ export default function ProductFilters({
   const dealsChips = (
     <div className="flex flex-wrap gap-2">
       {["10", "20", "30", "50"].map((d) => (
-        <Link key={d} href={withParams(base, params, { discountMin: d })} className={`px-3 py-1 rounded-full border text-sm ${discountMin === d ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black" : "border-neutral-300 dark:border-neutral-700"}`}>-{d}% or more</Link>
+        <Link key={d} href={withParams(base, params, { discountMin: d })} className={`px-3 py-1 rounded-full border text-sm ${discountMin === d ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black" : "border-neutral-300 dark:border-neutral-700"}`}>-{d}% {translate(locale, "filters.percentOff")}</Link>
       ))}
       {discountMin ? (
-        <Link href={withParams(base, params, { discountMin: undefined })} className="text-sm text-neutral-500 hover:underline">Clear</Link>
+        <Link href={withParams(base, params, { discountMin: undefined })} className="text-sm text-neutral-500 hover:underline">{translate(locale, "filters.clear")}</Link>
       ) : null}
     </div>
   );
@@ -275,38 +277,38 @@ export default function ProductFilters({
     return (
       <>
         <div>
-          <div className="text-sm font-semibold mb-3">Price</div>
+          <div className="text-sm font-semibold mb-3">{translate(locale, "filters.price")}</div>
           {slider}
           <div className="mt-2">{priceForm}</div>
           <div className="mt-2">{presetChips}</div>
         </div>
         <div>
-          <div className="text-sm font-semibold mb-3">Condition</div>
+          <div className="text-sm font-semibold mb-3">{translate(locale, "filters.condition")}</div>
           {conditionChips}
         </div>
         <div>
-          <div className="text-sm font-semibold mb-3">Rating</div>
+          <div className="text-sm font-semibold mb-3">{translate(locale, "filters.rating")}</div>
           {ratingChips}
         </div>
         <div>
-          <div className="text-sm font-semibold mb-3">Sort</div>
+          <div className="text-sm font-semibold mb-3">{translate(locale, "filters.sort")}</div>
           {sortChips}
         </div>
         <div>
-          <div className="text-sm font-semibold mb-3">Seller</div>
+          <div className="text-sm font-semibold mb-3">{translate(locale, "filters.seller")}</div>
           {sellerChips}
         </div>
         <div>
-          <div className="text-sm font-semibold mb-3">Shipping</div>
+          <div className="text-sm font-semibold mb-3">{translate(locale, "filters.shipping")}</div>
           {shippingChips}
         </div>
         <div>
-          <div className="text-sm font-semibold mb-3">Deals</div>
+          <div className="text-sm font-semibold mb-3">{translate(locale, "filters.deals")}</div>
           {dealsChips}
         </div>
         {attributesUI}
         <div className="pt-2">
-          <Link href={clearAllHref} className="text-sm text-neutral-500 hover:underline">Clear all{activeCount ? ` (${activeCount})` : ""}</Link>
+          <Link href={clearAllHref} className="text-sm text-neutral-500 hover:underline">{translate(locale, "filters.clearAll")}{activeCount ? ` (${activeCount})` : ""}</Link>
         </div>
       </>
     );
@@ -316,36 +318,36 @@ export default function ProductFilters({
   return (
     <>
       <div className="flex items-center gap-2 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <button onClick={() => setOpen("price")} className="bg-neutral-100 dark:bg-neutral-900 rounded-full px-3 py-1.5 text-sm font-medium">Price</button>
-        <button onClick={() => setOpen("sort")} className="bg-neutral-100 dark:bg-neutral-900 rounded-full px-3 py-1.5 text-sm font-medium">Sort</button>
-        <button onClick={() => setOpen("condition")} className="bg-neutral-100 dark:bg-neutral-900 rounded-full px-3 py-1.5 text-sm font-medium">Condition</button>
-        <Link href={clearAllHref} className="text-sm text-neutral-500 hover:underline ml-auto">Clear all{activeCount ? ` (${activeCount})` : ""}</Link>
+        <button onClick={() => setOpen("price")} className="bg-neutral-100 dark:bg-neutral-900 rounded-full px-3 py-1.5 text-sm font-medium">{translate(locale, "filters.price")}</button>
+        <button onClick={() => setOpen("sort")} className="bg-neutral-100 dark:bg-neutral-900 rounded-full px-3 py-1.5 text-sm font-medium">{translate(locale, "filters.sort")}</button>
+        <button onClick={() => setOpen("condition")} className="bg-neutral-100 dark:bg-neutral-900 rounded-full px-3 py-1.5 text-sm font-medium">{translate(locale, "filters.condition")}</button>
+        <Link href={clearAllHref} className="text-sm text-neutral-500 hover:underline ml-auto">{translate(locale, "filters.clearAll")}{activeCount ? ` (${activeCount})` : ""}</Link>
       </div>
 
-      <MobileSheet open={open === "price"} onClose={() => setOpen(null)} title="Price">
+      <MobileSheet open={open === "price"} onClose={() => setOpen(null)} title={translate(locale, "filters.price")}>
         {slider}
         <div className="mt-3">{priceForm}</div>
         <div className="mt-3">{presetChips}</div>
       </MobileSheet>
-      <MobileSheet open={open === "sort"} onClose={() => setOpen(null)} title="Sort">
+      <MobileSheet open={open === "sort"} onClose={() => setOpen(null)} title={translate(locale, "filters.sort")}>
         {sortChips}
       </MobileSheet>
-      <MobileSheet open={open === "condition"} onClose={() => setOpen(null)} title="Condition">
+      <MobileSheet open={open === "condition"} onClose={() => setOpen(null)} title={translate(locale, "filters.condition")}>
         {conditionChips}
         <div className="mt-4">
-          <div className="text-sm font-semibold mb-3">Rating</div>
+          <div className="text-sm font-semibold mb-3">{translate(locale, "filters.rating")}</div>
           {ratingChips}
         </div>
         <div className="mt-4">
-          <div className="text-sm font-semibold mb-3">Seller</div>
+          <div className="text-sm font-semibold mb-3">{translate(locale, "filters.seller")}</div>
           {sellerChips}
         </div>
         <div className="mt-4">
-          <div className="text-sm font-semibold mb-3">Shipping</div>
+          <div className="text-sm font-semibold mb-3">{translate(locale, "filters.shipping")}</div>
           {shippingChips}
         </div>
         <div className="mt-4">
-          <div className="text-sm font-semibold mb-3">Deals</div>
+          <div className="text-sm font-semibold mb-3">{translate(locale, "filters.deals")}</div>
           {dealsChips}
         </div>
       </MobileSheet>

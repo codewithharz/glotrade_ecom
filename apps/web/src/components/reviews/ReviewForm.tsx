@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Star, X, Send, CheckCircle } from "lucide-react";
 import { ReviewFormData } from "@/types/review";
 import { createProductReview, updateProductReview } from "@/utils/reviewApi";
+import { translate, Locale } from "@/utils/i18n";
 
 interface ReviewFormProps {
   productId: string;
@@ -18,15 +19,17 @@ interface ReviewFormProps {
     orderId: string;
     isVerifiedPurchase: boolean;
   };
+  locale: Locale;
 }
 
-export default function ReviewForm({ 
-  productId, 
-  productTitle, 
-  onReviewSubmitted, 
+export default function ReviewForm({
+  productId,
+  productTitle,
+  onReviewSubmitted,
   onClose,
   existingReview,
-  orderInfo
+  orderInfo,
+  locale
 }: ReviewFormProps) {
   const [formData, setFormData] = useState<ReviewFormData>({
     rating: existingReview?.rating || 0,
@@ -43,14 +46,14 @@ export default function ReviewForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (formData.rating === 0) {
-      setError("Please select a rating");
+      setError(translate(locale, "reviews.form.ratingError"));
       return;
     }
 
     if (!formData.comment.trim()) {
-      setError("Please write a review comment");
+      setError(translate(locale, "reviews.form.commentError"));
       return;
     }
 
@@ -71,11 +74,11 @@ export default function ReviewForm({
           comment: formData.comment.trim()
         });
       }
-      
+
       onReviewSubmitted();
       onClose();
     } catch (err: any) {
-      setError(err.message || "Failed to submit review");
+      setError(err.message || translate(locale, "reviews.form.submitError"));
     } finally {
       setIsSubmitting(false);
     }
@@ -89,7 +92,7 @@ export default function ReviewForm({
         {/* Header */}
         <div className="flex items-center justify-between p-3 sm:p-4 border-b border-neutral-200 dark:border-neutral-800">
           <h3 className="text-base sm:text-lg font-semibold text-neutral-800 dark:text-neutral-100">
-            {isEditing ? "Edit Review" : "Write a Review"}
+            {isEditing ? translate(locale, "reviews.form.titleEdit") : translate(locale, "reviews.form.titleWrite")}
           </h3>
           <button
             onClick={onClose}
@@ -103,10 +106,10 @@ export default function ReviewForm({
         <form onSubmit={handleSubmit} className="p-3 sm:p-4 space-y-3 sm:space-y-4">
           {/* Product Info */}
           <div className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
-            Reviewing: <span className="font-medium text-neutral-800 dark:text-neutral-200">{productTitle}</span>
+            {translate(locale, "reviews.form.reviewing")} <span className="font-medium text-neutral-800 dark:text-neutral-200">{productTitle}</span>
             {orderInfo && (
               <div className="mt-2 ml-3 sm:ml-0 inline-flex items-center gap-1.5 sm:gap-2 rounded-full bg-emerald-100 text-emerald-800 px-2.5 sm:px-3 py-1 text-[10px] sm:text-xs font-medium">
-                <CheckCircle size={10} className="sm:w-3 sm:h-3" /> Verified Purchase • Order #{orderInfo.orderId.slice(-6)}
+                <CheckCircle size={10} className="sm:w-3 sm:h-3" /> {translate(locale, "reviews.form.verifiedPurchase")} • {translate(locale, "reviews.form.order")} {orderInfo.orderId.slice(-6)}
               </div>
             )}
           </div>
@@ -114,7 +117,7 @@ export default function ReviewForm({
           {/* Rating */}
           <div>
             <label className="block text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-              Rating *
+              {translate(locale, "reviews.form.ratingLabel")} *
             </label>
             <div className="flex items-center gap-1 sm:gap-1">
               {[1, 2, 3, 4, 5].map((star) => (
@@ -128,11 +131,10 @@ export default function ReviewForm({
                 >
                   <Star
                     size={20}
-                    className={`sm:w-6 sm:h-6 ${
-                      star <= (hoveredRating || formData.rating)
+                    className={`sm:w-6 sm:h-6 ${star <= (hoveredRating || formData.rating)
                         ? "fill-yellow-400 text-yellow-400"
                         : "text-neutral-300 dark:text-neutral-600"
-                    }`}
+                      }`}
                   />
                 </button>
               ))}
@@ -140,11 +142,11 @@ export default function ReviewForm({
             <div className="text-[10px] sm:text-xs text-neutral-500 mt-1">
               {formData.rating > 0 && (
                 <span className="text-yellow-600">
-                  {formData.rating === 1 && "Poor"}
-                  {formData.rating === 2 && "Fair"}
-                  {formData.rating === 3 && "Good"}
-                  {formData.rating === 4 && "Very Good"}
-                  {formData.rating === 5 && "Excellent"}
+                  {formData.rating === 1 && translate(locale, "reviews.rating.poor")}
+                  {formData.rating === 2 && translate(locale, "reviews.rating.fair")}
+                  {formData.rating === 3 && translate(locale, "reviews.rating.good")}
+                  {formData.rating === 4 && translate(locale, "reviews.rating.veryGood")}
+                  {formData.rating === 5 && translate(locale, "reviews.rating.excellent")}
                 </span>
               )}
             </div>
@@ -153,12 +155,12 @@ export default function ReviewForm({
           {/* Comment */}
           <div>
             <label className="block text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-              Review Comment *
+              {translate(locale, "reviews.form.commentLabel")} *
             </label>
             <textarea
               value={formData.comment}
               onChange={(e) => setFormData(prev => ({ ...prev, comment: e.target.value }))}
-              placeholder="Share your experience with this product..."
+              placeholder={translate(locale, "reviews.form.placeholder")}
               rows={4}
               className="w-full px-2.5 sm:px-3 py-2 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 placeholder-neutral-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               required
@@ -179,7 +181,7 @@ export default function ReviewForm({
               onClick={onClose}
               className="flex-1 px-3 sm:px-4 py-2.5 sm:py-2 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-700 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
             >
-              Cancel
+              {translate(locale, "reviews.form.cancel")}
             </button>
             <button
               type="submit"
@@ -189,12 +191,12 @@ export default function ReviewForm({
               {isSubmitting ? (
                 <>
                   <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Submitting...
+                  {translate(locale, "reviews.form.submitting")}
                 </>
               ) : (
                 <>
                   <Send size={14} className="sm:w-4 sm:h-4" />
-                  {isEditing ? "Update Review" : "Submit Review"}
+                  {isEditing ? translate(locale, "reviews.form.update") : translate(locale, "reviews.form.submit")}
                 </>
               )}
             </button>

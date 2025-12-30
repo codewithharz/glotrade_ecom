@@ -2,6 +2,8 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import { translate, Locale } from "@/utils/i18n";
+
 type Category = { _id: string; name: string; slug: string; parentId?: string };
 
 function withParams(
@@ -26,11 +28,13 @@ export default function MobileCategoryBrowser({
   params,
   selectedCategoryName,
   basePath = "/marketplace",
+  locale
 }: {
   categories: Category[];
   params: Record<string, string>;
   selectedCategoryName?: string;
   basePath?: string;
+  locale: Locale;
 }) {
   const level1 = useMemo(() => categories.filter((c) => !c.parentId), [categories]);
   const childrenMap = useMemo(() => {
@@ -86,10 +90,9 @@ export default function MobileCategoryBrowser({
   };
 
   const pill = (active: boolean) =>
-    `px-3 py-1.5 rounded-full border text-sm whitespace-nowrap ${
-      active
-        ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black"
-        : "border-neutral-300 dark:border-neutral-700"
+    `px-3 py-1.5 rounded-full border text-sm whitespace-nowrap ${active
+      ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black"
+      : "border-neutral-300 dark:border-neutral-700"
     }`;
 
   return (
@@ -104,7 +107,7 @@ export default function MobileCategoryBrowser({
           className={pill(!selectedCategoryName)}
           onClick={() => { setL1(undefined); setL2(undefined); }}
         >
-          All
+          {translate(locale, "market.all")}
         </Link>
         {level1.map((c) => (
           <button key={c._id} onClick={() => { setL1(c); setL2(undefined); }} className={pill(l1?.slug === c.slug)}>
@@ -124,7 +127,7 @@ export default function MobileCategoryBrowser({
             className={pill(!selectedCategoryName)}
             onClick={() => { setL2(undefined); }}
           >
-            All
+            {translate(locale, "market.all")}
           </Link>
           {level2.map((c) => (
             <button key={c._id} onClick={() => setL2(c)} className={pill(l2?.slug === c.slug)}>
@@ -144,7 +147,7 @@ export default function MobileCategoryBrowser({
             href={withParams(basePath, params, { category: undefined })}
             className={pill(!selectedCategoryName)}
           >
-            All
+            {translate(locale, "market.all")}
           </Link>
           {level3.map((c) => (
             <Link

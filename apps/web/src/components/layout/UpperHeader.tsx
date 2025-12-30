@@ -1,25 +1,38 @@
 "use client";
 import Link from "next/link";
 import { Globe, HelpCircle, ShieldCheck, X } from "lucide-react";
-
-import { useEffect, useState } from "react";
-import { setStoredLocale, translate } from "@/utils/i18n";
+import { useEffect, useState, useRef } from "react";
+import { setStoredLocale, translate, getStoredLocale, Locale, languageNames, locales } from "@/utils/i18n";
 import { useRouter } from "next/navigation";
 
 export default function UpperHeader() {
   const router = useRouter();
-  const [locale, setLocale] = useState<"en" | "fr">("en");
+  const [locale, setLocale] = useState<Locale>("en");
+  const [showLangMenu, setShowLangMenu] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+    // Initial load
+    setLocale(getStoredLocale());
+
     const onLocale = (e: Event) => {
-      const detail = (e as CustomEvent).detail as { locale: "en" | "fr" };
+      const detail = (e as CustomEvent).detail as { locale: Locale };
       setLocale(detail.locale);
     };
     window.addEventListener("i18n:locale", onLocale as EventListener);
-    return () =>
+
+    return () => {
       window.removeEventListener("i18n:locale", onLocale as EventListener);
+    };
   }, []);
+
+  if (!mounted) {
+    return (
+      <div className="sticky top-0 z-[60] w-full bg-[#2EA5FF] h-[33px]" />
+    );
+  }
 
   const handleGDIPClick = (e: React.MouseEvent) => {
     const userData = localStorage.getItem("afritrade:user") || localStorage.getItem("user");
@@ -29,11 +42,17 @@ export default function UpperHeader() {
     }
   };
 
+  const handleLangChange = (newLocale: Locale) => {
+    setStoredLocale(newLocale);
+    setShowLangMenu(false);
+    router.refresh();
+  };
+
   return (
-    <div className="flex sticky top-0 z-[60] w-full bg-[#2EA5FF] shadow-sm border-b overflow-x-auto no-scrollbar">
+    <div className="sticky top-0 z-[60] w-full bg-[#2EA5FF] shadow-sm border-b">
       <div className="w-[95%] lg:w-[95%] mx-auto flex justify-between items-center gap-4 py-1.5 px-3 md:px-0">
         <div className="hidden sm:flex items-center gap-3 text-white text-[10px] md:text-sm font-semibold whitespace-nowrap">
-          <span>Need help? Call Us:</span>
+          <span>{translate(locale, "header.needHelp")} {translate(locale, "header.callUs")}</span>
           <span>(+234)902-900-4712</span>
         </div>
 
@@ -51,12 +70,49 @@ export default function UpperHeader() {
           >
             <HelpCircle size={16} className="md:w-[18px] md:h-[18px]" /> {translate(locale, "navSupport")}
           </Link>
-          <button
-            onClick={() => setStoredLocale(locale === "en" ? "fr" : "en")}
-            className="inline-flex items-center gap-1.5 whitespace-nowrap transition-all hover:scale-105"
-          >
-            <Globe size={16} className="md:w-[18px] md:h-[18px]" /> {translate(locale, "language")}
-          </button>
+
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowLangMenu(!showLangMenu)}
+              className="inline-flex items-center gap-1.5 whitespace-nowrap transition-all hover:scale-105 bg-white/10 px-2 py-1 rounded-lg"
+            >
+              <Globe size={16} className="md:w-[18px] md:h-[18px]" />
+              <span>{languageNames[locale]}</span>
+              <svg className={`w-3 h-3 transition-transform ${showLangMenu ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {showLangMenu && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setShowLangMenu(false)}
+                />
+                <div
+                  className="absolute right-0 mt-2 w-40 bg-white dark:bg-neutral-900 rounded-xl shadow-xl border border-neutral-100 dark:border-neutral-800 py-1 z-20 overflow-hidden animate-in fade-in zoom-in duration-150 origin-top-right"
+                >
+                  {locales.map((loc) => (
+                    <button
+                      key={loc}
+                      type="button"
+                      onClick={() => handleLangChange(loc)}
+                      className={`w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center justify-between ${locale === loc
+                        ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 font-bold'
+                        : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800'
+                        }`}
+                    >
+                      {languageNames[loc]}
+                      {locale === loc && (
+                        <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 

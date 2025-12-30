@@ -1,11 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
+import { translate, Locale } from "@/utils/i18n";
 
 type Props = {
   productId: string;
   className?: string;
   minQty?: number;
   maxQty?: number;
+  locale: Locale;
 };
 
 function readCart(): string[] {
@@ -18,7 +20,7 @@ function readCart(): string[] {
 
 // No write here – Qty select shouldn't commit to cart. AddToCartControl is responsible for writing.
 
-export default function QtySelectControl({ productId, className, minQty = 1, maxQty = 5 }: Props) {
+export default function QtySelectControl({ productId, className, minQty = 1, maxQty = 5, locale }: Props) {
   const [qty, setQty] = useState<number>(0);
   const MIN_QTY = Math.max(1, Number(minQty));
   const MAX_QTY = Math.max(MIN_QTY, Number(maxQty));
@@ -52,7 +54,7 @@ export default function QtySelectControl({ productId, className, minQty = 1, max
   };
 
   if (MAX_QTY <= 0) {
-    return <div className="text-sm text-rose-600">Out of stock</div>;
+    return <div className="text-sm text-rose-600">{translate(locale, "product.outOfStock")}</div>;
   }
 
   return (
@@ -66,7 +68,7 @@ export default function QtySelectControl({ productId, className, minQty = 1, max
           <option key={n} value={n}>{n}</option>
         ))}
       </select>
-      <span className="text-sm text-neutral-500">Added</span>
+      <span className="text-sm text-neutral-500">{translate(locale, "product.added")}</span>
     </div>
   );
 }

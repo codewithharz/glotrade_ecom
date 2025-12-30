@@ -6,6 +6,7 @@ import { apiPost } from "@/utils/api";
 import { toast } from "@/components/common/Toast";
 import { RequireGuest } from "@/components/auth/Guards";
 import { Lock, Eye, EyeOff, AlertCircle, Loader2, ArrowLeft } from "lucide-react";
+import { translate, getStoredLocale } from "@/utils/i18n";
 
 function ResetForm() {
     const params = useSearchParams();
@@ -17,27 +18,28 @@ function ResetForm() {
     const [showConfirm, setShowConfirm] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const locale = getStoredLocale();
 
     useEffect(() => {
         if (!token) {
-            toast("Missing token", "error");
+            toast(translate(locale, "auth.reset.missingToken"), "error");
         }
-    }, [token]);
+    }, [token, locale]);
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
 
         if (!token) {
-            setError("Missing token");
+            setError(translate(locale, "auth.reset.missingToken"));
             return;
         }
         if (pwd.length < 6) {
-            setError("Password must be at least 6 characters");
+            setError(translate(locale, "auth.reset.passwordTooShort"));
             return;
         }
         if (pwd !== confirm) {
-            setError("Passwords do not match");
+            setError(translate(locale, "auth.reset.passwordMismatch"));
             return;
         }
 
@@ -45,11 +47,11 @@ function ResetForm() {
 
         try {
             await apiPost("/api/v1/auth/reset-password", { token, newPassword: pwd });
-            toast("Password reset successful", "success");
+            toast(translate(locale, "auth.reset.toastSuccess"), "success");
             setTimeout(() => router.replace("/auth/login"), 1500);
         } catch (e: any) {
-            setError(e.message || "Reset failed");
-            toast(e.message || "Reset failed", "error");
+            setError(e.message || translate(locale, "auth.reset.failed"));
+            toast(e.message || translate(locale, "auth.reset.failed"), "error");
         } finally {
             setIsLoading(false);
         }
@@ -62,9 +64,9 @@ function ResetForm() {
                     {/* Header */}
                     <div className="text-center mb-8">
                         <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent mb-2">
-                            Reset Password
+                            {translate(locale, "auth.reset.title")}
                         </h1>
-                        <p className="text-neutral-600 dark:text-neutral-400">Enter your new password</p>
+                        <p className="text-neutral-600 dark:text-neutral-400">{translate(locale, "auth.reset.subtitle")}</p>
                     </div>
 
                     {/* Card */}
@@ -73,7 +75,7 @@ function ResetForm() {
                             {/* New Password Input */}
                             <div>
                                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                                    New Password
+                                    {translate(locale, "auth.reset.newPasswordLabel")}
                                 </label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -84,7 +86,7 @@ function ResetForm() {
                                         required
                                         value={pwd}
                                         onChange={(e) => setPwd(e.target.value)}
-                                        placeholder="Enter new password"
+                                        placeholder={translate(locale, "auth.reset.newPasswordPlaceholder")}
                                         className="w-full pl-10 pr-12 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
                                     />
                                     <button
@@ -100,7 +102,7 @@ function ResetForm() {
                             {/* Confirm Password Input */}
                             <div>
                                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                                    Confirm Password
+                                    {translate(locale, "auth.reset.confirmPasswordLabel")}
                                 </label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -111,7 +113,7 @@ function ResetForm() {
                                         required
                                         value={confirm}
                                         onChange={(e) => setConfirm(e.target.value)}
-                                        placeholder="Confirm new password"
+                                        placeholder={translate(locale, "auth.reset.confirmPasswordPlaceholder")}
                                         className="w-full pl-10 pr-12 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
                                     />
                                     <button
@@ -141,10 +143,10 @@ function ResetForm() {
                                 {isLoading ? (
                                     <>
                                         <Loader2 className="h-5 w-5 animate-spin" />
-                                        <span>Resetting...</span>
+                                        <span>{translate(locale, "auth.reset.resetting")}</span>
                                     </>
                                 ) : (
-                                    <span>Reset Password</span>
+                                    <span>{translate(locale, "auth.reset.resetButton")}</span>
                                 )}
                             </button>
                         </form>
@@ -153,7 +155,7 @@ function ResetForm() {
                         <div className="mt-6 text-center">
                             <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
                                 <ArrowLeft className="h-4 w-4" />
-                                Back to Sign In
+                                {translate(locale, "auth.forgot.backToSignIn")}
                             </Link>
                         </div>
                     </div>
@@ -164,8 +166,9 @@ function ResetForm() {
 }
 
 export default function ResetPage() {
+    const locale = getStoredLocale();
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">{translate(locale, "common.loading")}</div>}>
             <ResetForm />
         </Suspense>
     );

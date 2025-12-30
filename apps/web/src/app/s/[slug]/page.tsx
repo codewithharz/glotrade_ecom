@@ -1,4 +1,6 @@
 import ProductCard from "@/app/marketplace/ProductCard";
+import { cookies } from "next/headers";
+import { Locale } from "@/utils/i18n";
 import type { ProductCardData } from "@/types/product";
 import { apiGet } from "@/utils/api";
 import ProductFilters from "@/components/filters/ProductFilters";
@@ -28,9 +30,11 @@ type ProductsResponse = { status: string; data: Product[] };
 type Category = { _id: string; name: string; slug: string; parentId?: string };
 type CategoriesResponse = { status: string; data: Category[] };
 
-export default async function StorefrontPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<Record<string,string>> }) {
+export default async function StorefrontPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<Record<string, string>> }) {
   const { slug } = await params;
   const sp = await searchParams;
+  const cookieStore = await cookies();
+  const locale = (cookieStore.get("locale")?.value || "en") as Locale;
 
   const selectedCategory = sp?.category;
   const minPrice = sp?.minPrice;
@@ -60,13 +64,13 @@ export default async function StorefrontPage({ params, searchParams }: { params:
     <div className="w-full max-w-none mx-auto">
       <StoreHeader slug={slug} seller={seller} itemsCount={itemsCount} />
       <div className="px-4 md:px-8 py-6">
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
-        <aside className="hidden lg:block">
-          <div className="sticky top-20 space-y-6">
-            {/* <div className="rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
+          <aside className="hidden lg:block">
+            <div className="sticky top-20 space-y-6">
+              {/* <div className="rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
               <div className="flex items-center gap-3"> */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                {/* <img src={seller?.logoUrl || 'https://placehold.co/80x80?text=Logo'} alt="logo" className="h-12 w-12 rounded object-cover" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              {/* <img src={seller?.logoUrl || 'https://placehold.co/80x80?text=Logo'} alt="logo" className="h-12 w-12 rounded object-cover" />
                 <div>
                   <div className="font-semibold">{seller?.name || slug}</div>
                   <div className="text-xs text-neutral-500">{seller?.country || ''}</div>
@@ -80,32 +84,32 @@ export default async function StorefrontPage({ params, searchParams }: { params:
               </div>
             </div> */}
 
-            <DesktopCategoryTree categories={categories} params={sp} selectedCategoryName={selectedCategory} basePath={`/s/${slug}`} />
+              <DesktopCategoryTree categories={categories} params={sp} selectedCategoryName={selectedCategory} basePath={`/s/${slug}`} locale={locale} />
 
-            {/* Reuse marketplace filters, but scoped to this seller via query param handling on API side (soon). */}
-            <ProductFilters basePath={`/s/${slug}`} params={sp} selectedCategory={sp?.category} minPrice={sp?.minPrice} maxPrice={sp?.maxPrice} condition={sp?.condition} sort={sp?.sort} variant="desktop" />
-          </div>
-        </aside>
-
-        <main>
-          <DesktopQuickChips params={sp} basePath={`/s/${slug}`} />
-          <div className="lg:hidden mb-4 space-y-3 sticky top-16 z-20 bg-white dark:bg-neutral-950 py-2">
-            <MobileCategoryBrowser categories={categories} params={sp} selectedCategoryName={selectedCategory} basePath={`/s/${slug}`} />
-            <MobileQuickChips params={sp} basePath={`/s/${slug}`} />
-            <ProductFilters basePath={`/s/${slug}`} params={sp} selectedCategory={selectedCategory} minPrice={minPrice} maxPrice={maxPrice} condition={condition} sort={sort} variant="mobile" />
-          </div>
-
-          {products.length === 0 ? (
-            <div className="text-sm text-neutral-500">No products yet.</div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-              {products.map((p) => (
-                <ProductCard key={p._id} product={p as unknown as ProductCardData} />
-              ))}
+              {/* Reuse marketplace filters, but scoped to this seller via query param handling on API side (soon). */}
+              <ProductFilters basePath={`/s/${slug}`} params={sp} selectedCategory={sp?.category} minPrice={sp?.minPrice} maxPrice={sp?.maxPrice} condition={sp?.condition} sort={sp?.sort} locale={locale} variant="desktop" />
             </div>
-          )}
-        </main>
-      </div>
+          </aside>
+
+          <main>
+            <DesktopQuickChips params={sp} basePath={`/s/${slug}`} locale={locale} />
+            <div className="lg:hidden mb-4 space-y-3 sticky top-16 z-20 bg-white dark:bg-neutral-950 py-2">
+              <MobileCategoryBrowser categories={categories} params={sp} selectedCategoryName={selectedCategory} basePath={`/s/${slug}`} locale={locale} />
+              <MobileQuickChips params={sp} basePath={`/s/${slug}`} locale={locale} />
+              <ProductFilters basePath={`/s/${slug}`} params={sp} selectedCategory={selectedCategory} minPrice={minPrice} maxPrice={maxPrice} condition={condition} sort={sort} locale={locale} variant="mobile" />
+            </div>
+
+            {products.length === 0 ? (
+              <div className="text-sm text-neutral-500">No products yet.</div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+                {products.map((p) => (
+                  <ProductCard key={p._id} product={p as unknown as ProductCardData} locale={locale} />
+                ))}
+              </div>
+            )}
+          </main>
+        </div>
       </div>
     </div>
   );

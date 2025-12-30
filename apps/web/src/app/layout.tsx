@@ -93,18 +93,37 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+import { NextIntlClientProvider } from 'next-intl';
+import { cookies } from "next/headers";
+import { defaultLocale, isRTLStatus, Locale } from "@/utils/i18n";
+import en from "../i18n/en.json";
+import fr from "../i18n/fr.json";
+import es from "../i18n/es.json";
+import zh from "../i18n/zh.json";
+import ar from "../i18n/ar.json";
+import ha from "../i18n/ha.json";
+
+const messagesMap = { en, fr, es, zh, ar, ha };
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const locale = (cookieStore.get("locale")?.value as Locale) || defaultLocale;
+  const isRTL = isRTLStatus[locale];
+  const messages = messagesMap[locale] || en;
+
   return (
-    <html lang="en">
+    <html lang={locale} dir={isRTL ? "rtl" : "ltr"}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} antialiased`}
       >
-        <ToastHost />
-        <LayoutWrapper>{children}</LayoutWrapper>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <ToastHost />
+          <LayoutWrapper>{children}</LayoutWrapper>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

@@ -19,14 +19,14 @@ import UserMenu from "@/components/layout/UserMenu";
 import NotificationBell from "./NotificationBell";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { getStoredLocale, setStoredLocale, translate } from "@/utils/i18n";
+import { getStoredLocale, Locale, translate } from "@/utils/i18n";
 import { fetchCategories, ICategory } from "@/utils/categoryApi";
 
 export default function Header() {
   const [cartCount, setCartCount] = useState<number>(0);
   const [wishCount, setWishCount] = useState<number>(0);
   const [isDark, setIsDark] = useState<boolean>(false);
-  const [locale, setLocale] = useState<"en" | "fr">("en");
+  const [locale, setLocale] = useState<Locale>("en");
   const [userRole, setUserRole] = useState<string>("guest");
   const [showMobileSearch, setShowMobileSearch] = useState<boolean>(true);
 
@@ -37,15 +37,20 @@ export default function Header() {
       if (cartRaw) setCartCount(JSON.parse(cartRaw).length);
       const wishRaw = localStorage.getItem("wishlist");
       if (wishRaw) setWishCount(JSON.parse(wishRaw).length);
-      const storedTheme = localStorage.getItem("theme");
-      const prefersDark =
-        window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const dark = storedTheme ? storedTheme === "dark" : prefersDark;
-      document.documentElement.classList.toggle("dark", dark);
-      setIsDark(dark);
-      const loc = getStoredLocale();
-      setLocale(loc);
+
+      // const storedTheme = localStorage.getItem("theme");
+      // const prefersDark =
+      //   window.matchMedia &&
+      //   window.matchMedia("(prefers-color-scheme: dark)").matches;
+      // const dark = storedTheme ? storedTheme === "dark" : prefersDark;
+      // document.documentElement.classList.toggle("dark", dark);
+      // setIsDark(dark);
+
+      // Force light mode
+      localStorage.setItem("theme", "light");
+      document.documentElement.classList.remove("dark");
+      setIsDark(false);
+      setLocale(getStoredLocale());
 
       // Detect user role from localStorage
       const userData =
@@ -94,7 +99,7 @@ export default function Header() {
 
   useEffect(() => {
     const onLocale = (e: Event) => {
-      const detail = (e as CustomEvent).detail as { locale: "en" | "fr" };
+      const detail = (e as CustomEvent).detail as { locale: Locale };
       setLocale(detail.locale);
     };
     window.addEventListener("i18n:locale", onLocale as EventListener);
@@ -146,7 +151,7 @@ export default function Header() {
   };
 
   return (
-    <header className={`sticky top-0 z-50 w-full bg-[#2EA5FF] shadow-sm`}>
+    <header className={`sticky top-[33px] z-50 w-full bg-[#2EA5FF] shadow-sm`}>
       <div className="mx-auto w-[95%] px-3 md:px-4">
         <div className="flex items-center gap-3 md:gap-5 py-1">
           <Link href="/" className="flex items-center gap-2">
@@ -173,7 +178,7 @@ export default function Header() {
               className="hidden md:flex items-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors"
             >
               <span>⚡</span>
-              Admin Panel
+              {translate(locale, "header.adminPanel")}
             </Link>
           )}
 
@@ -184,7 +189,7 @@ export default function Header() {
                 href="/dashboard"
                 className="hover:underline inline-flex items-center gap-1.5"
               >
-                <LayoutDashboard size={16} /> Dashboard
+                <LayoutDashboard size={16} /> {translate(locale, "header.dashboard")}
               </Link>
             )}
             {/* Coming soon */}
@@ -193,7 +198,7 @@ export default function Header() {
                 href="/profile/wallet"
                 className="hover:underline inline-flex items-center gap-1.5"
               >
-                <Wallet size={16} /> Wallet
+                <Wallet size={16} /> {translate(locale, "header.wallet")}
               </Link>
             )}
             <Link
@@ -203,7 +208,7 @@ export default function Header() {
               <ThumbsUp size={16} /> {translate(locale, "navBestSelling")}
             </Link>
             {/* Smart Categories dropdown (3-level with hover) */}
-            <HeaderSmartCategories />
+            <HeaderSmartCategories locale={locale} />
           </nav>
 
           {/* Mobile actions: simplified layout */}
@@ -234,20 +239,13 @@ export default function Header() {
               )}
             </Link>
             <NotificationBell className="text-white hover:text-white/80" />
-            <button
+            {/* <button
               aria-label="Toggle theme"
               onClick={toggleTheme}
               className="p-2 rounded-md hover:bg-white/10"
             >
               {isDark ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-            <button
-              aria-label="Toggle language"
-              onClick={() => setStoredLocale(locale === "en" ? "fr" : "en")}
-              className="p-2 rounded-md hover:bg-white/10"
-            >
-              <Globe size={20} />
-            </button>
+            </button> */}
           </div>
 
           {/* Search (desktop) */}
@@ -293,13 +291,13 @@ export default function Header() {
           <div className="hidden lg:flex items-center gap-3 text-white text-sm font-semibold">
             <UserMenu role={userRole as any} />
 
-            <button
+            {/* <button
               onClick={toggleTheme}
               className="p-2 rounded-md hover:bg-white/10"
               aria-label="Toggle theme"
             >
               {isDark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
+            </button> */}
             {/* Notification Bell */}
             <NotificationBell className="text-white hover:text-white/80" />
             {/* Single wishlist icon link (no duplicate text link) */}
@@ -364,7 +362,7 @@ export default function Header() {
   );
 }
 
-function HeaderSmartCategories() {
+function HeaderSmartCategories({ locale }: { locale: Locale }) {
   const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [hoveredL1, setHoveredL1] = useState<string | undefined>();
@@ -500,7 +498,7 @@ function HeaderSmartCategories() {
         aria-haspopup="menu"
         aria-expanded={open}
       >
-        <span>Categories</span>
+        <span>{translate(locale, "header.categories")}</span>
         <ChevronDown
           size={16}
           className={`transition-transform ${open ? "rotate-180" : ""}`}
@@ -523,13 +521,13 @@ function HeaderSmartCategories() {
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <div className="text-sm text-neutral-500">
-                Loading categories...
+                {translate(locale, "header.loadingCategories")}
               </div>
             </div>
           ) : categories.length === 0 ? (
             <div className="flex items-center justify-center py-12">
               <div className="text-sm text-neutral-500">
-                No categories available
+                {translate(locale, "header.noCategories")}
               </div>
             </div>
           ) : (
@@ -538,7 +536,7 @@ function HeaderSmartCategories() {
               <div className="bg-neutral-50 dark:bg-neutral-900 border-r border-neutral-200 dark:border-neutral-700 overflow-y-auto h-full">
                 <div className="p-4 pb-20">
                   <h3 className="text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-3">
-                    All Departments
+                    {translate(locale, "header.allDepartments")}
                   </h3>
                   <div className="space-y-1">
                     {level1.map((category) => {
@@ -585,7 +583,7 @@ function HeaderSmartCategories() {
                     <div className="text-center">
                       <div className="text-6xl mb-4">🏪</div>
                       <p className="text-neutral-500 dark:text-neutral-400 text-sm">
-                        Hover over a department to see categories
+                        {translate(locale, "header.hoverForCategories")}
                       </p>
                     </div>
                   </div>
@@ -593,7 +591,7 @@ function HeaderSmartCategories() {
                   <div className="flex items-center justify-center h-full">
                     <div className="text-center">
                       <p className="text-neutral-500 dark:text-neutral-400 text-sm">
-                        No categories in this department
+                        {translate(locale, "header.noCategoriesInDepartment")}
                       </p>
                     </div>
                   </div>

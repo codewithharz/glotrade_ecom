@@ -7,6 +7,7 @@ import { toast } from "@/components/common/Toast";
 import { RequireGuest } from "@/components/auth/Guards";
 import { Mail, AlertCircle, Lock, User, Eye, EyeOff, Loader2 } from "lucide-react";
 import Modal from "@/components/common/Modal";
+import { translate, getStoredLocale } from "@/utils/i18n";
 
 function LoginForm() {
   const [loginInput, setLoginInput] = useState("");
@@ -18,6 +19,7 @@ function LoginForm() {
   const [deletionEmail, setDeletionEmail] = useState("");
   const router = useRouter();
   const search = useSearchParams();
+  const locale = getStoredLocale();
 
   // Helper function to detect if input is email or username
   const isEmail = (input: string) => {
@@ -45,19 +47,19 @@ function LoginForm() {
         window.dispatchEvent(new CustomEvent("auth:update", { detail: { user: json.data } }));
       } catch { }
 
-      toast("Signed in", "success");
+      toast(translate(locale, "auth.toast.signedIn"), "success");
       const next = search.get("next") || "/";
       router.replace(next);
     } catch (e: any) {
       // Check if this is a deletion-related error
       if (e.message && e.message.includes("Account is marked for deletion")) {
         // For deletion modal, we need to get the email from the response or use the input if it's an email
-        setDeletionEmail(isEmail(loginInput) ? loginInput : "your registered email");
+        setDeletionEmail(isEmail(loginInput) ? loginInput : translate(locale, "auth.login.deletionModal.yourRegisteredEmail"));
         setShowDeletionModal(true);
         // Don't show error toast for deletion - show modal instead
       } else {
-        setError(e.message || "Login failed");
-        toast(e.message || "Login failed", "error");
+        setError(e.message || translate(locale, "auth.toast.loginFailed"));
+        toast(e.message || translate(locale, "auth.toast.loginFailed"), "error");
       }
     } finally {
       setIsLoading(false);
@@ -71,9 +73,9 @@ function LoginForm() {
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent mb-2">
-              Welcome Back
+              {translate(locale, "auth.login.title")}
             </h1>
-            <p className="text-neutral-600 dark:text-neutral-400">Sign in to continue to your account</p>
+            <p className="text-neutral-600 dark:text-neutral-400">{translate(locale, "auth.login.subtitle")}</p>
           </div>
 
           {/* Card */}
@@ -82,7 +84,7 @@ function LoginForm() {
               {/* Email/Username Input */}
               <div>
                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                  Email or Username
+                  {translate(locale, "auth.login.loginInputLabel")}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -97,7 +99,7 @@ function LoginForm() {
                     required
                     value={loginInput}
                     onChange={(e) => setLoginInput(e.target.value)}
-                    placeholder="Enter your email or username"
+                    placeholder={translate(locale, "auth.login.loginInputPlaceholder")}
                     className="w-full pl-10 pr-4 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
                   />
                 </div>
@@ -106,7 +108,7 @@ function LoginForm() {
               {/* Password Input */}
               <div>
                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                  Password
+                  {translate(locale, "auth.login.passwordLabel")}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -117,7 +119,7 @@ function LoginForm() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter your password"
+                    placeholder={translate(locale, "auth.login.passwordPlaceholder")}
                     className="w-full pl-10 pr-12 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
                   />
                   <button
@@ -141,7 +143,7 @@ function LoginForm() {
               {/* Forgot Password Link */}
               <div className="flex justify-end">
                 <Link href="/auth/forgot" className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
-                  Forgot password?
+                  {translate(locale, "auth.login.forgotPassword")}
                 </Link>
               </div>
 
@@ -154,10 +156,10 @@ function LoginForm() {
                 {isLoading ? (
                   <>
                     <Loader2 className="h-5 w-5 animate-spin" />
-                    <span>Signing in...</span>
+                    <span>{translate(locale, "auth.login.signingIn")}</span>
                   </>
                 ) : (
-                  <span>Sign In</span>
+                  <span>{translate(locale, "auth.login.signInButton")}</span>
                 )}
               </button>
             </form>
@@ -165,9 +167,9 @@ function LoginForm() {
             {/* Sign Up Link */}
             <div className="mt-6 text-center">
               <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                Don't have an account?{" "}
+                {translate(locale, "auth.login.dontHaveAccount")}{" "}
                 <Link href="/auth/register-business" className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
-                  Create one
+                  {translate(locale, "auth.login.createOne")}
                 </Link>
               </p>
             </div>
@@ -178,7 +180,7 @@ function LoginForm() {
         <Modal
           open={showDeletionModal}
           onClose={() => setShowDeletionModal(false)}
-          title="Account Reactivation Required"
+          title={translate(locale, "auth.login.deletionModal.title")}
           size="lg"
           footer={(
             <>
@@ -186,17 +188,17 @@ function LoginForm() {
                 onClick={() => setShowDeletionModal(false)}
                 className="flex-1 rounded-full border px-4 py-2 text-sm"
               >
-                Close
+                {translate(locale, "common.close")}
               </button>
               <button
                 onClick={() => {
                   setShowDeletionModal(false);
                   // Optionally resend the reactivation email
-                  toast("Reactivation email already sent. Please check your inbox.", "info");
+                  toast(translate(locale, "auth.login.deletionModal.toastAlreadySent"), "info");
                 }}
                 className="flex-1 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
               >
-                Got it
+                {translate(locale, "ok")}
               </button>
             </>
           )}
@@ -206,7 +208,7 @@ function LoginForm() {
               <AlertCircle className="h-8 w-8 text-amber-600 dark:text-amber-400" />
             </div>
             <p className="text-sm text-neutral-600 dark:text-neutral-300 mt-2">
-              Your account was marked for deletion and requires reactivation
+              {translate(locale, "auth.login.deletionModal.description")}
             </p>
           </div>
 
@@ -215,8 +217,8 @@ function LoginForm() {
               <div className="flex items-start gap-3">
                 <Mail className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
                 <div className="text-sm text-blue-800 dark:text-blue-200">
-                  <div className="font-medium mb-1">Reactivation Email Sent</div>
-                  <div>We've sent a reactivation link to:</div>
+                  <div className="font-medium mb-1">{translate(locale, "auth.login.deletionModal.emailSentTitle")}</div>
+                  <div>{translate(locale, "auth.login.deletionModal.emailSentDesc")}</div>
                   <div className="font-mono text-xs mt-1 bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded">
                     {deletionEmail}
                   </div>
@@ -225,19 +227,19 @@ function LoginForm() {
             </div>
 
             <div className="rounded-lg bg-amber-50 p-4 dark:bg-amber-900/20">
-              <div className="font-medium text-amber-800 dark:text-amber-200 mb-2">What to do next:</div>
+              <div className="font-medium text-amber-800 dark:text-amber-200 mb-2">{translate(locale, "auth.login.deletionModal.todoTitle")}</div>
               <ul className="space-y-1 text-xs text-amber-700 dark:text-amber-300">
-                <li>• Check your email inbox (and spam folder)</li>
-                <li>• Click the reactivation link in the email</li>
-                <li>• Your account will be restored immediately</li>
-                <li>• You can then log in normally</li>
+                <li>• {translate(locale, "auth.login.deletionModal.todoStep1")}</li>
+                <li>• {translate(locale, "auth.login.deletionModal.todoStep2")}</li>
+                <li>• {translate(locale, "auth.login.deletionModal.todoStep3")}</li>
+                <li>• {translate(locale, "auth.login.deletionModal.todoStep4")}</li>
               </ul>
             </div>
 
             <div className="rounded-lg bg-neutral-50 p-4 dark:bg-neutral-800/60">
-              <div className="font-medium text-neutral-800 dark:text-neutral-200 mb-2">Need help?</div>
+              <div className="font-medium text-neutral-800 dark:text-neutral-200 mb-2">{translate(locale, "auth.login.deletionModal.helpTitle")}</div>
               <div className="text-xs text-neutral-600 dark:text-neutral-400">
-                If you don't receive the email within a few minutes, check your spam folder or contact support.
+                {translate(locale, "auth.login.deletionModal.helpDesc")}
               </div>
             </div>
           </div>
@@ -248,8 +250,9 @@ function LoginForm() {
 }
 
 export default function LoginPage() {
+  const locale = getStoredLocale();
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">{translate(locale, "common.loading")}</div>}>
       <LoginForm />
     </Suspense>
   );

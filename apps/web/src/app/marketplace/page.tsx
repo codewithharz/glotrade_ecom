@@ -1,4 +1,5 @@
 // import Link from "next/link";
+import { cookies } from "next/headers";
 import ProductCard from "./ProductCard";
 import type { ProductCardData } from "@/types/product";
 import { apiGet } from "@/utils/api";
@@ -7,6 +8,7 @@ import DesktopCategoryTree from "./DesktopCategoryTree";
 import ProductFilters from "@/components/filters/ProductFilters";
 import MobileQuickChips from "./MobileQuickChips";
 import DesktopQuickChips from "./DesktopQuickChips";
+import { translate, Locale } from "@/utils/i18n";
 
 type Product = {
   _id: string;
@@ -43,6 +45,9 @@ export default async function MarketplacePage({
   searchParams: Promise<Record<string, string>>;
 }) {
   const params = await searchParams;
+  const cookieStore = await cookies();
+  const locale = (cookieStore.get("locale")?.value || "en") as Locale;
+
   const selectedCategory = params?.category;
   const minPrice = params?.minPrice;
   const maxPrice = params?.maxPrice;
@@ -91,12 +96,12 @@ export default async function MarketplacePage({
 
   return (
     <div className="w-full max-w-none mx-auto px-2 md:px-8 py-6">
-      <h1 className="text-2xl font-semibold mb-6">Marketplace</h1>
+      <h1 className="text-2xl font-semibold mb-6">{translate(locale, "market.title")}</h1>
       <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
         <aside className="hidden lg:block">
           <div className="sticky top-20 space-y-6">
-            <DesktopCategoryTree categories={categories} params={params} selectedCategoryName={selectedCategory} basePath="/marketplace" />
-            
+            <DesktopCategoryTree categories={categories} params={params} selectedCategoryName={selectedCategory} basePath="/marketplace" locale={locale} />
+
             <ProductFilters
               basePath="/marketplace"
               params={params}
@@ -106,16 +111,17 @@ export default async function MarketplacePage({
               condition={condition}
               sort={sort}
               variant="desktop"
+              locale={locale}
             />
           </div>
         </aside>
 
         <main>
-          <DesktopQuickChips params={params} basePath="/marketplace" />
+          <DesktopQuickChips params={params} basePath="/marketplace" locale={locale} />
           {/* Mobile filters toolbar */}
           <div className="lg:hidden mb-4 space-y-3 sticky top-16 z-20 bg-white dark:bg-neutral-950 py-2">
-            <MobileCategoryBrowser categories={categories} params={params} selectedCategoryName={selectedCategory} basePath="/marketplace" />
-            <MobileQuickChips params={params} basePath="/marketplace" />
+            <MobileCategoryBrowser categories={categories} params={params} selectedCategoryName={selectedCategory} basePath="/marketplace" locale={locale} />
+            <MobileQuickChips params={params} basePath="/marketplace" locale={locale} />
             <ProductFilters
               basePath="/marketplace"
               params={params}
@@ -125,14 +131,15 @@ export default async function MarketplacePage({
               condition={condition}
               sort={sort}
               variant="mobile"
+              locale={locale}
             />
           </div>
           {products.length === 0 ? (
-            <div className="text-sm text-neutral-500">No products match your filters.</div>
+            <div className="text-sm text-neutral-500">{translate(locale, "market.noProducts")}</div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {products.map((p) => (
-                <ProductCard key={p._id} product={p as unknown as ProductCardData} />
+                <ProductCard key={p._id} product={p as unknown as ProductCardData} locale={locale} />
               ))}
             </div>
           )}

@@ -6,6 +6,14 @@ import { apiPost } from "@/utils/api";
 import { toast } from "@/components/common/Toast";
 import { RequireGuest } from "@/components/auth/Guards";
 import { Mail, User, Lock, Eye, EyeOff, Loader2, AlertCircle, CheckCircle2, Building2, Briefcase, FileText, Globe } from "lucide-react";
+import { translate, getStoredLocale } from "@/utils/i18n";
+
+// Business type constants (these values are sent to the backend API)
+const BUSINESS_TYPES = {
+    WHOLESALER: "Wholesaler",
+    DISTRIBUTOR: "Distributor",
+    SALES_AGENT: "Sales Agent"
+} as const;
 
 export default function RegisterBusinessPage() {
     const [step, setStep] = useState<1 | 2>(1);
@@ -16,7 +24,7 @@ export default function RegisterBusinessPage() {
 
     // Business fields
     const [companyName, setCompanyName] = useState("");
-    const [businessType, setBusinessType] = useState("Wholesaler");
+    const [businessType, setBusinessType] = useState<typeof BUSINESS_TYPES[keyof typeof BUSINESS_TYPES]>(BUSINESS_TYPES.WHOLESALER);
     const [taxId, setTaxId] = useState("");
     const [registrationNumber, setRegistrationNumber] = useState("");
     const [website, setWebsite] = useState("");
@@ -27,11 +35,12 @@ export default function RegisterBusinessPage() {
     const [msg, setMsg] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+    const locale = getStoredLocale();
 
     const handleNextStep = (e: React.FormEvent) => {
         e.preventDefault();
         if (!email || !username || !password) {
-            setError("Please fill in all account details");
+            setError(translate(locale, "auth.register.errorFillAll"));
             return;
         }
         setError(null);
@@ -66,8 +75,8 @@ export default function RegisterBusinessPage() {
             }
 
             await apiPost<{ status: string; data?: any }>("/api/v1/auth/register", payload);
-            setMsg("Business account created! Please check your email to verify your account.");
-            toast("Verification email sent", "success");
+            setMsg(translate(locale, "auth.register.successMsg"));
+            toast(translate(locale, "auth.register.verificationEmailSent"), "success");
 
             // Clear form fields
             setEmail("");
@@ -78,8 +87,8 @@ export default function RegisterBusinessPage() {
             // Redirect to login
             setTimeout(() => router.push("/auth/login"), 3000);
         } catch (e: any) {
-            setError(e.message || "Registration failed");
-            toast(e.message || "Registration failed", "error");
+            setError(e.message || translate(locale, "auth.toast.registrationFailed"));
+            toast(e.message || translate(locale, "auth.toast.registrationFailed"), "error");
             setIsLoading(false); // Only stop loading on error, keep loading on success until redirect
         }
     };
@@ -91,21 +100,21 @@ export default function RegisterBusinessPage() {
                     {/* Header */}
                     <div className="text-center mb-8">
                         <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
-                            Business Registration
+                            {translate(locale, "auth.register.title")}
                         </h1>
-                        <p className="text-neutral-600 dark:text-neutral-400">Create a wholesale account for your business</p>
+                        <p className="text-neutral-600 dark:text-neutral-400">{translate(locale, "auth.register.subtitle")}</p>
                     </div>
 
                     {/* Progress Steps */}
                     <div className="flex items-center justify-center mb-8 gap-4">
                         <div className={`flex items-center gap-2 ${step === 1 ? "text-blue-600 font-semibold" : "text-neutral-500"}`}>
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm border ${step === 1 ? "border-blue-600 bg-blue-50" : "border-neutral-300"}`}>1</div>
-                            <span>Account</span>
+                            <span>{translate(locale, "auth.register.steps.account")}</span>
                         </div>
                         <div className="w-12 h-px bg-neutral-300"></div>
                         <div className={`flex items-center gap-2 ${step === 2 ? "text-blue-600 font-semibold" : "text-neutral-500"}`}>
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm border ${step === 2 ? "border-blue-600 bg-blue-50" : "border-neutral-300"}`}>2</div>
-                            <span>Business Info</span>
+                            <span>{translate(locale, "auth.register.steps.businessInfo")}</span>
                         </div>
                     </div>
 
@@ -118,7 +127,7 @@ export default function RegisterBusinessPage() {
                                 <>
                                     <div>
                                         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                                            Work Email Address
+                                            {translate(locale, "auth.register.workEmailLabel")}
                                         </label>
                                         <div className="relative">
                                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -129,7 +138,7 @@ export default function RegisterBusinessPage() {
                                                 required
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
-                                                placeholder="name@company.com"
+                                                placeholder={translate(locale, "auth.register.workEmailPlaceholder")}
                                                 className="w-full pl-10 pr-4 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
                                             />
                                         </div>
@@ -137,7 +146,7 @@ export default function RegisterBusinessPage() {
 
                                     <div>
                                         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                                            Username
+                                            {translate(locale, "auth.register.usernameLabel")}
                                         </label>
                                         <div className="relative">
                                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -148,7 +157,7 @@ export default function RegisterBusinessPage() {
                                                 required
                                                 value={username}
                                                 onChange={(e) => setUsername(e.target.value)}
-                                                placeholder="Choose a username"
+                                                placeholder={translate(locale, "auth.register.usernamePlaceholder")}
                                                 className="w-full pl-10 pr-4 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
                                             />
                                         </div>
@@ -156,7 +165,7 @@ export default function RegisterBusinessPage() {
 
                                     <div>
                                         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                                            Password
+                                            {translate(locale, "auth.register.passwordLabel")}
                                         </label>
                                         <div className="relative">
                                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -167,7 +176,7 @@ export default function RegisterBusinessPage() {
                                                 required
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
-                                                placeholder="Create a strong password"
+                                                placeholder={translate(locale, "auth.register.passwordPlaceholder")}
                                                 className="w-full pl-10 pr-12 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
                                             />
                                             <button
@@ -184,7 +193,7 @@ export default function RegisterBusinessPage() {
                                         type="submit"
                                         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
                                     >
-                                        Next Step
+                                        {translate(locale, "auth.register.nextStep")}
                                     </button>
                                 </>
                             ) : (
@@ -192,7 +201,7 @@ export default function RegisterBusinessPage() {
                                 <>
                                     <div>
                                         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                                            Company Name
+                                            {translate(locale, "auth.register.companyNameLabel")}
                                         </label>
                                         <div className="relative">
                                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -203,7 +212,7 @@ export default function RegisterBusinessPage() {
                                                 required
                                                 value={companyName}
                                                 onChange={(e) => setCompanyName(e.target.value)}
-                                                placeholder="Legal Business Name"
+                                                placeholder={translate(locale, "auth.register.companyNamePlaceholder")}
                                                 className="w-full pl-10 pr-4 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
                                             />
                                         </div>
@@ -212,7 +221,7 @@ export default function RegisterBusinessPage() {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
                                             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                                                Business Type
+                                                {translate(locale, "auth.register.businessTypeLabel")}
                                             </label>
                                             <div className="relative">
                                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -220,29 +229,27 @@ export default function RegisterBusinessPage() {
                                                 </div>
                                                 <select
                                                     value={businessType}
-                                                    onChange={(e) => setBusinessType(e.target.value)}
+                                                    onChange={(e) => setBusinessType(e.target.value as typeof BUSINESS_TYPES[keyof typeof BUSINESS_TYPES])}
                                                     className="w-full pl-10 pr-4 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none appearance-none"
                                                 >
-                                                    <option value="Wholesaler">Wholesaler</option>
-                                                    {/* <option value="Retailer">Retailer</option> */}
-                                                    <option value="Distributor">Distributor</option>
-                                                    <option value="Sales Agent">Sales Agent</option>
-                                                    {/* <option value="Other">Other</option> */}
+                                                    <option value={BUSINESS_TYPES.WHOLESALER}>{translate(locale, "auth.register.businessTypes.wholesaler")}</option>
+                                                    <option value={BUSINESS_TYPES.DISTRIBUTOR}>{translate(locale, "auth.register.businessTypes.distributor")}</option>
+                                                    <option value={BUSINESS_TYPES.SALES_AGENT}>{translate(locale, "auth.register.businessTypes.salesAgent")}</option>
                                                 </select>
                                             </div>
                                         </div>
 
                                         {/* Conditionally show Industry field - hide for Sales Agents */}
-                                        {businessType !== "Sales Agent" && (
+                                        {businessType !== BUSINESS_TYPES.SALES_AGENT && (
                                             <div>
                                                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                                                    Industry
+                                                    {translate(locale, "auth.register.industryLabel")}
                                                 </label>
                                                 <input
                                                     type="text"
                                                     value={industry}
                                                     onChange={(e) => setIndustry(e.target.value)}
-                                                    placeholder="e.g. Electronics"
+                                                    placeholder={translate(locale, "auth.register.industryPlaceholder")}
                                                     className="w-full px-4 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
                                                 />
                                             </div>
@@ -252,7 +259,7 @@ export default function RegisterBusinessPage() {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
                                             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                                                Tax ID / TIN (Optional)
+                                                {translate(locale, "auth.register.taxIdLabel")}
                                             </label>
                                             <div className="relative">
                                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -262,7 +269,7 @@ export default function RegisterBusinessPage() {
                                                     type="text"
                                                     value={taxId}
                                                     onChange={(e) => setTaxId(e.target.value)}
-                                                    placeholder="Tax Identification Number"
+                                                    placeholder={translate(locale, "auth.register.taxIdPlaceholder")}
                                                     className="w-full pl-10 pr-4 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
                                                 />
                                             </div>
@@ -270,13 +277,13 @@ export default function RegisterBusinessPage() {
 
                                         <div>
                                             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                                                Reg Number (Optional)
+                                                {translate(locale, "auth.register.regNumberLabel")}
                                             </label>
                                             <input
                                                 type="text"
                                                 value={registrationNumber}
                                                 onChange={(e) => setRegistrationNumber(e.target.value)}
-                                                placeholder="RC Number"
+                                                placeholder={translate(locale, "auth.register.regNumberPlaceholder")}
                                                 className="w-full px-4 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
                                             />
                                         </div>
@@ -284,7 +291,7 @@ export default function RegisterBusinessPage() {
 
                                     <div>
                                         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                                            Website (Optional)
+                                            {translate(locale, "auth.register.websiteLabel")}
                                         </label>
                                         <div className="relative">
                                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -294,7 +301,7 @@ export default function RegisterBusinessPage() {
                                                 type="url"
                                                 value={website}
                                                 onChange={(e) => setWebsite(e.target.value)}
-                                                placeholder="https://example.com"
+                                                placeholder={translate(locale, "auth.register.websitePlaceholder")}
                                                 className="w-full pl-10 pr-4 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
                                             />
                                         </div>
@@ -303,17 +310,17 @@ export default function RegisterBusinessPage() {
                                     {/* Referral Code Field */}
                                     <div>
                                         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                                            Referral Code (Optional)
+                                            {translate(locale, "auth.register.referralCodeLabel")}
                                         </label>
                                         <input
                                             type="text"
                                             value={referralCode}
                                             onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
-                                            placeholder="Enter referral code if you have one"
+                                            placeholder={translate(locale, "auth.register.referralCodePlaceholder")}
                                             className="w-full px-4 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none uppercase"
                                         />
                                         <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
-                                            If you were referred by a Sales Agent, enter their code here
+                                            {translate(locale, "auth.register.referralCodeHint")}
                                         </p>
                                     </div>
                                     <div className="flex gap-3 pt-2">
@@ -322,7 +329,7 @@ export default function RegisterBusinessPage() {
                                             onClick={() => setStep(1)}
                                             className="w-1/3 px-4 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
                                         >
-                                            Back
+                                            {translate(locale, "common.back")}
                                         </button>
                                         <button
                                             type="submit"
@@ -332,10 +339,10 @@ export default function RegisterBusinessPage() {
                                             {isLoading ? (
                                                 <>
                                                     <Loader2 className="h-5 w-5 animate-spin" />
-                                                    <span>Creating...</span>
+                                                    <span>{translate(locale, "auth.register.creating")}</span>
                                                 </>
                                             ) : (
-                                                <span>Complete Registration</span>
+                                                <span>{translate(locale, "auth.register.completeButton")}</span>
                                             )}
                                         </button>
                                     </div>
@@ -361,9 +368,9 @@ export default function RegisterBusinessPage() {
 
                         <div className="mt-6 text-center">
                             <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                                Already have an account?{" "}
+                                {translate(locale, "auth.register.alreadyHaveAccount")}{" "}
                                 <Link href="/auth/login" className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
-                                    Sign in
+                                    {translate(locale, "auth.register.signIn")}
                                 </Link>
                             </p>
 

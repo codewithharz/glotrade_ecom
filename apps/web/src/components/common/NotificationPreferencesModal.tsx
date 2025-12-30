@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
 import React, { useState } from 'react';
 import { X, Settings } from 'lucide-react';
+import { translate, Locale } from '@/utils/i18n';
 
 interface NotificationPreferences {
   channels: {
@@ -35,13 +36,15 @@ interface NotificationPreferencesModalProps {
   onClose: () => void;
   onSave: (preferences: NotificationPreferences) => void;
   initialPreferences?: NotificationPreferences;
+  locale: Locale;
 }
 
 export default function NotificationPreferencesModal({
   isOpen,
   onClose,
   onSave,
-  initialPreferences
+  initialPreferences,
+  locale
 }: NotificationPreferencesModalProps) {
   const [preferences, setPreferences] = useState<NotificationPreferences>(
     initialPreferences || {
@@ -101,8 +104,12 @@ export default function NotificationPreferencesModal({
                 <Settings className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">Notification Preferences</h2>
-                <p className="text-sm text-gray-600">Customize how and when you receive notifications</p>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  {translate(locale, "notifications.modalTitle")}
+                </h2>
+                <p className="text-sm text-gray-600">
+                  {translate(locale, "notifications.modalDesc")}
+                </p>
               </div>
             </div>
             <button
@@ -117,7 +124,9 @@ export default function NotificationPreferencesModal({
           <div className="p-6 space-y-6">
             {/* Delivery Channels */}
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Delivery Channels</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                {translate(locale, "notifications.deliveryChannels")}
+              </h3>
               <div className="grid grid-cols-2 gap-4">
                 {Object.entries(preferences.channels).map(([channel, enabled]) => (
                   <label key={channel} className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
@@ -137,7 +146,9 @@ export default function NotificationPreferencesModal({
 
             {/* Notification Types */}
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Notification Types</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                {translate(locale, "notifications.notificationTypes")}
+              </h3>
               <div className="grid grid-cols-2 gap-3">
                 {Object.entries(preferences.types).map(([type, enabled]) => (
                   <label key={type} className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
@@ -157,7 +168,9 @@ export default function NotificationPreferencesModal({
 
             {/* Frequency */}
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Update Frequency</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                {translate(locale, "notifications.updateFrequency")}
+              </h3>
               <div className="grid grid-cols-3 gap-3">
                 {['immediate', 'daily', 'weekly'].map((freq) => (
                   <label key={freq} className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
@@ -178,7 +191,9 @@ export default function NotificationPreferencesModal({
 
             {/* Quiet Hours */}
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Quiet Hours</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                {translate(locale, "notifications.quietHours")}
+              </h3>
               <div className="space-y-4">
                 <label className="flex items-center gap-3">
                   <input
@@ -187,13 +202,17 @@ export default function NotificationPreferencesModal({
                     onChange={(e) => handlePreferenceChange('quietHours', 'enabled', e.target.checked)}
                     className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                   />
-                  <span className="text-sm font-medium text-gray-700">Enable quiet hours</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    {translate(locale, "notifications.enableQuietHours")}
+                  </span>
                 </label>
-                
+
                 {preferences.quietHours.enabled && (
                   <div className="grid grid-cols-2 gap-4 ml-7">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Start Time</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {translate(locale, "notifications.startTime")}
+                      </label>
                       <input
                         type="time"
                         value={preferences.quietHours.start}
@@ -202,7 +221,9 @@ export default function NotificationPreferencesModal({
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">End Time</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {translate(locale, "notifications.endTime")}
+                      </label>
                       <input
                         type="time"
                         value={preferences.quietHours.end}
@@ -222,17 +243,17 @@ export default function NotificationPreferencesModal({
               onClick={onClose}
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              Cancel
+              {translate(locale, "common.cancel")}
             </button>
             <button
               onClick={handleSave}
               className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              Save Preferences
+              {translate(locale, "notifications.savePreferences")}
             </button>
           </div>
         </div>
       </div>
     </>
   );
-} 
+}

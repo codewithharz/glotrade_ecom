@@ -1,16 +1,29 @@
 "use client";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { translate, getStoredLocale } from "@/utils/i18n";
 
 function readUser(): any | null {
   try { const raw = localStorage.getItem("afritrade:user"); return raw ? JSON.parse(raw) : null; } catch { return null; }
 }
 
-export function RequireAuth({ children, title = "Sign in required", message = "Please sign in to continue.", cancelRedirect = "/" }: { children: React.ReactNode; title?: string; message?: string; cancelRedirect?: string }) {
+export function RequireAuth({
+  children,
+  title,
+  message,
+  cancelRedirect = "/"
+}: {
+  children: React.ReactNode;
+  title?: string;
+  message?: string;
+  cancelRedirect?: string
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const [needsAuth, setNeedsAuth] = useState(false);
   const [checked, setChecked] = useState(false);
+  const locale = getStoredLocale();
+
   useEffect(() => {
     const user = readUser();
     if (!user) {
@@ -31,11 +44,11 @@ export function RequireAuth({ children, title = "Sign in required", message = "P
         <div className="fixed inset-0 z-[70] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
           <div className="relative w-[92%] max-w-md rounded-2xl border border-neutral-200 bg-white p-5 text-neutral-900 shadow-2xl ring-1 ring-black/5 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100">
-            <div className="mb-1 text-lg font-semibold">{title}</div>
-            <div className="text-sm text-neutral-600 dark:text-neutral-300">{message}</div>
+            <div className="mb-1 text-lg font-semibold">{title || translate(locale, "auth.guards.authTitle")}</div>
+            <div className="text-sm text-neutral-600 dark:text-neutral-300">{message || translate(locale, "auth.guards.authMessage")}</div>
             <div className="mt-4 flex gap-2">
-              <button onClick={goLogin} className="flex-1 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:opacity-95">OK, sign in</button>
-              <button onClick={() => router.replace(cancelRedirect)} className="flex-1 rounded-full border px-4 py-2 text-sm">Cancel</button>
+              <button onClick={goLogin} className="flex-1 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:opacity-95">{translate(locale, "auth.guards.okSignIn")}</button>
+              <button onClick={() => router.replace(cancelRedirect)} className="flex-1 rounded-full border px-4 py-2 text-sm">{translate(locale, "auth.guards.cancel")}</button>
             </div>
           </div>
         </div>
@@ -79,10 +92,21 @@ export function RequireAdmin({ children }: { children: React.ReactNode }) {
   return authorized ? <>{children}</> : null;
 }
 
-export function RequireDistributor({ children, title = "Partner Access Required", message = "Join our Trusted Insured Trade Partners platform. Only distributors have access to this page.", cancelRedirect = "/" }: { children: React.ReactNode; title?: string; message?: string; cancelRedirect?: string }) {
+export function RequireDistributor({
+  children,
+  title,
+  message,
+  cancelRedirect = "/"
+}: {
+  children: React.ReactNode;
+  title?: string;
+  message?: string;
+  cancelRedirect?: string
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const [status, setStatus] = useState<"checking" | "needs-auth" | "needs-distributor" | "authorized">("checking");
+  const locale = getStoredLocale();
 
   useEffect(() => {
     const user = readUser();
@@ -108,13 +132,15 @@ export function RequireDistributor({ children, title = "Partner Access Required"
       <div className="fixed inset-0 z-[70] flex items-center justify-center">
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
         <div className="relative w-[92%] max-w-md rounded-2xl border border-neutral-200 bg-white p-5 text-neutral-900 shadow-2xl ring-1 ring-black/5 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100">
-          <div className="mb-1 text-lg font-semibold">{status === "needs-auth" ? "Partner Access Required" : title}</div>
+          <div className="mb-1 text-lg font-semibold">
+            {status === "needs-auth" ? translate(locale, "auth.guards.distributorTitle") : (title || translate(locale, "auth.guards.distributorTitle"))}
+          </div>
           <div className="text-sm text-neutral-600 dark:text-neutral-300">
             {status === "needs-auth"
-              ? "Join our Trusted Insured Trade Partners platform. Please login or create an account to continue."
-              : message}
+              ? translate(locale, "auth.guards.distributorAuthMessage")
+              : (message || translate(locale, "auth.guards.distributorMessage"))}
             <div className="mt-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
-              <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">Contact for Support</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">{translate(locale, "auth.guards.contactSupport")}</span>
               <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1">
                 <a href="tel:+2349029004712" className="text-blue-600 text-xs font-bold hover:underline">Call: (+234) 902-900-4712</a>
                 <a href="https://wa.me/2349029004712" target="_blank" rel="noopener noreferrer" className="text-emerald-600 text-xs font-bold hover:underline">WhatsApp</a>
@@ -124,11 +150,11 @@ export function RequireDistributor({ children, title = "Partner Access Required"
           </div>
           <div className="mt-4 flex gap-2">
             {status === "needs-auth" ? (
-              <button onClick={goLogin} className="flex-1 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:opacity-95">OK, sign in</button>
+              <button onClick={goLogin} className="flex-1 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:opacity-95">{translate(locale, "auth.guards.okSignIn")}</button>
             ) : (
-              <button onClick={() => router.replace("/")} className="flex-1 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:opacity-95">Go to Homepage</button>
+              <button onClick={() => router.replace("/")} className="flex-1 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:opacity-95">{translate(locale, "auth.guards.goToHome")}</button>
             )}
-            <button onClick={() => router.replace(cancelRedirect)} className="flex-1 rounded-full border px-4 py-2 text-sm">Cancel</button>
+            <button onClick={() => router.replace(cancelRedirect)} className="flex-1 rounded-full border px-4 py-2 text-sm">{translate(locale, "auth.guards.cancel")}</button>
           </div>
         </div>
       </div>

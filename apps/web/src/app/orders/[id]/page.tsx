@@ -6,6 +6,7 @@ import { API_BASE_URL, apiGet, apiPatch, getAuthHeader } from "@/utils/api";
 import { toast } from "@/components/common/Toast";
 import { Check, ChevronRight, Package, Truck, BadgeCheck, Printer, ChevronLeft, RotateCcw, FileText, MapPin, Clock, X, Star, ArrowLeft } from "lucide-react";
 import ReviewForm from "@/components/reviews/ReviewForm";
+import { getStoredLocale, Locale } from "@/utils/i18n";
 
 type OrderDoc = {
   _id: string;
@@ -38,6 +39,14 @@ export default function OrderDetailPage() {
     productImage?: string;
   } | null>(null);
   const [reviewedProducts, setReviewedProducts] = useState<Set<string>>(new Set());
+  const [locale, setLocale] = useState<Locale>("en");
+
+  useEffect(() => {
+    setLocale(getStoredLocale());
+    const handleLangChange = () => setLocale(getStoredLocale());
+    window.addEventListener("language-change", handleLangChange);
+    return () => window.removeEventListener("language-change", handleLangChange);
+  }, []);
 
   const fetchOrder = async () => {
     setLoading(true);
@@ -542,6 +551,7 @@ export default function OrderDetailPage() {
               setShowReviewModal(false);
               setSelectedProductForReview(null);
             }}
+            locale={locale}
           />
         )}
       </div>

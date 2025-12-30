@@ -11,7 +11,8 @@ import AttributePicker from "@/components/product/AttributePicker";
 import QtySelectControl from "@/components/product/QtySelectControl";
 import BulkPricingTiers from "@/components/product/BulkPricingTiers";
 
-
+import { cookies } from "next/headers";
+import { translate, Locale } from "@/utils/i18n";
 type Product = {
   _id: string;
   title: string;
@@ -50,6 +51,9 @@ type CategoriesResponse = { status: string; data: Category[] };
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const cookieStore = await cookies();
+  const locale = (cookieStore.get("locale")?.value || "en") as Locale;
+
   const [productRes, categoriesRes] = await Promise.all([
     apiGet<ProductResponse>(`/api/v1/market/products/${id}`),
     apiGet<CategoriesResponse>(`/api/v1/market/categories`).catch(() => ({ status: "success", data: [] } as CategoriesResponse)),
@@ -62,10 +66,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">Product Not Found</h1>
-          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">The product you're looking for doesn't exist or has been removed.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">{translate(locale, "product.notFound")}</h1>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">{translate(locale, "product.notFoundDesc")}</p>
           <Link href="/marketplace" className="bg-emerald-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg hover:bg-emerald-700 transition-colors text-sm sm:text-base font-medium">
-            Back to Marketplace
+            {translate(locale, "product.backToMarket")}
           </Link>
         </div>
       </div>
@@ -138,7 +142,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
       <div className="mx-auto max-w-7xl px-3 sm:px-4 py-4 sm:py-6 lg:px-8 lg:py-8">
         {/* Breadcrumbs */}
         <nav className="mb-3 text-xs sm:text-sm text-neutral-500">
-          <Link href="/" className="hover:underline text-neutral-600">Home</Link>
+          <Link href="/" className="hover:underline text-neutral-600">{translate(locale, "nav.home")}</Link>
           {trail.length ? (
             <>
               {trail.map((c, idx) => (
@@ -162,7 +166,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             <ProductImageGallery images={product.images || []} title={product.title} />
             {/* Reviews under gallery (desktop only) */}
             <div className="mt-8 hidden lg:block">
-              <ProductReviews productId={product._id} productTitle={product.title} />
+              <ProductReviews productId={product._id} productTitle={product.title} locale={locale} />
             </div>
             {/* bottom sentinel for alignment */}
             <div id="pd-left-end" className="h-1" />
@@ -173,8 +177,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold leading-tight">{product.title}</h1>
 
             <div className="mt-3 sm:mt-4">
-              <h3 className="text-sm sm:text-base font-semibold mb-2">Description</h3>
-              <DescriptionClamp text={product.description} clampLines={2} />
+              <h3 className="text-sm sm:text-base font-semibold mb-2">{translate(locale, "product.description")}</h3>
+              <DescriptionClamp text={product.description} clampLines={2} locale={locale} />
             </div>
 
             {/* rating row */}
@@ -183,10 +187,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <span className="text-neutral-500">
                   {(product.views || 0) > 0 ? (
                     (product.views || 0) >= 1000
-                      ? `${((product.views || 0) / 1000).toFixed(1)}k+ views`
-                      : `${product.views || 0}+ views`
+                      ? `${((product.views || 0) / 1000).toFixed(1)}k+ ${translate(locale, "product.views")}`
+                      : `${product.views || 0}+ ${translate(locale, "product.views")}`
                   ) : (
-                    "New product"
+                    translate(locale, "product.newProduct")
                   )}
                 </span>
                 {/* SINGLE VENDOR MODE: Hide vendor info
@@ -214,7 +218,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-2 text-neutral-500">
-                  <span className="text-xs sm:text-sm">No reviews yet</span>
+                  <span className="text-xs sm:text-sm">{translate(locale, "product.noReviews")}</span>
                 </span>
               )}
             </div>
@@ -228,7 +232,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               {discounted !== undefined ? (
                 <div className="inline-flex items-baseline gap-2">
                   <span className="line-through text-neutral-500 dark:text-neutral-200 text-xs sm:text-sm">{product.price} <span className="text-[10px] sm:text-xs">{product.currency}</span></span>
-                  <span className="rounded bg-rose-500 text-white text-xs sm:text-sm px-2 py-0.5">-{product.discount}% OFF</span>
+                  <span className="rounded bg-rose-500 text-white text-xs sm:text-sm px-2 py-0.5">-{product.discount}% {translate(locale, "product.off")}</span>
                 </div>
               ) : null}
             </div>
@@ -238,7 +242,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               {product.shippingOptions && product.shippingOptions.length > 0 ? (
                 product.shippingOptions.some(option => option.cost === 0) ? (
                   <span className="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-300">
-                    <Truck size={14} className="sm:w-4 sm:h-4" /> Free shipping
+                    <Truck size={14} className="sm:w-4 sm:h-4" /> {translate(locale, "product.shipping.freeAvailable")}
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-300">
@@ -247,11 +251,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 )
               ) : (
                 <span className="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-300">
-                  <Truck size={14} className="sm:w-4 sm:h-4" /> Free shipping
+                  <Truck size={14} className="sm:w-4 sm:h-4" /> {translate(locale, "product.shipping.freeAvailable")}
                 </span>
               )}
               <span className="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-300">
-                <BadgeCheck size={14} className="sm:w-4 sm:h-4" /> Secure payments
+                <BadgeCheck size={14} className="sm:w-4 sm:h-4" /> {translate(locale, "product.securePayments")}
               </span>
             </div>
 
@@ -270,6 +274,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 price={product.price}
                 currency={product.currency}
                 tiers={product.bulkPricing}
+                locale={locale}
               />
             )}
 
@@ -277,10 +282,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             <div className="mt-3 sm:mt-4 space-y-3">
               {/* Attributes (preferred) or fallback Color row */}
               {product.attributes && Object.keys(product.attributes).length ? (
-                <AttributePicker productId={product._id} attributes={product.attributes as any} />
+                <AttributePicker productId={product._id} attributes={product.attributes as any} locale={locale} />
               ) : (
                 <div className="flex items-center gap-3 text-xs sm:text-sm">
-                  <span className="w-12 text-black font-semibold">Color</span>
+                  <span className="w-12 text-black font-semibold">{translate(locale, "product.color")}</span>
                   <div className="flex items-center gap-2">
                     <button
                       className="h-6 w-6 sm:h-7 sm:w-7 rounded-full border border-neutral-300"
@@ -293,7 +298,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 </div>
               )}
               <div className="flex items-center gap-3 text-xs sm:text-sm">
-                <span className="w-12 text-black font-semibold">Qty</span>
+                <span className="w-12 text-black font-semibold">{translate(locale, "product.qty")}</span>
                 <QtySelectControl
                   productId={product._id}
                   minQty={Math.max(1, Number(product.minOrderQuantity || 1))}
@@ -309,7 +314,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                       }
                     } catch { }
                     return Math.max(0, Number(product.quantity || 0));
-                  })()} className="w-20 rounded-full border border-neutral-300 bg-white dark:bg-neutral-900 px-3 sm:px-4 py-2 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-400 focus:border-neutral-400 transition" />
+                  })()}
+                  locale={locale}
+                  className="w-20 rounded-full border border-neutral-300 bg-white dark:bg-neutral-900 px-3 sm:px-4 py-2 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-neutral-400 focus:border-neutral-400 transition"
+                />
               </div>
             </div>
 
@@ -319,6 +327,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 variantLabel={colorName || undefined}
                 minQty={Math.max(1, Number(product.minOrderQuantity || 1))}
                 maxQty={Math.max(0, Number(product.quantity || 0))}
+                locale={locale}
               />
             </div>
 
@@ -329,16 +338,16 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <Truck size={14} className="sm:w-4 sm:h-4" />
                 {product.shippingOptions && product.shippingOptions.length > 0 ? (
                   product.shippingOptions.some(option => option.cost === 0) ? (
-                    "Free shipping available"
+                    translate(locale, "product.shipping.freeAvailable")
                   ) : (
-                    `Shipping from ${product.currency} ${Math.min(...product.shippingOptions.map(opt => opt.cost))}`
+                    `${translate(locale, "product.shipping.from")} ${product.currency} ${Math.min(...product.shippingOptions.map(opt => opt.cost))}`
                   )
                 ) : (
-                  "Free shipping on orders"
+                  translate(locale, "product.shipping.freeOnOrders")
                 )}
               </div>
               <div className="rounded border border-neutral-200 dark:border-neutral-800 p-3 flex items-center gap-2 text-xs sm:text-sm">
-                <ShieldCheck size={14} className="sm:w-4 sm:h-4" /> Secure payments & privacy
+                <ShieldCheck size={14} className="sm:w-4 sm:h-4" /> {translate(locale, "product.securePaymentsPrivacy")}
               </div>
             </div>
           </div>
@@ -346,11 +355,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
         {/* Reviews: placed below both sections on mobile */}
         <div className="lg:hidden mt-6 sm:mt-8">
-          <ProductReviews productId={product._id} productTitle={product.title} />
+          <ProductReviews productId={product._id} productTitle={product.title} locale={locale} />
         </div>
 
         {/* Explore your interests */}
-        <ExploreInterests productId={product._id} seedBrand={product.brand} seedCategory={product.category} />
+        <ExploreInterests productId={product._id} seedBrand={product.brand} seedCategory={product.category} locale={locale} />
       </div>
     </div>
   );

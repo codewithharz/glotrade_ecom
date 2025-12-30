@@ -6,6 +6,7 @@ import { apiPost } from "@/utils/api";
 import { toast } from "@/components/common/Toast";
 import { RequireGuest } from "@/components/auth/Guards";
 import { Mail, AlertCircle, CheckCircle2, Loader2, ArrowLeft } from "lucide-react";
+import { translate, getStoredLocale } from "@/utils/i18n";
 
 export default function ForgotPage() {
   const [email, setEmail] = useState("");
@@ -13,6 +14,7 @@ export default function ForgotPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const locale = getStoredLocale();
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,12 +24,12 @@ export default function ForgotPage() {
 
     try {
       await apiPost("/api/v1/auth/forgot-password", { email });
-      setMsg("If an account exists, a reset link has been sent.");
-      toast("Check your email for the reset link", "success");
+      setMsg(translate(locale, "auth.forgot.successMsg"));
+      toast(translate(locale, "auth.forgot.toastSuccess"), "success");
       setTimeout(() => router.replace("/auth/login"), 3000);
     } catch (e: any) {
-      setError(e.message || "Request failed");
-      toast(e.message || "Request failed", "error");
+      setError(e.message || translate(locale, "auth.toast.requestFailed"));
+      toast(e.message || translate(locale, "auth.toast.requestFailed"), "error");
     } finally {
       setIsLoading(false);
     }
@@ -40,9 +42,9 @@ export default function ForgotPage() {
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent mb-2">
-              Forgot Password
+              {translate(locale, "auth.forgot.title")}
             </h1>
-            <p className="text-neutral-600 dark:text-neutral-400">Enter your email to receive a reset link</p>
+            <p className="text-neutral-600 dark:text-neutral-400">{translate(locale, "auth.forgot.subtitle")}</p>
           </div>
 
           {/* Card */}
@@ -51,7 +53,7 @@ export default function ForgotPage() {
               {/* Email Input */}
               <div>
                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                  Email Address
+                  {translate(locale, "auth.forgot.emailLabel")}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -62,7 +64,7 @@ export default function ForgotPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
+                    placeholder={translate(locale, "auth.forgot.emailPlaceholder")}
                     className="w-full pl-10 pr-4 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
                   />
                 </div>
@@ -93,10 +95,10 @@ export default function ForgotPage() {
                 {isLoading ? (
                   <>
                     <Loader2 className="h-5 w-5 animate-spin" />
-                    <span>Sending...</span>
+                    <span>{translate(locale, "auth.forgot.sending")}</span>
                   </>
                 ) : (
-                  <span>Send Reset Link</span>
+                  <span>{translate(locale, "auth.forgot.sendButton")}</span>
                 )}
               </button>
             </form>
@@ -105,7 +107,7 @@ export default function ForgotPage() {
             <div className="mt-6 text-center">
               <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
                 <ArrowLeft className="h-4 w-4" />
-                Back to Sign In
+                {translate(locale, "auth.forgot.backToSignIn")}
               </Link>
             </div>
           </div>

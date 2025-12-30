@@ -28,6 +28,8 @@ import { getCountryNames } from "@/utils/countryData";
 import { API_BASE_URL, getUserStorage, saveUserStorage } from "@/utils/api";
 import Modal from "@/components/common/Modal";
 
+import { getStoredLocale, setStoredLocale, Locale, languageNames, locales, translate } from "@/utils/i18n";
+
 type Role = "guest" | "customer" | "vendor" | "admin" | "superAdmin";
 
 // Lightweight, dependency-free user menu
@@ -37,7 +39,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
   // kept for future inline display; we still listen to keep badge accurate when used elsewhere
   const [cartCount, setCartCount] = useState<number>(0);
   const [wishCount, setWishCount] = useState<number>(0);
-  const [language, setLanguage] = useState<string>("en");
+  const [language, setLanguage] = useState<Locale>("en");
   const [currency, setCurrency] = useState<string>("NGN");
   const [country, setCountry] = useState<string>("Nigeria");
   const [firstName, setFirstName] = useState<string>("Guest");
@@ -114,19 +116,24 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
       if (cartRaw) setCartCount(JSON.parse(cartRaw).length);
       const wishRaw = localStorage.getItem("wishlist");
       if (wishRaw) setWishCount(JSON.parse(wishRaw).length);
-      const storedLang = localStorage.getItem("lang");
       const storedCurr = localStorage.getItem("currency");
       const storedCountry = localStorage.getItem("country");
-      if (storedLang) setLanguage(storedLang);
+      setLanguage(getStoredLocale());
       if (storedCurr) setCurrency(storedCurr);
       if (storedCountry) setCountry(storedCountry);
-      const storedTheme = localStorage.getItem("theme");
-      const prefersDark =
-        window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const dark = storedTheme ? storedTheme === "dark" : prefersDark;
-      document.documentElement.classList.toggle("dark", dark);
-      setIsDark(dark);
+
+      // const storedTheme = localStorage.getItem("theme");
+      // const prefersDark =
+      //   window.matchMedia &&
+      //   window.matchMedia("(prefers-color-scheme: dark)").matches;
+      // const dark = storedTheme ? storedTheme === "dark" : prefersDark;
+      // document.documentElement.classList.toggle("dark", dark);
+      // setIsDark(dark);
+
+      // Force light mode
+      localStorage.setItem("theme", "light");
+      document.documentElement.classList.remove("dark");
+      setIsDark(false);
       loadUser();
     } catch { }
     let syncTimer: any = null;
@@ -292,12 +299,19 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
         /* noop */
       }
     };
+    const onLocale = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { locale: Locale };
+      setLanguage(detail.locale);
+    };
+
     window.addEventListener("cart:update", onCart as EventListener);
     window.addEventListener("wishlist:update", onWish as EventListener);
     window.addEventListener("auth:update", onAuth as EventListener);
     window.addEventListener("storage", onStorage as EventListener);
+    window.addEventListener("i18n:locale", onLocale as EventListener);
     return () => {
       if (syncTimer) clearTimeout(syncTimer);
+      window.removeEventListener("i18n:locale", onLocale as EventListener);
       window.removeEventListener("cart:update", onCart as EventListener);
       window.removeEventListener("wishlist:update", onWish as EventListener);
       window.removeEventListener("auth:update", onAuth as EventListener);
@@ -361,11 +375,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
     const value = v;
     persistPreferences({ [prefKey]: value });
     if (k === "lang") {
-      try {
-        window.dispatchEvent(
-          new CustomEvent("i18n:locale", { detail: { locale: v } })
-        );
-      } catch { }
+      setStoredLocale(v as Locale);
     }
   };
 
@@ -441,15 +451,15 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
         <div className="text-left">
           <div className="hidden sm:block text-[10px] sm:text-xs font-semibold opacity-80 leading-tight">
             {role === "admin" || role === "superAdmin"
-              ? "Admin"
+              ? translate(language, "usermenu.admin")
               : guest
-                ? "Hello, Guest"
-                : `Hello, ${firstName}${lastName ? ` ${lastName}` : ""}`}
+                ? translate(language, "usermenu.helloGuest")
+                : `${translate(language, "usermenu.hello")} ${firstName}${lastName ? ` ${lastName}` : ""}`}
           </div>
           <div className="text-[14px] sm:text-[15px] font-bold leading-tight">
             {role === "admin" || role === "superAdmin"
-              ? "Dashboard"
-              : "Account"}
+              ? translate(language, "usermenu.dashboard")
+              : translate(language, "usermenu.account")}
           </div>
         </div>
       </button>
@@ -468,24 +478,24 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
             {guest ? (
               <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
                 <div className="text-base sm:text-lg font-semibold">
-                  Welcome
+                  {translate(language, "usermenu.welcome")}
                 </div>
                 <div className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
-                  Sign in to view orders, manage addresses, and more.
+                  {translate(language, "usermenu.signInDesc")}
                 </div>
                 <Link
                   href="/auth/login"
                   onClick={() => setOpen(false)}
                   className="w-full inline-flex items-center justify-center rounded-full bg-neutral-900 px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-white dark:bg-neutral-100 dark:text-black"
                 >
-                  Login
+                  {translate(language, "usermenu.login")}
                 </Link>
                 <Link
                   href="/auth/register"
                   onClick={() => setOpen(false)}
                   className="w-full inline-flex items-center justify-center rounded-full border px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold"
                 >
-                  Create account
+                  {translate(language, "usermenu.createAccount")}
                 </Link>
               </div>
             ) : (
@@ -525,7 +535,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                   <>
                     <div className="my-1 h-px w-full bg-neutral-200 dark:bg-neutral-800" />
                     <div className="px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-                      Administration
+                      {translate(language, "usermenu.administration")}
                     </div>
                     <Link
                       href="/admin"
@@ -533,8 +543,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                       className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-[0.95rem] hover:bg-neutral-50 dark:hover:bg-neutral-800"
                     >
                       <span className="inline-flex items-center gap-2">
-                        <Shield size={14} className="sm:w-4 sm:h-4" /> Admin
-                        Dashboard
+                        <Shield size={14} className="sm:w-4 sm:h-4" /> {translate(language, "usermenu.adminDashboard")}
                       </span>
                       <ChevronRight size={14} className="sm:w-4 sm:h-4" />
                     </Link>
@@ -544,8 +553,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                       className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-[0.95rem] hover:bg-neutral-50 dark:hover:bg-neutral-800"
                     >
                       <span className="inline-flex items-center gap-2">
-                        <Users size={14} className="sm:w-4 sm:h-4" /> User
-                        Management
+                        <Users size={14} className="sm:w-4 sm:h-4" /> {translate(language, "usermenu.userManagement")}
                       </span>
                       <ChevronRight size={14} className="sm:w-4 sm:h-4" />
                     </Link>
@@ -556,8 +564,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                       className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-[0.95rem] hover:bg-neutral-50 dark:hover:bg-neutral-800"
                     >
                       <span className="inline-flex items-center gap-2">
-                        <Store size={14} className="sm:w-4 sm:h-4" /> Store
-                        Settings
+                        <Store size={14} className="sm:w-4 sm:h-4" /> {translate(language, "usermenu.storeSettings")}
                       </span>
                       <ChevronRight size={14} className="sm:w-4 sm:h-4" />
                     </Link>
@@ -570,7 +577,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                     <div className="my-1 h-px w-full bg-neutral-200 dark:bg-neutral-800" />
 
                     <div className="px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-                      Dashboard
+                      {translate(language, "usermenu.dashboardTitle")}
                     </div>
                     <Link
                       href="/dashboard"
@@ -579,14 +586,14 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                     >
                       <span className="inline-flex items-center gap-2">
                         <LayoutDashboard size={14} className="sm:w-4 sm:h-4" />{" "}
-                        My Dashboard
+                        {translate(language, "usermenu.myDashboard")}
                       </span>
                       <ChevronRight size={14} className="sm:w-4 sm:h-4" />
                     </Link>
 
                     <div className="my-1 h-px w-full bg-neutral-200 dark:bg-neutral-800" />
                     <div className="px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-                      Orders
+                      Order
                     </div>
                     <Link
                       href="/orders"
@@ -594,8 +601,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                       className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-[0.95rem] hover:bg-neutral-50 dark:hover:bg-neutral-800"
                     >
                       <span className="inline-flex items-center gap-2">
-                        <ShoppingBag size={14} className="sm:w-4 sm:h-4" /> My
-                        Orders
+                        <ShoppingBag size={14} className="sm:w-4 sm:h-4" /> {translate(language, "usermenu.myOrders")}
                       </span>
                       <ChevronRight size={14} className="sm:w-4 sm:h-4" />
                     </Link>
@@ -608,14 +614,14 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                     >
                       <span className="inline-flex items-center gap-2">
                         <PackageSearch size={14} className="sm:w-4 sm:h-4" />{" "}
-                        Track Order
+                        {translate(language, "usermenu.trackOrder")}
                       </span>
                       <ChevronRight size={14} className="sm:w-4 sm:h-4" />
                     </button>
 
                     <div className="my-1 h-px w-full bg-neutral-200 dark:bg-neutral-800" />
                     <div className="px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-                      Shopping
+                      {translate(language, "usermenu.shoppingTitle")}
                     </div>
                     <Link
                       href="/wishlist"
@@ -623,7 +629,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                       className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-[0.95rem] hover:bg-neutral-50 dark:hover:bg-neutral-800"
                     >
                       <span className="inline-flex items-center gap-2">
-                        <Heart size={14} className="sm:w-4 sm:h-4" /> Wishlist
+                        <Heart size={14} className="sm:w-4 sm:h-4" /> {translate(language, "usermenu.wishlist")}
                       </span>
                       <span className="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
                         {wishCount}
@@ -635,7 +641,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                       className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-[0.95rem] hover:bg-neutral-50 dark:hover:bg-neutral-800"
                     >
                       <span className="inline-flex items-center gap-2">
-                        <ShoppingBag size={14} className="sm:w-4 sm:h-4" /> Cart
+                        <ShoppingBag size={14} className="sm:w-4 sm:h-4" /> {translate(language, "usermenu.cart")}
                       </span>
                       <span className="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
                         {cartCount}
@@ -648,18 +654,18 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                     >
                       <span className="inline-flex items-center gap-2">
                         <TicketPercent size={14} className="sm:w-4 sm:h-4" />{" "}
-                        Vouchers
+                        {translate(language, "usermenu.vouchers")}
                       </span>
                       <ChevronRight size={14} className="sm:w-4 sm:h-4" />
                     </Link>
 
                     <div className="my-1 h-px w-full bg-neutral-200 dark:bg-neutral-800" />
                     <div className="px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-                      Payments & Address
+                      {translate(language, "usermenu.paymentsAddress")}
                     </div>
                     {/* coming soon */}
                     {hasWallet && (
-                      <Link href="/profile/wallet" onClick={() => setOpen(false)} className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-[0.95rem] hover:bg-neutral-50 dark:hover:bg-neutral-800"><span className="inline-flex items-center gap-2"><Wallet size={14} className="sm:w-4 sm:h-4" /> Wallet</span><ChevronRight size={14} className="sm:w-4 sm:h-4" /></Link>
+                      <Link href="/profile/wallet" onClick={() => setOpen(false)} className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-[0.95rem] hover:bg-neutral-50 dark:hover:bg-neutral-800"><span className="inline-flex items-center gap-2"><Wallet size={14} className="sm:w-4 sm:h-4" /> {translate(language, "header.wallet")}</span><ChevronRight size={14} className="sm:w-4 sm:h-4" /></Link>
                     )}
                     <Link
                       href="/profile#addresses"
@@ -667,7 +673,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                       className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-[0.95rem] hover:bg-neutral-50 dark:hover:bg-neutral-800"
                     >
                       <span className="inline-flex items-center gap-2">
-                        <MapPin size={14} className="sm:w-4 sm:h-4" /> Addresses
+                        <MapPin size={14} className="sm:w-4 sm:h-4" /> {translate(language, "usermenu.addresses")}
                       </span>
                       <ChevronRight size={14} className="sm:w-4 sm:h-4" />
                     </Link>
@@ -676,12 +682,14 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
 
                 <div className="my-1 h-px w-full bg-neutral-200 dark:bg-neutral-800" />
                 <div className="px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-                  Preferences
+                  {translate(language, "usermenu.preferences")}
                 </div>
                 {/* Language */}
                 <div className="px-3 sm:px-4 py-1.5 sm:py-2">
                   <button
-                    onClick={() => {
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setOpenLang((v) => !v);
                       setOpenCurr(false);
                       setOpenCountry(false);
@@ -689,34 +697,30 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                     className="flex w-full items-center justify-between rounded-md px-2 py-1.5 sm:py-2 text-xs sm:text-[0.95rem] hover:bg-neutral-50 dark:hover:bg-neutral-800"
                   >
                     <span className="inline-flex items-center gap-2">
-                      <Globe size={14} className="sm:w-4 sm:h-4" /> Language
+                      <Globe size={14} className="sm:w-4 sm:h-4" /> {translate(language, "usermenu.language")}
                     </span>
                     <span className="text-xs text-neutral-500 dark:text-neutral-400">
-                      {language === "fr" ? "Français" : "English"}
+                      {languageNames[language]}
                     </span>
                   </button>
                   {openLang ? (
                     <div className="mt-1.5 sm:mt-2 grid grid-cols-1 gap-1 px-2">
-                      <button
-                        onClick={() => {
-                          setLanguage("en");
-                          setPref("lang", "en");
-                          setOpen(false);
-                        }}
-                        className="rounded px-2 py-1 text-left text-xs sm:text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800"
-                      >
-                        English
-                      </button>
-                      <button
-                        onClick={() => {
-                          setLanguage("fr");
-                          setPref("lang", "fr");
-                          setOpen(false);
-                        }}
-                        className="rounded px-2 py-1 text-left text-xs sm:text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800"
-                      >
-                        Français
-                      </button>
+                      {locales.map((loc) => (
+                        <button
+                          key={loc}
+                          onClick={() => {
+                            setLanguage(loc);
+                            setPref("lang", loc);
+                            setOpen(false);
+                          }}
+                          className={`rounded px-2 py-1 text-left text-xs sm:text-sm transition-colors ${language === loc
+                            ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 font-bold'
+                            : 'hover:bg-neutral-50 dark:hover:bg-neutral-800'
+                            }`}
+                        >
+                          {languageNames[loc]}
+                        </button>
+                      ))}
                     </div>
                   ) : null}
                 </div>
@@ -724,14 +728,16 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                 {!(role === "admin" || role === "superAdmin") && (
                   <div className="px-3 sm:px-4 py-1.5 sm:py-2">
                     <button
-                      onClick={() => {
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
                         setOpenCurr((v) => !v);
                         setOpenLang(false);
                         setOpenCountry(false);
                       }}
                       className="flex w-full items-center justify-between rounded-md px-2 py-1.5 sm:py-2 text-xs sm:text-[0.95rem] hover:bg-neutral-50 dark:hover:bg-neutral-800"
                     >
-                      <span>Currency</span>
+                      <span>{translate(language, "usermenu.currency")}</span>
                       <span className="text-xs text-neutral-500 dark:text-neutral-400">
                         {currency}
                       </span>
@@ -766,14 +772,16 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                 {!(role === "admin" || role === "superAdmin") && (
                   <div className="px-3 sm:px-4 py-1.5 sm:py-2">
                     <button
-                      onClick={() => {
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
                         setOpenCountry((v) => !v);
                         setOpenLang(false);
                         setOpenCurr(false);
                       }}
                       className="flex w-full items-center justify-between rounded-md px-2 py-1.5 sm:py-2 text-xs sm:text-[0.95rem] hover:bg-neutral-50 dark:hover:bg-neutral-800"
                     >
-                      <span>Country/Region</span>
+                      <span>{translate(language, "usermenu.countryRegion")}</span>
                       <span className="text-xs text-neutral-500 dark:text-neutral-400">
                         {country}
                       </span>
@@ -797,12 +805,12 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                     ) : null}
                   </div>
                 )}
-                <div className="flex items-center justify-between px-3 sm:px-4 py-2 text-xs sm:text-[0.95rem] hover:bg-neutral-50 dark:hover:bg-neutral-800">
+                {/* <div className="flex items-center justify-between px-3 sm:px-4 py-2 text-xs sm:text-[0.95rem] hover:bg-neutral-50 dark:hover:bg-neutral-800">
                   <span className="inline-flex items-center gap-2">
-                    <Sun size={14} className="sm:w-4 sm:h-4" /> Dark Mode
+                    <Sun size={14} className="sm:w-4 sm:h-4" /> {translate(language, "usermenu.darkMode")}
                   </span>
                   <Switch checked={isDark} onChange={toggleTheme} />
-                </div>
+                </div> */}
 
                 {/* Become a Seller and Manage Account - hidden for admin users */}
                 {!(role === "admin" || role === "superAdmin") && (
@@ -818,8 +826,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                       className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-[0.95rem] hover:bg-neutral-50 dark:hover:bg-neutral-800"
                     >
                       <span className="inline-flex items-center gap-2">
-                        <Settings size={14} className="sm:w-4 sm:h-4" /> Manage
-                        Account
+                        <Settings size={14} className="sm:w-4 sm:h-4" /> {translate(language, "usermenu.manageAccount")}
                       </span>
                       <ChevronRight size={14} className="sm:w-4 sm:h-4" />
                     </Link>
@@ -831,12 +838,12 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                     setLastName("");
                     setOpen(false);
                     logout();
-                    toast("Signed out", "success");
+                    toast(translate(language, "usermenu.signedOut"), "success");
                   }}
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-left text-xs sm:text-sm text-rose-600 hover:bg-neutral-50 dark:hover:bg-neutral-800"
                 >
                   <LogOut size={14} className="inline mr-2 sm:w-4 sm:h-4" />{" "}
-                  Sign out
+                  {translate(language, "usermenu.signOut")}
                 </button>
               </>
             )}
@@ -851,7 +858,7 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
           setShowTrack(false);
           setTrackId("");
         }}
-        title="Track your order"
+        title={translate(language, "usermenu.trackOrderModalTitle")}
         size="sm"
         footer={
           <>
@@ -862,13 +869,13 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
               }}
               className="flex-1 rounded-full border px-4 py-2 text-sm text-neutral-900 dark:text-neutral-100"
             >
-              Cancel
+              {translate(language, "common.cancel")}
             </button>
             <button
               onClick={async () => {
                 const key = trackId.trim();
                 if (!key) {
-                  toast("Please enter an Order ID", "error");
+                  toast(translate(language, "usermenu.enterOrderIdError"), "error");
                   return;
                 }
                 try {
@@ -882,25 +889,25 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
                   if (!res.ok) throw new Error(await res.text());
                   const json = await res.json();
                   const fullId = json?.data?.orderId;
-                  if (!fullId) throw new Error("Order not found");
+                  if (!fullId) throw new Error(translate(language, "usermenu.orderNotFound"));
                   setShowTrack(false);
                   setOpen(false);
                   setTrackId("");
                   router.push(`/orders/${fullId}`);
                 } catch (e: any) {
-                  toast(e?.message || "Order not found", "error");
+                  toast(e?.message || translate(language, "usermenu.orderNotFound"), "error");
                 }
               }}
               className="flex-1 rounded-full bg-neutral-900 px-4 py-2 text-sm font-semibold text-white dark:bg-neutral-100 dark:text-black"
             >
-              Track
+              {translate(language, "common.track")}
             </button>
           </>
         }
       >
         <input
           autoFocus
-          placeholder="Enter Order ID"
+          placeholder={translate(language, "usermenu.enterOrderId")}
           value={trackId}
           onChange={(e) => setTrackId(e.target.value)}
           className="mt-1 w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:ring-1 focus:ring-blue-500 dark:border-neutral-700 dark:bg-neutral-950"

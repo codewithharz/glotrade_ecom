@@ -2,12 +2,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus, Minus, ShoppingCart } from "lucide-react";
+import { translate, Locale } from "@/utils/i18n";
 
 type Props = {
   productId: string;
   variantLabel?: string;
   minQty?: number;
   maxQty?: number;
+  locale: Locale;
 };
 
 function readCart(): string[] {
@@ -54,7 +56,7 @@ function AutoScrollText({ text, className }: { text: string; className?: string 
   );
 }
 
-export default function AddToCartControl({ productId, variantLabel, minQty = 1, maxQty = 5 }: Props) {
+export default function AddToCartControl({ productId, variantLabel, minQty = 1, maxQty = 5, locale }: Props) {
   const [qty, setQty] = useState<number>(0);
   const [pendingQty, setPendingQty] = useState<number | null>(null);
   const MIN_QTY = Math.max(1, Number(minQty));
@@ -150,7 +152,7 @@ export default function AddToCartControl({ productId, variantLabel, minQty = 1, 
     if (MAX_QTY <= 0) {
       return (
         <button className="flex justify-center w-full md:w-[70%] inline-flex items-center gap-2 rounded-full bg-neutral-300 text-neutral-600 px-4 sm:px-6 py-3 sm:py-3.5 text-sm sm:text-base font-semibold cursor-not-allowed" disabled>
-          Out of stock
+          {translate(locale, "product.outOfStock")}
         </button>
       );
     }
@@ -164,7 +166,7 @@ export default function AddToCartControl({ productId, variantLabel, minQty = 1, 
         }}
       >
         <ShoppingCart size={16} className="sm:w-[18px] sm:h-[18px]" />
-        Add to cart
+        {translate(locale, "product.addToCart")}
       </button>
     );
   }
@@ -180,7 +182,7 @@ export default function AddToCartControl({ productId, variantLabel, minQty = 1, 
           <Minus size={18} className="sm:w-5 sm:h-5" />
         </button>
         <div className="flex text-center">
-          <div className="text-xs sm:text-xs font-semibold pr-2">{qty} Added</div>
+          <div className="text-xs sm:text-xs font-semibold pr-2">{qty} {translate(locale, "product.added")}</div>
           <AutoScrollText
             text={variantLabel || ""}
             className="text-xs sm:text-xs text-neutral-500"
@@ -199,12 +201,12 @@ export default function AddToCartControl({ productId, variantLabel, minQty = 1, 
         href="/cart"
         className="w-auto sm:flex-none inline-flex justify-center items-center rounded-full bg-orange-500 text-white px-4 py-2 text-sm sm:text-base font-semibold hover:bg-orange-600 active:bg-orange-700 transition-colors"
       >
-        Go to cart
+        {translate(locale, "product.goToCart")}
       </Link>
       {showMaxToast ? (
         <div className="fixed left-1/2 bottom-6 -translate-x-1/2 z-50" aria-live="polite">
           <div className="rounded-full bg-black/85 text-white px-3 py-1 text-xs shadow-md">
-            You have reached the maximum purchase limit for this item.
+            {translate(locale, "product.maxLimit")}
           </div>
         </div>
       ) : null}

@@ -6,10 +6,11 @@ import { RequireAuth } from "@/components/auth/Guards";
 import Modal from "@/components/common/Modal";
 import { toast } from "@/components/common/Toast";
 import AvatarUpload from "@/components/profile/AvatarUpload";
-import { API_BASE_URL } from "@/utils/api";
-import { clearUserData, logout, getUserId, authHeader } from "@/utils/auth";
+import { apiGet, apiPost, apiPut, apiDelete, apiPatch } from "@/utils/api";
+import { clearUserData, logout, getUserId } from "@/utils/auth";
 import { useRouter } from "next/navigation";
 import { getCountryPhoneCode, getStatesForCountry, getCitiesForState, getCountryNames } from "@/utils/countryData";
+import { getStoredLocale, setStoredLocale, translate, Locale } from "@/utils/i18n";
 
 // Shared UI classes for headers inside cards (module scope so subcomponents can reuse)
 const CARD_HEADER = "flex items-center gap-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 px-3 py-2";
@@ -21,7 +22,20 @@ interface Bank {
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [firstName, setFirstName] = useState("Guest");
+  const [locale, setLocale] = useState<Locale>("en");
+
+  useEffect(() => {
+    const fetchLocale = () => {
+      const stored = getStoredLocale();
+      setLocale(stored);
+      setPrefs(prev => ({ ...prev, language: stored }));
+    };
+    fetchLocale();
+    window.addEventListener("i18n:locale", fetchLocale);
+    return () => window.removeEventListener("i18n:locale", fetchLocale);
+  }, []);
+
+  const [firstName, setFirstName] = useState(translate(locale, "common.guest"));
   const [lastName, setLastName] = useState("");
   const [tier, setTier] = useState<"Bronze" | "Silver" | "Gold">("Bronze");
   const [avatar, setAvatar] = useState<string | null>(null);
@@ -61,7 +75,7 @@ export default function ProfilePage() {
     if (userWalletId) {
       navigator.clipboard.writeText(userWalletId);
       // You can add a toast notification here if you have a toast system
-      alert("Wallet ID copied to clipboard!");
+      alert(translate(locale, "profile.toast.walletIdCopied"));
     }
   };
   const [deletionStatus, setDeletionStatus] = useState<{
@@ -93,7 +107,7 @@ export default function ProfilePage() {
       const raw = localStorage.getItem("afritrade:user");
       if (raw) {
         const obj = JSON.parse(raw);
-        const f = obj?.username || obj?.firstName || (obj?.name ? String(obj.name).split(" ")[0] : "Guest");
+        const f = obj?.username || obj?.firstName || (obj?.name ? String(obj.name).split(" ")[0] : translate(locale, "common.guest"));
         const l = obj?.lastName || (obj?.name ? String(obj.name).split(" ").slice(1).join(" ") : "");
         setFirstName(String(f)); setLastName(String(l));
         setEmailVerified(Boolean(obj?.emailVerified));
@@ -127,42 +141,39 @@ export default function ProfilePage() {
     (async () => {
       try {
         const uid = getUserId(); if (!uid) return;
-        const res = await fetch(new URL(`/api/v1/users/profile/${uid}`, API_BASE_URL).toString(), { headers: { ...authHeader() }, cache: "no-store" });
-        if (res.ok) {
-          const json = await res.json();
-          const u = json?.data || {};
+        const json = await apiGet<{ data: any }>(`/api/v1/users/profile/${uid}`);
+        const u = json?.data || {};
 
-          const admin = ['admin', 'superadmin'].includes(String(u?.role || "").toLowerCase());
-          setIsAdmin(admin);
-          setIsSeller(admin);
+        const admin = ['admin', 'superadmin'].includes(String(u?.role || "").toLowerCase());
+        setIsAdmin(admin);
+        setIsSeller(admin);
 
-          // Load avatar from server data - ensure it's a full URL
-          const profileImage = u?.profileImage;
-          if (profileImage && !profileImage.startsWith('http')) {
-            // If it's just a filename, don't set it as avatar
-            setAvatar(null);
-          } else {
-            setAvatar(profileImage || null);
-          }
-
-          // Load wallet ID
-          setUserWalletId(u?.walletId || null);
-
-          // Set account type and business info
-          setAccountType(u?.accountType || "individual");
-          setBusinessInfo(u?.businessInfo || null);
-
-          // hydrate local user cache with role/store to keep UI consistent
-          try {
-            const raw = localStorage.getItem("afritrade:user");
-            if (raw) {
-              const prev = JSON.parse(raw);
-              const next = { ...prev, role: u?.role || prev?.role, store: u?.store || prev?.store };
-              localStorage.setItem("afritrade:user", JSON.stringify(next));
-              window.dispatchEvent(new CustomEvent("auth:update", { detail: { user: next } }));
-            }
-          } catch { }
+        // Load avatar from server data - ensure it's a full URL
+        const profileImage = u?.profileImage;
+        if (profileImage && !profileImage.startsWith('http')) {
+          // If it's just a filename, don't set it as avatar
+          setAvatar(null);
+        } else {
+          setAvatar(profileImage || null);
         }
+
+        // Load wallet ID
+        setUserWalletId(u?.walletId || null);
+
+        // Set account type and business info
+        setAccountType(u?.accountType || "individual");
+        setBusinessInfo(u?.businessInfo || null);
+
+        // hydrate local user cache with role/store to keep UI consistent
+        try {
+          const raw = localStorage.getItem("afritrade:user");
+          if (raw) {
+            const prev = JSON.parse(raw);
+            const next = { ...prev, role: u?.role || prev?.role, store: u?.store || prev?.store };
+            localStorage.setItem("afritrade:user", JSON.stringify(next));
+            window.dispatchEvent(new CustomEvent("auth:update", { detail: { user: next } }));
+          }
+        } catch { }
       } catch { }
     })();
     try {
@@ -176,9 +187,7 @@ export default function ProfilePage() {
     (async () => {
       try {
         const uid = getUserId(); if (!uid) return;
-        const url = new URL(`/api/v1/orders`, API_BASE_URL).toString() + `?buyerId=${encodeURIComponent(uid)}&limit=1`;
-        const res = await fetch(url, { headers: { ...authHeader() }, cache: "no-store" });
-        const json = await res.json();
+        const json = await apiGet<{ data: { total: number } }>(`/api/v1/orders`, { query: { buyerId: uid, limit: 1 } });
         const total = json?.data?.total || 0;
         setStats((s) => ({ ...s, orders: Number(total) || 0 }));
       } catch { }
@@ -186,14 +195,11 @@ export default function ProfilePage() {
     // Load addresses meta for Payments & Address card
     (async () => {
       try {
-        const res = await fetch(new URL(`/api/v1/users/me/addresses`, API_BASE_URL).toString(), { headers: { ...authHeader() }, cache: "no-store" });
-        if (res.ok) {
-          const json = await res.json();
-          const list: Address[] = Array.isArray(json?.data) ? json.data : [];
-          const def = list.find((a: any) => a.isDefault);
-          setAddrMeta({ count: list.length, defaultLine: def ? `${def.street}, ${def.city}` : "" });
-          setAddrList(list);
-        }
+        const json = await apiGet<{ data: Address[] }>(`/api/v1/users/me/addresses`);
+        const list: Address[] = Array.isArray(json?.data) ? json.data : [];
+        const def = list.find((a: any) => a.isDefault);
+        setAddrMeta({ count: list.length, defaultLine: def ? `${def.street}, ${def.city}` : "" });
+        setAddrList(list);
       } catch { }
     })();
 
@@ -205,20 +211,10 @@ export default function ProfilePage() {
     (async () => {
       try {
         setReviewsLoading(true);
-        const res = await fetch(new URL(`/api/v1/market/reviews?limit=100`, API_BASE_URL).toString(), {
-          headers: { ...authHeader() },
-          cache: "no-store"
-        });
-
-        if (res.ok) {
-          const json = await res.json();
-          const reviewsData = json?.data || {};
-          const reviewsArray = reviewsData.reviews || [];
-          setReviews(reviewsArray);
-        } else {
-          console.error('Failed to fetch user reviews:', res.status);
-          setReviews([]);
-        }
+        const json = await apiGet<{ data: { reviews: any[] } }>(`/api/v1/market/reviews`, { query: { limit: 100 } });
+        const reviewsData = json?.data || {};
+        const reviewsArray = reviewsData.reviews || [];
+        setReviews(reviewsArray);
       } catch (error) {
         console.error('Error fetching user reviews:', error);
         setReviews([]);
@@ -234,42 +230,43 @@ export default function ProfilePage() {
     (async () => {
       try {
         const uid = getUserId(); if (!uid) return;
-        const res = await fetch(new URL(`/api/v1/users/profile/${uid}`, API_BASE_URL).toString(), { headers: { ...authHeader() }, cache: "no-store" });
-        if (res.ok) {
-          const json = await res.json();
-          const user = json?.data || {};
-          // Check if user is admin (in single-vendor mode, admin manages the store)
-          const isAdminUser = ['admin', 'superadmin'].includes(String(user?.role || "").toLowerCase());
-          if (isAdminUser) {
-            setSellerStatsLoading(true);
-            try {
-              // Use admin dashboard endpoint for accurate stats
-              const dashboardRes = await fetch(new URL(`/api/v1/admin/dashboard`, API_BASE_URL).toString(), { headers: { ...authHeader() }, cache: "no-store" });
-              if (dashboardRes.ok) {
-                const dashboardJson = await dashboardRes.json();
-                const data = dashboardJson?.data || {};
+        const json = await apiGet<{ data: any }>(`/api/v1/users/profile/${uid}`);
+        const user = json?.data || {};
+        // Check if user is admin (in single-vendor mode, admin manages the store)
+        const isAdminUser = ['admin', 'superadmin'].includes(String(user?.role || "").toLowerCase());
+        if (isAdminUser) {
+          setSellerStatsLoading(true);
+          try {
+            // Use admin dashboard endpoint for accurate stats
+            const dashboardJson = await apiGet<{ data: any }>(`/api/v1/admin/dashboard`);
+            const data = dashboardJson?.data || {};
 
-                setSellerStats({
-                  activeProducts: data.totalProducts || 0,
-                  totalRevenue: data.totalRevenue || 0,
-                  pendingOrders: data.totalOrders || 0,
-                  pendingSales: 0,
-                  completedSales: 0,
-                  totalOrders: 0,
-                  shippedOrders: 0,
-                  deliveredOrders: 0,
-                  cancelledOrders: 0
-                });
-              }
-            } finally {
-              setSellerStatsLoading(false);
-            }
-          }
+            setSellerStats({
+              activeProducts: data.totalProducts || 0,
+              totalRevenue: data.totalRevenue || 0,
+              pendingOrders: data.totalOrders || 0,
+              pendingSales: 0,
+              completedSales: 0,
+              totalOrders: 0,
+              shippedOrders: 0,
+              deliveredOrders: 0,
+              cancelledOrders: 0
+            });
+          } catch { } finally { setSellerStatsLoading(false); }
         }
       } catch { }
     })();
     const onWish = (e: Event) => { const count = (e as CustomEvent).detail?.count ?? 0; setStats((s) => ({ ...s, wishlist: Number(count) || 0 })); };
     window.addEventListener("wishlist:update", onWish as EventListener);
+
+    // Initial prefs hydration
+    try {
+      const storedPrefs = localStorage.getItem("afritrade:prefs");
+      if (storedPrefs) {
+        setPrefs(prev => ({ ...prev, ...JSON.parse(storedPrefs) }));
+      }
+    } catch { }
+
     return () => { window.removeEventListener("wishlist:update", onWish as EventListener); };
   }, []);
 
@@ -284,28 +281,29 @@ export default function ProfilePage() {
     const next = { ...prefs, ...patch };
     setPrefs(next);
     try { localStorage.setItem("afritrade:prefs", JSON.stringify(next)); } catch { }
-    if (patch.theme) {
-      const t = patch.theme;
-      if (t === "dark" || (t === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches)) document.documentElement.classList.add("dark");
-      else document.documentElement.classList.remove("dark");
-      try { localStorage.setItem("theme", t === "system" ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : t); } catch { }
-    }
-    if (patch.language) { try { localStorage.setItem("lang", patch.language); window.dispatchEvent(new CustomEvent("i18n:locale", { detail: patch.language })); } catch { } }
+
+    //  if (patch.theme) {
+    //   const t = patch.theme;
+    //   if (t === "dark" || (t === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches)) document.documentElement.classList.add("dark");
+    //   else document.documentElement.classList.remove("dark");
+    //   try { localStorage.setItem("theme", t === "system" ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : t); } catch { }
+    // }
+
+    // Force light mode
+    document.documentElement.classList.remove("dark");
+    localStorage.setItem("theme", "light");
+    if (patch.language) { setStoredLocale(patch.language as Locale); }
     if (patch.currency) { try { localStorage.setItem("currency", patch.currency); } catch { } }
-    if (patch.country) { try { localStorage.setItem("currency", patch.country); } catch { } }
+    if (patch.country) { try { localStorage.setItem("country", patch.country); } catch { } }
 
     window.dispatchEvent(new CustomEvent("prefs:update", { detail: patch }));
-    try { await fetch(new URL(`/api/v1/users/me`, API_BASE_URL).toString(), { method: "PUT", headers: { "Content-Type": "application/json", ...authHeader() }, body: JSON.stringify({ preferences: next }) }); } catch { }
+    try { await apiPut("/api/v1/users/me", { preferences: next }); } catch { }
   };
 
   const checkDeletionStatus = async () => {
     try {
-      const uid = getUserId(); if (!uid) return;
-      const res = await fetch(new URL(`/api/v1/users/me/deletion-status`, API_BASE_URL).toString(), { headers: { ...authHeader() }, cache: "no-store" });
-      if (res.ok) {
-        const json = await res.json();
-        setDeletionStatus(json.data);
-      }
+      const json = await apiGet<{ data: any }>(`/api/v1/users/me/deletion-status`);
+      setDeletionStatus(json.data);
     } catch (error) {
       console.error('Failed to check deletion status:', error);
     }
@@ -314,43 +312,30 @@ export default function ProfilePage() {
   const requestAccountDeletion = async (reason?: string) => {
     try {
       setDeletionLoading(true);
-      const uid = getUserId(); if (!uid) return;
+      const res = await apiPost<{ message: string }>(`/api/v1/users/me/delete-account`, { reason });
 
-      const res = await fetch(new URL(`/api/v1/users/me/delete-account`, API_BASE_URL).toString(), {
-        method: 'POST',
-        headers: { "Content-Type": "application/json", ...authHeader() },
-        body: JSON.stringify({ reason })
-      });
+      toast(res.message || translate(locale, "profile.delete.status.requested"), 'success');
 
-      if (res.ok) {
-        const json = await res.json();
-        toast(json.message || 'Account deletion requested successfully', 'success');
-
-        // Logout user and redirect to homepage
-        try {
-          clearUserData();
-        } catch (e) {
-          console.error('Failed to clear auth data:', e);
-        }
-
-        // Redirect to homepage
-        window.location.href = '/';
-      } else {
-        const error = await res.json();
-
-        // Check if it's an unsettled orders error (400 status)
-        if (res.status === 400 && error.message && error.message.includes('unsettled order')) {
-          setUnsettledOrdersInfo({
-            reason: error.message,
-            unsettledOrders: parseInt(error.message.match(/(\d+)/)?.[1] || '0')
-          });
-          setShowUnsettledOrdersModal(true);
-        } else {
-          toast(error.message || 'Failed to request account deletion', 'error');
-        }
+      // Logout user and redirect to homepage
+      try {
+        clearUserData();
+      } catch (e) {
+        console.error('Failed to clear auth data:', e);
       }
-    } catch (error) {
-      toast('Failed to request account deletion', 'error');
+
+      // Redirect to homepage
+      window.location.href = '/';
+    } catch (e: any) {
+      // Check if it's an unsettled orders error (400 status)
+      if (e?.message && e.message.includes('unsettled order')) {
+        setUnsettledOrdersInfo({
+          reason: e.message,
+          unsettledOrders: parseInt(e.message.match(/(\d+)/)?.[1] || '0')
+        });
+        setShowUnsettledOrdersModal(true);
+      } else {
+        toast(e?.message || translate(locale, "profile.delete.status.failedRequest"), 'error');
+      }
     } finally {
       setDeletionLoading(false);
     }
@@ -359,24 +344,13 @@ export default function ProfilePage() {
   const reactivateAccount = async () => {
     try {
       setDeletionLoading(true);
-      const uid = getUserId(); if (!uid) return;
+      const res = await apiPost<{ message: string }>(`/api/v1/users/me/reactivate-account`);
 
-      const res = await fetch(new URL(`/api/v1/users/me/reactivate-account`, API_BASE_URL).toString(), {
-        method: 'POST',
-        headers: { "Content-Type": "application/json", ...authHeader() }
-      });
-
-      if (res.ok) {
-        const json = await res.json();
-        toast(json.message || 'Account reactivated successfully', 'success');
-        await checkDeletionStatus(); // Refresh status
-        setShowDelete(false);
-      } else {
-        const error = await res.json();
-        toast(error.message || 'Failed to reactivate account', 'error');
-      }
-    } catch (error) {
-      toast('Failed to reactivate account', 'error');
+      toast(res.message || translate(locale, "profile.delete.status.reactivated"), 'success');
+      await checkDeletionStatus(); // Refresh status
+      setShowDelete(false);
+    } catch (e: any) {
+      toast(e?.message || translate(locale, "profile.delete.status.failedReactivate"), 'error');
     } finally {
       setDeletionLoading(false);
     }
@@ -391,22 +365,40 @@ export default function ProfilePage() {
           // @ts-ignore
           await window.userStore.updateUserProfile(form);
         } else {
-          const res = await fetch(new URL(`/api/v1/users/me`, API_BASE_URL).toString(), { method: "PUT", headers: { "Content-Type": "application/json", ...authHeader() }, body: JSON.stringify({ username: form.username, email: form.email, phone: form.phone, profileImage: form.profileImage }) });
-          if (!res.ok) throw new Error(await res.text());
+          await apiPut("/api/v1/users/me", { username: form.username, email: form.email, phone: form.phone, profileImage: form.profileImage });
         }
         // update local cache
         try { const raw = localStorage.getItem("afritrade:user"); if (raw) { const u = JSON.parse(raw); const next = { ...u, ...form }; localStorage.setItem("afritrade:user", JSON.stringify(next)); window.dispatchEvent(new CustomEvent("auth:update", { detail: { user: next } })); } } catch { }
-        toast("Profile updated", "success");
+        toast(translate(locale, "profile.toast.profileUpdated"), "success");
         setEditing(false);
         // Update local state to reflect changes
-        setFirstName(form.username || "Guest");
+        setFirstName(form.username || translate(locale, "common.guest"));
         setLastName("");
         setAvatar(form.profileImage || null);
       } catch (e: any) {
-        toast(e?.message || "Failed to update profile", "error");
+        toast(e?.message || translate(locale, "profile.toast.updateFailed"), "error");
       }
     } catch (e: any) {
-      toast(e?.message || "Failed to update profile", "error");
+      toast(e?.message || translate(locale, "profile.toast.updateFailed"), "error");
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (!pwd.next || pwd.next !== pwd.confirm) {
+      toast(translate(locale, "profile.security.toast.match"), 'error');
+      return;
+    }
+    try {
+      await apiPost('/api/v1/auth/change-password', {
+        oldPassword: pwd.old,
+        newPassword: pwd.next,
+        email: userEmail
+      });
+      toast(translate(locale, "profile.security.toast.updated"), 'success');
+      setShowPwd(false);
+      setPwd({ old: '', next: '', confirm: '' });
+    } catch (e: any) {
+      toast(e?.message || translate(locale, "profile.security.toast.failed"), 'error');
     }
   };
 
@@ -425,11 +417,8 @@ export default function ProfilePage() {
     const loadAddresses = async () => {
       setLoading(true);
       try {
-        const res = await fetch(new URL(`/api/v1/users/me/addresses`, API_BASE_URL).toString(), { headers: { ...authHeader() }, cache: "no-store" });
-        if (res.ok) {
-          const json = await res.json();
-          setAddresses(Array.isArray(json?.data) ? json.data : []);
-        }
+        const json = await apiGet<{ data: Address[] }>(`/api/v1/users/me/addresses`);
+        setAddresses(Array.isArray(json?.data) ? json.data : []);
       } catch { } finally { setLoading(false); }
     };
 
@@ -438,44 +427,32 @@ export default function ProfilePage() {
     const saveAddress = async () => {
       try {
         const url = editingAddr
-          ? new URL(`/api/v1/users/me/addresses/${editingAddr.id}`, API_BASE_URL).toString()
-          : new URL(`/api/v1/users/me/addresses`, API_BASE_URL).toString();
-        const res = await fetch(url, {
-          method: editingAddr ? "PUT" : "POST",
-          headers: { "Content-Type": "application/json", ...authHeader() },
-          body: JSON.stringify(addrForm)
-        });
-        if (!res.ok) throw new Error(await res.text());
-        toast(editingAddr ? "Address updated" : "Address added", "success");
+          ? `/api/v1/users/me/addresses/${editingAddr.id}`
+          : `/api/v1/users/me/addresses`;
+        const res = editingAddr ? await apiPut(url, addrForm) : await apiPost(url, addrForm);
+
+        toast(editingAddr ? translate(locale, "profile.addresses.toast.updated") : translate(locale, "profile.addresses.toast.added"), "success");
         setShowModal(false);
         setEditingAddr(null);
         setAddrForm({ street: "", city: "", state: "", country: "Nigeria", phone: "" });
         loadAddresses();
-      } catch (e: any) { toast(e?.message || "Failed to save address", "error"); }
+      } catch (e: any) { toast(e?.message || translate(locale, "profile.addresses.toast.addedFailed"), "error"); }
     };
 
     const deleteAddress = async (id: string) => {
       try {
-        const res = await fetch(new URL(`/api/v1/users/me/addresses/${id}`, API_BASE_URL).toString(), {
-          method: "DELETE",
-          headers: { ...authHeader() }
-        });
-        if (!res.ok) throw new Error(await res.text());
-        toast("Address deleted", "success");
+        await apiDelete(`/api/v1/users/me/addresses/${id}`);
+        toast(translate(locale, "profile.addresses.toast.deleted"), "success");
         loadAddresses();
-      } catch (e: any) { toast(e?.message || "Failed to delete", "error"); }
+      } catch (e: any) { toast(e?.message || translate(locale, "profile.addresses.toast.deleteFailed"), "error"); }
     };
 
     const setDefaultAddress = async (id: string) => {
       try {
-        const res = await fetch(new URL(`/api/v1/users/me/addresses/${id}/default`, API_BASE_URL).toString(), {
-          method: "PUT",
-          headers: { ...authHeader() }
-        });
-        if (!res.ok) throw new Error(await res.text());
-        toast("Default address updated", "success");
+        await apiPut(`/api/v1/users/me/addresses/${id}/default`);
+        toast(translate(locale, "profile.addresses.toast.defaultUpdated"), "success");
         loadAddresses();
-      } catch (e: any) { toast(e?.message || "Failed to update", "error"); }
+      } catch (e: any) { toast(e?.message || translate(locale, "profile.addresses.toast.updatedFailed"), "error"); }
     };
 
     return (
@@ -485,10 +462,10 @@ export default function ProfilePage() {
             <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
               <MapPin className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Addresses</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{translate(locale, "profile.addresses.title")}</h3>
           </div>
           <button onClick={() => { setEditingAddr(null); setAddrForm({ street: "", city: "", state: "", country: "Nigeria", phone: "" }); setShowModal(true); }} className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
-            + Add New
+            + {translate(locale, "profile.addresses.addNew")}
           </button>
         </div>
 
@@ -499,7 +476,7 @@ export default function ProfilePage() {
             ))}
           </div>
         ) : addresses.length === 0 ? (
-          <div className="text-sm text-gray-500 dark:text-gray-400 text-center py-8">No saved addresses.</div>
+          <div className="text-sm text-gray-500 dark:text-gray-400 text-center py-8">{translate(locale, "profile.addresses.noAddresses")}</div>
         ) : (
           <div className="space-y-4">
             {addresses.map((addr) => (
@@ -509,7 +486,7 @@ export default function ProfilePage() {
                     <div className="flex items-center gap-2 mb-1">
                       <span className="font-medium text-gray-900 dark:text-white text-sm">{addr.street}</span>
                       {addr.isDefault && (
-                        <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">Default</span>
+                        <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">{translate(locale, "profile.addresses.default")}</span>
                       )}
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -518,16 +495,16 @@ export default function ProfilePage() {
                   </div>
                   <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button onClick={() => { setEditingAddr(addr); setAddrForm(addr); setShowModal(true); }} className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
-                      Edit
+                      {translate(locale, "common.edit")}
                     </button>
                     <button onClick={() => deleteAddress(addr.id)} className="px-3 py-1.5 text-xs font-medium text-rose-700 bg-rose-100 rounded-lg hover:bg-rose-200 dark:bg-rose-900/30 dark:text-rose-300 dark:hover:bg-rose-900/50">
-                      Delete
+                      {translate(locale, "common.delete")}
                     </button>
                   </div>
                 </div>
                 {!addr.isDefault && (
                   <button onClick={() => setDefaultAddress(addr.id)} className="mt-2 text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400">
-                    Set as Default
+                    {translate(locale, "profile.addresses.setAsDefault")}
                   </button>
                 )}
               </div>
@@ -538,23 +515,23 @@ export default function ProfilePage() {
         <Modal
           open={showModal}
           onClose={() => setShowModal(false)}
-          title={<span className="text-lg font-semibold">{editingAddr ? "Edit Address" : "Add New Address"}</span>}
+          title={<span className="text-lg font-semibold">{editingAddr ? translate(locale, "profile.addresses.modal.editTitle") : translate(locale, "profile.addresses.modal.addTitle")}</span>}
           size="md"
           footer={(
             <>
-              <button onClick={() => setShowModal(false)} className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600">Cancel</button>
-              <button onClick={saveAddress} className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 shadow-sm">Save Address</button>
+              <button onClick={() => setShowModal(false)} className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600">{translate(locale, "common.cancel")}</button>
+              <button onClick={saveAddress} className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 shadow-sm">{translate(locale, "common.save")}</button>
             </>
           )}
         >
           <div className="space-y-4 py-2">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Street Address</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{translate(locale, "profile.addresses.modal.street")}</label>
               <input value={addrForm.street} onChange={(e) => setAddrForm((s) => ({ ...s, street: e.target.value }))} className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Country</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{translate(locale, "profile.addresses.modal.country")}</label>
                 <select
                   value={addrForm.country}
                   onChange={(e) => {
@@ -573,7 +550,7 @@ export default function ProfilePage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{translate(locale, "profile.addresses.modal.phone")}</label>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600">
                     {getCountryPhoneCode(addrForm.country)}
@@ -584,7 +561,7 @@ export default function ProfilePage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">State</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{translate(locale, "profile.addresses.modal.state")}</label>
                 <select
                   value={addrForm.state}
                   onChange={(e) => {
@@ -596,21 +573,21 @@ export default function ProfilePage() {
                   }}
                   className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
                 >
-                  <option value="">Select State</option>
+                  <option value="">{translate(locale, "profile.addresses.modal.selectState")}</option>
                   {availableStates.map(state => (
                     <option key={state.name} value={state.name}>{state.name}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{translate(locale, "profile.addresses.modal.city")}</label>
                 <select
                   value={addrForm.city}
                   onChange={(e) => setAddrForm((s) => ({ ...s, city: e.target.value }))}
                   disabled={!addrForm.state}
                   className={`w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900 ${!addrForm.state ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
-                  <option value="">{addrForm.state ? "Select City" : "Select State First"}</option>
+                  <option value="">{addrForm.state ? translate(locale, "profile.addresses.modal.selectCity") : translate(locale, "profile.addresses.modal.selectState")}</option>
                   {availableCities.map(city => (
                     <option key={city} value={city}>{city}</option>
                   ))}
@@ -632,9 +609,9 @@ export default function ProfilePage() {
       (async () => {
         try {
           const uid = getUserId(); if (!uid) return;
-          const res = await fetch(new URL(`/api/v1/orders?buyerId=${encodeURIComponent(uid)}&limit=5`, API_BASE_URL).toString(), { headers: { ...authHeader() }, cache: "no-store" });
-          if (res.ok) {
-            const json = await res.json();
+          setLoading(true);
+          const json = await apiGet<{ data: { orders: any[] } }>(`/api/v1/orders`, { query: { buyerId: uid, limit: 5 } });
+          if (json?.data?.orders) {
             setOrders(Array.isArray(json?.data?.orders) ? json.data.orders : []);
           }
         } catch { } finally { setLoading(false); }
@@ -644,15 +621,11 @@ export default function ProfilePage() {
     const cancelOrder = async () => {
       if (!cancelModal.orderId) return;
       try {
-        const res = await fetch(new URL(`/api/v1/orders/${cancelModal.orderId}/cancel`, API_BASE_URL).toString(), {
-          method: "POST",
-          headers: { ...authHeader() }
-        });
-        if (!res.ok) throw new Error(await res.text());
-        toast("Order cancelled", "success");
+        await apiPost(`/api/v1/orders/${cancelModal.orderId}/cancel`);
+        toast(translate(locale, "profile.orders.toast.cancelled"), "success");
         setCancelModal({ open: false, orderId: null });
         setOrders(orders.filter(o => o._id !== cancelModal.orderId));
-      } catch (e: any) { toast(e?.message || "Failed to cancel order", "error"); }
+      } catch (e: any) { toast(e?.message || translate(locale, "profile.orders.toast.cancelledFailed"), "error"); }
     };
 
     return (
@@ -662,9 +635,9 @@ export default function ProfilePage() {
             <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
               <ShoppingBag className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Orders</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{translate(locale, "profile.orders.title")}</h3>
           </div>
-          <Link href="/orders" className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400">View All</Link>
+          <Link href="/orders" className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400">{translate(locale, "profile.orders.viewAll")}</Link>
         </div>
 
         {loading ? (
@@ -674,7 +647,7 @@ export default function ProfilePage() {
             ))}
           </div>
         ) : orders.length === 0 ? (
-          <div className="text-sm text-gray-500 dark:text-gray-400 text-center py-8">No orders yet.</div>
+          <div className="text-sm text-gray-500 dark:text-gray-400 text-center py-8">{translate(locale, "profile.orders.noOrders")}</div>
         ) : (
           <div className="space-y-4">
             {orders.map((order) => (
@@ -682,7 +655,7 @@ export default function ProfilePage() {
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium text-gray-900 dark:text-white text-sm">Order #{order.orderId || order._id.slice(-8)}</span>
+                      <span className="font-medium text-gray-900 dark:text-white text-sm">{translate(locale, "reviews.form.order")} {order.orderId || order._id.slice(-8)}</span>
                       <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${order.status === 'delivered' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' :
                         order.status === 'shipped' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' :
                           order.status === 'cancelled' ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300' :
@@ -692,17 +665,17 @@ export default function ProfilePage() {
                       </span>
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">
-                      {new Date(order.createdAt).toLocaleDateString()} • NGN {order.totalAmount?.toLocaleString()}
+                      {new Date(order.createdAt).toLocaleDateString()} • {prefs.currency} {order.totalAmount?.toLocaleString()}
                     </div>
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <Link href={`/orders/${order._id}`} className="flex-1 px-3 py-1.5 text-xs font-medium text-center text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
-                    View Details
+                    {translate(locale, "profile.orders.viewDetails")}
                   </Link>
                   {order.status === 'pending' && (
                     <button onClick={() => setCancelModal({ open: true, orderId: order._id })} className="px-3 py-1.5 text-xs font-medium text-rose-700 bg-rose-100 rounded-lg hover:bg-rose-200 dark:bg-rose-900/30 dark:text-rose-300">
-                      Cancel
+                      {translate(locale, "profile.orders.cancel")}
                     </button>
                   )}
                 </div>
@@ -714,16 +687,16 @@ export default function ProfilePage() {
         <Modal
           open={cancelModal.open}
           onClose={() => setCancelModal({ open: false, orderId: null })}
-          title={<span className="flex items-center gap-2 text-rose-600"><XCircle size={18} /> Cancel Order</span>}
+          title={<span className="flex items-center gap-2 text-rose-600"><XCircle size={18} /> {translate(locale, "profile.orders.modal.title")}</span>}
           size="sm"
           footer={(
             <>
-              <button onClick={() => setCancelModal({ open: false, orderId: null })} className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600">No, Keep It</button>
-              <button onClick={cancelOrder} className="flex-1 px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-lg hover:bg-rose-700">Yes, Cancel</button>
+              <button onClick={() => setCancelModal({ open: false, orderId: null })} className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600">{translate(locale, "profile.orders.modal.keep")}</button>
+              <button onClick={cancelOrder} className="flex-1 px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-lg hover:bg-rose-700">{translate(locale, "profile.orders.modal.confirm")}</button>
             </>
           )}
         >
-          <p className="text-sm text-gray-600 dark:text-gray-400">Are you sure you want to cancel this order? This action cannot be undone.</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{translate(locale, "profile.orders.modal.message")}</p>
         </Modal>
       </div>
     );
@@ -750,12 +723,8 @@ export default function ProfilePage() {
           const items = await Promise.all(
             topIds.map(async (id) => {
               try {
-                const res = await fetch(new URL(`/api/v1/market/products/${id}`, API_BASE_URL).toString(), { cache: "no-store" });
-                if (res.ok) {
-                  const json = await res.json();
-                  return json.data;
-                }
-                return null;
+                const json = await apiGet<{ data: any }>(`/api/v1/market/products/${id}`);
+                return json.data;
               } catch {
                 return null;
               }
@@ -784,9 +753,9 @@ export default function ProfilePage() {
             <div className="p-2 bg-rose-100 dark:bg-rose-900/30 rounded-lg">
               <Heart className="w-5 h-5 text-rose-600 dark:text-rose-400" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Wishlist</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{translate(locale, "profile.wishlist.title")}</h3>
           </div>
-          <Link href="/wishlist" className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400">View All</Link>
+          <Link href="/wishlist" className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400">{translate(locale, "profile.orders.viewAll")}</Link>
         </div>
 
         {loading ? (
@@ -802,7 +771,7 @@ export default function ProfilePage() {
             ))}
           </div>
         ) : wishlistItems.length === 0 ? (
-          <div className="text-sm text-gray-500 dark:text-gray-400 text-center py-8">Your wishlist is empty.</div>
+          <div className="text-sm text-gray-500 dark:text-gray-400 text-center py-8">{translate(locale, "profile.wishlist.empty")}</div>
         ) : (
           <div className="space-y-4">
             {wishlistItems.map((item, idx) => (
@@ -823,7 +792,7 @@ export default function ProfilePage() {
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-gray-900 dark:text-white text-sm truncate">{item.title}</div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {item.currency || 'NGN'} {item.price?.toLocaleString()}
+                    {item.currency || prefs.currency} {item.price?.toLocaleString()}
                   </div>
                 </div>
               </Link>
@@ -841,7 +810,7 @@ export default function ProfilePage() {
           <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
             <Shield className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Security</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{translate(locale, "profile.security.title")}</h3>
         </div>
 
         <div className="space-y-4">
@@ -851,8 +820,8 @@ export default function ProfilePage() {
                 <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400" />
               </div>
               <div className="text-left">
-                <div className="text-sm font-medium text-gray-900 dark:text-white">Change Password</div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">Update your password regularly</div>
+                <div className="text-sm font-medium text-gray-900 dark:text-white">{translate(locale, "profile.security.changePassword")}</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">{translate(locale, "profile.security.updateRegularly")}</div>
               </div>
             </div>
             <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300" />
@@ -865,8 +834,8 @@ export default function ProfilePage() {
                   <Shield className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-gray-900 dark:text-white">Two-Factor Authentication</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">Coming Soon</div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-white">{translate(locale, "profile.security.twoFactor")}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">{translate(locale, "profile.security.comingSoon")}</div>
                 </div>
               </div>
             </div>
@@ -890,14 +859,11 @@ export default function ProfilePage() {
       try {
         setLoading(true);
         const uid = getUserId();
-        const res = await fetch(new URL(`/api/v1/users/profile/${uid}`, API_BASE_URL).toString(), { headers: { ...authHeader() }, cache: "no-store" });
-        if (res.ok) {
-          const json = await res.json();
-          const user = json.data;
-          setBankAccount(user.bankAccount);
-          if (user.bankAccount) {
-            setForm(user.bankAccount);
-          }
+        const json = await apiGet<{ data: any }>(`/api/v1/users/profile/${uid}`);
+        const user = json.data;
+        setBankAccount(user.bankAccount);
+        if (user.bankAccount) {
+          setForm(user.bankAccount);
         }
       } catch (err) {
         console.error("Error loading bank info:", err);
@@ -909,11 +875,8 @@ export default function ProfilePage() {
     const fetchBanks = async () => {
       try {
         setLoadingBanks(true);
-        const res = await fetch(new URL("/api/v1/withdrawals/banks", API_BASE_URL).toString(), { headers: { ...authHeader() } });
-        if (res.ok) {
-          const json = await res.json();
-          setBanks(json.data);
-        }
+        const json = await apiGet<{ data: Bank[] }>("/api/v1/withdrawals/banks");
+        setBanks(json.data);
       } catch (err) {
         console.error("Error fetching banks:", err);
       } finally {
@@ -926,16 +889,12 @@ export default function ProfilePage() {
       try {
         setIsResolving(true);
         setError("");
-        const res = await fetch(new URL(`/api/v1/withdrawals/resolve-account?accountNumber=${form.accountNumber}&bankCode=${form.bankCode}`, API_BASE_URL).toString(), { headers: { ...authHeader() } });
-        if (res.ok) {
-          const json = await res.json();
-          setForm(s => ({ ...s, accountName: json.data.accountName }));
-        } else {
-          const json = await res.json();
-          setError(json.message || "Could not resolve account");
-        }
-      } catch (err) {
-        setError("Resolution failed");
+        const json = await apiGet<{ data: { accountName: string } }>(`/api/v1/withdrawals/resolve-account`, {
+          query: { accountNumber: form.accountNumber, bankCode: form.bankCode }
+        });
+        setForm(s => ({ ...s, accountName: json.data.accountName }));
+      } catch (err: any) {
+        setError(err?.message || translate(locale, "profile.bank.modal.error.failed"));
       } finally {
         setIsResolving(false);
       }
@@ -943,21 +902,12 @@ export default function ProfilePage() {
 
     const handleSave = async () => {
       try {
-        const res = await fetch(new URL(`/api/v1/users/me`, API_BASE_URL).toString(), {
-          method: "PUT",
-          headers: { "Content-Type": "application/json", ...authHeader() },
-          body: JSON.stringify({ bankAccount: form })
-        });
-        if (res.ok) {
-          toast("Bank details updated", "success");
-          setShowModal(false);
-          loadBankInfo();
-        } else {
-          const json = await res.json();
-          toast(json.message || "Failed to update", "error");
-        }
-      } catch (err) {
-        toast("Update failed", "error");
+        await apiPut(`/api/v1/users/me`, { bankAccount: form });
+        toast(translate(locale, "profile.bank.toast.updated"), "success");
+        setShowModal(false);
+        loadBankInfo();
+      } catch (err: any) {
+        toast(err?.message || translate(locale, "profile.bank.toast.failed"), "error");
       }
     };
 
@@ -984,10 +934,10 @@ export default function ProfilePage() {
             <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
               <Building className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Bank Account</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{translate(locale, "profile.bank.title")}</h3>
           </div>
           <button onClick={() => setShowModal(true)} className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400">
-            {bankAccount ? "Edit Details" : "+ Add Bank"}
+            {bankAccount ? translate(locale, "profile.bank.edit") : `+ ${translate(locale, "profile.bank.add")}`}
           </button>
         </div>
 
@@ -995,7 +945,7 @@ export default function ProfilePage() {
           <div className="h-20 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800" />
         ) : !bankAccount ? (
           <div className="text-sm text-gray-500 dark:text-gray-400 text-center py-8">
-            No bank details saved. Necessary for commission payouts.
+            {translate(locale, "profile.bank.noDetails")}
           </div>
         ) : (
           <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4">
@@ -1016,19 +966,19 @@ export default function ProfilePage() {
         <Modal
           open={showModal}
           onClose={() => setShowModal(false)}
-          title={<span className="text-lg font-semibold">Bank Payout Details</span>}
+          title={<span className="text-lg font-semibold">{translate(locale, "profile.bank.modal.title")}</span>}
           size="sm"
           footer={(
             <>
-              <button onClick={() => setShowModal(false)} className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600">Cancel</button>
-              <button onClick={handleSave} disabled={!form.accountName} className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50">Save</button>
+              <button onClick={() => setShowModal(false)} className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600">{translate(locale, "common.cancel")}</button>
+              <button onClick={handleSave} disabled={!form.accountName} className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50">{translate(locale, "profile.bank.modal.save")}</button>
             </>
           )}
         >
           <div className="space-y-4 py-2">
             {error && <div className="text-xs text-rose-600 bg-rose-50 p-2 rounded">{error}</div>}
             <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Select Bank</label>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{translate(locale, "profile.bank.modal.selectBank")}</label>
               <select
                 value={form.bankCode}
                 onChange={(e) => {
@@ -1037,12 +987,12 @@ export default function ProfilePage() {
                 }}
                 className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:bg-gray-900 dark:border-gray-600"
               >
-                <option value="">{loadingBanks ? "Loading..." : "Choose Bank"}</option>
+                <option value="">{loadingBanks ? translate(locale, "common.loading") : translate(locale, "profile.bank.modal.selectBank")}</option>
                 {banks.map(b => <option key={b.code} value={b.code}>{b.name}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Account Number</label>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{translate(locale, "profile.bank.modal.accountNumber")}</label>
               <input
                 maxLength={10}
                 value={form.accountNumber}
@@ -1051,13 +1001,13 @@ export default function ProfilePage() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Account Name</label>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{translate(locale, "profile.bank.modal.accountName")}</label>
               <div className="relative">
                 <input
                   readOnly
                   value={form.accountName}
                   className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-700"
-                  placeholder={isResolving ? "Resolving..." : "Automatic resolution"}
+                  placeholder={isResolving ? translate(locale, "profile.bank.modal.resolving") : translate(locale, "profile.bank.modal.autoResolve")}
                 />
                 {isResolving && <div className="absolute right-3 top-1/2 -translate-y-1/2"><RefreshCw size={12} className="animate-spin text-blue-500" /></div>}
               </div>
@@ -1087,14 +1037,14 @@ export default function ProfilePage() {
           <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
             <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Notifications</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{translate(locale, "profile.notifications.title")}</h3>
         </div>
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-sm font-medium text-gray-900 dark:text-white">Order Updates</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">Get notified about your orders</div>
+              <div className="text-sm font-medium text-gray-900 dark:text-white">{translate(locale, "profile.notifications.orderUpdates")}</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">{translate(locale, "profile.notifications.orderUpdatesDesc")}</div>
             </div>
             <button
               onClick={() => toggleNotif('orderUpdates')}
@@ -1106,8 +1056,8 @@ export default function ProfilePage() {
 
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-sm font-medium text-gray-900 dark:text-white">Promotions</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">Receive promotional offers</div>
+              <div className="text-sm font-medium text-gray-900 dark:text-white">{translate(locale, "profile.notifications.promotions")}</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">{translate(locale, "profile.notifications.promotionsDesc")}</div>
             </div>
             <button
               onClick={() => toggleNotif('promotions')}
@@ -1119,8 +1069,8 @@ export default function ProfilePage() {
 
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-sm font-medium text-gray-900 dark:text-white">Newsletter</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">Weekly newsletter updates</div>
+              <div className="text-sm font-medium text-gray-900 dark:text-white">{translate(locale, "profile.notifications.newsletter")}</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">{translate(locale, "profile.notifications.newsletterDesc")}</div>
             </div>
             <button
               onClick={() => toggleNotif('newsletter')}
@@ -1141,16 +1091,16 @@ export default function ProfilePage() {
           {/* Header */}
           <div className="mb-8">
             <nav className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-4">
-              <Link href="/" className="hover:text-gray-900 dark:hover:text-white transition-colors">Home</Link>
+              <Link href="/" className="hover:text-gray-900 dark:hover:text-white transition-colors">{translate(locale, "nav.home")}</Link>
               <ChevronRight className="w-4 h-4 mx-2" />
-              <span className="text-gray-900 dark:text-white font-medium">Profile</span>
+              <span className="text-gray-900 dark:text-white font-medium">{translate(locale, "profile.title")}</span>
             </nav>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {accountType === 'business' ? (businessInfo?.businessType || 'Business Account') : 'Individual Account'}
+                  {accountType === 'business' ? (businessInfo?.businessType || translate(locale, "profile.businessAccount")) : translate(locale, "profile.individualAccount")}
                 </h1>
-                <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your account settings and preferences</p>
+                <p className="text-gray-600 dark:text-gray-400 mt-1">{translate(locale, "profile.manageAccount")}</p>
               </div>
               <div className="flex gap-3">
                 <button
@@ -1159,13 +1109,13 @@ export default function ProfilePage() {
                       setFirstName("Guest");
                       setLastName("");
                       logout();
-                      toast("Signed out", "success");
+                      toast(translate(locale, "profile.toast.signedOut"), "success");
                     } catch { }
                   }}
                   className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-rose-600 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors text-sm font-medium"
                 >
                   <LogOut size={16} />
-                  <span>Sign Out</span>
+                  <span>{translate(locale, "profile.signOut")}</span>
                 </button>
               </div>
             </div>
@@ -1177,11 +1127,8 @@ export default function ProfilePage() {
               <div className="flex items-center gap-3">
                 <span className="text-2xl">⚠️</span>
                 <div className="flex-1">
-                  <div className="font-semibold text-rose-800 dark:text-rose-200">Account Deletion Requested</div>
-                  <div className="text-sm text-rose-700 dark:text-rose-300">
-                    Your account will be permanently deleted on {deletionStatus.gracePeriodEndsAt ? new Date(deletionStatus.gracePeriodEndsAt).toLocaleDateString() : 'unknown date'}.
-                    You can still reactivate your account during this period.
-                  </div>
+                  <div className="font-semibold text-rose-800 dark:text-rose-200">{translate(locale, "profile.accountDeleted")}</div>
+                  {translate(locale, "profile.deletionDate", { date: deletionStatus.gracePeriodEndsAt ? new Date(deletionStatus.gracePeriodEndsAt).toLocaleDateString() : 'unknown date' })}
                 </div>
                 <button
                   onClick={reactivateAccount}
@@ -1222,7 +1169,7 @@ export default function ProfilePage() {
                       tier === 'Silver' ? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300' :
                         'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300'
                       }`}>
-                      {tier} Member
+                      {translate(locale, "profile.member", { tier })}
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -1238,7 +1185,7 @@ export default function ProfilePage() {
                     )}
                     <div className="flex items-center gap-1.5">
                       <MapPin size={14} />
-                      {addrMeta.defaultLine || "No default address"}
+                      {addrMeta.defaultLine || translate(locale, "profile.addresses.noAddresses")}
                     </div>
                   </div>
                 </div>
@@ -1247,15 +1194,15 @@ export default function ProfilePage() {
               <div className="flex gap-8 border-t md:border-t-0 md:border-l border-gray-200 dark:border-gray-700 pt-6 md:pt-0 md:pl-8 w-full md:w-auto">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.orders}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mt-1">Orders</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mt-1">{translate(locale, "profile.stats.orders")}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.wishlist}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mt-1">Wishlist</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mt-1">{translate(locale, "profile.stats.wishlist")}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">{reviews.length}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mt-1">Reviews</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mt-1">{translate(locale, "profile.stats.reviews")}</div>
                 </div>
               </div>
             </div>
@@ -1265,7 +1212,7 @@ export default function ProfilePage() {
               <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 animate-in fade-in slide-in-from-top-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Display Name</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{translate(locale, "profile.displayName")}</label>
                     <input
                       value={form.username}
                       onChange={(e) => setForm((s) => ({ ...s, username: e.target.value }))}
@@ -1273,7 +1220,7 @@ export default function ProfilePage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email Address</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{translate(locale, "profile.email")}</label>
                     <input
                       type="email"
                       value={form.email}
@@ -1282,7 +1229,7 @@ export default function ProfilePage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone Number</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{translate(locale, "profile.phone")}</label>
                     <input
                       value={form.phone}
                       onChange={(e) => setForm((s) => ({ ...s, phone: e.target.value }))}
@@ -1290,12 +1237,13 @@ export default function ProfilePage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Profile Picture</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{translate(locale, "profile.profilePicture")}</label>
                     <AvatarUpload
                       currentAvatar={form.profileImage}
                       onAvatarChange={(avatarUrl) => setForm((s) => ({ ...s, profileImage: avatarUrl }))}
                       userId={getUserId() || ""}
                       editing={editing}
+                      locale={locale}
                     />
                   </div>
                 </div>
@@ -1304,13 +1252,13 @@ export default function ProfilePage() {
                     onClick={() => setEditing(false)}
                     className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700"
                   >
-                    Cancel
+                    {translate(locale, "profile.cancel")}
                   </button>
                   <button
                     onClick={onSave}
                     className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 shadow-sm"
                   >
-                    Save Changes
+                    {translate(locale, "profile.saveChanges")}
                   </button>
                 </div>
               </div>
@@ -1323,28 +1271,28 @@ export default function ProfilePage() {
               <div className="p-4 bg-blue-100 dark:bg-blue-900/30 rounded-lg group-hover:bg-blue-200 dark:group-hover:bg-blue-800/40 transition-colors">
                 <ShoppingBag className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
-              <span className="text-sm font-medium text-gray-900 dark:text-white">My Orders</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">{translate(locale, "profile.quickActions.orders")}</span>
             </Link>
 
             <Link href="/wishlist" className="flex flex-col items-center gap-3 p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all group">
               <div className="p-4 bg-rose-100 dark:bg-rose-900/30 rounded-lg group-hover:bg-rose-200 dark:group-hover:bg-rose-800/40 transition-colors">
                 <Heart className="w-6 h-6 text-rose-600 dark:text-rose-400" />
               </div>
-              <span className="text-sm font-medium text-gray-900 dark:text-white">Wishlist</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">{translate(locale, "profile.quickActions.wishlist")}</span>
             </Link>
 
             <Link href="/cart" className="flex flex-col items-center gap-3 p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all group">
               <div className="p-4 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg group-hover:bg-emerald-200 dark:group-hover:bg-emerald-800/40 transition-colors">
                 <ShoppingBag className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <span className="text-sm font-medium text-gray-900 dark:text-white">My Cart</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">{translate(locale, "profile.quickActions.cart")}</span>
             </Link>
 
             <Link href="/profile/vouchers" className="flex flex-col items-center gap-3 p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all group">
               <div className="p-4 bg-purple-100 dark:bg-purple-900/30 rounded-lg group-hover:bg-purple-200 dark:group-hover:bg-purple-800/40 transition-colors">
                 <TicketPercent className="w-6 h-6 text-purple-600 dark:text-purple-400" />
               </div>
-              <span className="text-sm font-medium text-gray-900 dark:text-white">Vouchers</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">{translate(locale, "profile.quickActions.vouchers")}</span>
             </Link>
           </div>
 
@@ -1369,32 +1317,25 @@ export default function ProfilePage() {
                         <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
                           <Store className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                         </div>
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Store Management</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{translate(locale, "profile.admin.title")}</h3>
                       </div>
                       <button
                         onClick={async () => {
                           setSellerStatsLoading(true);
                           try {
-                            // Use admin dashboard endpoint for accurate stats
-                            const dashboardRes = await fetch(new URL(`/api/v1/admin/dashboard`, API_BASE_URL).toString(), { headers: { ...authHeader() }, cache: "no-store" });
-                            if (dashboardRes.ok) {
-                              const dashboardJson = await dashboardRes.json();
-                              const data = dashboardJson?.data || {};
-                              const activeProducts = data.totalProducts || 0;
-                              const totalRevenue = data.totalRevenue || 0;
-                              const pendingOrders = data.totalOrders || 0; // Use total orders as pending orders
-                              setSellerStats({
-                                activeProducts,
-                                totalRevenue,
-                                pendingOrders,
-                                pendingSales: 0,
-                                completedSales: 0,
-                                totalOrders: 0,
-                                shippedOrders: 0,
-                                deliveredOrders: 0,
-                                cancelledOrders: 0
-                              });
-                            }
+                            const dashboardJson = await apiGet<{ data: any }>(`/api/v1/admin/dashboard`);
+                            const data = dashboardJson?.data || {};
+                            setSellerStats({
+                              activeProducts: data.totalProducts || 0,
+                              totalRevenue: data.totalRevenue || 0,
+                              pendingOrders: data.totalOrders || 0,
+                              pendingSales: 0,
+                              completedSales: 0,
+                              totalOrders: 0,
+                              shippedOrders: 0,
+                              deliveredOrders: 0,
+                              cancelledOrders: 0
+                            });
                           } catch (err) {
                             console.error("Failed to fetch seller stats:", err);
                           } finally {
@@ -1415,18 +1356,18 @@ export default function ProfilePage() {
                       <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                           <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
-                            <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Active Products</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">{translate(locale, "profile.admin.activeProducts")}</div>
                             <div className="text-2xl font-bold text-gray-900 dark:text-white">{sellerStats.activeProducts}</div>
                           </div>
                           <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
-                            <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Pending Orders</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">{translate(locale, "profile.admin.pendingOrders")}</div>
                             <div className="text-2xl font-bold text-gray-900 dark:text-white">{sellerStats.pendingOrders}</div>
                           </div>
                         </div>
                         <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
-                          <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Revenue</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">{translate(locale, "profile.admin.totalRevenue")}</div>
                           <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                            NGN {sellerStats.totalRevenue?.toLocaleString()}
+                            {prefs.currency} {sellerStats.totalRevenue?.toLocaleString()}
                           </div>
                         </div>
                         <Link
@@ -1434,12 +1375,12 @@ export default function ProfilePage() {
                           className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-medium rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors text-sm"
                         >
                           <Store className="w-4 h-4" />
-                          Go to Admin Dashboard
+                          {translate(locale, "profile.admin.goToDashboard")}
                         </Link>
                       </div>
                     ) : (
                       <div className="text-center py-8">
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Click refresh to load store statistics</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{translate(locale, "profile.admin.refreshHint")}</p>
                       </div>
                     )}
                   </div>
@@ -1452,20 +1393,29 @@ export default function ProfilePage() {
                   <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
                     <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Preferences</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{translate(locale, "profile.preferences.title")}</h3>
                 </div>
                 <div className="space-y-4">
                   <button onClick={() => setPrefLangOpen(true)} className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                     <div className="flex items-center gap-3">
                       <Globe className="w-5 h-5 text-gray-500" />
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Language</span>
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{translate(locale, "profile.preferences.language")}</span>
                     </div>
-                    <span className="text-sm text-gray-500">{prefs.language === 'fr' ? 'Français' : 'English'}</span>
+                    <span className="text-sm text-gray-500">
+                      {({
+                        en: 'English',
+                        fr: 'Français',
+                        es: 'Español',
+                        zh: '中文',
+                        ar: 'العربية',
+                        ha: 'Hausa'
+                      })[locale] || 'English'}
+                    </span>
                   </button>
-                  <div className="p-3">
+                  {/* <div className="p-3">
                     <div className="flex items-center gap-3 mb-3">
                       <Sun className="w-5 h-5 text-gray-500" />
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Theme</span>
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{translate(locale, "profile.preferences.theme")}</span>
                     </div>
                     <div className="grid grid-cols-3 gap-2">
                       {['light', 'system', 'dark'].map(v => (
@@ -1481,7 +1431,7 @@ export default function ProfilePage() {
                         </button>
                       ))}
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
 
@@ -1539,16 +1489,16 @@ export default function ProfilePage() {
               <div className="bg-rose-50 dark:bg-rose-900/10 rounded-xl shadow-sm border border-rose-200 dark:border-rose-800 p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-400" />
-                  <h3 className="text-lg font-semibold text-rose-900 dark:text-rose-100">Danger Zone</h3>
+                  <h3 className="text-lg font-semibold text-rose-900 dark:text-rose-100">{translate(locale, "profile.dangerZone")}</h3>
                 </div>
                 <p className="text-sm text-rose-700 dark:text-rose-300 mb-4">
-                  Permanently delete your account and all of your content.
+                  {translate(locale, "profile.deleteWarning")}
                 </p>
                 <button
                   onClick={() => setShowDelete(true)}
                   className="w-full py-2 px-4 bg-white dark:bg-gray-800 border border-rose-300 dark:border-rose-700 text-rose-600 dark:text-rose-400 font-medium rounded-lg hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors text-sm"
                 >
-                  Delete Account
+                  {translate(locale, "profile.deleteAccount")}
                 </button>
               </div>
             </div>
@@ -1559,35 +1509,33 @@ export default function ProfilePage() {
         <Modal
           open={trackModal.open}
           onClose={() => setTrackModal({ open: false, id: "" })}
-          title={<span className="inline-flex items-center gap-2"><PackageSearch size={16} /> Track order</span>}
+          title={<span className="inline-flex items-center gap-2"><PackageSearch size={16} /> {translate(locale, "profile.track.modal.title")}</span>}
           size="sm"
           footer={(
             <>
               <button
                 onClick={async () => {
                   const key = trackModal.id.trim();
-                  if (!key) { toast("Please enter an Order ID", "error"); return; }
+                  if (!key) { toast(translate(locale, "profile.track.modal.error.empty"), "error"); return; }
                   try {
-                    const res = await fetch(new URL(`/api/v1/orders/resolve/${encodeURIComponent(key)}`, API_BASE_URL).toString(), { headers: { ...authHeader() }, cache: "no-store" });
-                    if (!res.ok) throw new Error(await res.text());
-                    const json = await res.json();
+                    const json = await apiGet<{ data: any }>(`/api/v1/orders/resolve/${encodeURIComponent(key)}`);
                     const fullId = json?.data?.orderId;
-                    if (!fullId) throw new Error("Resolve failed");
+                    if (!fullId) throw new Error(translate(locale, "profile.track.modal.error.resolveFailed"));
                     setTrackModal({ open: false, id: "" });
                     router.push(`/orders/${fullId}`);
                   } catch (e: any) {
-                    toast(e?.message || "Order not found", "error");
+                    toast(e?.message || translate(locale, "profile.track.modal.error.notFound"), "error");
                   }
                 }}
                 className="flex-1 rounded-full bg-neutral-900 px-4 py-2 text-sm font-semibold text-white dark:bg-neutral-100 dark:text-black"
-              >Track</button>
-              <button onClick={() => setTrackModal({ open: false, id: "" })} className="flex-1 rounded-full border px-4 py-2 text-sm">Cancel</button>
+              >{translate(locale, "common.track")}</button>
+              <button onClick={() => setTrackModal({ open: false, id: "" })} className="flex-1 rounded-full border px-4 py-2 text-sm">{translate(locale, "common.cancel")}</button>
             </>
           )}
         >
           <input
             autoFocus
-            placeholder="Enter Order ID"
+            placeholder={translate(locale, "profile.track.modal.placeholder")}
             value={trackModal.id}
             onChange={(e) => setTrackModal((m) => ({ ...m, id: e.target.value }))}
             className="mt-2 w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:ring-1 focus:ring-blue-500 dark:border-neutral-700 dark:bg-neutral-950"
@@ -1598,23 +1546,23 @@ export default function ProfilePage() {
         <Modal
           open={showAddrModal}
           onClose={() => setShowAddrModal(false)}
-          title={<span className="inline-flex items-center gap-2"><MapPin size={16} /> Your addresses</span>}
+          title={<span className="inline-flex items-center gap-2"><MapPin size={16} /> {translate(locale, "profile.addresses.previewTitle")}</span>}
           size="sm"
           footer={(
             <>
-              <button onClick={() => { setShowAddrModal(false); router.push("/profile#addresses"); }} className="flex-1 rounded-full border px-4 py-2 text-sm">Manage</button>
-              <button onClick={() => setShowAddrModal(false)} className="flex-1 rounded-full bg-neutral-900 px-4 py-2 text-sm font-semibold text-white dark:bg-neutral-100 dark:text-black">Close</button>
+              <button onClick={() => { setShowAddrModal(false); router.push("/profile#addresses"); }} className="flex-1 rounded-full border px-4 py-2 text-sm">{translate(locale, "common.manage")}</button>
+              <button onClick={() => setShowAddrModal(false)} className="flex-1 rounded-full bg-neutral-900 px-4 py-2 text-sm font-semibold text-white dark:bg-neutral-100 dark:text-black">{translate(locale, "common.close")}</button>
             </>
           )}
         >
           <div className="max-h-72 overflow-y-auto no-scrollbar space-y-2 pr-1">
             {addrList.length === 0 ? (
-              <div className="text-sm text-neutral-500">No saved addresses.</div>
+              <div className="text-sm text-neutral-500">{translate(locale, "profile.addresses.noAddresses")}</div>
             ) : addrList.map((a) => (
               <div key={a.id} className="rounded-xl border border-neutral-200 p-3 dark:border-neutral-800">
                 <div className="flex items-center justify-between">
                   <div className="text-sm font-semibold">{a.street}</div>
-                  {a.isDefault ? (<span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">Default</span>) : null}
+                  {a.isDefault ? (<span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">{translate(locale, "profile.addresses.default")}</span>) : null}
                 </div>
                 <div className="mt-1 text-xs text-neutral-600 dark:text-neutral-300">{a.city}, {a.state}, {a.country} • {a.phone}</div>
               </div>
@@ -1623,33 +1571,50 @@ export default function ProfilePage() {
         </Modal>
 
         {/* Change password modal */}
-        {showPwd ? (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowPwd(false)} />
-            <div className="relative w-[92%] max-w-md rounded-2xl border border-neutral-200 bg-white p-5 text-neutral-900 shadow-2xl dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100">
-              <div className="mb-3 text-base font-semibold">Change password</div>
-              {['old', 'next', 'confirm'].map(k => (
-                <input key={k} type="password" placeholder={k} value={(pwd as any)[k]} onChange={(e) => setPwd((s: any) => ({ ...s, [k]: e.target.value }))} className="mb-2 w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm dark:border-neutral-700 dark:bg-neutral-950" />
-              ))}
-              <div className="mt-2 flex gap-2"><button onClick={async () => { if (!pwd.next || pwd.next !== pwd.confirm) { toast('Passwords do not match', 'error'); return; } try { const headers: any = { 'Content-Type': 'application/json' }; const uid = getUserId(); if (uid) headers['Authorization'] = `Bearer ${uid}`; const resp = await fetch(new URL('/api/v1/auth/change-password', API_BASE_URL).toString(), { method: 'POST', headers, body: JSON.stringify({ oldPassword: pwd.old, newPassword: pwd.next, email: userEmail }) }); if (!resp.ok) { const msg = await resp.text().catch(() => 'Change password failed'); throw new Error(msg); } toast('Password updated', 'success'); setShowPwd(false); setPwd({ old: '', next: '', confirm: '' }); } catch (e: any) { toast(e?.message || 'Update failed', 'error'); } }} className="flex-1 rounded-full bg-neutral-900 px-4 py-2 text-sm font-semibold text-white dark:bg-neutral-100 dark:text-black">Save</button><button onClick={() => setShowPwd(false)} className="flex-1 rounded-full border px-4 py-2 text-sm">Cancel</button></div>
-            </div>
+        <Modal
+          open={showPwd}
+          onClose={() => setShowPwd(false)}
+          title={<span className="text-lg font-semibold">{translate(locale, "profile.security.modal.title")}</span>}
+          size="sm"
+          footer={(
+            <>
+              <button onClick={() => setShowPwd(false)} className="flex-1 rounded-full border px-4 py-2 text-sm">{translate(locale, "common.cancel")}</button>
+              <button onClick={handleChangePassword} className="flex-1 rounded-full bg-neutral-900 px-4 py-2 text-sm font-semibold text-white dark:bg-neutral-100 dark:text-black">{translate(locale, "common.save")}</button>
+            </>
+          )}
+        >
+          <div className="space-y-4 py-2">
+            {['old', 'next', 'confirm'].map(k => (
+              <div key={k}>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  {translate(locale, `profile.security.modal.${k}`)}
+                </label>
+                <input
+                  type="password"
+                  placeholder={translate(locale, `profile.security.modal.${k}`)}
+                  value={(pwd as any)[k]}
+                  onChange={(e) => setPwd((s: any) => ({ ...s, [k]: e.target.value }))}
+                  className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-blue-500 dark:border-neutral-700 dark:bg-neutral-950"
+                />
+              </div>
+            ))}
           </div>
-        ) : null}
+        </Modal>
 
         {/* Delete account modal */}
-        <Modal open={showDelete} onClose={() => setShowDelete(false)} title={<span className="inline-flex items-center gap-2 text-rose-600 dark:text-rose-300"><Trash2 size={16} /> Delete account</span>} size="lg" footer={(
+        <Modal open={showDelete} onClose={() => setShowDelete(false)} title={<span className="inline-flex items-center gap-2 text-rose-600 dark:text-rose-300"><Trash2 size={16} /> {translate(locale, "profile.deleteAccount")}</span>} size="lg" footer={(
           <>
-            <button onClick={() => setShowDelete(false)} className="flex-1 rounded-full border px-4 py-2 text-sm">Cancel</button>
+            <button onClick={() => setShowDelete(false)} className="flex-1 rounded-full border px-4 py-2 text-sm">{translate(locale, "profile.cancel")}</button>
             <button
               onClick={async () => {
                 if (deleteConfirm !== 'DELETE') {
-                  toast('Type DELETE to confirm', 'error');
+                  toast(translate(locale, "profile.delete.error.match"), 'error');
                   return;
                 }
                 try {
                   await requestAccountDeletion(deleteConfirm);
                 } catch {
-                  toast('Failed', 'error');
+                  toast(translate(locale, "profile.delete.error.failed"), 'error');
                 }
               }}
               disabled={deleteConfirm !== 'DELETE' || deletionLoading}
@@ -1658,7 +1623,7 @@ export default function ProfilePage() {
                 : 'bg-neutral-400 cursor-not-allowed'
                 }`}
             >
-              {deletionLoading ? 'Processing...' : 'Delete Account'}
+              {deletionLoading ? translate(locale, "profile.reactivateProcessing") : translate(locale, "profile.deleteAccount")}
             </button>
           </>
         )}>
@@ -1668,30 +1633,30 @@ export default function ProfilePage() {
               <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-amber-600">⚠️</span>
-                  <span className="font-semibold text-amber-800 dark:text-amber-200">Account Deletion Status</span>
+                  <span className="font-semibold text-amber-800 dark:text-amber-200">{translate(locale, "profile.accountDeleted")}</span>
                 </div>
                 {deletionStatus.isDeletionRequested ? (
                   <div className="space-y-2 text-sm text-amber-700 dark:text-amber-300">
-                    <div>Your account deletion was requested on <span className="font-semibold">{new Date(deletionStatus.deletionRequestedAt!).toLocaleDateString()}</span></div>
-                    <div>Grace period ends on <span className="font-semibold">{new Date(deletionStatus.gracePeriodEndsAt!).toLocaleDateString()}</span></div>
-                    <div className="text-xs">You can still reactivate your account during this period.</div>
+                    <div>{translate(locale, "profile.delete.info.requestedOn", { date: new Date(deletionStatus.deletionRequestedAt!).toLocaleDateString() })}</div>
+                    <div>{translate(locale, "profile.delete.info.graceEnds", { date: new Date(deletionStatus.gracePeriodEndsAt!).toLocaleDateString() })}</div>
+                    <div className="text-xs">{translate(locale, "profile.delete.info.reactivateHint")}</div>
                     <button
                       onClick={reactivateAccount}
                       disabled={deletionLoading}
                       className="mt-2 rounded-lg bg-amber-600 px-3 py-2 text-xs font-medium text-white hover:bg-amber-700 disabled:opacity-50"
                     >
-                      {deletionLoading ? 'Processing...' : 'Reactivate Account'}
+                      {deletionLoading ? translate(locale, "profile.reactivateProcessing") : translate(locale, "profile.reactivate")}
                     </button>
                   </div>
                 ) : (
                   <div className="text-sm text-amber-700 dark:text-amber-300">
                     {deletionStatus.canDelete ? (
-                      <span>Your account is active and can be deleted.</span>
+                      <span>{translate(locale, "profile.delete.info.active")}</span>
                     ) : (
                       <div>
-                        <span className="font-semibold">Cannot delete account:</span> {deletionStatus.reason}
+                        <span className="font-semibold">{translate(locale, "profile.delete.info.cannotDelete")}</span> {deletionStatus.reason}
                         {deletionStatus.unsettledOrders && (
-                          <div className="mt-1 text-xs">You have {deletionStatus.unsettledOrders} unsettled order(s).</div>
+                          <div className="mt-1 text-xs">{translate(locale, "profile.delete.info.unsettledOrders", { count: deletionStatus.unsettledOrders })}</div>
                         )}
                       </div>
                     )}
@@ -1702,25 +1667,25 @@ export default function ProfilePage() {
 
             {/* Deletion Information */}
             <div className="text-sm text-neutral-600 dark:text-neutral-300">
-              <div className="mb-2">This action is <span className="font-semibold text-rose-600">irreversible</span> and will:</div>
+              <div className="mb-2">{translate(locale, "profile.delete.irreversible")}</div>
               <ul className="space-y-1 text-xs">
-                <li>• Mark your account for deletion (60-day grace period)</li>
-                <li>• Prevent new orders and transactions</li>
-                <li>• Allow existing orders to complete</li>
-                <li>• Preserve business data for compliance</li>
-                <li>• Send notifications to affected customers</li>
+                <li>• {translate(locale, "profile.delete.effect1")}</li>
+                <li>• {translate(locale, "profile.delete.effect2")}</li>
+                <li>• {translate(locale, "profile.delete.effect3")}</li>
+                <li>• {translate(locale, "profile.delete.effect4")}</li>
+                <li>• {translate(locale, "profile.delete.effect5")}</li>
               </ul>
             </div>
 
             {/* Confirmation Input */}
             <div>
               <div className="mb-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                Type <span className="font-mono font-bold text-rose-600">DELETE</span> to confirm:
+                {translate(locale, "profile.delete.confirmPrompt")}
               </div>
               <input
                 value={deleteConfirm}
                 onChange={(e) => setDeleteConfirm(e.target.value)}
-                placeholder="Type DELETE to confirm"
+                placeholder={translate(locale, "profile.delete.confirmPlaceholder")}
                 className={`w-full rounded-lg border px-3 py-2 text-sm font-mono transition-all ${deleteConfirm === 'DELETE'
                   ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
                   : deleteConfirm && deleteConfirm !== 'DELETE'
@@ -1734,7 +1699,7 @@ export default function ProfilePage() {
                 <div className="mt-2 animate-in slide-in-from-top-2 duration-300">
                   <div className="flex items-center gap-2 rounded-lg bg-rose-50 border border-rose-200 px-3 py-2 text-xs text-rose-700 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-300">
                     <span className="animate-pulse">⚠️</span>
-                    <span>Please type <span className="font-mono font-bold">DELETE</span> exactly to confirm account deletion</span>
+                    <span>{translate(locale, "profile.delete.error.exactMatch")}</span>
                   </div>
                 </div>
               )}
@@ -1744,7 +1709,7 @@ export default function ProfilePage() {
                 <div className="mt-2 animate-in slide-in-from-top-2 duration-300">
                   <div className="flex items-center gap-2 rounded-lg bg-green-50 border border-green-200 px-3 py-2 text-xs text-green-700 dark:bg-green-900/20 dark:border-green-800 dark:text-green-300">
                     <span>✅</span>
-                    <span>Confirmation text matches. You can now delete your account.</span>
+                    <span>{translate(locale, "profile.delete.success.match")}</span>
                   </div>
                 </div>
               )}
@@ -1756,14 +1721,14 @@ export default function ProfilePage() {
         <Modal
           open={showUnsettledOrdersModal}
           onClose={() => setShowUnsettledOrdersModal(false)}
-          title={<span className="inline-flex items-center gap-2 text-amber-600 dark:text-amber-300">⚠️ Cannot Delete Account</span>}
+          title={<span className="inline-flex items-center gap-2 text-amber-600 dark:text-amber-300">⚠️ {translate(locale, "profile.unsettled.modal.title")}</span>}
           size="md"
           footer={(
             <button
               onClick={() => setShowUnsettledOrdersModal(false)}
               className="w-full rounded-full bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700"
             >
-              I Understand
+              {translate(locale, "common.close")}
             </button>
           )}
         >
@@ -1773,30 +1738,29 @@ export default function ProfilePage() {
                 <span className="text-2xl">📦</span>
               </div>
               <h3 className="mb-2 text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-                Account Has Unsettled Orders
+                {translate(locale, "profile.unsettled.modal.header")}
               </h3>
             </div>
 
             <div className="text-sm text-neutral-600 dark:text-neutral-300">
               <p className="mb-3">
-                You cannot delete your account because you have <span className="font-semibold text-amber-600 dark:text-amber-400">{unsettledOrdersInfo?.unsettledOrders || 0} unsettled order(s)</span>.
+                {translate(locale, "profile.unsettled.modal.desc", { count: unsettledOrdersInfo?.unsettledOrders || 0 })}
               </p>
 
               <div className="rounded-lg bg-amber-50 p-3 dark:bg-amber-900/20">
-                <div className="font-medium text-amber-800 dark:text-amber-200 mb-2">What you need to do:</div>
+                <div className="font-medium text-amber-800 dark:text-amber-200 mb-2">{translate(locale, "profile.unsettled.todo.title")}</div>
                 <ul className="space-y-1 text-xs text-amber-700 dark:text-amber-300">
-                  <li>• Complete any pending orders</li>
-                  <li>• Wait for shipped orders to be delivered</li>
-                  <li>• Cancel orders if they cannot be completed</li>
-                  <li>• Ensure all refunds are processed</li>
+                  <li>• {translate(locale, "profile.unsettled.todo.item1")}</li>
+                  <li>• {translate(locale, "profile.unsettled.todo.item2")}</li>
+                  <li>• {translate(locale, "profile.unsettled.todo.item3")}</li>
+                  <li>• {translate(locale, "profile.unsettled.todo.item4")}</li>
                 </ul>
               </div>
 
               <div className="mt-4 rounded-lg bg-blue-50 p-3 dark:bg-blue-900/20">
-                <div className="font-medium text-blue-800 dark:text-blue-200 mb-2">Why this matters:</div>
+                <div className="font-medium text-blue-800 dark:text-blue-200 mb-2">{translate(locale, "profile.unsettled.why.title")}</div>
                 <div className="text-xs text-blue-700 dark:text-blue-300">
-                  We need to protect both you and your customers. Unsettled orders could result in financial disputes,
-                  incomplete transactions, or customer service issues. Once all orders are resolved, you can safely delete your account.
+                  {translate(locale, "profile.unsettled.why.desc")}
                 </div>
               </div>
             </div>
@@ -1806,7 +1770,7 @@ export default function ProfilePage() {
                 href="/orders"
                 className="inline-flex items-center gap-2 rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-black dark:hover:bg-neutral-200"
               >
-                <span>View My Orders</span>
+                <span>{translate(locale, "profile.unsettled.viewOrders")}</span>
                 <ChevronRight size={16} />
               </Link>
             </div>
@@ -1814,17 +1778,24 @@ export default function ProfilePage() {
         </Modal>
 
         {/* Preferences Modals */}
-        <Modal open={prefLangOpen} onClose={() => setPrefLangOpen(false)} title={<span className="inline-flex items-center gap-2"><Globe size={16} /> Language</span>} size="sm" footer={null}>
+        <Modal open={prefLangOpen} onClose={() => setPrefLangOpen(false)} title={<span className="inline-flex items-center gap-2"><Globe size={16} /> {translate(locale, "profile.preferences.language")}</span>} size="sm" footer={null}>
           <div className="grid gap-2">
-            {[{ v: 'en', l: 'English' }, { v: 'fr', l: 'Français' }].map((o) => (
+            {([
+              { v: 'en', l: 'English' },
+              { v: 'fr', l: 'Français' },
+              { v: 'es', l: 'Español' },
+              { v: 'zh', l: '中文' },
+              { v: 'ar', l: 'العربية' },
+              { v: 'ha', l: 'Hausa' }
+            ]).map((o) => (
               <button key={o.v} onClick={() => { savePrefs({ language: o.v }); setPrefLangOpen(false); }} className={`rounded-xl border px-3 py-2 text-left ${prefs.language === o.v ? 'border-neutral-900 dark:border-neutral-200' : 'border-neutral-200 dark:border-neutral-800'}`}>{o.l}</button>
             ))}
           </div>
         </Modal>
 
-        <Modal open={prefCountryOpen} onClose={() => setPrefCountryOpen(false)} title={<span className="inline-flex items-center gap-2"><MapPin size={16} /> Country/Region</span>} size="sm" footer={null}>
-          <div className="grid gap-2">
-            {["Nigeria", "Ghana", "Côte d'Ivoire"].map((c) => (
+        <Modal open={prefCountryOpen} onClose={() => setPrefCountryOpen(false)} title={<span className="inline-flex items-center gap-2"><MapPin size={16} /> {translate(locale, "profile.addresses.modal.country")}</span>} size="sm" footer={null}>
+          <div className="grid gap-2 max-h-[60vh] overflow-y-auto no-scrollbar">
+            {getCountryNames().map((c) => (
               <button key={c} onClick={() => { savePrefs({ country: c }); setPrefCountryOpen(false); }} className={`rounded-xl border px-3 py-2 text-left ${prefs.country === c ? 'border-neutral-900 dark:border-neutral-200' : 'border-neutral-200 dark:border-neutral-800'}`}>{c}</button>
             ))}
           </div>

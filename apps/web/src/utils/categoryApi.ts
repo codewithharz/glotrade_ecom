@@ -1,4 +1,4 @@
-import { API_BASE_URL } from './api';
+import { apiGet } from './api';
 
 export interface ICategory {
   _id: string;
@@ -31,11 +31,7 @@ export interface CategoryHierarchy {
 // Fetch all categories from the API
 export const fetchCategories = async (): Promise<ICategory[]> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/market/categories`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch categories');
-    }
-    const data = await response.json();
+    const data = await apiGet<{ data: ICategory[] }>("/api/v1/market/categories");
     return data.data || [];
   } catch (error) {
     console.error('Error fetching categories:', error);
@@ -125,7 +121,7 @@ export const getCategoryPath = (category: ICategory, categories: ICategory[]): s
 // Get all subcategories of a category (recursive)
 export const getAllSubcategories = (categoryId: string, categories: ICategory[]): ICategory[] => {
   const subcategories: ICategory[] = [];
-  
+
   const findSubcategories = (parentId: string) => {
     const children = categories.filter(c => c.parentId === parentId);
     children.forEach(child => {

@@ -4,15 +4,17 @@ import { Camera, Upload, X, Loader2 } from "lucide-react";
 import { toast } from "@/components/common/Toast";
 import { API_BASE_URL } from "@/utils/api";
 import { authHeader } from "@/utils/auth";
+import { translate, Locale } from "@/utils/i18n";
 
 interface AvatarUploadProps {
   currentAvatar?: string | null;
   onAvatarChange: (avatarUrl: string) => void;
   userId: string;
   editing?: boolean;
+  locale: Locale;
 }
 
-export default function AvatarUpload({ currentAvatar, onAvatarChange, userId, editing = false }: AvatarUploadProps) {
+export default function AvatarUpload({ currentAvatar, onAvatarChange, userId, editing = false, locale }: AvatarUploadProps) {
   const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -30,7 +32,7 @@ export default function AvatarUpload({ currentAvatar, onAvatarChange, userId, ed
         },
         body: JSON.stringify({ avatarUrl }),
       });
-      
+
       if (response.ok) {
         const result = await response.json();
         return result.data.presignedUrl;
@@ -44,7 +46,7 @@ export default function AvatarUpload({ currentAvatar, onAvatarChange, userId, ed
   // Update avatar display with presigned URL
   useEffect(() => {
     let isMounted = true;
-    
+
     if (currentAvatar) {
       getPresignedUrl(currentAvatar).then(url => {
         if (isMounted) {
@@ -67,13 +69,13 @@ export default function AvatarUpload({ currentAvatar, onAvatarChange, userId, ed
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     if (!allowedTypes.includes(file.type)) {
-      toast('Please select a valid image file (JPEG, PNG, WebP, or GIF)', 'error');
+      toast(translate(locale, "profile.avatar.invalidType"), 'error');
       return;
     }
 
     // Validate file size (5MB)
     if (file.size > 5 * 1024 * 1024) {
-      toast('File size must be less than 5MB', 'error');
+      toast(translate(locale, "profile.avatar.tooLarge"), 'error');
       return;
     }
 
@@ -99,16 +101,16 @@ export default function AvatarUpload({ currentAvatar, onAvatarChange, userId, ed
       }
 
       const result = await response.json();
-      
+
       if (result.status === 'success') {
         onAvatarChange(result.data.avatar.url);
-        toast('Avatar uploaded successfully!', 'success');
+        toast(translate(locale, "profile.avatar.updated"), 'success');
       } else {
         throw new Error(result.message || 'Upload failed');
       }
     } catch (error) {
       console.error('Avatar upload error:', error);
-      toast('Failed to upload avatar. Please try again.', 'error');
+      toast(translate(locale, "profile.avatar.uploadError"), 'error');
     } finally {
       setIsUploading(false);
     }
@@ -120,10 +122,10 @@ export default function AvatarUpload({ currentAvatar, onAvatarChange, userId, ed
 
   const confirmDelete = async () => {
     if (!currentAvatar) return;
-    
+
     setIsDeleting(true);
     setShowDeleteConfirm(false);
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/v1/avatars/delete`, {
         method: 'DELETE',
@@ -137,16 +139,16 @@ export default function AvatarUpload({ currentAvatar, onAvatarChange, userId, ed
       }
 
       const result = await response.json();
-      
+
       if (result.status === 'success') {
         onAvatarChange('');
-        toast('Avatar removed successfully!', 'success');
+        toast(translate(locale, "profile.avatar.removed"), 'success');
       } else {
         throw new Error(result.message || 'Delete failed');
       }
     } catch (error) {
       console.error('Avatar delete error:', error);
-      toast('Failed to remove avatar. Please try again.', 'error');
+      toast(translate(locale, "profile.avatar.removeError"), 'error');
     } finally {
       setIsDeleting(false);
     }
@@ -194,7 +196,7 @@ export default function AvatarUpload({ currentAvatar, onAvatarChange, userId, ed
                 onClick={handleDeleteClick}
                 disabled={isDeleting}
                 className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-colors disabled:opacity-50"
-                title="Remove avatar"
+                title={translate(locale, "profile.avatar.remove")}
               >
                 {isDeleting ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -203,7 +205,7 @@ export default function AvatarUpload({ currentAvatar, onAvatarChange, userId, ed
                 )}
               </button>
             ) : null}
-            
+
             <button
               onClick={triggerFileSelect}
               disabled={isUploading}
@@ -251,22 +253,22 @@ export default function AvatarUpload({ currentAvatar, onAvatarChange, userId, ed
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50" onClick={cancelDelete} />
           <div className="relative bg-white dark:bg-neutral-900 rounded-2xl p-4 sm:p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold mb-2">Remove Profile Picture?</h3>
+            <h3 className="text-lg font-semibold mb-2">{translate(locale, "profile.avatar.deleteConfirm")}</h3>
             <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
-              Are you sure you want to remove your profile picture? This action cannot be undone.
+              {translate(locale, "profile.avatar.deleteDesc")}
             </p>
             <div className="flex gap-3">
               <button
                 onClick={cancelDelete}
                 className="flex-1 rounded-full border px-4 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
               >
-                Cancel
+                {translate(locale, "common.cancel")}
               </button>
               <button
                 onClick={confirmDelete}
                 className="flex-1 rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 transition-colors"
               >
-                Remove Picture
+                {translate(locale, "profile.avatar.remove")}
               </button>
             </div>
           </div>

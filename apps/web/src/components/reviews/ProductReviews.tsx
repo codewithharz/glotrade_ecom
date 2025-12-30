@@ -7,12 +7,15 @@ import { API_BASE_URL } from "@/utils/api";
 import ReviewForm from "./ReviewForm";
 import { toast } from "@/components/common/Toast";
 
+import { translate, Locale } from "@/utils/i18n";
+
 interface ProductReviewsProps {
   productId: string;
   productTitle: string;
+  locale: Locale;
 }
 
-export default function ProductReviews({ productId, productTitle }: ProductReviewsProps) {
+export default function ProductReviews({ productId, productTitle, locale }: ProductReviewsProps) {
   const [reviews, setReviews] = useState<ProductReview[]>([]);
   const [loading, setLoading] = useState(true);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -180,10 +183,10 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays === 1) return "yesterday";
-    if (diffDays < 7) return `${diffDays} days ago`;
-    if (diffDays < 30) return `${Math.ceil(diffDays / 7)} weeks ago`;
-    if (diffDays < 365) return `${Math.ceil(diffDays / 30)} months ago`;
+    if (diffDays === 1) return translate(locale, "reviews.date.yesterday");
+    if (diffDays < 7) return translate(locale, "reviews.date.daysAgo").replace("{count}", diffDays.toString());
+    if (diffDays < 30) return translate(locale, "reviews.date.weeksAgo").replace("{count}", Math.ceil(diffDays / 7).toString());
+    if (diffDays < 365) return translate(locale, "reviews.date.monthsAgo").replace("{count}", Math.ceil(diffDays / 30).toString());
     return date.toLocaleDateString();
   };
 
@@ -210,7 +213,7 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div className="flex flex sm:items-center justify-between sm:gap-3">
           <div className="text-lg sm:text-xl font-semibold">
-            {totalReviews} review{totalReviews !== 1 ? 's' : ''}
+            {totalReviews} {translate(locale, totalReviews !== 1 ? "reviews.plural" : "reviews.singular")}
           </div>
           {averageRating > 0 && (
             <>
@@ -240,8 +243,8 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
               className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm sm:text-base"
             >
               <Edit size={14} className="sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">Edit Review</span>
-              <span className="sm:hidden">Edit</span>
+              <span className="hidden sm:inline">{translate(locale, "reviews.editReview")}</span>
+              <span className="sm:hidden">{translate(locale, "reviews.edit")}</span>
             </button>
           ) : (
             // User hasn't reviewed yet - show write review button
@@ -250,16 +253,16 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
               className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm sm:text-base"
             >
               <Plus size={14} className="sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">Write Review</span>
-              <span className="sm:hidden">Review</span>
+              <span className="hidden sm:inline">{translate(locale, "reviews.writeReview")}</span>
+              <span className="sm:hidden">{translate(locale, "reviews.review")}</span>
             </button>
           )
         ) : (
           // User hasn't purchased - show purchase required message
           <div className="inline-flex items-center gap-2 px-3 py-2 bg-neutral-100 text-neutral-500 rounded-lg border border-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:border-neutral-700 text-xs sm:text-sm">
             <CheckCircle size={14} className="sm:w-4 sm:h-4" />
-            <span className="hidden sm:inline">Purchase Required to Review</span>
-            <span className="sm:hidden">Purchase Required</span>
+            <span className="hidden sm:inline">{translate(locale, "reviews.purchaseRequired")}</span>
+            <span className="sm:hidden">{translate(locale, "reviews.purchaseRequiredMobile")}</span>
           </div>
         )}
       </div>
@@ -273,14 +276,14 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
               .slice(0, 3)
               .map(([rating, count]) => (
                 <span key={rating} className="inline-flex items-center rounded-full border px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm">
-                  {rating} Star{Number(rating) !== 1 ? 's' : ''} ({count})
+                  {rating} {translate(locale, "reviews.stars")} ({count})
                 </span>
               ))}
           </div>
           <div className="w-fit inline-flex items-center gap-2 rounded-full bg-emerald-100 text-emerald-800 px-3 py-1.5 text-xs sm:text-sm font-medium">
             <CheckCircle size={14} className="sm:w-4 sm:h-4" />
-            <span className="hidden sm:inline">All reviews are from verified purchases</span>
-            <span className="sm:hidden">Verified purchases</span>
+            <span className="hidden sm:inline">{translate(locale, "reviews.allVerified")}</span>
+            <span className="sm:hidden">{translate(locale, "reviews.verified")}</span>
           </div>
         </div>
       )}
@@ -301,8 +304,8 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
                     {review.isVerifiedPurchase && (
                       <span className="inline-flex items-center gap-1 text-emerald-600 text-xs">
                         <CheckCircle size={10} className="sm:w-3 sm:h-3" />
-                        <span className="hidden sm:inline">Verified Purchase</span>
-                        <span className="sm:hidden">Verified</span>
+                        <span className="hidden sm:inline">{translate(locale, "reviews.verifiedPurchase")}</span>
+                        <span className="sm:hidden">{translate(locale, "reviews.verified")}</span>
                       </span>
                     )}
                   </div>
@@ -316,8 +319,8 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
                         key={star}
                         size={14}
                         className={`sm:w-4 sm:h-4 ${star <= review.rating
-                            ? "fill-neutral-900 text-neutral-900 dark:fill-neutral-100 dark:text-neutral-100"
-                            : "text-neutral-300 dark:text-neutral-600"
+                          ? "fill-neutral-900 text-neutral-900 dark:fill-neutral-100 dark:text-neutral-100"
+                          : "text-neutral-300 dark:text-neutral-600"
                           }`}
                       />
                     ))}
@@ -362,15 +365,15 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
             onClick={() => setVisible((v) => Math.min(v + 5, safeReviews.length))}
             className="mx-auto block rounded-full border px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base font-medium hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors"
           >
-            See more reviews
+            {translate(locale, "reviews.seeMore")}
           </button>
         )}
 
         {safeReviews.length === 0 && (
           <div className="text-center py-6 sm:py-8 text-neutral-500 dark:text-neutral-400">
             <MessageSquare size={40} className="mx-auto mb-3 sm:mb-4 text-neutral-300 dark:text-neutral-600 sm:w-12 sm:h-12" />
-            <p className="text-base sm:text-lg font-medium">No reviews yet</p>
-            <p className="text-xs sm:text-sm">Be the first to review this product!</p>
+            <p className="text-base sm:text-lg font-medium">{translate(locale, "reviews.noReviews")}</p>
+            <p className="text-xs sm:text-sm">{translate(locale, "reviews.beFirst")}</p>
           </div>
         )}
       </div>
@@ -378,7 +381,7 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
       {!localStorage.getItem('afritrade:auth') && (
         <div className="mt-6 text-center p-6 bg-neutral-50 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
           <p className="text-neutral-600 dark:text-neutral-400 mb-2">
-            Please <a href="/auth/login" className="text-blue-600 hover:underline">log in</a> to view and write reviews.
+            {translate(locale, "reviews.loginRequired")} <a href="/auth/login" className="text-blue-600 hover:underline">{translate(locale, "auth.login")}</a>.
           </p>
         </div>
       )}
@@ -395,6 +398,7 @@ export default function ProductReviews({ productId, productTitle }: ProductRevie
             rating: userReview.rating,
             comment: userReview.comment
           } : undefined}
+          locale={locale}
         />
       )}
     </section>

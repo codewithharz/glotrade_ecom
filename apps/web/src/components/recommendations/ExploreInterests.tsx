@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import ProductCard from "@/app/marketplace/ProductCard";
 import type { ProductCardData } from "@/types/product";
+import { translate, Locale } from "@/utils/i18n";
 
 type Product = {
   _id: string;
@@ -16,7 +17,7 @@ type Product = {
   category?: string;
 };
 
-export default function ExploreInterests({ productId, seedBrand, seedCategory }: { productId: string; seedBrand?: string; seedCategory?: string }) {
+export default function ExploreInterests({ productId, seedBrand, seedCategory, locale }: { productId: string; seedBrand?: string; seedCategory?: string; locale: Locale }) {
   const [items, setItems] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -69,12 +70,12 @@ export default function ExploreInterests({ productId, seedBrand, seedCategory }:
   return (
     <section className="mt-10">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg md:text-xl font-semibold">Explore your interests</h2>
-        <Link href="/marketplace" className="text-sm text-neutral-600 hover:underline">See more</Link>
+        <h2 className="text-lg md:text-xl font-semibold">{translate(locale, "product.exploreInterests")}</h2>
+        <Link href="/marketplace" className="text-sm text-neutral-600 hover:underline">{translate(locale, "product.seeMore")}</Link>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
         {items.map((p) => (
-          <ProductCard key={p._id} product={p as unknown as ProductCardData} />
+          <ProductCard key={p._id} product={p as unknown as ProductCardData} locale={locale} />
         ))}
       </div>
     </section>

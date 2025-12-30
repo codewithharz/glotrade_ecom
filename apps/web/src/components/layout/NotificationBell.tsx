@@ -1,5 +1,4 @@
-// apps/web/src/components/layout/NotificationBell.tsx
-'use client';
+"use client";
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Bell, X, Check, Archive, Trash2, Settings } from 'lucide-react';
@@ -7,6 +6,8 @@ import { Bell, X, Check, Archive, Trash2, Settings } from 'lucide-react';
 import { API_BASE_URL, apiGet, apiPost, apiPatch, apiDelete } from '@/utils/api';
 import { useRealTimeNotifications } from '@/hooks/useRealTimeNotifications';
 import NotificationPreferencesModal from '@/components/common/NotificationPreferencesModal';
+// i18n imports
+import { getStoredLocale, Locale, translate } from "@/utils/i18n";
 
 interface Notification {
   _id: string;
@@ -58,10 +59,24 @@ export default function NotificationBell({ className = '' }: NotificationBellPro
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'all' | 'unread'>('all');
   const [showPreferences, setShowPreferences] = useState(false);
+  const [locale, setLocale] = useState<Locale>("en");
 
   // Refs for outside click detection
   const menuRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+
+  // Initialize locale
+  useEffect(() => {
+    setLocale(getStoredLocale());
+
+    const onLocale = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { locale: Locale };
+      setLocale(detail.locale);
+    };
+    window.addEventListener("i18n:locale", onLocale as EventListener);
+    return () =>
+      window.removeEventListener("i18n:locale", onLocale as EventListener);
+  }, []);
 
   // Get user from localStorage
   useEffect(() => {
@@ -308,7 +323,7 @@ export default function NotificationBell({ className = '' }: NotificationBellPro
         ref={triggerRef}
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 text-white hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
-        aria-label="Notifications"
+        aria-label={translate(locale, "notifications.title")}
       >
         <Bell size={22} />
         {unreadCount > 0 && (
@@ -316,10 +331,6 @@ export default function NotificationBell({ className = '' }: NotificationBellPro
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
-        {/* Connection status indicator - commented out for cleaner UX */}
-        {/* <div className={`absolute -bottom-1 -right-1 w-2 h-2 rounded-full ${
-          isConnected ? 'bg-green-500' : 'bg-gray-400'
-        }`} title={isConnected ? 'Connected' : 'Disconnected'} /> */}
       </button>
 
       {/* Notification Dropdown */}
@@ -334,10 +345,12 @@ export default function NotificationBell({ className = '' }: NotificationBellPro
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 border-b border-gray-200 gap-2 sm:gap-0">
               <div className="flex items-center gap-2">
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900">Notifications</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900">
+                  {translate(locale, "notifications.title")}
+                </h3>
                 {unreadCount > 0 && (
                   <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
-                    {unreadCount} new
+                    {unreadCount} {translate(locale, "notifications.new")}
                   </span>
                 )}
               </div>
@@ -347,7 +360,7 @@ export default function NotificationBell({ className = '' }: NotificationBellPro
                   disabled={unreadCount === 0}
                   className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 disabled:text-gray-400 disabled:cursor-not-allowed px-2 py-1 rounded hover:bg-blue-50"
                 >
-                  Mark all read
+                  {translate(locale, "notifications.markAllRead")}
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
@@ -367,7 +380,7 @@ export default function NotificationBell({ className = '' }: NotificationBellPro
                   : 'text-gray-500 hover:text-gray-700'
                   }`}
               >
-                All
+                {translate(locale, "notifications.all")}
               </button>
               <button
                 onClick={() => setActiveTab('unread')}
@@ -376,7 +389,7 @@ export default function NotificationBell({ className = '' }: NotificationBellPro
                   : 'text-gray-500 hover:text-gray-700'
                   }`}
               >
-                Unread ({unreadCount})
+                {translate(locale, "notifications.unread")} ({unreadCount})
               </button>
             </div>
 
@@ -385,13 +398,15 @@ export default function NotificationBell({ className = '' }: NotificationBellPro
               {loading ? (
                 <div className="p-3 sm:p-4 text-center text-gray-500">
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                  <p className="text-xs sm:text-sm">Loading notifications...</p>
+                  <p className="text-xs sm:text-sm">{translate(locale, "notifications.loading")}</p>
                 </div>
               ) : filteredNotifications.length === 0 ? (
                 <div className="p-3 sm:p-4 text-center text-gray-500">
                   <Bell className="h-8 w-8 text-gray-400 mx-auto mb-2" />
                   <p className="text-xs sm:text-sm">
-                    {activeTab === 'unread' ? 'No unread notifications' : 'No notifications yet'}
+                    {activeTab === 'unread'
+                      ? translate(locale, "notifications.noUnread")
+                      : translate(locale, "notifications.noNotifications")}
                   </p>
                 </div>
               ) : (
@@ -414,7 +429,7 @@ export default function NotificationBell({ className = '' }: NotificationBellPro
                           <button
                             onClick={() => markAsRead(notification._id)}
                             className="p-1.5 text-gray-400 hover:text-blue-600 transition-colors rounded hover:bg-blue-50"
-                            title="Mark as read"
+                            title={translate(locale, "notifications.markAsRead")}
                           >
                             <Check className="h-3 w-3" />
                           </button>
@@ -422,14 +437,14 @@ export default function NotificationBell({ className = '' }: NotificationBellPro
                         <button
                           onClick={() => archiveNotification(notification._id)}
                           className="p-1.5 text-gray-400 hover:text-orange-600 transition-colors rounded hover:bg-orange-50"
-                          title="Archive"
+                          title={translate(locale, "notifications.archive")}
                         >
                           <Archive className="h-3 w-3" />
                         </button>
                         <button
                           onClick={() => deleteNotification(notification._id)}
                           className="p-1.5 text-gray-400 hover:text-red-600 transition-colors rounded hover:bg-red-50"
-                          title="Delete"
+                          title={translate(locale, "notifications.delete")}
                         >
                           <Trash2 className="h-3 w-3" />
                         </button>
@@ -463,14 +478,14 @@ export default function NotificationBell({ className = '' }: NotificationBellPro
                   onClick={() => window.location.href = '/profile/notifications'}
                   className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-medium px-3 py-2 rounded hover:bg-blue-50 text-center"
                 >
-                  View all notifications
+                  {translate(locale, "notifications.viewAll")}
                 </button>
                 <button
                   onClick={() => setShowPreferences(true)}
                   className="flex items-center justify-center gap-1 text-xs sm:text-sm text-gray-500 hover:text-gray-700 px-3 py-2 rounded hover:bg-gray-50"
                 >
                   <Settings className="h-4 w-4" />
-                  Preferences
+                  {translate(locale, "notifications.preferences")}
                 </button>
               </div>
             </div>
@@ -484,7 +499,8 @@ export default function NotificationBell({ className = '' }: NotificationBellPro
         onClose={() => setShowPreferences(false)}
         onSave={savePreferences}
         initialPreferences={preferences}
+        locale={locale}
       />
     </div>
   );
-} 
+}

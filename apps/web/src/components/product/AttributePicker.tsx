@@ -1,9 +1,11 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
+import { translate, Locale } from "@/utils/i18n";
 
 type Props = {
   productId: string;
   attributes?: Record<string, string | string[]>;
+  locale: Locale;
 };
 
 function colorSwatch(name: string): string {
@@ -20,7 +22,7 @@ function colorSwatch(name: string): string {
   return "#9ca3af";
 }
 
-export default function AttributePicker({ productId, attributes }: Props) {
+export default function AttributePicker({ productId, attributes, locale }: Props) {
   const data = useMemo(() => {
     const map: Record<string, string[]> = {};
     if (!attributes) return map;
@@ -57,14 +59,14 @@ export default function AttributePicker({ productId, attributes }: Props) {
           })
         );
       }
-    } catch {}
+    } catch { }
   }, [productId, selected]);
 
   if (!attributes || Object.keys(data).length === 0) return null;
 
   return (
     <div>
-      <h3 className="text-sm sm:text-base font-semibold mb-2">Attributes</h3>
+      <h3 className="text-sm sm:text-base font-semibold mb-2">{translate(locale, "product.attributes")}</h3>
       <div className="space-y-3">
         {Object.entries(data).map(([key, values]) => {
           const isColor = key.toLowerCase() === "color";
@@ -77,11 +79,10 @@ export default function AttributePicker({ productId, attributes }: Props) {
                   <button
                     key={v}
                     type="button"
-                    className={`inline-flex items-center gap-1.5 sm:gap-2 rounded-full border px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm transition ${
-                      current === v
+                    className={`inline-flex items-center gap-1.5 sm:gap-2 rounded-full border px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm transition ${current === v
                         ? "border-neutral-900 bg-neutral-900 text-white dark:border-neutral-200 dark:bg-neutral-200 dark:text-black"
                         : "border-neutral-300 bg-white text-neutral-800 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 hover:border-neutral-400 dark:hover:border-neutral-600"
-                    }`}
+                      }`}
                     onClick={() => setSelected((s) => ({ ...s, [key]: v }))}
                     aria-pressed={current === v}
                   >
@@ -102,4 +103,3 @@ export default function AttributePicker({ productId, attributes }: Props) {
     </div>
   );
 }
-

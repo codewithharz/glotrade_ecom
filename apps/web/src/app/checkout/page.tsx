@@ -18,6 +18,7 @@ import {
   Tag,
 } from "lucide-react";
 import { API_BASE_URL, apiGet, apiDelete } from "@/utils/api";
+import { getStoredLocale, translate, Locale } from "@/utils/i18n";
 import { initiatePayment, createOrder } from "./initiate";
 
 import AddressModal from "@/components/cart/AddressModal";
@@ -66,9 +67,20 @@ function AddressCard({
 }) {
   console.log("AddressCard: Received address prop:", address);
   console.log("AddressCard: displayName value:", address?.displayName);
+  const [locale, setLocale] = useState<Locale>("en");
+
+  useEffect(() => {
+    setLocale(getStoredLocale());
+    const onLocale = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { locale: Locale };
+      setLocale(detail.locale);
+    };
+    window.addEventListener("i18n:locale", onLocale as EventListener);
+    return () => window.removeEventListener("i18n:locale", onLocale as EventListener);
+  }, []);
 
   if (!address) {
-    return <div className="text-sm text-neutral-500">No address saved.</div>;
+    return <div className="text-sm text-neutral-500">{translate(locale, "checkout.noAddress")}</div>;
   }
 
   return (
@@ -135,7 +147,18 @@ export default function CheckoutPage() {
   const [guestEmail, setGuestEmail] = useState("");
   const [userData, setUserData] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [locale, setLocale] = useState<Locale>("en");
   const router = useRouter();
+
+  useEffect(() => {
+    setLocale(getStoredLocale());
+    const onLocale = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { locale: Locale };
+      setLocale(detail.locale);
+    };
+    window.addEventListener("i18n:locale", onLocale as EventListener);
+    return () => window.removeEventListener("i18n:locale", onLocale as EventListener);
+  }, []);
 
 
   // Function to update localStorage user data when address is updated
@@ -595,7 +618,7 @@ export default function CheckoutPage() {
           <div className="text-center">
             <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-neutral-600 dark:text-neutral-400">
-              Loading checkout...
+              {translate(locale, "checkout.loading")}
             </p>
           </div>
         </div>
@@ -614,11 +637,11 @@ export default function CheckoutPage() {
       {/* Breadcrumb */}
       <nav className="mb-3 text-sm text-neutral-500">
         <Link href="/" className="text-neutral-500 dark:text-neutral-400">
-          Home
+          {translate(locale, "home")}
         </Link>
         <span className="mx-2">›</span>
         <span className="text-neutral-500 dark:text-neutral-400">
-          Checkout
+          {translate(locale, "checkout.title")}
         </span>
       </nav>
 
@@ -626,9 +649,9 @@ export default function CheckoutPage() {
       <div className="rounded border border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/30 p-3 text-sm flex items-center justify-between mb-4 max-w-full lg:max-w-[calc(100%-400px-1.5rem)]">
         <div className="inline-flex items-center gap-2 text-emerald-700 dark:text-emerald-200 text-[10px] sm:text-sm">
           <Check size={16} className="text-emerald-600" />
-          Free shipping special for you
+          {translate(locale, "cart.freeShippingBanner")}
         </div>
-        <div className="text-neutral-500">Limited-time offer</div>
+        <div className="text-neutral-500">{translate(locale, "cart.limitedTimeOffer")}</div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-4 lg:gap-0">
@@ -640,21 +663,21 @@ export default function CheckoutPage() {
             {!isLoggedIn && (
               <div className="w-full mb-6 border-b border-neutral-200 dark:border-neutral-800 pb-6">
                 <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100 mb-4">
-                  Contact Information
+                  {translate(locale, "checkout.contactInfo")}
                 </h3>
                 <div className="space-y-2">
                   <label className="text-sm text-neutral-600 dark:text-neutral-400">
-                    Email Address <span className="text-rose-500">*</span>
+                    {translate(locale, "checkout.email")} <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="email"
                     value={guestEmail}
                     onChange={(e) => setGuestEmail(e.target.value)}
-                    placeholder="Enter your email for order confirmation"
+                    placeholder={translate(locale, "checkout.emailPlaceholder")}
                     className="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2.5 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-500"
                   />
                   <p className="text-xs text-neutral-500">
-                    We'll send your order confirmation and tracking updates here.
+                    {translate(locale, "checkout.emailDesc")}
                   </p>
                 </div>
               </div>
@@ -664,13 +687,13 @@ export default function CheckoutPage() {
             <div className="mb-6 lg:mb-0 w-full lg:w-[40%] ">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">
-                  Shipping address
+                  {translate(locale, "checkout.shippingAddress")}
                 </h3>
                 <Link
                   href="/cart"
                   className="text-grey-600 dark:text-neutral-400 hover:underline text-sm"
                 >
-                  Change address ›
+                  {translate(locale, "checkout.changeAddress")} ›
                 </Link>
               </div>
               <AddressCard
@@ -684,17 +707,16 @@ export default function CheckoutPage() {
                 !address.country) && (
                   <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-lg">
                     <div className="text-sm text-amber-800 dark:text-amber-200 font-medium mb-2">
-                      ⚠️ Shipping address required
+                      ⚠️ {translate(locale, "checkout.addressRequired")}
                     </div>
                     <div className="text-xs text-amber-700 dark:text-amber-300 mb-3">
-                      Please add a complete shipping address to proceed with
-                      checkout.
+                      {translate(locale, "checkout.addressRequiredDesc")}
                     </div>
                     <Link
                       href="/cart"
                       className="inline-flex items-center gap-2 text-xs bg-amber-600 text-white px-3 py-1.5 rounded-full hover:bg-amber-700 transition-colors"
                     >
-                      Add Address
+                      {translate(locale, "checkout.addAddress")}
                     </Link>
                   </div>
                 )}
@@ -712,7 +734,7 @@ export default function CheckoutPage() {
             {isLoggedIn && (
               <div className="w-full lg:w-[40%]">
                 <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100 mb-4">
-                  Shipping methods
+                  {translate(locale, "checkout.shippingMethods")}
                 </h3>
                 <div className="space-y-0">
                   <label className="flex items-start gap-3 cursor-pointer">
@@ -725,10 +747,10 @@ export default function CheckoutPage() {
                     />
                     <div className="flex-1">
                       <div className="text-base font-semibold text-emerald-700">
-                        Standard: FREE
+                        {translate(locale, "checkout.standardFree")}
                       </div>
                       <div className="text-sm font-semibold text-grey-500 dark:text-neutral-400 mt-1">
-                        Delivery: {config.shipping.standard.deliveryRange} ›
+                        {translate(locale, "checkout.delivery")}: {config.shipping.standard.deliveryRange} ›
                       </div>
                       <div className="text-sm text-neutral-500 dark:text-neutral-400">
                         Get a{" "}
@@ -737,7 +759,7 @@ export default function CheckoutPage() {
                         delivery?
                       </div>
                       <div className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-                        Courier company:{" "}
+                        {translate(locale, "checkout.courierCompany")}:{" "}
                         {config.shipping.standard.couriers.join(", ")} ›
                       </div>
                     </div>
@@ -753,7 +775,7 @@ export default function CheckoutPage() {
                     />
                     <div className="flex items-center gap-2">
                       <span className="text-base font-semibold text-emerald-700">
-                        Pickup: FREE
+                        {translate(locale, "checkout.pickupFree")}
                       </span>
                       <Truck size={16} className="text-green-600" />
                     </div>
@@ -762,7 +784,7 @@ export default function CheckoutPage() {
                 {totalVoucherDiscount > 0 && (
                   <div className="flex items-center justify-end mt-4 font-semibold text-sm text-green-600">
                     {totalVoucherDiscount.toLocaleString()}{" "}
-                    {products[0]?.currency || "NGN"} OFF applied
+                    {products[0]?.currency || "NGN"} {translate(locale, "voucher.off")} applied
                     <ChevronRight size={14} className="text-neutral-500" />
                   </div>
                 )}
@@ -779,7 +801,7 @@ export default function CheckoutPage() {
                 </span>
               </div>
               <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">
-                Vouchers & Discounts
+                {translate(locale, "checkout.vouchers")}
               </h3>
             </div>
 
@@ -799,18 +821,18 @@ export default function CheckoutPage() {
                 <span className="text-blue-600 dark:text-blue-300 text-sm font-bold">#</span>
               </div>
               <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">
-                Purchase Order (Optional)
+                {translate(locale, "checkout.purchaseOrder")}
               </h3>
             </div>
             <div className="space-y-2">
               <label className="text-sm text-neutral-600 dark:text-neutral-400">
-                Enter PO Number for your records
+                {translate(locale, "checkout.enterPoNumber")}
               </label>
               <input
                 type="text"
                 value={poNumber}
                 onChange={(e) => setPoNumber(e.target.value)}
-                placeholder="e.g., PO-2025-001"
+                placeholder={translate(locale, "checkout.poPlaceholder")}
                 className="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2.5 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-500"
               />
             </div>
@@ -820,7 +842,7 @@ export default function CheckoutPage() {
           <div className="rounded-xs border border-neutral-200 dark:border-neutral-800 p-5 bg-white dark:bg-neutral-900">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-semibold text-grey-800">
-                Item details (
+                {translate(locale, "checkout.itemDetails")} (
                 <span className="text-orange-500">{summary?.items || 0}</span>
                 )
               </h3>
@@ -828,7 +850,7 @@ export default function CheckoutPage() {
                 onClick={() => setShowItemsModal(true)}
                 className="hidden sm:flex items-center gap-1 text-grey-600 hover:underline text-sm font-semibold"
               >
-                <span>View all</span>
+                <span>{translate(locale, "checkout.viewAll")}</span>
                 <ChevronRight size={14} className="text-neutral-500" />
               </button>
             </div>
@@ -836,7 +858,7 @@ export default function CheckoutPage() {
               onClick={() => setShowItemsModal(true)}
               className="sm:hidden w-full text-left text-blue-600 underline text-sm font-medium mb-2"
             >
-              View all
+              {translate(locale, "checkout.viewAll")}
             </button>
 
             {/* Debug Info */}
@@ -868,7 +890,7 @@ export default function CheckoutPage() {
                     <div className="aspect-square rounded-md bg-neutral-100 dark:bg-neutral-900 mb-2 sm:mb-3 overflow-hidden relative">
                       {p.featured ? (
                         <span className="absolute left-1 sm:left-2 top-1 sm:top-2 z-10 rounded bg-amber-500 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 flex items-center gap-0.5 sm:gap-1 shadow-sm">
-                          <span className="hidden sm:inline">Featured</span>
+                          <span className="hidden sm:inline">{translate(locale, "product.featured")}</span>
                           <span className="sm:hidden">★</span>
                         </span>
                       ) : null}
@@ -982,7 +1004,7 @@ export default function CheckoutPage() {
           {/* Order Summary */}
           < div className="rounded-xs border border-neutral-200 dark:border-neutral-800 p-4 bg-white dark:bg-neutral-900" >
             <h3 className="text-base font-semibold text-neutral-800 dark:text-neutral-100 mb-3">
-              Order summary
+              {translate(locale, "checkout.orderSummary")}
             </h3>
 
             {/* Product Breakdown */}
@@ -1040,7 +1062,7 @@ export default function CheckoutPage() {
               <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between">
                   <span className="text-neutral-600 dark:text-neutral-400">
-                    Item(s) total:
+                    {translate(locale, "checkout.itemTotal")}:
                   </span>
                   <span className="line-through text-neutral-500 dark:text-neutral-400">
                     {summary.subtotal.toLocaleString()}{" "}
@@ -1049,7 +1071,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-neutral-600 dark:text-neutral-400">
-                    Item(s) discount:
+                    {translate(locale, "checkout.itemDiscount")}:
                   </span>
                   <span className="text-rose-600">
                     -{summary.discount.toLocaleString()}{" "}
@@ -1057,7 +1079,7 @@ export default function CheckoutPage() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between font-medium text-neutral-800 dark:text-neutral-100">
-                  <span>Subtotal:</span>
+                  <span>{translate(locale, "checkout.subtotal")}:</span>
                   <span>
                     {summary?.finalSubtotal?.toLocaleString() || "0"}{" "}
                     {products[0]?.currency || "NGN"}
@@ -1066,7 +1088,7 @@ export default function CheckoutPage() {
                 {totalVoucherDiscount > 0 && (
                   <div className="flex items-center justify-between">
                     <span className="text-neutral-600 dark:text-neutral-400">
-                      Voucher discount:
+                      {translate(locale, "checkout.voucherDiscount")}:
                     </span>
                     <span className="text-rose-600">
                       -{summary?.voucherApplied?.toLocaleString() || "0"}{" "}
@@ -1075,7 +1097,7 @@ export default function CheckoutPage() {
                   </div>
                 )}
                 <div className="flex items-center justify-between font-medium text-neutral-800 dark:text-neutral-100">
-                  <span>Subtotal after vouchers:</span>
+                  <span>{translate(locale, "checkout.subtotalAfterVouchers")}:</span>
                   <span>
                     {summary?.finalAfterVouchers?.toLocaleString() || "0"}{" "}
                     {products[0]?.currency || "NGN"}
@@ -1083,26 +1105,26 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-neutral-600 dark:text-neutral-400">
-                    Shipping:
+                    {translate(locale, "checkout.shipping")}:
                   </span>
-                  <span className="text-emerald-600 font-medium">FREE</span>
+                  <span className="text-emerald-600 font-medium">{translate(locale, "checkout.free")}</span>
                 </div>
               </div>
             </div>
             {/* Payment Methods */}
             <div className="border-t border-neutral-200 dark:border-neutral-800 my-3 pt-2">
               <h3 className="text-base font-semibold text-neutral-800 dark:text-neutral-100 mb-3">
-                Payment methods
+                {translate(locale, "checkout.paymentMethods")}
               </h3>
               <div className="space-y-3 mb-4">
                 {[
-                  { id: "wallet", name: walletBalance ? `Wallet (Avail: ₦${((walletBalance.available + (walletBalance.creditLimit || 0) - (walletBalance.creditUsed || 0))).toLocaleString()})` : "Wallet", logo: "💰" },
+                  { id: "wallet", name: walletBalance ? translate(locale, "checkout.walletAvailable", { amount: ((walletBalance.available + (walletBalance.creditLimit || 0) - (walletBalance.creditUsed || 0))).toLocaleString() }) : translate(locale, "checkout.wallet"), logo: "💰" },
                   // { id: "apple", name: "Apple Pay", logo: "🍎" },
                   // { id: "card", name: "Card", logo: "💳" },
                   // { id: "google", name: "Google Pay", logo: "G" },
                   // { id: "bank", name: "Bank transfer", logo: "🏦" },
                   // { id: "flutterwave", name: "Flutterwave", logo: "F" },
-                  { id: "paystack", name: "Pay with Bank", logo: "P" },
+                  { id: "paystack", name: translate(locale, "checkout.payWithBank"), logo: "P" },
                   // { id: "orange_money", name: "Orange Money", logo: "🍊" },
                 ].filter(method => {
                   // Hide wallet for guest users
@@ -1142,7 +1164,7 @@ export default function CheckoutPage() {
 
             <div className="border-t border-neutral-200 dark:border-neutral-800 my-3 pt-2">
               <div className="flex items-center justify-between text-base font-semibold text-neutral-800 dark:text-neutral-100">
-                <span>Order total:</span>
+                <span>{translate(locale, "checkout.orderTotal")}:</span>
                 <span>
                   {summary?.finalTotal?.toLocaleString() || "0"}{" "}
                   {products[0]?.currency || "NGN"}
@@ -1314,7 +1336,7 @@ export default function CheckoutPage() {
                 : "bg-orange-500 text-white hover:bg-orange-600"
                 }`}
             >
-              {isProcessing ? "Processing..." : `Submit order (${summary?.items || 0})`}
+              {isProcessing ? translate(locale, "checkout.processing") : `${translate(locale, "checkout.submitOrder")} (${summary?.items || 0})`}
             </button>
             {
               (summary?.finalTotal || 0) <= 0 && (
@@ -1338,13 +1360,13 @@ export default function CheckoutPage() {
             }
 
             <div className="mt-4 text-xs text-neutral-500 text-center">
-              By submitting your order, you agree to our{" "}
+              {translate(locale, "checkout.terms.agree")}{" "}
               <Link href="#" className="text-blue-600 underline">
-                Terms of Use
+                {translate(locale, "checkout.terms.termsOfUse")}
               </Link>{" "}
-              and acknowledge that you have read our{" "}
+              {translate(locale, "checkout.terms.acknowledge")}{" "}
               <Link href="#" className="text-blue-600 underline">
-                Privacy Policy
+                {translate(locale, "checkout.terms.privacyPolicy")}
               </Link>
               .
             </div>
@@ -1353,7 +1375,7 @@ export default function CheckoutPage() {
           {/* Donate with Marketplace */}
           < div className="rounded-xs border border-neutral-200 dark:border-neutral-800 p-4 bg-white dark:bg-neutral-900" >
             <h3 className="text-base font-semibold text-neutral-800 dark:text-neutral-100 mb-3">
-              Donate with Marketplace
+              {translate(locale, "checkout.trust.donate")}
             </h3>
             <label className="flex items-start gap-3 cursor-pointer">
               <input
@@ -1363,9 +1385,7 @@ export default function CheckoutPage() {
                 className="w-4 h-4 text-orange-500 mt-0.5"
               />
               <span className="text-sm text-neutral-700 dark:text-neutral-300">
-                We invite you to donate{" "}
-                {config.donation.treeAmount.toLocaleString()}{" "}
-                {products[0]?.currency || "NGN"} to fund a tree?
+                {translate(locale, "checkout.trust.donateTree", { amount: config.donation.treeAmount.toLocaleString(), currency: products[0]?.currency || "NGN" })}
               </span>
             </label>
           </div >
@@ -1378,19 +1398,17 @@ export default function CheckoutPage() {
               </span>
               <Leaf size={16} className="text-green-600" />
               <h3 className="text-base font-semibold text-green-700">
-                Plant Marketplace's Tree Planting Program
+                {translate(locale, "checkout.trust.plantTree")}
               </h3>
             </div>
             <p className="text-sm text-neutral-700 dark:text-neutral-300 mb-3">
-              Marketplace and its users have donated funds to Trees for the
-              Future to plant trees across sub-Saharan Africa.
+              {translate(locale, "checkout.trust.plantTreeDesc")}
             </p>
             <div className="w-20 h-12 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 rounded flex items-center justify-center mx-auto">
-              <span className="text-green-700 text-[11px] font-semibold text-center leading-tight">
-                TREES FOR
-                <br />
-                THE FUTURE
-              </span>
+              <span
+                className="text-green-700 text-[11px] font-semibold text-center leading-tight"
+                dangerouslySetInnerHTML={{ __html: translate(locale, "checkout.trust.treesForFuture") }}
+              />
             </div>
           </div >
 
@@ -1399,33 +1417,32 @@ export default function CheckoutPage() {
             <div className="flex items-center gap-2 mb-3">
               <ShieldCheck size={16} className="text-green-600" />
               <h3 className="text-base font-semibold text-green-700">
-                Delivery guarantee
+                {translate(locale, "checkout.trust.deliveryGuarantee")}
               </h3>
             </div>
             <ul className="space-y-1 text-sm text-neutral-700 dark:text-neutral-300">
               <li className="flex items-center gap-2">
                 <Check size={14} className="text-green-600" />
-                {config.shipping.standard.creditAmount.toLocaleString()}{" "}
-                {products[0]?.currency || "NGN"} Credit for delay
+                {translate(locale, "checkout.trust.delayCredit", { amount: config.shipping.standard.creditAmount.toLocaleString(), currency: products[0]?.currency || "NGN" })}
               </li>
               <li className="flex items-center gap-2">
                 <Check size={14} className="text-green-600" />
-                Return if item damaged
+                {translate(locale, "checkout.trust.damageReturn")}
               </li>
               <li className="flex items-center gap-2">
                 <Check size={14} className="text-green-600" />
-                15-day no update refund
+                {translate(locale, "checkout.trust.noUpdateRefund")}
               </li>
               <li className="flex items-center gap-2">
                 <Check size={14} className="text-green-600" />
-                60-day no delivery refund
+                {translate(locale, "checkout.trust.noDeliveryRefund")}
               </li>
             </ul>
             <Link
               href="#"
               className="text-green-700 text-sm hover:underline mt-2 inline-block"
             >
-              Learn more ›
+              {translate(locale, "checkout.trust.learnMore")} ›
             </Link>
           </div >
 
@@ -1434,26 +1451,25 @@ export default function CheckoutPage() {
             <div className="flex items-center gap-2 mb-3">
               <ShieldCheck size={16} className="text-green-600" />
               <h3 className="text-base font-semibold text-green-700">
-                Marketplace protects your card information
+                {translate(locale, "checkout.trust.secureCard")}
               </h3>
             </div>
             <ul className="space-y-1 text-sm text-neutral-700 dark:text-neutral-300">
               <li className="flex items-center gap-2">
                 <Check size={14} className="text-green-600" />
-                Marketplace follows the Payment Card Industry Data Security
-                Standard (PCI DSS) when handling card data
+                {translate(locale, "checkout.trust.pciDss")}
               </li>
               <li className="flex items-center gap-2">
                 <Check size={14} className="text-green-600" />
-                Card information is secure and uncompromised
+                {translate(locale, "checkout.trust.cardSecure")}
               </li>
               <li className="flex items-center gap-2">
                 <Check size={14} className="text-green-600" />
-                All data is safeguarded
+                {translate(locale, "checkout.trust.dataSafeguarded")}
               </li>
               <li className="flex items-center gap-2">
                 <Check size={14} className="text-green-600" />
-                Marketplace never sells your card information
+                {translate(locale, "checkout.trust.noSell")}
               </li>
             </ul>
             <div className="flex flex-wrap gap-2 mt-3">
@@ -1482,21 +1498,17 @@ export default function CheckoutPage() {
             <div className="flex items-center gap-2 mb-2">
               <ShieldCheck size={16} className="text-green-600" />
               <h3 className="text-base font-semibold text-green-700">
-                Secure privacy
+                {translate(locale, "checkout.trust.securePrivacy")}
               </h3>
             </div>
             <p className="text-sm text-neutral-700 dark:text-neutral-300">
-              Protecting your privacy is important to us. Please be assured
-              that your information will be kept secured and uncompromised. We
-              do not sell your personal information for money and will only
-              use your information in accordance with our privacy and cookie
-              policy to provide and improve our services to you.
+              {translate(locale, "checkout.trust.securePrivacyDesc")}
             </p>
             <Link
               href="#"
               className="text-green-700 text-sm hover:underline mt-2 inline-block"
             >
-              Learn more ›
+              {translate(locale, "checkout.trust.learnMore")} ›
             </Link>
           </div >
 
@@ -1505,18 +1517,17 @@ export default function CheckoutPage() {
             <div className="flex items-center gap-2 mb-2">
               <ShieldCheck size={16} className="text-green-600" />
               <h3 className="text-base font-semibold text-green-700">
-                Marketplace purchase protection
+                {translate(locale, "checkout.trust.purchaseProtection")}
               </h3>
             </div>
             <p className="text-sm text-neutral-700 dark:text-neutral-300">
-              Shop confidently on Marketplace knowing that if something goes
-              wrong, we've always got your back.
+              {translate(locale, "checkout.trust.purchaseProtectionDesc")}
             </p>
             <Link
               href="#"
               className="text-green-700 text-sm hover:underline mt-2 inline-block"
             >
-              Learn more ›
+              {translate(locale, "checkout.trust.learnMore")} ›
             </Link>
           </div >
         </aside >
@@ -1538,7 +1549,7 @@ export default function CheckoutPage() {
             </button>
             <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-neutral-200 dark:border-neutral-800">
               <h2 className="text-[22px] leading-7 font-semibold text-center text-neutral-800 dark:text-neutral-100">
-                Item details
+                {translate(locale, "checkout.itemDetails")}
               </h2>
             </div>
             <div className="px-4 sm:px-6 py-2 divide-y divide-neutral-200 dark:divide-neutral-800">

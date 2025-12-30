@@ -50,16 +50,16 @@ export default function AdBanner({ banners }: AdBannerProps) {
     // Ensure we have exactly 5 banners for the grid layout
     const displayBanners = banners.slice(0, 5);
 
-    // If less than 5 banners, show a simpler layout
+    // If less than 5 banners
     if (displayBanners.length < 5) {
         return (
             <div className="hidden md:block w-full mb-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {displayBanners.map((banner) => (
+                    {displayBanners.map((banner, index) => (
                         <BannerItem
                             key={banner._id}
                             banner={banner}
-                            className="h-[200px] md:h-[250px]"
+                            className={`aspect-[21/9] md:aspect-auto md:h-[250px] w-full bg-neutral-100 ${index > 0 ? 'hidden md:block' : 'block'}`}
                         />
                     ))}
                 </div>
@@ -70,15 +70,15 @@ export default function AdBanner({ banners }: AdBannerProps) {
     // Grid layout for exactly 5 banners
     return (
         <div className="hidden md:block w-full mb-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 h-auto ">
-                {/* Large banner - spans 2 columns and 2 rows */}
+            <div className="flex flex-col md:grid md:grid-cols-4 gap-2 h-auto">
+                {/* First banner - Visible on mobile as a full-width block with aspect ratio, on desktop as a grid span */}
                 <BannerItem
                     banner={displayBanners[0]}
-                    className="col-span-2 row-span-2 h-[510px]"
+                    className="block w-full md:col-span-2 md:row-span-2 aspect-[21/9] md:aspect-auto md:h-[510px] bg-neutral-100"
                 />
 
-                {/* Column 2 - Two small banners stacked */}
-                <div className="col-span-1 row-span-2 flex flex-col gap-2">
+                {/* Secondary banners - Hidden on mobile, flex row on desktop grid */}
+                <div className="hidden md:flex col-span-1 row-span-2 flex-col gap-2">
                     <BannerItem
                         banner={displayBanners[1]}
                         className="flex-1 h-[250px]"
@@ -89,8 +89,7 @@ export default function AdBanner({ banners }: AdBannerProps) {
                     />
                 </div>
 
-                {/* Column 3 - Two small banners stacked */}
-                <div className="col-span-1 row-span-2 flex flex-col gap-2">
+                <div className="hidden md:flex col-span-1 row-span-2 flex-col gap-2">
                     <BannerItem
                         banner={displayBanners[3]}
                         className="flex-1 h-[250px]"

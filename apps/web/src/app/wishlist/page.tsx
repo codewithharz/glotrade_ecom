@@ -5,7 +5,7 @@ import { Heart, Check, Trash2 } from "lucide-react";
 import { API_BASE_URL } from "@/utils/api";
 import ProductCard from "../marketplace/ProductCard";
 import type { ProductCardData } from "@/types/product";
-import { getStoredLocale, translate } from "@/utils/i18n";
+import { getStoredLocale, translate, Locale } from "@/utils/i18n";
 
 type ApiProduct = {
   _id: string;
@@ -33,7 +33,7 @@ function writeWishlist(ids: string[]) {
   try {
     localStorage.setItem("wishlist", JSON.stringify(ids));
     window.dispatchEvent(new CustomEvent("wishlist:update", { detail: { count: ids.length } }));
-  } catch {}
+  } catch { }
 }
 
 export default function WishlistPage() {
@@ -41,13 +41,13 @@ export default function WishlistPage() {
   const [products, setProducts] = useState<ApiProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [picks, setPicks] = useState<ApiProduct[]>([]);
-  const [locale, setLocale] = useState<"en" | "fr">("en");
+  const [locale, setLocale] = useState<Locale>("en");
   const hasItems = productIds.length > 0 && products.length > 0;
 
   useEffect(() => {
     setLocale(getStoredLocale());
     const onLocale = (e: Event) => {
-      const detail = (e as CustomEvent).detail as { locale: "en" | "fr" };
+      const detail = (e as CustomEvent).detail as { locale: Locale };
       setLocale(detail.locale);
     };
     window.addEventListener("i18n:locale", onLocale as EventListener);
@@ -85,7 +85,7 @@ export default function WishlistPage() {
         const res = await fetch(new URL(`/api/v1/market/products?sort=-views&limit=8`, API_BASE_URL).toString(), { cache: "no-store" });
         const json: SearchResponse = await res.json();
         if (!aborted) setPicks(Array.isArray(json.data?.products) ? json.data.products : []);
-      } catch {}
+      } catch { }
     }
     load();
     return () => {
@@ -126,7 +126,7 @@ export default function WishlistPage() {
             })
           );
           if (!cancelled) setProducts((prev) => [...prev, ...results]);
-        } catch {}
+        } catch { }
       }
     }
     const handler = () => { syncFromStorage(); };
@@ -202,9 +202,9 @@ export default function WishlistPage() {
                 className="absolute right-2 bottom-2 z-20 inline-flex items-center justify-center h-6 w-6 rounded-full bg-red-500/95 text-neutral-700 shadow ring-1 ring-neutral-200"
                 title="Remove"
               >
-                <Trash2 size={12} className="text-white hover:h-4 hover:w-4 font-bold"/>
+                <Trash2 size={12} className="text-white hover:h-4 hover:w-4 font-bold" />
               </button>
-              <ProductCard product={p as unknown as ProductCardData} />
+              <ProductCard product={p as unknown as ProductCardData} locale={locale} />
             </div>
           ))}
         </div>
@@ -216,7 +216,7 @@ export default function WishlistPage() {
         {picks.length ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
             {picks.map((p) => (
-              <ProductCard key={p._id} product={p as unknown as ProductCardData} />
+              <ProductCard key={p._id} product={p as unknown as ProductCardData} locale={locale} />
             ))}
           </div>
         ) : (

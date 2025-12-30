@@ -1,5 +1,5 @@
-"use client";
 import Link from "next/link";
+import { translate, Locale } from "@/utils/i18n";
 
 type Props = {
   params: Record<string, string>;
@@ -22,7 +22,7 @@ function withParams(
   return query ? `${basePath}?${query}` : basePath;
 }
 
-export default function MobileQuickChips({ params, basePath = "/marketplace" }: Props & { basePath?: string }) {
+export default function MobileQuickChips({ params, basePath = "/marketplace", locale }: Props & { basePath?: string; locale: Locale }) {
   const base = basePath;
   const sort = params["sort"];
   const freeShipping = params["freeShipping"] === "true";
@@ -38,29 +38,29 @@ export default function MobileQuickChips({ params, basePath = "/marketplace" }: 
   return (
     <div className="flex items-center gap-2 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {/* Sort */}
-      <Link href={withParams(base, params, { sort: "-views" })} className={chip(sort === "-views")}>Popular</Link>
-      <Link href={withParams(base, params, { sort: "price" })} className={chip(sort === "price")}>Price ↑</Link>
-      <Link href={withParams(base, params, { sort: "-price" })} className={chip(sort === "-price")}>Price ↓</Link>
-      <Link href={withParams(base, params, { sort: "-createdAt" })} className={chip(sort === "-createdAt")}>Newest</Link>
+      <Link href={withParams(base, params, { sort: "-views" })} className={chip(sort === "-views")}>{translate(locale, "market.sortPopular")}</Link>
+      <Link href={withParams(base, params, { sort: "price" })} className={chip(sort === "price")}>{translate(locale, "market.sortPriceLowHigh")}</Link>
+      <Link href={withParams(base, params, { sort: "-price" })} className={chip(sort === "-price")}>{translate(locale, "market.sortPriceHighLow")}</Link>
+      <Link href={withParams(base, params, { sort: "-createdAt" })} className={chip(sort === "-createdAt")}>{translate(locale, "market.sortNewest")}</Link>
 
       {/* Deals */}
       <Link
         href={withParams(base, params, { freeShipping: (!freeShipping).toString() })}
         className={chip(freeShipping)}
       >
-        Free shipping
+        {translate(locale, "market.filterFreeShipping")}
       </Link>
       <Link
         href={withParams(base, params, { verifiedSeller: (!verifiedSeller).toString() })}
         className={chip(verifiedSeller)}
       >
-        Verified
+        {translate(locale, "market.filterVerified")}
       </Link>
       <Link
         href={withParams(base, params, { discountMin: discountMin === "20" ? undefined : 20 })}
         className={chip(discountMin === "20")}
       >
-        -20%+
+        {translate(locale, "market.discount20Off")}
       </Link>
     </div>
   );
