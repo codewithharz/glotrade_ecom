@@ -445,20 +445,21 @@ export default function UserMenu({ role = "guest" as Role }: { role?: Role }) {
       <button
         ref={triggerRef}
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-2 rounded-full px-2 py-1.5 hover:bg-white/10 focus:outline-none"
+        className="inline-flex items-center gap-2 rounded-full px-2 py-1.5 border border-white/20 hover:border-white/40 hover:bg-white/10 focus:outline-none transition-colors"
       >
         <Avatar />
         <div className="text-left">
-          <div className="hidden sm:block text-[10px] sm:text-xs font-semibold opacity-80 leading-tight">
-            {role === "admin" || role === "superAdmin"
-              ? translate(language, "usermenu.admin")
-              : guest
+          {/* Hide top line for admins, show for regular users */}
+          {!(role === "admin" || role === "superAdmin") && (
+            <div className="hidden sm:block text-[10px] sm:text-xs font-semibold opacity-80 leading-tight">
+              {guest
                 ? translate(language, "usermenu.helloGuest")
                 : `${translate(language, "usermenu.hello")} ${firstName}${lastName ? ` ${lastName}` : ""}`}
-          </div>
+            </div>
+          )}
           <div className="text-[14px] sm:text-[15px] font-bold leading-tight">
             {role === "admin" || role === "superAdmin"
-              ? translate(language, "usermenu.dashboard")
+              ? translate(language, "usermenu.admin")
               : translate(language, "usermenu.account")}
           </div>
         </div>

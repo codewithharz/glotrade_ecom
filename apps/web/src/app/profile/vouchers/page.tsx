@@ -8,6 +8,7 @@ import { toast } from "@/components/common/Toast";
 import { API_BASE_URL } from "@/utils/api";
 import { getUserId, authHeader } from "@/utils/auth";
 import { TicketPercent, Calendar, Users, Tag, Info, Copy, CheckCircle, XCircle, Clock, BarChart3 } from "lucide-react";
+import { getStoredLocale, translate, Locale } from "@/utils/i18n";
 
 interface Voucher {
   _id: string;
@@ -50,6 +51,17 @@ export default function VouchersPage() {
   const [loading, setLoading] = useState(true);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'available' | 'used' | 'history'>('available');
+  const [locale, setLocale] = useState<Locale>("en");
+
+  useEffect(() => {
+    setLocale(getStoredLocale());
+    const onLocale = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { locale: Locale };
+      setLocale(detail.locale);
+    };
+    window.addEventListener("i18n:locale", onLocale as EventListener);
+    return () => window.removeEventListener("i18n:locale", onLocale as EventListener);
+  }, []);
 
   useEffect(() => {
     loadVouchers();
@@ -86,7 +98,6 @@ export default function VouchersPage() {
 
       if (usageResponse.ok) {
         const usageData = await usageResponse.json();
-        console.log("Voucher usage data:", usageData); // Debug log
         setVoucherUsage(usageData.data || []);
 
         // Extract used vouchers from usage data
@@ -102,11 +113,10 @@ export default function VouchersPage() {
           orderTotal: usage.orderTotal
         })) || [];
 
-        console.log("Processed used vouchers:", usedVouchersData); // Debug log
         setUsedVouchers(usedVouchersData);
       }
     } catch (error) {
-      toast("Error loading vouchers", "error");
+      toast(translate(locale, "vouchers.toasts.loadError"), "error");
     } finally {
       setLoading(false);
     }
@@ -116,15 +126,15 @@ export default function VouchersPage() {
     try {
       await navigator.clipboard.writeText(code);
       setCopiedCode(code);
-      toast("Voucher code copied!", "success");
+      toast(translate(locale, "vouchers.toasts.copySuccess"), "success");
       setTimeout(() => setCopiedCode(null), 2000);
     } catch (error) {
-      toast("Failed to copy code", "error");
+      toast(translate(locale, "vouchers.toasts.copyError"), "error");
     }
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+    return new Date(dateString).toLocaleDateString(locale === 'zh' ? 'zh-CN' : locale === 'fr' ? 'fr-FR' : locale === 'es' ? 'es-ES' : locale === 'ha' ? 'ha-NG' : locale === 'ar' ? 'ar-SA' : 'en-US', {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -134,11 +144,11 @@ export default function VouchersPage() {
   const getVoucherTypeLabel = (type: string) => {
     switch (type) {
       case "percentage":
-        return "Percentage Off";
+        return translate(locale, "vouchers.types.percentage");
       case "fixed":
-        return "Fixed Amount Off";
+        return translate(locale, "vouchers.types.fixed");
       case "free_shipping":
-        return "Free Shipping";
+        return translate(locale, "vouchers.types.free_shipping");
       default:
         return type;
     }
@@ -160,11 +170,11 @@ export default function VouchersPage() {
   const getVoucherValue = (voucher: Voucher) => {
     switch (voucher.type) {
       case "percentage":
-        return `${voucher.value}% OFF`;
+        return `${voucher.value}% ${translate(locale, "voucher.off")}`;
       case "fixed":
-        return `NGN ${voucher.value.toLocaleString()} OFF`;
+        return `${voucher.value.toLocaleString()} NGN ${translate(locale, "voucher.off")}`;
       case "free_shipping":
-        return "FREE SHIPPING";
+        return translate(locale, "voucher.freeShipping");
       default:
         return voucher.value;
     }
@@ -176,13 +186,13 @@ export default function VouchersPage() {
     const validUntil = new Date(voucher.validUntil);
 
     if (now < validFrom) {
-      return { status: "upcoming", label: "Coming Soon", icon: Clock, color: "text-blue-600" };
+      return { status: "upcoming", label: translate(locale, "vouchers.status.upcoming"), icon: Clock, color: "text-blue-600" };
     } else if (now > validUntil) {
-      return { status: "expired", label: "Expired", icon: XCircle, color: "text-red-600" };
+      return { status: "expired", label: translate(locale, "vouchers.status.expired"), icon: XCircle, color: "text-red-600" };
     } else if (voucher.usedCount >= voucher.maxUsage) {
-      return { status: "exhausted", label: "Fully Used", icon: XCircle, color: "text-red-600" };
+      return { status: "exhausted", label: translate(locale, "vouchers.status.exhausted"), icon: XCircle, color: "text-red-600" };
     } else {
-      return { status: "active", label: "Active", icon: CheckCircle, color: "text-green-600" };
+      return { status: "active", label: translate(locale, "vouchers.status.active"), icon: CheckCircle, color: "text-green-600" };
     }
   };
 
@@ -193,7 +203,7 @@ export default function VouchersPage() {
           <div className="flex items-center justify-center py-16 sm:py-20">
             <div className="text-center">
               <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-neutral-900 mx-auto mb-3 sm:mb-4"></div>
-              <p className="text-sm sm:text-base text-neutral-600">Loading vouchers...</p>
+              <p className="text-sm sm:text-base text-neutral-600">{translate(locale, "loading")}</p>
             </div>
           </div>
         </div>
@@ -207,11 +217,11 @@ export default function VouchersPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Breadcrumb Navigation */}
           <nav className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-4">
-            <Link href="/" className="hover:text-gray-900 dark:hover:text-white transition-colors">Home</Link>
+            <Link href="/" className="hover:text-gray-900 dark:hover:text-white transition-colors">{translate(locale, "home.title")}</Link>
             <ChevronRight className="w-4 h-4 mx-2" />
-            <Link href="/profile" className="hover:text-gray-900 dark:hover:text-white transition-colors">Profile</Link>
+            <Link href="/profile" className="hover:text-gray-900 dark:hover:text-white transition-colors">{translate(locale, "profile.title")}</Link>
             <ChevronRight className="w-4 h-4 mx-2" />
-            <span className="text-gray-900 dark:text-white font-medium">Vouchers</span>
+            <span className="text-gray-900 dark:text-white font-medium">{translate(locale, "vouchers.title")}</span>
           </nav>
 
           {/* Back Button */}
@@ -220,16 +230,16 @@ export default function VouchersPage() {
             className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium mb-6 text-sm transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back
+            {translate(locale, "vouchers.back")}
           </button>
 
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              My Vouchers
+              {translate(locale, "vouchers.title")}
             </h1>
             <p className="mt-2 text-gray-600 dark:text-gray-400">
-              Available discount codes and promotional offers
+              {translate(locale, "vouchers.subtitle")}
             </p>
           </div>
 
@@ -243,7 +253,7 @@ export default function VouchersPage() {
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                   }`}
               >
-                Available ({availableVouchers.length})
+                {translate(locale, "vouchers.tabs.available").replace("{count}", availableVouchers.length.toString())} {activeTab !== 'available' && `(${availableVouchers.length})`}
               </button>
               <button
                 onClick={() => setActiveTab('used')}
@@ -252,7 +262,7 @@ export default function VouchersPage() {
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                   }`}
               >
-                Used ({usedVouchers.length})
+                {translate(locale, "vouchers.tabs.used").replace("{count}", usedVouchers.length.toString())} {activeTab !== 'used' && `(${usedVouchers.length})`}
               </button>
               <button
                 onClick={() => setActiveTab('history')}
@@ -261,7 +271,7 @@ export default function VouchersPage() {
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                   }`}
               >
-                History ({voucherUsage.length})
+                {translate(locale, "vouchers.tabs.history").replace("{count}", voucherUsage.length.toString())} {activeTab !== 'history' && `(${voucherUsage.length})`}
               </button>
             </div>
           </div>
@@ -275,10 +285,10 @@ export default function VouchersPage() {
                     <TicketPercent className="w-8 h-8 text-gray-400" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                    No vouchers available
+                    {translate(locale, "vouchers.empty.availableTitle")}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                    You don't have any active vouchers at the moment. Check back later for new offers!
+                    {translate(locale, "vouchers.empty.availableDesc")}
                   </p>
                 </div>
               ) : (
@@ -304,7 +314,7 @@ export default function VouchersPage() {
                         <div className="mb-4">
                           <div className="flex items-center justify-between mb-2">
                             <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                              Voucher Code
+                              {translate(locale, "vouchers.card.codeLabel")}
                             </span>
                             <button
                               onClick={() => copyToClipboard(voucher.code)}
@@ -313,12 +323,12 @@ export default function VouchersPage() {
                               {copiedCode === voucher.code ? (
                                 <>
                                   <CheckCircle className="w-3 h-3" />
-                                  Copied!
+                                  {translate(locale, "vouchers.card.copied")}
                                 </>
                               ) : (
                                 <>
                                   <Copy className="w-3 h-3" />
-                                  Copy
+                                  {translate(locale, "vouchers.card.copy")}
                                 </>
                               )}
                             </button>
@@ -344,25 +354,25 @@ export default function VouchersPage() {
                           {voucher.minOrderAmount && (
                             <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                               <Info className="w-3.5 h-3.5" />
-                              <span>Min. order: NGN {voucher.minOrderAmount.toLocaleString()}</span>
+                              <span>{translate(locale, "vouchers.card.minOrder").replace("{amount}", voucher.minOrderAmount.toLocaleString()).replace("{currency}", "NGN")}</span>
                             </div>
                           )}
 
                           {voucher.maxDiscount && voucher.type === "percentage" && (
                             <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                               <Info className="w-3.5 h-3.5" />
-                              <span>Max. discount: NGN {voucher.maxDiscount.toLocaleString()}</span>
+                              <span>{translate(locale, "vouchers.card.maxDiscount").replace("{amount}", voucher.maxDiscount.toLocaleString()).replace("{currency}", "NGN")}</span>
                             </div>
                           )}
 
                           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                             <Users className="w-3.5 h-3.5" />
-                            <span>Usage: {voucher.usedCount}/{voucher.maxUsage}</span>
+                            <span>{translate(locale, "vouchers.card.usage").replace("{count}", voucher.usedCount.toString()).replace("{total}", voucher.maxUsage.toString())}</span>
                           </div>
 
                           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                             <Calendar className="w-3.5 h-3.5" />
-                            <span>Expires: {formatDate(voucher.validUntil)}</span>
+                            <span>{translate(locale, "vouchers.card.expires").replace("{date}", formatDate(voucher.validUntil))}</span>
                           </div>
                         </div>
 
@@ -379,7 +389,7 @@ export default function VouchersPage() {
                         {voucher.terms && (
                           <details className="group mb-4">
                             <summary className="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-                              Terms & Conditions
+                              {translate(locale, "vouchers.card.terms")}
                             </summary>
                             <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">
                               {voucher.terms}
@@ -390,7 +400,7 @@ export default function VouchersPage() {
                         {/* Usage Instructions */}
                         <div className="mt-6 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                           <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
-                            Use this code during checkout to apply your discount
+                            {translate(locale, "vouchers.card.instructions")}
                           </p>
                         </div>
                       </div>
@@ -410,10 +420,10 @@ export default function VouchersPage() {
                     <CheckCircle className="w-8 h-8 text-gray-400" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                    No vouchers used yet
+                    {translate(locale, "vouchers.empty.usedTitle")}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                    You haven't used any vouchers yet. Start shopping to take advantage of great deals!
+                    {translate(locale, "vouchers.empty.usedDesc")}
                   </p>
                 </div>
               ) : (
@@ -427,7 +437,7 @@ export default function VouchersPage() {
                       <div className="absolute top-4 right-4 flex items-center gap-2">
                         <CheckCircle className="w-4 h-4 text-green-600" />
                         <span className="text-xs font-medium text-green-600">
-                          Used
+                          {translate(locale, "vouchers.tabs.used").split("(")[0].trim()}
                         </span>
                       </div>
 
@@ -435,10 +445,10 @@ export default function VouchersPage() {
                       <div className="mb-4">
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                            Voucher Code
+                            {translate(locale, "vouchers.card.codeLabel")}
                           </span>
                           <span className="text-xs text-gray-500">
-                            Applied
+                            {translate(locale, "voucher.applied")}
                           </span>
                         </div>
                         <div className="font-mono text-lg font-bold text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-lg">
@@ -456,7 +466,7 @@ export default function VouchersPage() {
                           {getVoucherValue(voucher)}
                           {voucher.discountApplied && (
                             <div className="text-sm text-green-600 dark:text-green-400 mt-1">
-                              Saved: NGN {voucher.discountApplied.toLocaleString()}
+                              {translate(locale, "vouchers.card.saved").replace("{amount}", voucher.discountApplied.toLocaleString()).replace("{currency}", "NGN")}
                             </div>
                           )}
                         </div>
@@ -466,7 +476,7 @@ export default function VouchersPage() {
                       <div className="space-y-3 mb-6">
                         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                           <Calendar className="w-3.5 h-3.5" />
-                          <span>Used: {formatDate(voucher.usedAt)}</span>
+                          <span>{translate(locale, "vouchers.tabs.used").split("(")[0].trim()}: {formatDate(voucher.usedAt)}</span>
                         </div>
 
                         {voucher.description && (
@@ -480,7 +490,7 @@ export default function VouchersPage() {
                       {/* Success Message */}
                       <div className="mt-6 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
                         <p className="text-xs text-green-700 dark:text-green-300 text-center">
-                          ✓ Successfully applied to your order
+                          ✓ {translate(locale, "vouchers.card.appliedSuccessfully")}
                         </p>
                       </div>
                     </div>
@@ -499,10 +509,10 @@ export default function VouchersPage() {
                     <BarChart3 className="w-8 h-8 text-gray-400" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                    No usage history
+                    {translate(locale, "vouchers.empty.historyTitle")}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                    You haven't used any vouchers yet. Start shopping to see your usage history!
+                    {translate(locale, "vouchers.empty.historyDesc")}
                   </p>
                 </div>
               ) : (
@@ -522,7 +532,7 @@ export default function VouchersPage() {
                               {usage.code}
                             </h3>
                             <p className="text-sm text-gray-600 dark:text-gray-400">
-                              {getVoucherTypeLabel(usage.type)} - {usage.value}{usage.type === 'percentage' ? '%' : ' NGN'} OFF
+                              {getVoucherTypeLabel(usage.type)} - {usage.value}{usage.type === 'percentage' ? '%' : ' NGN'} {translate(locale, "voucher.off")}
                             </p>
                           </div>
                         </div>
@@ -538,19 +548,19 @@ export default function VouchersPage() {
 
                       <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                         <div>
-                          <span className="text-xs text-gray-500 uppercase tracking-wide">Order Total</span>
+                          <span className="text-xs text-gray-500 uppercase tracking-wide">{translate(locale, "vouchers.history.orderTotal")}</span>
                           <div className="text-sm font-medium text-gray-900 dark:text-white">
                             NGN {usage.orderTotal.toLocaleString()}
                           </div>
                         </div>
                         <div>
-                          <span className="text-xs text-gray-500 uppercase tracking-wide">Discount Applied</span>
+                          <span className="text-xs text-gray-500 uppercase tracking-wide">{translate(locale, "vouchers.history.discountApplied")}</span>
                           <div className="text-sm font-medium text-green-600 dark:text-green-400">
                             NGN {usage.discountApplied.toLocaleString()}
                           </div>
                         </div>
                         <div>
-                          <span className="text-xs text-gray-500 uppercase tracking-wide">Final Amount</span>
+                          <span className="text-xs text-gray-500 uppercase tracking-wide">{translate(locale, "vouchers.history.finalAmount")}</span>
                           <div className="text-sm font-medium text-gray-900 dark:text-white">
                             NGN {(usage.orderTotal - usage.discountApplied).toLocaleString()}
                           </div>
@@ -568,8 +578,7 @@ export default function VouchersPage() {
             <div className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
               <Info className="w-4 h-4" />
               <span>
-                Vouchers are automatically applied during checkout.
-                Some restrictions may apply.
+                {translate(locale, "vouchers.footer")}
               </span>
             </div>
           </div>

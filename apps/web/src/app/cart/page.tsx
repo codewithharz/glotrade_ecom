@@ -258,7 +258,7 @@ export default function CartPage() {
 
   return (
     <main className="mx-auto md:w-[95%] w-full px-2 md:px-6 py-4 sm:py-5">
-      <nav className="mb-3 text-sm text-neutral-500"><Link href="/">{translate(locale, "home")}</Link> <span className="mx-2">›</span> <span className="text-neutral-700">{translate(locale, "cart.title")}</span></nav>
+      <nav className="mb-3 text-sm text-neutral-500"><Link href="/">{translate(locale, "home.title")}</Link> <span className="mx-2">›</span> <span className="text-neutral-700">{translate(locale, "cart.title")}</span></nav>
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
         <section>
           <div className="rounded border border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/20 p-2 text-sm flex items-center justify-between">

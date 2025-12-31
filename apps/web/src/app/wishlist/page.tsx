@@ -147,25 +147,28 @@ export default function WishlistPage() {
     <main className="mx-auto md:w-[95%] w-full px-2 md:px-6 py-6">
       {/* Breadcrumb */}
       <nav className="mb-4 text-sm text-neutral-500">
-        <Link href="/" className="text-neutral-500 dark:text-neutral-400">{translate(locale, 'home')}</Link>
+        <Link href="/" className="text-neutral-500 dark:text-neutral-400">{translate(locale, 'nav.home')}</Link>
         <span className="mx-2">›</span>
-        <span className="text-neutral-500 dark:text-neutral-400">{translate(locale, 'wishlistTitle')}</span>
+        <span className="text-neutral-500 dark:text-neutral-400">{translate(locale, 'wishlist.title')}</span>
+
       </nav>
 
       <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
         <h1 className="text-xl md:text-2xl font-semibold inline-flex items-center gap-2">
           <Heart size={22} className="text-rose-500" />
-          {translate(locale, 'wishlistTitle')}
+          {translate(locale, 'wishlist.title')}
+
         </h1>
         {hasItems ? (
           <div className="flex items-center gap-2">
             <button onClick={clearAll} className="text-sm rounded-full border border-neutral-300 dark:border-neutral-700 px-4 py-2 hover:bg-neutral-50 dark:hover:bg-neutral-900">
-              {translate(locale, 'clearAll')}
+              {translate(locale, 'wishlist.clearAll')}
             </button>
             <Link href="/marketplace" className="text-sm rounded-full bg-orange-500 text-white px-4 py-2">
-              {translate(locale, 'exploreMore')}
+              {translate(locale, 'wishlist.exploreMore')}
             </Link>
           </div>
+
         ) : null}
       </div>
 
@@ -173,24 +176,27 @@ export default function WishlistPage() {
       <div className="rounded border border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/30 p-3 text-sm flex items-center justify-between mb-4">
         <div className="inline-flex items-center gap-2 text-emerald-700 dark:text-emerald-200 text-[10px] sm:text-sm">
           <Check size={16} className="text-emerald-600" />
-          {translate(locale, 'freeShippingBanner')}
+          {translate(locale, 'wishlist.freeShippingBanner')}
         </div>
-        <div className="text-neutral-500 text-[10px] sm:text-sm">{translate(locale, 'limitedTimeOffer')}</div>
+        <div className="text-neutral-500 text-[10px] sm:text-sm">{translate(locale, 'wishlist.limitedTimeOffer')}</div>
+
       </div>
 
       {/* Content */}
       {loading ? (
-        <div className="text-sm text-neutral-500">{translate(locale, 'loading')}</div>
+        <div className="text-sm text-neutral-500">{translate(locale, 'wishlist.loading')}</div>
+
       ) : !hasItems ? (
         <div className="rounded-lg border border-dashed border-neutral-300 dark:border-neutral-800 p-8 text-center">
           <div className="mx-auto w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center mb-3">
             <Heart size={20} className="text-rose-500" />
           </div>
-          <div className="text-lg font-semibold">{translate(locale, 'emptyWishlistTitle')}</div>
-          <p className="text-sm text-neutral-500 mt-1">{translate(locale, 'emptyWishlistDesc')}</p>
+          <div className="text-lg font-semibold">{translate(locale, 'wishlist.empty.title')}</div>
+          <p className="text-sm text-neutral-500 mt-1">{translate(locale, 'wishlist.empty.desc')}</p>
           <Link href="/marketplace" className="inline-flex items-center gap-2 mt-4 rounded-full bg-orange-500 text-white px-5 py-2.5">
-            {translate(locale, 'exploreMarketplaceCta')}
+            {translate(locale, 'wishlist.empty.cta')}
           </Link>
+
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
@@ -212,7 +218,7 @@ export default function WishlistPage() {
 
       {/* Picks */}
       <div className="mt-8">
-        <h2 className="text-lg font-semibold mb-3">{translate(locale, 'explorePicks')}</h2>
+        <h2 className="text-lg font-semibold mb-3">{translate(locale, 'wishlist.picks.title')}</h2>
         {picks.length ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
             {picks.map((p) => (
@@ -220,9 +226,10 @@ export default function WishlistPage() {
             ))}
           </div>
         ) : (
-          <div className="text-sm text-neutral-500">{translate(locale, 'noPicks')}</div>
+          <div className="text-sm text-neutral-500">{translate(locale, 'wishlist.picks.noPicks')}</div>
         )}
       </div>
+
     </main>
   );
 }

@@ -447,6 +447,8 @@
     "createAccount": "创建帐户",
     "helloGuest": "你好，访客",
     "hello": "你好，",
+    "admin": "管理员",
+    "dashboard": "仪表板",
     "account": "帐户",
     "adminDashboard": "管理仪表板",
     "userManagement": "用户管理",

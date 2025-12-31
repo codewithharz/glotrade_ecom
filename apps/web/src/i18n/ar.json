@@ -447,6 +447,8 @@
     "createAccount": "إنشاء حساب",
     "helloGuest": "مرحبا، ضيف",
     "hello": "مرحبا،",
+    "admin": "مسؤول",
+    "dashboard": "لوحة القيادة",
     "account": "حساب",
     "adminDashboard": "لوحة تحكم المسؤول",
     "userManagement": "إدارة المستخدمين",

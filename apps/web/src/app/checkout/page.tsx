@@ -637,7 +637,7 @@ export default function CheckoutPage() {
       {/* Breadcrumb */}
       <nav className="mb-3 text-sm text-neutral-500">
         <Link href="/" className="text-neutral-500 dark:text-neutral-400">
-          {translate(locale, "home")}
+          {translate(locale, "home.title")}
         </Link>
         <span className="mx-2">›</span>
         <span className="text-neutral-500 dark:text-neutral-400">

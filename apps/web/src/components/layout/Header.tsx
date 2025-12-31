@@ -161,26 +161,22 @@ export default function Header() {
               alt="logo"
               className="h-14 w-14 md:h-16 md:w-16 object-contain"
             />
-            <span className="hidden md:block text-white text-[1.05rem] md:text-[1.5rem] font-bold tracking-wide">
+            <span className={`hidden md:block text-[1.05rem] md:text-[1.5rem] font-bold tracking-wide ${userRole === "admin" || userRole === "superAdmin" ? "px-4 bg-red-500 hover:bg-[#F9A407] text-white rounded-full transition-colors" : "text-white"
+              }`}>
               Glotrade
             </span>
-            {(userRole === "admin" || userRole === "superAdmin") && (
-              <span className="inline-flex items-center px-2 py-1 text-xs font-semibold bg-red-500 text-white rounded-full">
-                {userRole === "superAdmin" ? "SUPER ADMIN" : "ADMIN"}
-              </span>
-            )}
           </Link>
-
-          {/* Admin Quick Access */}
+          {/* Admin Badge - also serves as quick access */}
           {(userRole === "admin" || userRole === "superAdmin") && (
             <Link
               href="/admin"
-              className="hidden md:flex items-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors"
+              className="inline-flex items-center px-2 py-1 text-xs font-semibold bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors"
+              title={translate(locale, "header.adminPanel")}
             >
-              <span>⚡</span>
-              {translate(locale, "header.adminPanel")}
+              {userRole === "superAdmin" ? "⚡ SUPER ADMIN" : "⚡ ADMIN"}
             </Link>
           )}
+
 
           {/* Nav quick links */}
           <nav className="hidden lg:flex items-center gap-5 text-white text-sm font-semibold">

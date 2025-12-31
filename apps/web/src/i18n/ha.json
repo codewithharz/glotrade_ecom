@@ -68,7 +68,7 @@
     "forReference": "don tunani."
   },
   "header": {
-    "adminPanel": "Kwamitin Gudanarwa",
+    "adminPanel": "Gudanarwa",
     "dashboard": " Dashboard",
     "wallet": "Aljihun kuɗi",
     "allDepartments": "Duk Rukunoni",
@@ -87,6 +87,8 @@
     "createAccount": "Ƙirƙiri asusu",
     "helloGuest": "Sannu, Bako",
     "hello": "Sannu,",
+    "admin": "Admin",
+    "dashboard": "Dashboard",
     "account": "Asusu",
     "adminDashboard": "Dashboard din Gudanarwa",
     "userManagement": "Gudanar da Masu Amfani",
