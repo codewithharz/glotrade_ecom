@@ -155,12 +155,12 @@ export default function Header() {
       <div className="mx-auto w-[95%] px-3 md:px-4">
         <div className="flex items-center gap-3 md:gap-5 py-1">
           <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center">
+            <Link href="/" className="flex items-center shrink-0">
               {/* Logo */}
               <img
                 src={`../glotrade_logo.png`}
                 alt="logo"
-                className="h-16 w-16 md:h-16 md:w-16 object-contain"
+                className="h-14 w-14 md:h-16 md:w-16 object-contain shrink-0"
               />
             </Link>
 
