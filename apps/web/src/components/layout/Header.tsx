@@ -154,29 +154,39 @@ export default function Header() {
     <header className={`sticky top-[33px] z-50 w-full bg-[#2EA5FF] shadow-sm`}>
       <div className="mx-auto w-[95%] px-3 md:px-4">
         <div className="flex items-center gap-3 md:gap-5 py-1">
-          <Link href="/" className="flex items-center gap-2">
-            {/* Logo */}
-            <img
-              src={`../glotrade_logo.png`}
-              alt="logo"
-              className="h-14 w-14 md:h-16 md:w-16 object-contain"
-            />
-            {/* <span className={`hidden md:block text-[1.05rem] md:text-[1.5rem] font-bold tracking-wide ${userRole === "admin" || userRole === "superAdmin" ? "px-4 bg-red-500 hover:bg-[#F9A407] text-white rounded-full transition-colors" : "text-white" */}
-            <span className={`text-[1.05rem] md:text-[1.5rem] font-bold tracking-wide ${userRole === "admin" || userRole === "superAdmin" ? "px-4 bg-red-500 hover:bg-[#F9A407] text-white rounded-full transition-colors" : "text-white"
-              }`}>
-              Glotrade
-            </span>
-          </Link>
-          {/* Admin Badge - also serves as quick access */}
-          {(userRole === "admin" || userRole === "superAdmin") && (
-            <Link
-              href="/admin"
-              className="inline-flex items-center px-2 py-1 text-xs font-semibold bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors"
-              title={translate(locale, "header.adminPanel")}
-            >
-              {userRole === "superAdmin" ? "⚡ SUPER ADMIN" : "⚡ ADMIN"}
+          <div className="flex items-center gap-2">
+            <Link href="/" className="flex items-center">
+              {/* Logo */}
+              <img
+                src={`../glotrade_logo.png`}
+                alt="logo"
+                className="h-14 w-14 md:h-16 md:w-16 object-contain"
+              />
             </Link>
-          )}
+
+            {/* Logo Text / Admin Badge Unit */}
+            {(userRole === "admin" || userRole === "superAdmin") ? (
+              <Link
+                href="/admin"
+                className="flex items-center gap-2 px-3 py-1 bg-red-500 hover:bg-[#F9A407] text-white rounded-full transition-colors group"
+                title={translate(locale, "header.adminPanel")}
+              >
+                <span className="text-[1.05rem] md:text-[1.5rem] font-bold tracking-wide">
+                  Glotrade
+                </span>
+                <span className="text-xs font-bold uppercase tracking-tighter border-l border-white/30 pl-1">
+                  {/* {userRole === "superAdmin" ? "⚡ SUPER ADMIN" : "⚡ ADMIN"} */}
+                  {userRole === "superAdmin" ? "⚡" : "⚡"}
+                </span>
+              </Link>
+            ) : (
+              <Link href="/">
+                <span className="text-[1.05rem] md:text-[1.5rem] font-bold tracking-wide text-white">
+                  Glotrade
+                </span>
+              </Link>
+            )}
+          </div>
 
 
           {/* Nav quick links */}
