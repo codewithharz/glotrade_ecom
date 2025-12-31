@@ -1985,5 +1985,53 @@
       "poor": "médiocre",
       "verified": "vérifié"
     }
+  },
+  "support": {
+    "title": "Centre d'Assistance",
+    "subtitle": "Obtenez des réponses rapidement ou contactez notre équipe.",
+    "heroLabel": "Nous sommes là pour vous aider",
+    "searchPlaceholder": "Rechercher des articles d'aide et des FAQ",
+    "breadcrumbHome": "Accueil",
+    "breadcrumbSupport": "Assistance",
+    "topQuestions": "Questions fréquentes",
+    "updatedDaily": "Mis à jour quotidiennement",
+    "noResults": "Aucun résultat trouvé. Essayez un autre terme de recherche.",
+    "noArticles": "Pas encore d'articles.",
+    "contact": {
+      "title": "Contactez-nous",
+      "subtitle": "Réponses sous 24 heures",
+      "labels": {
+        "name": "Nom",
+        "email": "E-mail",
+        "topic": "Sujet",
+        "message": "Message"
+      },
+      "placeholders": {
+        "name": "Votre nom",
+        "email": "Adresse e-mail",
+        "message": "How can we help?"
+      },
+      "sendButton": "Envoyer le message",
+      "success": "Merci ! Votre message a été envoyé. Nous vous répondrons sous 24 heures.",
+      "error": "Veuillez remplir tous les champs obligatoires.",
+      "emailButton": "E-mail",
+      "chatButton": "Chat en direct"
+    },
+    "categories": {
+      "orders": "Commandes et Expédition",
+      "returns": "Retours et Remboursements",
+      "payments": "Paiements et Facturation",
+      "account": "Compte et Sécurité"
+    },
+    "faqs": {
+      "q1": "Où se trouve ma commande ?",
+      "a1": "Allez dans vos commandes pour suivre l'état de la livraison. La plupart des commandes arrivent dans le délai estimé affiché lors du paiement.",
+      "q2": "Comment initier un retour ?",
+      "a2": "Vous pouvez initier un retour dans les 15 jours suivant la livraison depuis votre page de commandes. Assurez-vous que l'article est dans son état d'origine.",
+      "q3": "Quels modes de paiement sont acceptés ?",
+      "a3": "Nous acceptons les cartes, les virements bancaires et les portefeuilles pris en charge via Paystack et Flutterwave.",
+      "q4": "Comment sécuriser mon compte ?",
+      "a4": "Utilisez un mot de passe fort, activez les notifications et ne partagez jamais de codes à usage unique. Contactez l'assistance immédiatement si vous remarquez quelque chose de suspect."
+    }
   }
 }

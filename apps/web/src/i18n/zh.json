@@ -1907,5 +1907,53 @@
       "poor": "较差",
       "verified": "已验证"
     }
+  },
+  "support": {
+    "title": "帮助中心",
+    "subtitle": "快速获取答案或联系我们的团队。",
+    "heroLabel": "我们随时为您提供帮助",
+    "searchPlaceholder": "搜索帮助文章和常见问题",
+    "breadcrumbHome": "首页",
+    "breadcrumbSupport": "帮助",
+    "topQuestions": "热门问题",
+    "updatedDaily": "每日更新",
+    "noResults": "未找到结果。请尝试其他搜索词。",
+    "noArticles": "暂无文章。",
+    "contact": {
+      "title": "联系我们",
+      "subtitle": "24小时内回复",
+      "labels": {
+        "name": "姓名",
+        "email": "电子邮箱",
+        "topic": "主题",
+        "message": "留言"
+      },
+      "placeholders": {
+        "name": "您的姓名",
+        "email": "电子邮箱地址",
+        "message": "我们能为您提供什么帮助？"
+      },
+      "sendButton": "发送消息",
+      "success": "谢谢！您的消息已发送。我们将在24小时内回复。",
+      "error": "请填写所有必填字段。",
+      "emailButton": "邮件",
+      "chatButton": "在线聊天"
+    },
+    "categories": {
+      "orders": "订单与配送",
+      "returns": "退货与退款",
+      "payments": "付款与账单",
+      "account": "账号与安全"
+    },
+    "faqs": {
+      "q1": "我的订单在哪里？",
+      "a1": "前往您的订单中心跟踪配送状态。大多数订单会在结账时显示的预计时间内送达。",
+      "q2": "如何开始退货？",
+      "a2": "您可以在送达后的15天内从订单页面发起退货。请确保商品处于原始状态。",
+      "q3": "接受哪些付款方式？",
+      "a3": "我们接受银行卡、银行转账以及通过 Paystack 和 Flutterwave 支持的钱包。",
+      "q4": "如何保护我的账号安全？",
+      "a4": "使用强密码，启用通知，切勿分享一次性验证码。如果发现任何可疑情况，请立即联系客服。"
+    }
   }
 }

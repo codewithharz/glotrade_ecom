@@ -2084,5 +2084,53 @@
       "poor": "poor",
       "verified": "verified"
     }
+  },
+  "support": {
+    "title": "Support Center",
+    "subtitle": "Get answers fast or contact our team.",
+    "heroLabel": "We’re here to help",
+    "searchPlaceholder": "Search help articles and FAQs",
+    "breadcrumbHome": "Home",
+    "breadcrumbSupport": "Support",
+    "topQuestions": "Top questions",
+    "updatedDaily": "Updated daily",
+    "noResults": "No results found. Try a different search term.",
+    "noArticles": "No articles yet.",
+    "contact": {
+      "title": "Contact us",
+      "subtitle": "Replies within 24 hours",
+      "labels": {
+        "name": "Name",
+        "email": "Email",
+        "topic": "Topic",
+        "message": "Message"
+      },
+      "placeholders": {
+        "name": "Your name",
+        "email": "Email address",
+        "message": "How can we help?"
+      },
+      "sendButton": "Send message",
+      "success": "Thanks! Your message has been sent. We'll get back within 24 hours.",
+      "error": "Please fill all required fields.",
+      "emailButton": "Email",
+      "chatButton": "Live Chat"
+    },
+    "categories": {
+      "orders": "Orders & Shipping",
+      "returns": "Returns & Refunds",
+      "payments": "Payments & Billing",
+      "account": "Account & Security"
+    },
+    "faqs": {
+      "q1": "Where is my order?",
+      "a1": "Go to your orders to track delivery status. Most orders arrive within the estimated time shown at checkout.",
+      "q2": "How do I start a return?",
+      "a2": "You can initiate a return within 15 days of delivery from your orders page. Make sure the item is in original condition.",
+      "q3": "Which payment methods are accepted?",
+      "a3": "We accept cards, bank transfers, and supported wallets via Paystack and Flutterwave.",
+      "q4": "How can I secure my account?",
+      "a4": "Use a strong password, enable notifications, and never share one‑time codes. Contact support immediately if you notice anything suspicious."
+    }
   }
 }

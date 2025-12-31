@@ -1853,18 +1853,66 @@
       }
     },
     "status": {
-      "active": "yana aiki",
-      "pending": "ana jira",
-      "matured": "ya nuna",
+      "active": "mai aiki",
+      "pending": "yana jira",
+      "matured": "ya isa lokaci",
       "completed": "an kammala",
       "scheduled": "an tsara",
       "processing": "ana sarrafawa",
-      "suspended": "an dakata",
+      "suspended": "an dakatar",
       "excellent": "kyau sosai",
-      "good": "akwai kyau",
+      "good": "mai kyau",
       "average": "matsakaici",
-      "poor": "maras kyau",
+      "poor": "mara kyau",
       "verified": "an tantance"
+    }
+  },
+  "support": {
+    "title": "Cibiyar Taimako",
+    "subtitle": "Samun amsoshi da sauri ko tuntuɓar ƙungiyarmu.",
+    "heroLabel": "Muna nan don taimaka muku",
+    "searchPlaceholder": "Bincika labaran taimako da FAQ",
+    "breadcrumbHome": "Gida",
+    "breadcrumbSupport": "Taimako",
+    "topQuestions": "Muhimman tambayoyi",
+    "updatedDaily": "Ana sabuntawa kullum",
+    "noResults": "Ba a sami sakamako ba. Gwada wani kalmar bincike.",
+    "noArticles": "Babu labarai tukuna.",
+    "contact": {
+      "title": "Tuntuɓe mu",
+      "subtitle": "Muna bayar da amsa cikin awanni 24",
+      "labels": {
+        "name": "Suna",
+        "email": "Imel",
+        "topic": "Maudu'i",
+        "message": "Saƙo"
+      },
+      "placeholders": {
+        "name": "Sunanku",
+        "email": "Adireshin imel",
+        "message": "Ta yaya za mu taimaka muku?"
+      },
+      "sendButton": "Aika saƙo",
+      "success": "Godiya! An aika saƙonku. Za mu tuntubi ku cikin awanni 24.",
+      "error": "Da fatan za a cika dukkan bayanan da ake buƙata.",
+      "emailButton": "Imel",
+      "chatButton": "Hira ta kai tsaye"
+    },
+    "categories": {
+      "orders": "Oda da Jirgin Sama",
+      "returns": "Maidowa da Mayar da Kuɗi",
+      "payments": "Biyan kuɗi da Lissafi",
+      "account": "Asusu da Tsaro"
+    },
+    "faqs": {
+      "q1": "Ina oda ta take?",
+      "a1": "Je zuwa ododinku don bin diddigin matsayin isarwa. Yawancin oda suna isa cikin lokacin da aka nuna yayin biyan kuɗi.",
+      "q2": "Yaya zan fara mayar da kaya?",
+      "a2": "Kuna iya fara mayar da kaya cikin kwanaki 15 bayan an isar da su daga shafinku na ododi. Tabbatar cewa kayan suna cikin yanayinsu na asali.",
+      "q3": "Waɗanne hanyoyin biyan kuɗi ake karɓa?",
+      "a3": "Muna karɓar katunan banki, tura kuɗi ta banki, da walat ɗin da ake tallafawa ta Paystack da Flutterwave.",
+      "q4": "Yaya zan iya tsare asusu na?",
+      "a4": "Yi amfani da kalmar sirri mai ƙarfi, kunna sanarwa, kuma kada ku raba lambobin sirri na lokaci ɗaya. Tuntuɓi taimako nan da nan idan kun ga wani abu da ba ku amince da shi ba."
     }
   }
 }
