@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const MONGODB_URI =
-  process.env.MONGODB_URI || "mongodb://localhost:27017/afritrade";
+  process.env.MONGODB_URI || "mongodb://localhost:27017/glotrade_ecom";
 
 export const connectDB = async (): Promise<void> => {
   try {

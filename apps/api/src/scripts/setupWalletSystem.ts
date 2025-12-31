@@ -12,10 +12,10 @@
   
   For Local MongoDB (Compass):
   - Make sure MongoDB is running locally
-  - Set MONGODB_URI=mongodb://localhost:27017/afritrade
+  - Set MONGODB_URI=mongodb://localhost:27017/glotrade_ecom
   
   For MongoDB Atlas:
-  - Set MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/afritrade
+  - Set MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/glotrade_ecom
   - Make sure your IP is whitelisted in Atlas
   
   The script will automatically detect which environment you're using.
@@ -41,22 +41,22 @@ async function setupWalletSystem() {
   try {
     // Connect to MongoDB - requires explicit MONGODB_URI
     const mongoUri = process.env.MONGODB_URI;
-    
+
     if (!mongoUri) {
       console.error("❌ MONGODB_URI environment variable is required!");
       console.log("\n💡 Please set MONGODB_URI in your .env file:");
-      console.log("   • For Local MongoDB: MONGODB_URI=mongodb://localhost:27017/afritrade");
-      console.log("   • For Atlas: MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/afritrade");
+      console.log("   • For Local MongoDB: MONGODB_URI=mongodb://localhost:27017/glotrade_ecom");
+      console.log("   • For Atlas: MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/glotrade_ecom");
       process.exit(1);
     }
-    
+
     // Detect if using Atlas or local
     const isAtlas = mongoUri.includes('mongodb+srv://') || mongoUri.includes('atlas');
     const dbType = isAtlas ? 'MongoDB Atlas' : 'Local MongoDB (Compass)';
-    
+
     console.log(`🔌 Connecting to ${dbType}...`);
     console.log(`📍 URI: ${mongoUri.replace(/\/\/.*@/, '//***:***@')}`); // Hide credentials
-    
+
     // Connection options for better Atlas compatibility
     const connectionOptions = {
       maxPoolSize: 10,
@@ -71,8 +71,8 @@ async function setupWalletSystem() {
     console.log("🚀 Starting comprehensive wallet system setup...\n");
 
     // STEP 1: Find users without walletId
-    const usersWithoutWalletId = await User.find({ 
-      walletId: { $exists: false } 
+    const usersWithoutWalletId = await User.find({
+      walletId: { $exists: false }
     });
 
     console.log(`📋 STEP 1: Found ${usersWithoutWalletId.length} users without walletId`);
@@ -86,7 +86,7 @@ async function setupWalletSystem() {
         let walletId;
         let attempts = 0;
         const maxAttempts = 10;
-        
+
         // Ensure unique wallet ID
         do {
           walletId = generateWalletId();
@@ -94,33 +94,33 @@ async function setupWalletSystem() {
           const existingUser = await User.findOne({ walletId });
           if (!existingUser) break;
         } while (attempts < maxAttempts);
-        
+
         if (attempts >= maxAttempts) {
           console.error(`❌ Failed to generate unique walletId for user ${user.email} after ${maxAttempts} attempts`);
           walletIdErrors++;
           continue;
         }
-        
+
         // Update user with walletId and wallet-related fields
-        const updateData: any = { 
+        const updateData: any = {
           walletId,
           isWalletPublic: true,
           walletVisibility: "public"
         };
-        
+
         // Set displayName if not already set
         if (!user.displayName) {
           updateData.displayName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
         }
-        
+
         await User.updateOne(
           { _id: user._id },
           { $set: updateData }
         );
-        
+
         console.log(`✅ Created walletId ${walletId} for user ${user.email}`);
         walletIdCount++;
-        
+
       } catch (error) {
         console.error(`❌ Error creating walletId for user ${user.email}:`, error);
         walletIdErrors++;
@@ -129,11 +129,11 @@ async function setupWalletSystem() {
 
     // STEP 2: Ensure all users with walletId have proper wallet fields
     console.log(`\n📋 STEP 2: Ensuring wallet fields for all users with walletId...`);
-    
+
     const result = await User.updateMany(
       { walletId: { $exists: true } },
-      { 
-        $set: { 
+      {
+        $set: {
           isWalletPublic: true,
           walletVisibility: "public"
         }
@@ -144,7 +144,7 @@ async function setupWalletSystem() {
 
     // STEP 3: Verify setup
     console.log(`\n📋 STEP 3: Verification...`);
-    
+
     const allUsers = await User.find({ walletId: { $exists: true } });
     let completeUsers = 0;
     let incompleteUsers = 0;
@@ -185,7 +185,7 @@ async function setupWalletSystem() {
     console.log(`✅ Users with complete wallet setup: ${completeUsers}`);
     console.log(`⚠️  Users with incomplete setup: ${incompleteUsers}`);
     console.log(`📝 Total users processed: ${allUsers.length}`);
-    
+
     if (incompleteUsers === 0) {
       console.log(`\n🎉 SUCCESS: All users have complete wallet setup!`);
       console.log(`💡 Users should log out and log back in to get fresh JWT tokens.`);
@@ -195,7 +195,7 @@ async function setupWalletSystem() {
 
   } catch (error) {
     console.error("❌ Wallet system setup failed:", error);
-    
+
     if (error instanceof Error) {
       if (error.message.includes('ENOTFOUND') || error.message.includes('ECONNREFUSED')) {
         console.log("\n💡 Connection Error Tips:");

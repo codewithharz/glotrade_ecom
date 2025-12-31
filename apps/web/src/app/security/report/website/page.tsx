@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Globe, Smartphone, AlertTriangle, Shield, CheckCircle, ExternalLink } from "lucide-react";
 import { apiPost } from "@/utils/api";
+import { translate } from "@/utils/translate";
 
 export default function ReportWebsitePage() {
   const [formData, setFormData] = useState({
@@ -20,7 +21,7 @@ export default function ReportWebsitePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const result = await apiPost<{ status: string; message?: string }>('/api/v1/security-reports/submit', {
         reportType: 'website',
@@ -65,21 +66,21 @@ export default function ReportWebsitePage() {
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-8 h-8 text-green-600" />
           </div>
-          <h1 className="text-2xl font-bold text-neutral-800 mb-2">Report Submitted Successfully</h1>
+          <h1 className="text-2xl font-bold text-neutral-800 mb-2">{translate("security.communication.success.title")}</h1>
           <p className="text-neutral-600 mb-6">
-            Thank you for reporting this suspicious website/app. Our security team will investigate and take appropriate action.
+            {translate("security.website.success.desc")}
           </p>
           <div className="space-y-3">
-            <Link 
+            <Link
               href="/security/report"
               className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-700 transition-colors"
             >
               <Shield className="w-4 h-4" />
-              Report Another Issue
+              {translate("security.communication.success.another")}
             </Link>
             <div>
               <Link href="/" className="text-emerald-600 hover:text-emerald-700 font-medium">
-                Return to Homepage
+                {translate("security.communication.success.home")}
               </Link>
             </div>
           </div>
@@ -92,20 +93,20 @@ export default function ReportWebsitePage() {
     <div className="mx-auto w-[95%] px-4 md:px-6 py-6 max-w-3xl">
       {/* Breadcrumbs */}
       <nav className="mb-6 text-sm text-neutral-500">
-        <Link href="/" className="hover:underline text-neutral-600">Home</Link>
+        <Link href="/" className="hover:underline text-neutral-600">{translate("usermenu.home")}</Link>
         <span className="mx-2">›</span>
-        <Link href="/security/report" className="hover:underline text-neutral-600">Report Suspicious Activity</Link>
+        <Link href="/security/report" className="hover:underline text-neutral-600">{translate("security.report.breadcrumb")}</Link>
         <span className="mx-2">›</span>
-        <span className="text-neutral-700">Website & App Impersonation</span>
+        <span className="text-neutral-700">{translate("security.website.breadcrumb")}</span>
       </nav>
 
       {/* Back Button */}
-      <Link 
+      <Link
         href="/security/report"
         className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-medium mb-6"
       >
         <ArrowLeft className="w-4 h-4" />
-        Back to Reporting Options
+        {translate("security.communication.backToOptions")}
       </Link>
 
       {/* Page Header */}
@@ -114,10 +115,10 @@ export default function ReportWebsitePage() {
           <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
             <Globe className="w-6 h-6 text-blue-600" />
           </div>
-          <h1 className="text-3xl font-bold text-neutral-800">Report Fake Website or App</h1>
+          <h1 className="text-3xl font-bold text-neutral-800">{translate("security.website.title")}</h1>
         </div>
         <p className="text-lg text-neutral-600">
-          Report websites or mobile apps that impersonate AfriTrade or try to steal user information.
+          {translate("security.website.desc")}
         </p>
       </div>
 
@@ -126,7 +127,7 @@ export default function ReportWebsitePage() {
         <div className="flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
           <div className="text-sm text-red-800">
-            <strong>Important:</strong> If you've already entered personal information or made a payment on a suspicious site, contact your bank immediately and change your passwords.
+            <span dangerouslySetInnerHTML={{ __html: translate("security.communication.warning") }} />
           </div>
         </div>
       </div>
@@ -136,12 +137,12 @@ export default function ReportWebsitePage() {
         {/* Type of Impersonation */}
         <div>
           <label className="block text-sm font-semibold text-neutral-700 mb-2">
-            Type of Impersonation *
+            {translate("security.website.form.typeLabel")}
           </label>
           <div className="space-y-3">
             {[
-              { value: "website", label: "Fake Website", icon: Globe },
-              { value: "mobile_app", label: "Fake Mobile App", icon: Smartphone }
+              { value: "website", label: translate("security.website.form.types.website"), icon: Globe },
+              { value: "mobile_app", label: translate("security.website.form.types.mobile_app"), icon: Smartphone }
             ].map(({ value, label, icon: Icon }) => (
               <label key={value} className="flex items-center gap-3 cursor-pointer">
                 <input
@@ -164,7 +165,7 @@ export default function ReportWebsitePage() {
         {formData.type === "website" && (
           <div>
             <label className="block text-sm font-semibold text-neutral-700 mb-2">
-              Website URL *
+              {translate("security.website.form.urlLabel")}
             </label>
             <div className="flex gap-2">
               <input
@@ -195,7 +196,7 @@ export default function ReportWebsitePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold text-neutral-700 mb-2">
-                App Name *
+                {translate("security.website.form.appNameLabel")}
               </label>
               <input
                 type="text"
@@ -208,7 +209,7 @@ export default function ReportWebsitePage() {
             </div>
             <div>
               <label className="block text-sm font-semibold text-neutral-700 mb-2">
-                App Store *
+                {translate("security.website.form.appStoreLabel")}
               </label>
               <select
                 value={formData.appStore}
@@ -216,10 +217,10 @@ export default function ReportWebsitePage() {
                 className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 required
               >
-                <option value="">Select app store</option>
-                <option value="google_play">Google Play Store</option>
-                <option value="app_store">Apple App Store</option>
-                <option value="other">Other</option>
+                <option value="">{translate("common.select")}</option>
+                <option value="google_play">{translate("security.website.form.appStores.google")}</option>
+                <option value="app_store">{translate("security.website.form.appStores.apple")}</option>
+                <option value="other">{translate("security.website.form.appStores.other")}</option>
               </select>
             </div>
           </div>
@@ -228,12 +229,12 @@ export default function ReportWebsitePage() {
         {/* Description */}
         <div>
           <label className="block text-sm font-semibold text-neutral-700 mb-2">
-            Describe the suspicious website/app *
+            {translate("security.website.form.descLabel")}
           </label>
           <textarea
             value={formData.description}
             onChange={(e) => handleInputChange("description", e.target.value)}
-            placeholder="Describe what you saw, what made it suspicious, and any other details..."
+            placeholder={translate("security.website.form.descPlaceholder")}
             rows={4}
             className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
             required
@@ -243,29 +244,29 @@ export default function ReportWebsitePage() {
         {/* Suspicious Elements */}
         <div>
           <label className="block text-sm font-semibold text-neutral-700 mb-2">
-            What made this website/app suspicious? (Select all that apply)
+            {translate("security.communication.form.suspiciousElementsLabel")}
           </label>
           <div className="space-y-2">
             {[
-              "URL looks similar but slightly different from afritrade.com",
-              "Asked for login credentials or personal information",
-              "Requested payment information",
-              "Had poor design or looked unprofessional",
-              "Contained spelling or grammar errors",
-              "Created sense of urgency",
-              "Offered unrealistic deals or prices",
-              "Asked to download suspicious files",
-              "Redirected to other suspicious websites",
-              "Had fake security certificates or warnings"
-            ].map((element) => (
-              <label key={element} className="flex items-center gap-3 cursor-pointer">
+              { key: "url", label: translate("security.website.form.elements.url") },
+              { key: "credentials", label: translate("security.website.form.elements.credentials") },
+              { key: "payment", label: translate("security.website.form.elements.payment") },
+              { key: "design", label: translate("security.website.form.elements.design") },
+              { key: "grammar", label: translate("security.website.form.elements.grammar") },
+              { key: "urgency", label: translate("security.website.form.elements.urgency") },
+              { key: "deals", label: translate("security.website.form.elements.deals") },
+              { key: "downloads", label: translate("security.website.form.elements.downloads") },
+              { key: "redirects", label: translate("security.website.form.elements.redirects") },
+              { key: "certificates", label: translate("security.website.form.elements.certificates") }
+            ].map(({ key, label }) => (
+              <label key={key} className="flex items-center gap-3 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={formData.suspiciousElements.includes(element)}
-                  onChange={() => handleCheckboxChange(element)}
+                  checked={formData.suspiciousElements.includes(label)}
+                  onChange={() => handleCheckboxChange(label)}
                   className="w-4 h-4 text-emerald-600 border-neutral-300 rounded focus:ring-emerald-500"
                 />
-                <span className="text-neutral-700">{element}</span>
+                <span className="text-neutral-700">{label}</span>
               </label>
             ))}
           </div>
@@ -274,32 +275,32 @@ export default function ReportWebsitePage() {
         {/* Action Taken */}
         <div>
           <label className="block text-sm font-semibold text-neutral-700 mb-2">
-            What action did you take?
+            {translate("security.communication.form.actionLabel")}
           </label>
           <select
             value={formData.actionTaken}
             onChange={(e) => handleInputChange("actionTaken", e.target.value)}
             className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
           >
-            <option value="">Select an option</option>
-            <option value="left_immediately">Left the website immediately</option>
-            <option value="closed_app">Closed the app</option>
-            <option value="reported_store">Reported to app store</option>
-            <option value="contacted_bank">Contacted my bank</option>
-            <option value="changed_passwords">Changed my passwords</option>
-            <option value="other">Other</option>
+            <option value="">{translate("common.select")}</option>
+            <option value="left_immediately">{translate("security.website.form.actions.left")}</option>
+            <option value="closed_app">{translate("security.website.form.actions.closed")}</option>
+            <option value="reported_store">{translate("security.website.form.actions.reported")}</option>
+            <option value="contacted_bank">{translate("security.communication.form.actions.bank")}</option>
+            <option value="changed_passwords">{translate("security.website.form.actions.passwords")}</option>
+            <option value="other">{translate("security.communication.form.actions.other")}</option>
           </select>
         </div>
 
         {/* Additional Details */}
         <div>
           <label className="block text-sm font-semibold text-neutral-700 mb-2">
-            Additional Details (Optional)
+            {translate("security.communication.form.additionalLabel")}
           </label>
           <textarea
             value={formData.additionalDetails}
             onChange={(e) => handleInputChange("additionalDetails", e.target.value)}
-            placeholder="Any screenshots, error messages, or other information that might be helpful..."
+            placeholder={translate("security.communication.form.additionalPlaceholder")}
             rows={3}
             className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
           />
@@ -311,30 +312,30 @@ export default function ReportWebsitePage() {
             type="submit"
             className="w-full bg-emerald-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-emerald-700 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
           >
-            Submit Report
+            {translate("security.communication.form.submit")}
           </button>
         </div>
       </form>
 
       {/* Security Tips */}
       <div className="mt-12 p-6 bg-emerald-50 border border-emerald-200 rounded-lg">
-        <h3 className="text-lg font-semibold mb-3 text-emerald-800">How to Spot Fake Websites & Apps</h3>
+        <h3 className="text-lg font-semibold mb-3 text-emerald-800">{translate("security.website.tips.title")}</h3>
         <div className="space-y-2 text-sm text-emerald-700">
           <div className="flex items-start gap-2">
             <CheckCircle className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
-            <span>Always check the URL carefully - our official website is afritrade.com</span>
+            <span>{translate("security.website.tips.url")}</span>
           </div>
           <div className="flex items-start gap-2">
             <CheckCircle className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
-            <span>Look for the padlock icon in your browser's address bar</span>
+            <span>{translate("security.website.tips.padlock")}</span>
           </div>
           <div className="flex items-start gap-2">
             <CheckCircle className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
-            <span>Be wary of sites with poor design, spelling errors, or unrealistic offers</span>
+            <span>{translate("security.website.tips.design")}</span>
           </div>
           <div className="flex items-start gap-2">
             <CheckCircle className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
-            <span>Only download apps from official app stores (Google Play, Apple App Store)</span>
+            <span>{translate("security.website.tips.stores")}</span>
           </div>
         </div>
       </div>

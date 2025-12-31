@@ -68,7 +68,256 @@
     "modalMessage": "GloTrade na daraja sirrin ku da tsaron ku. Ba za mu taɓa aiko da buƙatun ƙarin biyan kuɗi ta SMS ko imel ba. Idan kun sami kowane buƙata da ke da'awar cewa daga GloTrade take, muna ba da shawarar ku yi watsi da su kuma kada ku danna kowane hanyoyin haɗin yanar gizo da za su iya ƙunshewa.",
     "fraudCasesIntro": "Ga wasu",
     "commonFraudCases": "shari'o'in zamba na yau da kullun",
-    "forReference": "don tunani."
+    "forReference": "don tunani.",
+    "reportSuspicious": "Idan ka ci karo da wani abin tsoro, da fatan za a bayar da rahotonsa cikin lokaci",
+    "report": {
+      "breadcrumb": "Bayar da Rahoton Wani Abu Mai Rahusa",
+      "title": "Bayar da rahoton wani abu mai tuhuma",
+      "intro": "Mun yi alkawarin kiyaye sirrin ku da bayanan ku. Idan kun ci karo da wani aiki na shakku ko kuna da wani damuwa, da fatan za ku kai mana rahoto nan da nan ta zaɓuɓɓukan da aka bayar a ƙasa. Za mu bi da rahotonku da mahimmanci. Na gode da goyon baya da hadin gwiwa!",
+      "importantNotice": "<strong>Muhimmi:</strong> Idan kuna da wasu rahotannin da ba na tuhuma ba, kamar ayyukan hukuma da bayan siyar da oda, tuntuɓi sabis na abokin ciniki na {service}.",
+      "selectSituation": "Zaɓi wani yanayi na shakku da kuka ci karo da shi",
+      "options": {
+        "communication": {
+          "title": "Bayar da rahoton kiran waya mai tuhuma, imel, ko saƙon SMS/rubutu",
+          "desc": "Bayar da rahoton kowane sadarwa mai tuhuma da ke da'awar daga AfriTrade take"
+        },
+        "website": {
+          "title": "Bayar da rahoton gidan yanar gizo ko app mai kama da AfriTrade",
+          "desc": "Bayar da rahoton gidajen yanar gizo ko aikace-aikacen da ke kwaikwayon dandalinmu"
+        },
+        "jobs": {
+          "title": "Bayar da rahoton damar aiki na jabu da sauran ayyukan da ke yin iƙirarin AfriTrade ne",
+          "desc": "Bayar da rahoton jabun saƙon aiki ko ayyukan da ke amfani da sunan alamar mu"
+        }
+      },
+      "howWeProtect": "Yadda Muke Kare Ka:",
+      "protectionFeatures": {
+        "monitoring": "24/7 Kula da Tsaro",
+        "response": "Martanin Barazana nan take",
+        "data": "Amintaccen Kariyar Bayanai"
+      }
+    },
+    "communication": {
+      "breadcrumb": "Zambar Sadarwa",
+      "backToOptions": "Koma Zuwa Zaɓuɓɓukan Rahoto",
+      "title": "Bayar da Rahoton Gidan Yanar Gizo ko App Mai Kwaikwayo",
+      "desc": "Bayar da rahoton duk wani kiran waya mai tuhuma, imel, ko saƙon SMS da ke da'awar daga AfriTrade take.",
+      "warning": "<strong>Muhimmi:</strong> Idan kun riga kun ba da bayanan sirri ko kun yi biyan kuɗi, tuntuɓi bankin ku nan da nan kuma kuyi tunanin canza kalmomin sirrinku.",
+      "form": {
+        "typeLabel": "Nau'in Sadarwa *",
+        "types": {
+          "phone": "Kiran Waya",
+          "email": "Imel",
+          "sms": "Saƙon SMS"
+        },
+        "senderLabel": "Sunan Mai Aikawa/Ƙungiya",
+        "senderPlaceholder": "Wanene ya ce ya tuntuɓe ku?",
+        "dateLabel": "Ranar Sadarwa *",
+        "phoneLabel": "Lambar Waya",
+        "emailLabel": "Adireshin Imel",
+        "timeLabel": "Lokacin Sadarwa",
+        "contentLabel": "Me suka ce ko suka nema? *",
+        "contentPlaceholder": "Bayyana sadarwar shakku daki-daki...",
+        "suspiciousElementsLabel": "Me ya sa wannan sadarwar ta zama abin tsoro? (Zaɓi duka waɗanda suka dace)",
+        "elements": {
+          "personalInfo": "Neman bayanan sirri (kalmomin sirri, lambobin asiri, da sauransu.)",
+          "immediatePayment": "Neman biyan kuɗi nan take",
+          "suspension": "An yi barazanar dakatar da asusun",
+          "crypto": "Neman katin kyauta ko kuɗin crypto",
+          "unprofessional": "An yi iƙirarin cewa daga AfriTrade ne amma ba su nuna ƙwarewa ba",
+          "grammar": "Yana da kura-kurai na harshe ko rubutu",
+          "urgency": "Ƙirƙirar jin gaggawa",
+          "links": "Nemi danna hanyoyin haɗin shakku"
+        },
+        "actionLabel": "Wane mataki kuka ɗauka?",
+        "actions": {
+          "ignored": "An yi watsi da sadarwar",
+          "blocked": "An hana mai aikawa",
+          "reported": "An kai rahoto ga hukuma",
+          "bank": "An tuntuɓi banki na",
+          "other": "Sauran"
+        },
+        "additionalLabel": "Ƙarin Bayani (Na zaɓi)",
+        "additionalPlaceholder": "Duk wani bayani da zai iya taimakawa...",
+        "submit": "Aika Rahoto"
+      },
+      "success": {
+        "title": "An Aika Rahoto cikin Nasara",
+        "desc": "Na gode da rahoton wannan aiki na shakku. Ƙungiyar tsaron mu za ta sake duba rahoton ku kuma ta ɗauki matakin da ya dace.",
+        "another": "Bayar da Rahoton Wata Matsala",
+        "home": "Koma Gida"
+      },
+      "tips": {
+        "title": "Hanyoyin Tsaro",
+        "neverAsk": "AfriTrade ba zai taɓa neman kalmar sirrinku ko bayanan biyan kuɗi ta waya, imel, ko SMS ba",
+        "noThreat": "Ba za mu taɓa yin barazanar dakatar da asusunku don ɗaukar mataki nan take ba",
+        "official": "Sadarwar hukuma koyaushe tana fitowa daga adireshin @afritrade.com da aka tabbatar"
+      }
+    },
+    "website": {
+      "breadcrumb": "Kwaikwayon Gidan Yanar Gizo & App",
+      "title": "Bayar da Rahoton Jabun Gidan Yanar Gizo ko App",
+      "desc": "Bayar da rahoton gidajen yanar gizo ko aikace-aikacen tafi-da-gidanka da ke kwaikwayon AfriTrade ko ƙoƙarin sace bayanan mai amfani.",
+      "form": {
+        "typeLabel": "Nau'in Kwaikwayo *",
+        "types": {
+          "website": "Jabun Gidan Yanar Gizo",
+          "mobile_app": "Jabun App"
+        },
+        "urlLabel": "URL na Gidan Yanar Gizo *",
+        "appNameLabel": "Sunan App *",
+        "appStoreLabel": "Shagon App *",
+        "appStores": {
+          "google": "Google Play Store",
+          "apple": "Apple App Store",
+          "other": "Sauran"
+        },
+        "descLabel": "Bayyana gidan yanar gizon/app mai tuhuma *",
+        "descPlaceholder": "Bayyana abin da kuka gani, me ya sa ya zama abin shakku, da duk wani cikakken bayani...",
+        "elements": {
+          "url": "URL ya yi kama amma ya bambanta kaɗan da afritrade.com",
+          "credentials": "Neman bayanan shiga ko na sirri",
+          "payment": "Neman bayanan biyan kuɗi",
+          "design": "Zane mara kyau ko rashin ƙwarewa",
+          "grammar": "Yana da kura-kurai na rubutu ko nahawu",
+          "urgency": "Ƙirƙirar jin gaggawa",
+          "deals": "Bayar da ciniki ko farashin da ba gaskiya ba",
+          "downloads": "Neman sauke fayiloli mai tuhuma",
+          "redirects": "An tura ku zuwa wasu rukunin yanar gizon da ake shakka",
+          "certificates": "Ya ƙunshi takaddun tsaro na karya ko gargaɗi"
+        },
+        "actions": {
+          "left": "An bar gidan yanar gizon nan take",
+          "closed": "An rufe app ɗin",
+          "reported": "An kai rahoto ga kantin sayar da app",
+          "bank": "An tuntuɓi banki na",
+          "passwords": "Na canza kalmomin sirri na",
+          "other": "Sauran"
+        }
+      },
+      "success": {
+        "desc": "Na gode da rahoton wannan rukunin yanar gizon/app mai tuhuma. Ƙungiyar tsaron mu za ta yi bincike kuma ta ɗauki matakin da ya dace."
+      },
+      "tips": {
+        "title": "Yadda Ake Gane Jabun Yanar Gizo & Apps",
+        "url": "Koyaushe duba URL ɗin a hankali - rukunin gidan yanar gizon mu na hukuma shine afritrade.com",
+        "padlock": "Nemi alamar kwaɗo a mashin adireshin burauzar ku",
+        "design": "Kasance mai hattara da shafukan da ba su da tsari mai kyau, kuskuren rubutu, ko tayin da ba a saba gani ba",
+        "stores": "Zazzage ƙa'idodi kawai daga shagunan ƙa'idodin hukuma (Google Play, Apple App Store)"
+      }
+    },
+    "jobs": {
+      "breadcrumb": "Zambar Aiki & Damar Tallafi",
+      "title": "Bayar da Rahoton Jabun Damar Aiki",
+      "desc": "Bayar da rahoton jabun ayyukan yi, tsarin saka hannun jari, ko damar kasuwanci da ke da'awar karya daga AfriTrade suke.",
+      "warning": "<strong>Muhimmi:</strong> Idan kun riga kun bayar da bayanan sirri, tura kuɗi, ko raba takardu, tuntuɓi bankin ku nan da nan kuma kuyi tunanin kai rahoto ga hukumomin yankinku.",
+      "form": {
+        "typeLabel": "Nau'in Aiki Na Shakku *",
+        "types": {
+          "fake_job": {
+            "label": "Jabun Sanarwar Aiki",
+            "desc": "Tayin aiki da da'awar daga AfriTrade yake"
+          },
+          "investment_scheme": {
+            "label": "Tsarin Zuba Jari",
+            "desc": "Alkawuran samun riba mai yawa ta amfani da sunan AfriTrade"
+          },
+          "business_opportunity": {
+            "label": "Abokan Kasuwanci",
+            "desc": "Damar kasuwanci na bogi ko haɗin gwiwa"
+          },
+          "recruitment_scam": {
+            "label": "Zambar Daukar Ma'aikata",
+            "desc": "Tsarin daukar ma'aikata ko nada ma'aikata na bogi"
+          }
+        },
+        "companyLabel": "Sunan Kamfani/Ƙungiya *",
+        "jobTitleLabel": "Sunan Aiki (idan akwai)",
+        "contactLabel": "Bayanin Tuntuɓa *",
+        "platformLabel": "Dandalin da kuka same shi",
+        "platforms": {
+          "linkedin": "LinkedIn",
+          "indeed": "Indeed",
+          "glassdoor": "Glassdoor",
+          "email": "Imel",
+          "social": "Kafofin Sadarwar Jama'a",
+          "website": "Gidan Yanar Gizo",
+          "other": "Sauran"
+        },
+        "elements": {
+          "salary": "Albashi ko fa'idodin da ba gaskiya ba",
+          "upfront": "Neman biyan kuɗi na gaba ko kuɗin fito",
+          "urgency": "Neman ɗaukar mataki nan take ko yanke shawara",
+          "documents": "Neman takaddun shaida (fasfo, ID, da sauransu.)",
+          "wfh": "Bayar da damar yin aiki daga gida tare da ƙananan buƙatu",
+          "money": "Neman sarrafa kuɗi ko biyan kuɗi",
+          "investment": "Neman zuba jari ko siyan kayan aiki",
+          "grammar": "Kuskure a cikin sadarwa ta nahawu ko rubutu",
+          "bank": "Neman asusun banki ko bayanan biyan kuɗi",
+          "unprofessional": "Da'awar yana da alaƙa da AfriTrade amma ba su nuna ƙwarewa ba",
+          "commission": "Bayar da aiki da ya danganci hukumar tare da alkawarai masu yawa",
+          "recruit": "Nemi ɗaukar wasu ko gina ƙungiya"
+        },
+        "actions": {
+          "ignored": "An yi watsi da damar",
+          "blocked": "An datse mai tuntuɓar",
+          "reported_platform": "An kai rahoto ga dandalin",
+          "bank": "An tuntuɓi banki na",
+          "reported_authorities": "An kai rahoto ga hukuma",
+          "other": "Sauran"
+        }
+      },
+      "success": {
+        "desc": "Na gode da rahoton wannan damar aiki mai tuhuma. Ƙungiyar tsaron mu za ta yi bincike kuma ta ɗauki matakin da ya dace."
+      },
+      "tips": {
+        "title": "Yadda Ake Gane Jabun Damar Aiki",
+        "noFees": "Kamfanoni na gaskiya ba sa neman kowane biyan kuɗi na gaba",
+        "tooGood": "Kasance mai hattara da damar da ta yi kyau da za a iya yarda da ita",
+        "research": "Bincika kamfanin sosai kafin neman aiki",
+        "noShare": "Kada a raba takaddun shaida ko bayanan banki",
+        "careers": "Duk saƙon aiki na AfriTrade na gaskiya suna cikin shafinmu na hukuma"
+      }
+    },
+    "fraudCases": {
+      "breadcrumb": "Shari'o'in Zamba na Ruwa",
+      "title": "Shari'o'in Zamba na Ruwa",
+      "intro": "Kasance da sanin dabarun zamba da ‘yan damfara ke amfani da su. Ilimi shine babban kariya daga zamba. Idan kun fuskanci ɗayan waɗannan yanayi, kai rahoto nan da nan.",
+      "categories": {
+        "communication": {
+          "title": "Zambar Sadarwa",
+          "cases": {
+            "fake": "<strong>Jabun SMS/Imel:</strong> Saƙonni da ke da'awar daga AfriTrade suna neman tantance biyan kuɗi ko sabunta asusu",
+            "urgent": "<strong>Bukatar Biyan Gaggawa:</strong> Neman biyan kuɗi nan take ta hanyoyin da ba a saba gani ba (katunan kyauta, crypto)",
+            "suspension": "<strong>Barazanar Dakatar da Asusun:</strong> Gargaɗin dakatar da asusun bogi yana buƙatar mataki nan take"
+          },
+          "remember": "<strong>Ka Tuna:</strong> AfriTrade ba zai taɓa neman kalmar sirrinku, bayanan biyan kuɗi, ko bayanan sirri ta SMS ko imel ba."
+        },
+        "impersonation": {
+          "title": "Kwaikwayon Gidan Yanar Gizo & App",
+          "cases": {
+            "fake": "<strong>Jabun Shafukan Yanar Gizo:</strong> Shafukan da suke kama da AfriTrade amma suna da dan bambancin URL",
+            "copycat": "<strong>Aikace-aikacen kwaikwayo:</strong> Aikace-aikacen tafi-da-gidanka a cikin shagunan app waɗanda ke kwaikwayon dandalinmu",
+            "phishing": "<strong>Shafukan damfara:</strong> Shafukan da aka tsara don sace bayanan shiga da bayanan biyan kuɗi"
+          },
+          "verify": "<strong>Koyaushe Tabbatar:</strong> Bincika URL ɗin sosai. Shafin mu na hukuma koyaushe shine afritrade.com"
+        },
+        "jobs": {
+          "title": "Zambar Aiki & Damar Tallafi",
+          "cases": {
+            "postings": "<strong>Jabun Sanarwar Aiki:</strong> Tayin aiki da da'awar daga AfriTrade tare da albashin da ba gaskiya ba",
+            "schemes": "<strong>Tsarin Zuba Jari:</strong> Alkawuran samun riba mai yawa ta amfani da sunan AfriTrade",
+            "partnerships": "<strong>Zambar hadin gwiwa:</strong> Jabun damar kasuwanci tare da alakar da ba ta dace ba da AfriTrade"
+          },
+          "verify": "<strong>Tabbatar da Daukar Ma'aikata:</strong> Duk sanarwar aiki na AfriTrade na gaskiya suna cikin shafin aikin mu na kwarai."
+        }
+      },
+      "action": {
+        "title": "An Duba Wani Aiki Mai Tuhuma?",
+        "desc": "Kada ku yi shakkar bayar da rahoton kowane aiki na shakku. Rahotonku yana taimakawa wajen kiyaye amincin al'ummar mu baki ɗaya.",
+        "button": "Bayar da Rahoton Aiki Mai Tuhuma"
+      }
+    }
   },
   "header": {
     "adminPanel": "Gudanarwa",

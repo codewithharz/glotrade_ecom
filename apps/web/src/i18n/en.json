@@ -308,7 +308,255 @@
     "fraudCasesIntro": "Here are some",
     "commonFraudCases": "common fraud cases",
     "forReference": "for reference.",
-    "reportSuspicious": "If you come across anything suspicious, please report it in time"
+    "reportSuspicious": "If you come across anything suspicious, please report it in time",
+    "report": {
+      "breadcrumb": "Report Something Suspicious",
+      "title": "Report something suspicious",
+      "intro": "We promise to protect your privacy and data. If you come across any suspicious activity or have any concerns, please report them to us immediately through the options provided below. We will treat your report seriously. Thank you for your support and cooperation!",
+      "importantNotice": "<strong>Important:</strong> If you have any non-suspicious reports, such as official activities and order after-sales, please contact {service} customer service.",
+      "selectSituation": "Select a suspicious situation you encountered",
+      "options": {
+        "communication": {
+          "title": "Report a suspicious phone call, email, or SMS/text message",
+          "desc": "Report any suspicious communication claiming to be from AfriTrade"
+        },
+        "website": {
+          "title": "Report a fake website or app similar to AfriTrade",
+          "desc": "Report websites or apps that impersonate our platform"
+        },
+        "jobs": {
+          "title": "Report fake job opportunities and other activities that impersonate AfriTrade",
+          "desc": "Report fake job postings or activities using our brand name"
+        }
+      },
+      "howWeProtect": "How we protect you:",
+      "protectionFeatures": {
+        "monitoring": "24/7 security monitoring",
+        "response": "Immediate threat response",
+        "data": "Secure data protection"
+      }
+    },
+    "communication": {
+      "breadcrumb": "Communication Fraud",
+      "backToOptions": "Back to Reporting Options",
+      "title": "Report Suspicious Communication",
+      "desc": "Report any suspicious phone calls, emails, or SMS/text messages that claim to be from AfriTrade.",
+      "warning": "<strong>Important:</strong> If you've already provided personal information or made a payment, contact your bank immediately and consider changing your passwords.",
+      "form": {
+        "typeLabel": "Type of Communication *",
+        "types": {
+          "phone": "Phone Call",
+          "email": "Email",
+          "sms": "SMS/Text Message"
+        },
+        "senderLabel": "Sender Name/Organization",
+        "senderPlaceholder": "Who claimed to contact you?",
+        "dateLabel": "Date of Communication *",
+        "phoneLabel": "Phone Number",
+        "emailLabel": "Email Address",
+        "timeLabel": "Time of Communication",
+        "contentLabel": "What did they say or ask for? *",
+        "contentPlaceholder": "Describe the suspicious communication in detail...",
+        "suspiciousElementsLabel": "What made this communication suspicious? (Select all that apply)",
+        "elements": {
+          "personalInfo": "Asked for personal information (passwords, SSN, etc.)",
+          "immediatePayment": "Demanded immediate payment",
+          "suspension": "Threatened account suspension",
+          "crypto": "Asked for gift cards or cryptocurrency",
+          "unprofessional": "Claimed to be from AfriTrade but seemed unprofessional",
+          "grammar": "Had poor grammar or spelling",
+          "urgency": "Created sense of urgency",
+          "links": "Asked to click on suspicious links"
+        },
+        "actionLabel": "What action did you take?",
+        "actions": {
+          "ignored": "Ignored the communication",
+          "blocked": "Blocked the sender",
+          "reported": "Reported to authorities",
+          "bank": "Contacted my bank",
+          "other": "Other"
+        },
+        "additionalLabel": "Additional Details (Optional)",
+        "additionalPlaceholder": "Any other information that might be helpful...",
+        "submit": "Submit Report"
+      },
+      "success": {
+        "title": "Report Submitted Successfully",
+        "desc": "Thank you for reporting this suspicious activity. Our security team will review your report and take appropriate action.",
+        "another": "Report Another Issue",
+        "home": "Return to Homepage"
+      },
+      "tips": {
+        "title": "Security Tips",
+        "neverAsk": "AfriTrade will never ask for your password or payment information via phone, email, or SMS",
+        "noThreat": "We will never threaten to suspend your account for immediate action",
+        "official": "Official communications always come from verified @afritrade.com addresses"
+      }
+    },
+    "website": {
+      "breadcrumb": "Website & App Impersonation",
+      "title": "Report Fake Website or App",
+      "desc": "Report websites or mobile apps that impersonate AfriTrade or try to steal user information.",
+      "form": {
+        "typeLabel": "Type of Impersonation *",
+        "types": {
+          "website": "Fake Website",
+          "mobile_app": "Fake Mobile App"
+        },
+        "urlLabel": "Website URL *",
+        "appNameLabel": "App Name *",
+        "appStoreLabel": "App Store *",
+        "appStores": {
+          "google": "Google Play Store",
+          "apple": "Apple App Store",
+          "other": "Other"
+        },
+        "descLabel": "Describe the suspicious website/app *",
+        "descPlaceholder": "Describe what you saw, what made it suspicious, and any other details...",
+        "elements": {
+          "url": "URL looks similar but slightly different from afritrade.com",
+          "credentials": "Asked for login credentials or personal information",
+          "payment": "Requested payment information",
+          "design": "Had poor design or looked unprofessional",
+          "grammar": "Contained spelling or grammar errors",
+          "urgency": "Created sense of urgency",
+          "deals": "Offered unrealistic deals or prices",
+          "downloads": "Asked to download suspicious files",
+          "redirects": "Redirected to other suspicious websites",
+          "certificates": "Had fake security certificates or warnings"
+        },
+        "actions": {
+          "left": "Left the website immediately",
+          "closed": "Closed the app",
+          "reported": "Reported to app store",
+          "bank": "Contacted my bank",
+          "passwords": "Changed my passwords",
+          "other": "Other"
+        }
+      },
+      "success": {
+        "desc": "Thank you for reporting this suspicious website/app. Our security team will investigate and take appropriate action."
+      },
+      "tips": {
+        "title": "How to Spot Fake Websites & Apps",
+        "url": "Always check the URL carefully - our official website is afritrade.com",
+        "padlock": "Look for the padlock icon in your browser's address bar",
+        "design": "Be wary of sites with poor design, spelling errors, or unrealistic offers",
+        "stores": "Only download apps from official app stores (Google Play, Apple App Store)"
+      }
+    },
+    "jobs": {
+      "breadcrumb": "Job & Opportunity Scams",
+      "title": "Report Fake Job Opportunities",
+      "desc": "Report fake job postings, investment schemes, or business opportunities that falsely claim to be from AfriTrade.",
+      "warning": "<strong>Important:</strong> If you've already provided personal information, sent money, or shared documents, contact your bank immediately and consider reporting to local authorities.",
+      "form": {
+        "typeLabel": "Type of Suspicious Activity *",
+        "types": {
+          "fake_job": {
+            "label": "Fake Job Posting",
+            "desc": "Job offers claiming to be from AfriTrade"
+          },
+          "investment_scheme": {
+            "label": "Investment Scheme",
+            "desc": "Promises of high returns using AfriTrade's name"
+          },
+          "business_opportunity": {
+            "label": "Business Partnership",
+            "desc": "Fake business opportunities or partnerships"
+          },
+          "recruitment_scam": {
+            "label": "Recruitment Scam",
+            "desc": "Fake recruitment or hiring processes"
+          }
+        },
+        "companyLabel": "Company/Organization Name *",
+        "jobTitleLabel": "Job Title (if applicable)",
+        "contactLabel": "Contact Information *",
+        "platformLabel": "Platform Where Found",
+        "platforms": {
+          "linkedin": "LinkedIn",
+          "indeed": "Indeed",
+          "glassdoor": "Glassdoor",
+          "email": "Email",
+          "social": "Social Media",
+          "website": "Website",
+          "other": "Other"
+        },
+        "elements": {
+          "salary": "Unrealistically high salary or benefits",
+          "upfront": "Asked for upfront payment or fees",
+          "urgency": "Required immediate action or decision",
+          "documents": "Asked for personal documents (passport, SSN, etc.)",
+          "wfh": "Offered work-from-home with minimal requirements",
+          "money": "Asked to process payments or handle money",
+          "investment": "Required investment or purchase of equipment",
+          "grammar": "Had poor grammar or spelling in communications",
+          "bank": "Asked for bank account or payment information",
+          "unprofessional": "Claimed affiliation with AfriTrade but seemed unprofessional",
+          "commission": "Offered commission-based work with high promises",
+          "recruit": "Asked to recruit others or build a team"
+        },
+        "actions": {
+          "ignored": "Ignored the opportunity",
+          "blocked": "Blocked the sender",
+          "reported_platform": "Reported to the platform",
+          "bank": "Contacted my bank",
+          "reported_authorities": "Reported to authorities",
+          "other": "Other"
+        }
+      },
+      "success": {
+        "desc": "Thank you for reporting this suspicious job opportunity. Our security team will investigate and take appropriate action."
+      },
+      "tips": {
+        "title": "How to Spot Fake Job Opportunities",
+        "noFees": "Legitimate companies never ask for upfront payment or fees",
+        "tooGood": "Be wary of opportunities that seem too good to be true",
+        "research": "Research the company thoroughly before applying",
+        "noShare": "Never share personal documents or bank information",
+        "careers": "All legitimate AfriTrade job postings are listed on our official careers page"
+      }
+    },
+    "fraudCases": {
+      "breadcrumb": "Common Fraud Cases",
+      "title": "Common Fraud Cases",
+      "intro": "Stay informed about common fraud tactics used by scammers. Knowledge is your best defense against fraud. If you encounter any of these situations, report them immediately.",
+      "categories": {
+        "communication": {
+          "title": "Communication Fraud",
+          "cases": {
+            "fake": "<strong>Fake SMS/Email:</strong> Messages claiming to be from AfriTrade asking for payment verification or account updates",
+            "urgent": "<strong>Urgent Payment Requests:</strong> Demands for immediate payment via unusual methods (gift cards, cryptocurrency)",
+            "suspension": "<strong>Account Suspension Threats:</strong> False warnings about account suspension requiring immediate action"
+          },
+          "remember": "<strong>Remember:</strong> AfriTrade will never ask for your password, payment information, or personal details via SMS or email."
+        },
+        "impersonation": {
+          "title": "Website & App Impersonation",
+          "cases": {
+            "fake": "<strong>Fake Websites:</strong> Sites that look like AfriTrade but have slightly different URLs",
+            "copycat": "<strong>Copycat Apps:</strong> Mobile apps in app stores that mimic our platform",
+            "phishing": "<strong>Phishing Pages:</strong> Pages designed to steal login credentials and payment information"
+          },
+          "verify": "<strong>Always verify:</strong> Check the URL carefully. Our official website is always afritrade.com"
+        },
+        "jobs": {
+          "title": "Job & Opportunity Scams",
+          "cases": {
+            "postings": "<strong>Fake Job Postings:</strong> Job offers claiming to be from AfriTrade with unrealistic salaries",
+            "schemes": "<strong>Investment Schemes:</strong> Promises of high returns using AfriTrade's name",
+            "partnerships": "<strong>Partnership Scams:</strong> Fake business opportunities claiming affiliation with AfriTrade"
+          },
+          "verify": "<strong>Verify employment:</strong> All legitimate AfriTrade job postings are listed on our official careers page."
+        }
+      },
+      "action": {
+        "title": "Suspicious Activity Detected?",
+        "desc": "Don't hesitate to report any suspicious activity. Your reports help protect our entire community.",
+        "button": "Report Suspicious Activity"
+      }
+    }
   },
   "usermenu": {
     "welcome": "Welcome",

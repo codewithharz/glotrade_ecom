@@ -452,7 +452,256 @@
     "modalMessage": "GloTrade 重视您的隐私和安全。我们绝不会通过短信或电子邮件要求额外付款。如果您收到任何声称来自 GloTrade 的请求，我们强烈建议您忽略它们，不要点击其中包含的任何链接。",
     "fraudCasesIntro": "以下是一些",
     "commonFraudCases": "常见的欺诈案例",
-    "forReference": "供参考。"
+    "forReference": "供参考。",
+    "reportSuspicious": "如果您发现任何可疑情况，请及时向我们报告",
+    "report": {
+      "breadcrumb": "报告可疑情况",
+      "title": "报告可疑情况",
+      "intro": "我们承诺保护您的隐私和数据。如果您发现任何可疑活动或有任何疑问，请立即通过下面提供的选项向我们报告。我们将认真对待您的报告。感谢您的支持与合作！",
+      "importantNotice": "<strong>重要提示：</strong>如果您有任何非可疑情况的报告，例如官方活动和订单售后，请联系{service}客服。",
+      "selectSituation": "选择您遇到的可疑情况",
+      "options": {
+        "communication": {
+          "title": "报告可疑电话、电子邮件或短信",
+          "desc": "报告任何自称来自AfriTrade的可疑通讯"
+        },
+        "website": {
+          "title": "报告类似的仿冒AfriTrade网站或APP",
+          "desc": "报告冒充我们平台的网站或应用程序"
+        },
+        "jobs": {
+          "title": "报告冒充AfriTrade的虚假工作机会和其他活动",
+          "desc": "报告使用我们品牌名称的虚假职位发布或活动"
+        }
+      },
+      "howWeProtect": "我们如何保护您：",
+      "protectionFeatures": {
+        "monitoring": "24/7 安全监控",
+        "response": "立即威胁响应",
+        "data": "安全数据保护"
+      }
+    },
+    "communication": {
+      "breadcrumb": "通讯诈骗",
+      "backToOptions": "回到报告选项",
+      "title": "报告可疑通讯",
+      "desc": "报告任何自称来自AfriTrade的可疑电话、电子邮件或短信。",
+      "warning": "<strong>重要提示：</strong>如果您已提供个人信息或已付款，请立即联系您的银行并考虑更改您的密码。",
+      "form": {
+        "typeLabel": "通讯类型 *",
+        "types": {
+          "phone": "电话",
+          "email": "电子邮件",
+          "sms": "短信"
+        },
+        "senderLabel": "发件人姓名/机构",
+        "senderPlaceholder": "谁声称联系了您？",
+        "dateLabel": "通讯日期 *",
+        "phoneLabel": "电话号码",
+        "emailLabel": "电子邮件地址",
+        "timeLabel": "通讯时间",
+        "contentLabel": "他们说或要求了什么？ *",
+        "contentPlaceholder": "详细描述该可疑通讯...",
+        "suspiciousElementsLabel": "是什么让这次通讯看起来可疑？（可多选）",
+        "elements": {
+          "personalInfo": "询问个人信息（密码、社会安全号码等）",
+          "immediatePayment": "要求立即付款",
+          "suspension": "以账号停用为威胁",
+          "crypto": "要求礼品卡或加密货币",
+          "unprofessional": "自称来自AfriTrade但显得不专业",
+          "grammar": "语法或拼写错误",
+          "urgency": "制造紧迫感",
+          "links": "要求点击可疑链接"
+        },
+        "actionLabel": "您采取了什么措施？",
+        "actions": {
+          "ignored": "忽略了该通讯",
+          "blocked": "拉黑了发件人",
+          "reported": "已向相关部门报告",
+          "bank": "联系了我的银行",
+          "other": "其他"
+        },
+        "additionalLabel": "补充详情（选填）",
+        "additionalPlaceholder": "任何其他可能有帮助的信息...",
+        "submit": "提交报告"
+      },
+      "success": {
+        "title": "报告已成功提交",
+        "desc": "感谢您报告此可疑活动。我们的安全团队将审核您的报告并采取适当措施。",
+        "another": "报告另一个问题",
+        "home": "回到首页"
+      },
+      "tips": {
+        "title": "安全提示",
+        "neverAsk": "AfriTrade绝不会通过电话、电子邮件或短信询问您的密码或付款信息",
+        "noThreat": "我们绝不会以立即采取行动为由威胁停用您的账户",
+        "official": "官方通讯始终来自经过验证的 @afritrade.com 地址"
+      }
+    },
+    "website": {
+      "breadcrumb": "网站与APP仿冒",
+      "title": "报告仿冒网站或APP",
+      "desc": "报告冒充AfriTrade或试图窃取用户信息的可疑网站或移动应用程序。",
+      "form": {
+        "typeLabel": "仿冒类型 *",
+        "types": {
+          "website": "仿冒网站",
+          "mobile_app": "仿冒APP"
+        },
+        "urlLabel": "网站URL *",
+        "appNameLabel": "APP名称 *",
+        "appStoreLabel": "应用商店 *",
+        "appStores": {
+          "google": "Google Play 商店",
+          "apple": "Apple App 商店",
+          "other": "其他"
+        },
+        "descLabel": "描述该可疑网站/APP *",
+        "descPlaceholder": "描述您看到了什么、为什么觉得可疑以及任何其他细节...",
+        "elements": {
+          "url": "URL与afritrade.com类似但略有不同",
+          "credentials": "询问登录凭据或个人信息",
+          "payment": "要求付款信息",
+          "design": "设计粗糙或显得不专业",
+          "grammar": "包含拼写或语法错误",
+          "urgency": "制造紧迫感",
+          "deals": "提供不切实际的优惠或价格",
+          "downloads": "要求下载可疑文件",
+          "redirects": "重定向到其他可疑网站",
+          "certificates": "包含虚假安全证书或警告"
+        },
+        "actions": {
+          "left": "立即离开了网站",
+          "closed": "关闭了APP",
+          "reported": "已向应用商店报告",
+          "bank": "联系了我的银行",
+          "passwords": "更改了我的密码",
+          "other": "其他"
+        }
+      },
+      "success": {
+        "desc": "感谢您报告此可疑网站/APP。我们的安全团队将进行调查并采取适当措施。"
+      },
+      "tips": {
+        "title": "如何识别仿冒网站与APP",
+        "url": "请务必仔细检查URL - 我们的官方网站是 afritrade.com",
+        "padlock": "查找浏览器地址栏中的锁形图标",
+        "design": "警惕设计粗糙、有拼写错误或提供不切实际优惠的网站",
+        "stores": "仅从官方应用商店下载APP（Google Play, Apple App Store）"
+      }
+    },
+    "jobs": {
+      "breadcrumb": "虚假工作与机会诈骗",
+      "title": "报告虚假工作机会",
+      "desc": "报告冒充自AfriTrade的虚假职位发布、投资计划或商业机会。",
+      "warning": "<strong>重要提示：</strong>如果您已提供个人信息、汇款或分享了文件，请立即联系您的银行并考虑向当地官方部门报告。",
+      "form": {
+        "typeLabel": "可疑活动类型 *",
+        "types": {
+          "fake_job": {
+            "label": "虚假职位发布",
+            "desc": "声称来自AfriTrade的工作邀请"
+          },
+          "investment_scheme": {
+            "label": "投资计划",
+            "desc": "使用AfriTrade名义承诺的高额回报"
+          },
+          "business_opportunity": {
+            "label": "商业合作",
+            "desc": "虚假的商业机会或合作伙伴关系"
+          },
+          "recruitment_scam": {
+            "label": "招聘诈骗",
+            "desc": "虚假的招聘或录用流程"
+          }
+        },
+        "companyLabel": "公司/组织名称 *",
+        "jobTitleLabel": "职位名称（如有）",
+        "contactLabel": "联系信息 *",
+        "platformLabel": "发现该信息的平台",
+        "platforms": {
+          "linkedin": "LinkedIn",
+          "indeed": "Indeed",
+          "glassdoor": "Glassdoor",
+          "email": "电子邮件",
+          "social": "社交媒体",
+          "website": "网站",
+          "other": "其他"
+        },
+        "elements": {
+          "salary": "不切实际的高薪或福利",
+          "upfront": "要求预付款或费用",
+          "urgency": "要求立即采取行动或做出决定",
+          "documents": "询问个人证件（护照、身份证件等）",
+          "wfh": "以极低要求提供居家办公机会",
+          "money": "要求处理款项或转账",
+          "investment": "需要投资或购买设备",
+          "grammar": "沟通中存在严重的语法或拼写错误",
+          "bank": "询问银行账户或付款信息",
+          "unprofessional": "声称与AfriTrade有关但显得不专业",
+          "commission": "提供带有高额承诺的佣金制工作",
+          "recruit": "要求招聘他人或组建团队"
+        },
+        "actions": {
+          "ignored": "忽略了该机会",
+          "blocked": "拉黑了联系人",
+          "reported_platform": "已向相关平台报告",
+          "bank": "联系了我的银行",
+          "reported_authorities": "已向官方部门报告",
+          "other": "其他"
+        }
+      },
+      "success": {
+        "desc": "感谢您报告此可疑工作机会。我们的安全团队将进行调查并采取适当措施。"
+      },
+      "tips": {
+        "title": "如何识别虚假工作机会",
+        "noFees": "合法公司绝不会要求预付款或费用",
+        "tooGood": "警惕那些看起来好得令人难以置信的机会",
+        "research": "在申请前彻底调查公司背景",
+        "noShare": "绝不要分享个人证件或银行信息",
+        "careers": "所有合法的AfriTrade职位发布都列在我们的官方招聘页面上"
+      }
+    },
+    "fraudCases": {
+      "breadcrumb": "常见诈骗案例",
+      "title": "常见诈骗案例",
+      "intro": "了解诈骗者常用的诈骗手段。知识是您防范诈骗的最佳武器。如果您遇到以下任何情况，请立即向我们报告。",
+      "categories": {
+        "communication": {
+          "title": "通讯诈骗",
+          "cases": {
+            "fake": "<strong>虚假短信/电子邮件：</strong>声称来自AfriTrade的消息，要求验证付款或更新账户",
+            "urgent": "<strong>紧急付款要求：</strong>要求通过非寻常方式（礼品卡、加密货币）立即付款",
+            "suspension": "<strong>账户停用威胁：</strong>虚假的账户停用警告，要求立即采取行动"
+          },
+          "remember": "<strong>牢记：</strong>AfriTrade绝不会通过短信或电子邮件询问您的密码、付款信息或个人细节。"
+        },
+        "impersonation": {
+          "title": "网站与APP仿冒",
+          "cases": {
+            "fake": "<strong>仿冒网站：</strong>看起来像AfriTrade但URL略有不同的网站",
+            "copycat": "<strong>仿冒APP：</strong>应用商店中模仿我们平台的移动应用程序",
+            "phishing": "<strong>钓鱼页面：</strong>旨在窃取登录凭据和付款信息的页面"
+          },
+          "verify": "<strong>务必核实：</strong>仔细检查URL。我们的官方网站始终是 afritrade.com"
+        },
+        "jobs": {
+          "title": "虚假工作与机会诈骗",
+          "cases": {
+            "postings": "<strong>虚假职位发布：</strong>声称来自AfriTrade但薪资不切实际的工作邀请",
+            "schemes": "<strong>投资计划：</strong>使用AfriTrade名义承诺的高额回报",
+            "partnerships": "<strong>合作诈骗：</strong>声称与AfriTrade有关联的虚假商业机会"
+          },
+          "verify": "<strong>核实雇佣信息：</strong>所有合法的AfriTrade职位发布都列在我们的官方招聘页面上。"
+        }
+      },
+      "action": {
+        "title": "发现可疑活动？",
+        "desc": "发现任何可疑活动请立即向我们报告。您的报告有助于保护整个社区的安全。",
+        "button": "报告可疑活动"
+      }
+    }
   },
   "usermenu": {
     "welcome": "欢迎",

@@ -11,41 +11,41 @@ dotenv.config();
 async function migrateVendorsToSeller() {
   try {
     console.log('🔄 Starting vendor migration to Seller collection...');
-    
+
     // Connect to database
-    const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/afritrade";
+    const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/glotrade_ecom";
     await mongoose.connect(MONGODB_URI);
     console.log('✅ Connected to database');
-    
+
     // Find all users with role 'seller' who have store data
-    const existingVendors = await User.find({ 
+    const existingVendors = await User.find({
       role: 'seller',
       store: { $exists: true, $ne: null }
     }).select('_id username email store country profileImage');
-    
+
     console.log(`📊 Found ${existingVendors.length} existing vendors to migrate`);
-    
+
     let migratedCount = 0;
     let skippedCount = 0;
-    
+
     for (const vendor of existingVendors) {
       try {
         // Check if Seller document already exists
         const existingSeller = await Seller.findOne({ userId: vendor._id });
-        
+
         if (existingSeller) {
           console.log(`⏭️  Skipping ${vendor.username} - Seller document already exists`);
           skippedCount++;
           continue;
         }
-        
+
         // Create slug from store name
         const slug = String(vendor.store?.name || vendor.username)
           .toLowerCase()
           .trim()
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/(^-|-$)+/g, "");
-        
+
         // Create Seller document
         const sellerDoc = await Seller.create({
           userId: vendor._id,
@@ -73,35 +73,35 @@ async function migrateVendorsToSeller() {
             currency: vendor.country === 'NG' ? 'NGN' : 'XOF'
           }] : []
         });
-        
+
         console.log(`✅ Migrated ${vendor.username} to Seller collection (ID: ${sellerDoc._id})`);
         migratedCount++;
-        
+
       } catch (error) {
         console.error(`❌ Failed to migrate ${vendor.username}:`, error);
       }
     }
-    
+
     console.log('\n🎉 Migration completed!');
     console.log(`📈 Total vendors found: ${existingVendors.length}`);
     console.log(`✅ Successfully migrated: ${migratedCount}`);
     console.log(`⏭️  Skipped (already existed): ${skippedCount}`);
     console.log(`❌ Failed: ${existingVendors.length - migratedCount - skippedCount}`);
-    
+
     // Verify migration
     const totalSellers = await Seller.countDocuments();
     const totalVendorUsers = await User.countDocuments({ role: 'seller' });
-    
+
     console.log('\n🔍 Verification:');
     console.log(`📊 Total Seller documents: ${totalSellers}`);
     console.log(`👥 Total vendor users: ${totalVendorUsers}`);
-    
+
     if (totalSellers >= totalVendorUsers) {
       console.log('✅ Migration successful - all vendors now have Seller documents');
     } else {
       console.log('⚠️  Some vendors may still be missing Seller documents');
     }
-    
+
   } catch (error) {
     console.error('❌ Migration failed:', error);
   } finally {

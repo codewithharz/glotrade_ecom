@@ -4,13 +4,13 @@ import Link from "next/link";
 import { HelpCircle, Mail, MessageSquare, Phone, Search, Send, Clock, ShieldCheck, Truck, RotateCcw, CreditCard, User, ChevronRight } from "lucide-react";
 import { translate } from "@/utils/translate";
 
-type Faq = { q: string; a: string; icon?: React.ReactNode; category: string; categoryKey: string };
+type Faq = { q: string; a: string; icon?: React.ReactNode; categoryKey: string };
 
 const FAQS: Faq[] = [
-  { q: "support.faqs.q1", a: "support.faqs.a1", icon: <Truck size={16} />, category: "Orders & Shipping", categoryKey: "orders" },
-  { q: "support.faqs.q2", a: "support.faqs.a2", icon: <RotateCcw size={16} />, category: "Returns & Refunds", categoryKey: "returns" },
-  { q: "support.faqs.q3", a: "support.faqs.a3", icon: <CreditCard size={16} />, category: "Payments & Billing", categoryKey: "payments" },
-  { q: "support.faqs.q4", a: "support.faqs.a4", icon: <ShieldCheck size={16} />, category: "Account & Security", categoryKey: "account" },
+  { q: "support.faqs.q1", a: "support.faqs.a1", icon: <Truck size={16} />, categoryKey: "orders" },
+  { q: "support.faqs.q2", a: "support.faqs.a2", icon: <RotateCcw size={16} />, categoryKey: "returns" },
+  { q: "support.faqs.q3", a: "support.faqs.a3", icon: <CreditCard size={16} />, categoryKey: "payments" },
+  { q: "support.faqs.q4", a: "support.faqs.a4", icon: <ShieldCheck size={16} />, categoryKey: "account" },
 ];
 
 const QUICK_LINKS = [
@@ -272,13 +272,13 @@ export default function SupportPage() {
             {/* Alt contact */}
             <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
               <div className="grid grid-cols-2 gap-3">
-                <Link href="mailto:support@example.com" className="flex flex-col items-center justify-center gap-2 rounded-xl border border-gray-200 p-3 hover:bg-gray-50 hover:border-gray-300 transition-all dark:border-gray-700 dark:hover:bg-gray-800">
+                <Link href="mailto:support@glotrade.online" className="flex flex-col items-center justify-center gap-2 rounded-xl border border-gray-200 p-3 hover:bg-gray-50 hover:border-gray-300 transition-all dark:border-gray-700 dark:hover:bg-gray-800">
                   <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-full text-blue-600 dark:text-blue-400">
                     <Mail size={16} />
                   </div>
                   <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{translate("support.contact.emailButton")}</span>
                 </Link>
-                <Link href="#" className="flex flex-col items-center justify-center gap-2 rounded-xl border border-gray-200 p-3 hover:bg-gray-50 hover:border-gray-300 transition-all dark:border-gray-700 dark:hover:bg-gray-800">
+                <Link href="https://wa.me/2349029004712" className="flex flex-col items-center justify-center gap-2 rounded-xl border border-gray-200 p-3 hover:bg-gray-50 hover:border-gray-300 transition-all dark:border-gray-700 dark:hover:bg-gray-800">
                   <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-full text-emerald-600 dark:text-emerald-400">
                     <MessageSquare size={16} />
                   </div>

@@ -3,7 +3,7 @@ import ProductReview from '../models/ProductReview';
 import Product from '../models/Product';
 
 // Get MongoDB URI from environment
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/afritrade";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/glotrade_ecom";
 
 async function checkReviews() {
   try {
