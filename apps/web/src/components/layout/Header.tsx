@@ -160,7 +160,7 @@ export default function Header() {
               <img
                 src={`../glotrade_logo.png`}
                 alt="logo"
-                className="h-14 w-14 md:h-16 md:w-16 object-contain"
+                className="h16 w-16 md:h-16 md:w-16 object-contain"
               />
             </Link>
 
