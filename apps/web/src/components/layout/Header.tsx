@@ -161,7 +161,8 @@ export default function Header() {
               alt="logo"
               className="h-14 w-14 md:h-16 md:w-16 object-contain"
             />
-            <span className={`hidden md:block text-[1.05rem] md:text-[1.5rem] font-bold tracking-wide ${userRole === "admin" || userRole === "superAdmin" ? "px-4 bg-red-500 hover:bg-[#F9A407] text-white rounded-full transition-colors" : "text-white"
+            {/* <span className={`hidden md:block text-[1.05rem] md:text-[1.5rem] font-bold tracking-wide ${userRole === "admin" || userRole === "superAdmin" ? "px-4 bg-red-500 hover:bg-[#F9A407] text-white rounded-full transition-colors" : "text-white" */}
+            <span className={`text-[1.05rem] md:text-[1.5rem] font-bold tracking-wide ${userRole === "admin" || userRole === "superAdmin" ? "px-4 bg-red-500 hover:bg-[#F9A407] text-white rounded-full transition-colors" : "text-white"
               }`}>
               Glotrade
             </span>

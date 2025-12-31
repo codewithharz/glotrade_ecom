@@ -83,22 +83,22 @@ export default function AdBanner({ banners }: AdBannerProps) {
                 <div className="hidden md:flex col-span-1 row-span-2 flex-col gap-2">
                     <BannerItem
                         banner={displayBanners[1]}
-                        className="flex-1 h-[250px]"
+                        className="h-[120px] md:h-[250px]"
                     />
                     <BannerItem
                         banner={displayBanners[2]}
-                        className="flex-1 h-[250px]"
+                        className="h-[120px] md:h-[250px]"
                     />
                 </div>
 
                 <div className="hidden md:flex col-span-1 row-span-2 flex-col gap-2">
                     <BannerItem
                         banner={displayBanners[3]}
-                        className="flex-1 h-[250px]"
+                        className="h-[120px] md:h-[250px]"
                     />
                     <BannerItem
                         banner={displayBanners[4]}
-                        className="flex-1 h-[250px]"
+                        className="h-[120px] md:h-[250px]"
                     />
                 </div>
             </div>

@@ -31,7 +31,7 @@ export default function SecurityBanner() {
     <>
       {/* Security Banner */}
       <div
-        className="hidden md:block mb-6 rounded-lg border border-emerald-200 overflow-hidden"
+        className="block mb-6 rounded-lg border border-emerald-200 overflow-hidden"
         data-security-banner
       >
 
