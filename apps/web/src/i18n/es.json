@@ -185,7 +185,10 @@
       "order": "Pedido",
       "item": "artículo",
       "items": "artículos",
-      "view": "Ver"
+      "view": "Ver",
+      "prev": "Anterior",
+      "next": "Siguiente",
+      "page": "Página {number}"
     },
     "details": {
       "title": "Pedido {id}",
@@ -252,8 +255,16 @@
       },
       "messages": {
         "updated": "Pedido actualizado",
-        "updateFailed": "Error al actualizar",
-        "reviewSubmitted": "¡Opinión enviada con éxito!"
+        "updateFailed": "Actualización fallida",
+        "reviewSubmitted": "¡Reseña enviada con éxito!"
+      },
+      "toast": {
+        "failedLoad": "Error al cargar el pedido",
+        "updated": "Pedido actualizado",
+        "updateFailed": "Actualización fallida",
+        "generatingInvoice": "Generando factura...",
+        "invoiceDownloaded": "Factura descargada",
+        "invoiceFailed": "Error al descargar la factura"
       }
     }
   },
@@ -274,6 +285,9 @@
     "all": "Todo",
     "latestProducts": "Últimos productos",
     "noProductsMatch": "Ningún producto coincide con esta categoría.",
+    "pagination": {
+      "pageOf": "Página {current} de {total}"
+    },
     "loading": "Cargando...",
     "error": "Ocurrió un error",
     "save": "Guardar",
@@ -1100,8 +1114,20 @@
     },
     "tabs": {
       "transactions": "Transacciones",
-      "withdrawals": "Historial de Retiros",
-      "creditRequests": "Solicitudes de Crédito"
+      "withdrawals": "Historial de retiros",
+      "credit": "Solicitudes de crédito",
+      "creditRequests": "Solicitudes de crédito"
+    },
+    "creditRequests": {
+      "title": "Solicitudes de crédito",
+      "subtitle": "Vea y gestione sus solicitudes de línea de crédito",
+      "noRequests": "No se encontraron solicitudes de crédito.",
+      "clickToRequest": "Haga clic en 'Solicitar crédito' para aplicar.",
+      "submitted": "Enviado el {date} a las {time}",
+      "reviewed": "Revisado el {date}",
+      "approvedAmount": "Monto aprobado",
+      "note": "Nota del administrador",
+      "rejectionReason": "Razón del rechazo"
     },
     "transactions": {
       "title": "Transacciones Recientes",
@@ -1215,7 +1241,13 @@
         "resolving": "Verificando cuenta...",
         "cancel": "Cancelar",
         "submit": "Retirar Fondos",
-        "history": "Historial de Retiros"
+        "history": "Historial de retiros",
+        "invalidAmount": "Por favor, introduzca un monto válido",
+        "insufficientBalance": "Saldo insuficiente para este retiro",
+        "missingDetails": "Por favor, proporcione todos los detalles bancarios",
+        "loadingBanksError": "Error al cargar los bancos",
+        "resolveError": "No se pudieron verificar los detalles de la cuenta",
+        "processing": "Procesando..."
       },
       "creditRequest": {
         "title": "Solicitar Límite de Crédito",
@@ -1308,11 +1340,600 @@
       "updatedBalance": "Saldo de Billetera Actualizado",
       "availableBalance": "Saldo Disponible",
       "continue": "Continuar a la Billetera",
-      "autoRedirect": "Redireccionando automáticamente en {seconds} segundos...",
-      "failed": "Recarga Fallida",
-      "failedDesc": "No pudimos verificar su pago. Inténtelo de nuevo o contacte al soporte.",
-      "retry": "Reintentar",
-      "back": "Volver a la Billetera"
+      "autoRedirect": "Redireccionando automáticamente en {seconds} segundos..."
+    }
+  },
+  "agent": {
+    "dashboard": {
+      "title": "Panel del Agente de Ventas",
+      "subtitle": "Siga sus referidos, comisiones y rendimiento",
+      "loading": "Cargando panel...",
+      "stats": {
+        "totalReferrals": "Total de Referidos",
+        "activeCount": "{count} activos",
+        "totalEarned": "Total Ganado",
+        "commissionsCount": "{count} comisiones",
+        "pendingCommission": "Comisión Pendiente",
+        "awaitingApproval": "Esperando aprobación",
+        "conversionRate": "Tasa de Conversión",
+        "pendingToActive": "Pendiente → Activo"
+      },
+      "tools": {
+        "title": "Herramientas de Referidos",
+        "codeLabel": "Su Código de Referido",
+        "linkLabel": "Enlace de Referido",
+        "copy": "Copiar",
+        "copied": "¡Copiado!",
+        "share": "Compartir",
+        "viewReferrals": "Ver Referidos",
+        "commissions": "Comisiones",
+        "wallet": "Billetera"
+      },
+      "breakdown": {
+        "title": "Desglose de Comisiones",
+        "registration": "Bonos de Registro",
+        "purchase": "Comisiones de Compra",
+        "bonus": "Bonos"
+      },
+      "performance": {
+        "title": "Rendimiento de Referidos",
+        "totalOrders": "Total de Pedidos",
+        "totalOrderValue": "Valor Total de Pedidos",
+        "avgOrderValue": "Valor Promedio por Pedido"
+      }
+    },
+    "commissions": {
+      "title": "Historial de Comisiones",
+      "subtitle": "Ver todas sus ganancias por comisión y su estado",
+      "backToDashboard": "Volver al Panel",
+      "loading": "Cargando comisiones...",
+      "noCommissions": "No se encontraron comisiones",
+      "autoApproved": "(Aprobado automáticamente)",
+      "filters": {
+        "allStatus": "Todos los Estados",
+        "allTypes": "Todos los Tipos"
+      },
+      "table": {
+        "date": "Fecha",
+        "type": "Tipo",
+        "description": "Descripción",
+        "amount": "Monto",
+        "status": "Estado"
+      }
+    },
+    "referrals": {
+      "title": "Mis Referidos",
+      "subtitle": "Siga y gestione a todos sus usuarios referidos",
+      "backToDashboard": "Volver al Panel",
+      "loading": "Cargando referidos...",
+      "noReferrals": "No se encontraron referidos",
+      "searchPlaceholder": "Buscar por nombre de usuario o correo...",
+      "filters": {
+        "allStatus": "Todos los Estados"
+      },
+      "table": {
+        "user": "Usuario",
+        "status": "Estado",
+        "registered": "Registrado",
+        "orders": "Pedidos",
+        "orderValue": "Valor del Pedido",
+        "commission": "Comisión"
+      }
+    },
+    "status": {
+      "paid": "Pagado",
+      "approved": "Aprobado",
+      "pending": "Pendiente",
+      "rejected": "Rechazado",
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+    "types": {
+      "registration": "Registro",
+      "purchase": "Compra",
+      "bonus": "Bono",
+      "tier_upgrade": "Mejora de Nivel"
+    },
+    "toasts": {
+      "copied": "¡Código de referido copiado!",
+      "linkCopied": "¡Enlace de referido copiado!",
+      "loadDashboardError": "Error al cargar el panel",
+      "loadCommissionsError": "Error al cargar las comisiones",
+      "loadReferralsError": "Error al cargar los referidos"
+    }
+  },
+  "gdip": {
+    "layout": {
+      "restricted": {
+        "title": "Acceso de Distribuidor Restringido",
+        "message": "Esta área es exclusivamente para distribuidores autenticados. Póngase en contacto con el soporte si cree que esto es un error."
+      }
+    },
+    "dashboard": {
+      "title": "Tablero GDIP",
+      "subtitle": "Distribución Glotrade / Plataforma de Socios Asegurados de Confianza",
+      "generateStatement": "Generar Estado de Cuenta",
+      "stats": {
+        "totalTPIAs": "Total de TPIAs",
+        "clusters": "En {count} Clusters",
+        "deployed": "Desplegado",
+        "startingCapital": "Capital Inicial",
+        "profit": "Ganancia",
+        "roi": "+{roi}% ROI",
+        "netValue": "Valor Neto",
+        "netGain": "Ganancia Neta: ",
+        "available": "Disponible",
+        "balanceAlert": "Alerta de Saldo"
+      },
+      "quickActions": {
+        "title": "Acciones Rápidas",
+        "purchase": "Comprar TPIA",
+        "portfolio": "Mi Portafolio",
+        "cycles": "Ciclos de Mercado"
+      },
+      "activeHoldings": {
+        "title": "Tenencias Activas",
+        "subtitle": "Seguimiento del rendimiento reciente",
+        "manage": "Gestionar Portafolio",
+        "emptyTitle": "Portafolio Vacío",
+        "emptySubtitle": "Comience su viaje de inversión comprando su primer TPIA",
+        "getStarted": "Comenzar Ahora"
+      },
+      "tpiaCard": {
+        "cluster": "Cluster-{number}",
+        "capital": "Capital",
+        "estReturn": "Retorno Est.",
+        "netValue": "Valor Neto",
+        "profitMode": "Modo de Ganancia",
+        "cycleProgress": "Progreso del Ciclo",
+        "waitingCycle": "Esperando el próximo ciclo de trading",
+        "viewDetails": "Detalles del Bloque"
+      },
+      "error": {
+        "title": "Error",
+        "loadFailed": "Error al cargar el portafolio"
+      }
+    },
+    "cycles": {
+      "title": "Seguimiento del Ciclo de Vida",
+      "subtitle": "Ciclos de trading de materias primas en tiempo real y métricas de rendimiento",
+      "backToDashboard": "Volver al Tablero",
+      "stats": {
+        "globalCycles": "Ciclos Globales",
+        "matured": "Vencidos",
+        "activeVelocity": "Velocidad Activa",
+        "avgGrowth": "Crecimiento Promedio"
+      },
+      "filters": {
+        "label": "Filtrar Ciclo de Vida:",
+        "showing": "Mostrando {count} Secuencias por Fases",
+        "options": {
+          "all": "TODO EL CICLO DE VIDA",
+          "scheduled": "PROGRAMADO",
+          "active": "NODOS ACTIVOS",
+          "processing": "PROCESAMIENTO DE DATOS",
+          "completed": "FASES COMPLETADAS"
+        }
+      },
+      "empty": {
+        "title": "No se Encontraron Ciclos",
+        "subtitle": "No hay ciclos operativos que coincidan actualmente con sus filtros especificados."
+      },
+      "card": {
+        "sequenceIdentifier": "IDENTIFICADOR DE SECUENCIA",
+        "performance": "Rendimiento {rating}",
+        "node": "Nodo {type}",
+        "clusters": "GDC-{number} • {count} Clusters",
+        "daysRemaining": "DÍAS RESTANTES",
+        "growthVelocity": "Velocidad de Crecimiento",
+        "sequenceComplete": "Secuencia Completa",
+        "active": "{percent}% Activo",
+        "inauguration": "Inauguración",
+        "cycleWindow": "Ventana de Ciclo",
+        "days": "{count} Días",
+        "maturityDate": "Fecha de Vencimiento",
+        "financialArchitecture": "Arquitectura Financiera",
+        "cycleCapital": "Capital del Ciclo",
+        "floorTarget": "Objetivo Piso",
+        "roi": "ROI",
+        "accruedYield": "Rendimiento Acumulado",
+        "actualYield": "Rendimiento Real",
+        "netGrowth": "Crecimiento Neto",
+        "payoutArchitecture": "Arquitectura de Pago",
+        "disbursed": "Desembolsado el {date}",
+        "distributionPending": "Distribución Pendiente"
+      }
+    },
+    "tpias": {
+      "title": "Tenencias Activas",
+      "subtitle": "Gestione y rastree su portafolio privado de clusters de materias primas",
+      "backToDashboard": "Volver al Tablero",
+      "filters": {
+        "searchLabel": "Filtrar Búsqueda",
+        "searchPlaceholder": "Buscar IDs, Materias Primas, Certificados...",
+        "statusLabel": "Filtro de Estado",
+        "modeLabel": "Estrategia de Ganancia",
+        "results": "Se encontraron {count} resultados",
+        "reset": "Restablecer Filtros",
+        "statusOptions": {
+          "all": "TODOS LOS ESTADOS",
+          "pending": "PENDIENTE DE ACTIVACIÓN",
+          "active": "PORTAFOLIO ACTIVO",
+          "matured": "ACTIVOS VENCIDOS",
+          "suspended": "SUSPENDIDO"
+        },
+        "modeOptions": {
+          "all": "TODOS LOS MODOS",
+          "TPM": "TPM (CAPITALIZACIÓN)",
+          "EPS": "EPS (RETIRO)"
+        }
+      },
+      "empty": {
+        "title": "No se encontraron activos",
+        "subtitle": "No pudimos encontrar ningún bloque de inversión que coincida con sus filtros actuales.",
+        "button": "Adquirir Nuevo TPIA"
+      },
+      "card": {
+        "assetIdentifier": "IDENTIFICADOR DE ACTIVO",
+        "node": "Nodo {type}",
+        "purchase": "Compra",
+        "netValue": "Valor Neto",
+        "clusterLocation": "Ubicación del Cluster",
+        "nodeNumber": "Nodo GDC-{number}",
+        "marketSlot": "Espacio de Mercado",
+        "pos": "POS {pos}/10",
+        "lifecycles": "{count} CICLOS DE VIDA",
+        "growthVelocity": "Velocidad de Crecimiento"
+      }
+    },
+    "purchase": {
+      "title": "Adquirir TPIA",
+      "subtitle": "Asegure su bloque de inversión digital respaldado por materias primas",
+      "backToDashboard": "Volver al Tablero",
+      "config": {
+        "title": "Configuración del Activo",
+        "subtitle": "Personalice su inversión",
+        "commodityLabel": "Seleccionar Materia Prima",
+        "modeLabel": "Modo de Ganancia Estratégica",
+        "quantityLabel": "Volumen de Asignación",
+        "blockCount": "Número de Bloques",
+        "quantityOptions": {
+          "single": "Único",
+          "completeCluster": "Cluster Completo ({count})",
+          "fullNode": "Nodo Completo ({count})"
+        },
+        "modes": {
+          "TPM": {
+            "title": "Capitalización",
+            "badge": "Multiplicador de Capital",
+            "descriptionLabel": "Resumen de la Estrategia",
+            "description": "Las ganancias se reinvierten automáticamente para aumentar el patrimonio del activo."
+          },
+          "EPS": {
+            "title": "Retiro",
+            "badge": "Enfoque en Liquidez",
+            "descriptionLabel": "Resumen de la Estrategia",
+            "description": "Las ganancias se acreditan en su billetera para flexibilidad de retiro inmediato."
+          }
+        }
+      },
+      "gdc": {
+        "statusLabel": "ESTADO DE FORMACIÓN GDC",
+        "nodeLabel": "Clúster de Nodo GDC-{number}",
+        "velocity": "Velocidad Activa",
+        "slotsLocked": "{current} DE {total} ESPACIOS BLOQUEADOS",
+        "slotsRemaining": "{count} ESPACIOS RESTANTES"
+      },
+      "button": "Ejecutar Adquisición",
+      "summary": {
+        "title": "Resumen del Pedido",
+        "selectedUnits": "Unidades Seleccionadas",
+        "unitsCount": "{count} Bloque(s) TPIA",
+        "baseValue": "Valor Base",
+        "total": "Gran Total",
+        "walletCredits": "Créditos de Billetera",
+        "protectionsTitle": "PROTECCIONES DEL ACTIVO",
+        "protections": {
+          "insurance": "Certificado de Cobertura de Seguro",
+          "commodity": "Respaldo Físico de Materia Prima",
+          "node": "Asignación de Nodo de Cluster",
+          "compounding": "Capitalización Escala Automatizada",
+          "preservation": "100% Preservación de Capital"
+        }
+      },
+      "modal": {
+        "title": "Fondos Insuficientes",
+        "subtitle": "Necesita recargar su billetera para completar esta compra.",
+        "required": "Requerido",
+        "current": "Actual",
+        "gap": "Diferencia",
+        "cancel": "Cancelar",
+        "topup": "Recargar"
+      },
+      "error": {
+        "general": "Error al comprar TPIA",
+        "selectCommodity": "Seleccione un tipo de materia prima"
+      },
+      "success": {
+        "title": "¡Compra Exitosa!",
+        "subtitle": "Su(s) bloque(s) TPIA han sido creados y asignados a clusters GDC.",
+        "redirecting": "Redireccionando al tablero..."
+      }
+    },
+    "statement": {
+      "title": "Libro Mayor Global",
+      "subtitle": "Estado de cuenta completo e historial de transacciones",
+      "backToDashboard": "Volver al Tablero",
+      "preparing": "Preparando Estado de Cuenta...",
+      "download": "Descargar Libro Mayor",
+      "header": {
+        "platform": "PLATAFORMA INTERNACIONAL",
+        "tagline": "Finanzas Comerciales y Activos Digitales",
+        "company": "GloTrade Digital Assets",
+        "periodLabel": "PERÍODO DEL ESTADO",
+        "periodAll": "HISTORIAL COMPLETO",
+        "periodFiltered": "CRONOLOGÍA ESPECIFICADA",
+        "generatedOn": "Generado el {date}"
+      },
+      "filters": {
+        "last30": "ÚLTIMOS 30 DÍAS OPERATIVOS",
+        "quarterly": "ARCHIVO TRIMESTRAL",
+        "annual": "REGISTRO ANUAL",
+        "all": "HISTORIAL COMPLETO"
+      },
+      "summary": {
+        "totalInvestment": "INVERSIÓN TOTAL",
+        "active": "ACTIVO",
+        "totalROI": "TOTAL ROI GANADO",
+        "walletBalance": "SALDO DE BILLETERA"
+      },
+      "table": {
+        "headers": {
+          "time": "Ciclo de Vida / Hora",
+          "entity": "Entidad de Transacción",
+          "reference": "Referencia",
+          "reserve": "Nueva Reserva",
+          "value": "Valor de Rendimiento"
+        }
+      },
+      "card": {
+        "refLabel": "REF: ",
+        "entityLabel": "Entidad:",
+        "reserveLabel": "Reserva:",
+        "valueChange": "CAMBIO DE VALOR"
+      },
+      "empty": {
+        "title": "No se Encontraron Datos",
+        "subtitle": "No se encontraron secuencias históricas dentro de este período especificado."
+      },
+      "footer": {
+        "noticeTitle": "AVISO DE ARCHIVO OFICIAL",
+        "noticeText": "Este libro mayor de cuenta es un registro oficial de actividades en la Plataforma Internacional de Glotrade.",
+        "disclaimer": "Todas las entradas están verificadas por cruce con el movimiento físico de materias primas y los protocolos de custodia de activos digitales. Informe de discrepancias a {email} dentro de las 48 horas operativas.",
+        "verified": "LIBRO MAYOR SEGURO VERIFICADO",
+        "totalArchive": "ARCHIVO TOTAL DEL PORTAFOLIO",
+        "endOfRecord": "PLATAFORMA INTERNACIONAL GLOTRADE • FIN DE DATOS REGISTRADOS"
+      }
+    },
+    "details": {
+      "tpiaTitle": "Bloque de Protocolo de Alianza",
+      "subtitle": "Alianza de Socios Asegurados de Confianza",
+      "backToPortfolio": "Volver al Portafolio",
+      "ownershipLabel": "Propiedad",
+      "error": {
+        "title": "Error",
+        "loadFailed": "Error al cargar los detalles de TPIA",
+        "switchMode": "Error al cambiar el modo de ganancia",
+        "notFound": "TPIA no encontrado",
+        "goBack": "Volver"
+      },
+      "financial": {
+        "title": "Rendimiento Financiero",
+        "subtitle": "Valor de activos y ganancias",
+        "cost": "Costo Original",
+        "value": "Valor Actual",
+        "accrued": "Neto Acumulado",
+        "roi": "ROI Total",
+        "compoundedExit": "Valor de Salida Compuesto"
+      },
+      "cycle": {
+        "title": "Ciclo Activo",
+        "subtitle": "Crecimiento en curso",
+        "openDate": "Fecha de Apertura",
+        "projectedClose": "Cierre Proyectado",
+        "targetLabel": "Objetivo de ROI del Ciclo",
+        "progress": "{progress}% Acumulado",
+        "durationLabel": "Días en el Ciclo",
+        "durationValue": "{days} Días de Mercado",
+        "accruedProfit": "Beneficio Acumulado"
+      },
+      "profitMode": {
+        "title": "Método de Ganancias",
+        "compoundBadge": "Capitalización",
+        "withdrawalBadge": "Retiro",
+        "compoundDesc": "Las ganancias se reinvierten automáticamente para ampliar el patrimonio del activo.",
+        "withdrawalDesc": "Las ganancias se acreditan en su billetera líquida después de cada ciclo.",
+        "switchButton": "Cambiar a {mode}"
+      },
+      "insurance": {
+        "title": "Cobertura Activa",
+        "certificate": "Certificado de Protección",
+        "certLabel": "Certificado de Protección",
+        "insurer": "Asegurador",
+        "provider": "Asegurador",
+        "providers": {
+          "Default Insurance Provider": "Aseguradora Estratégica GloTrade"
+        },
+        "verified": "Verificado",
+        "statusLabel": "Verificado",
+        "purchaseInvoice": "Factura de Compra",
+        "invoiceButton": "Factura de Compra",
+        "assetCertificate": "Certificado de Activo",
+        "certButton": "Certificado de Activo"
+      },
+      "node": {
+        "title": "Nodo de Cluster",
+        "reference": "Referencia GDC",
+        "ref": "Referencia GDC",
+        "position": "Posición del Nodo",
+        "posLabel": "Posición del Nodo",
+        "posValue": "Bloque {pos} de {total}",
+        "commodity": "Respaldo de Materia Prima",
+        "defaultCommodity": "Materias Primas Mixtas"
+      }
+    },
+    "certificate": {
+      "header": {
+        "title": "Certificado de Seguro",
+        "protocol": "TPIA - Protocolo de Alianza",
+        "archiveLabel": "ARCHIVO OFICIAL DE ACTIVOS"
+      },
+      "info": {
+        "seqLabel": "SECUENCIA DE CERTIFICADO",
+        "dateLabel": "FECHA DE INICIO"
+      },
+      "partner": {
+        "entityLabel": "ENTIDAD DE ACTIVO IDENTIFICADA"
+      },
+      "content": {
+        "confirmation": "Este documento confirma la cobertura de seguro registrada para el bloque de inversión {id}. Totalmente respaldado por reservas físicas de materias primas bajo el marco de gestión de riesgos de múltiples capas GDIP.",
+        "backing": "Esta cobertura está suscrita por el asegurador principal que se enumera a continuación.",
+        "coverageLabel": "MAGNITUD DE LA COBERTURA",
+        "backingLabel": "RESPALDO DE ACTIVOS",
+        "backingValue": "{qty} {unit} {type}",
+        "windowLabel": "VENTANA EFECTIVA",
+        "logisticsLabel": "CENTRO LOGÍSTICO",
+        "defaultHub": "RESERVA ESTRATÉGICA DE GLOTRADE"
+      },
+      "footer": {
+        "authorizedSignatory": "Signatario Autorizado",
+        "adminSignatory": "Admin de GloTrade",
+        "leadUnderwriter": "Asegurador Principal",
+        "noticeTitle": "AVISO DE ARCHIVO OFICIAL",
+        "noticeText": "Este documento es una representación digital del contrato de seguro subyacente. ",
+        "protectionText": "La protección total del capital de {amount} por bloque TPIA está verificada de forma cruzada bajo estándares de custodia soberana.",
+        "verificationLabel": "Verificación Segura",
+        "endOfDocument": "PLATAFORMA INTERNACIONAL GLOTRADE • FIN DEL DOCUMENTO",
+        "encrypted": "LIBRO MAYOR SEGURO ENCRIPTADO"
+      },
+      "backToPortfolio": "Volver al Portafolio",
+      "printButton": "Imprimir Certificado"
+    },
+    "commodity": {
+      "title": "Respaldo de Materia Prima",
+      "subtitle": "Activos físicos que respaldan su inversión TPIA",
+      "back": "Volver",
+      "summary": {
+        "types": "Tipos de Materias Primas",
+        "total": "Total de Materias Primas",
+        "quantity": "Cantidad Total",
+        "value": "Valor Total"
+      },
+      "card": {
+        "idLabel": "ID de Materia Prima:",
+        "quantityLabel": "Cantidad:",
+        "marketPriceLabel": "Precio de Mercado:",
+        "unitPriceLabel": "Precio por Unidad:",
+        "qualityLabel": "Calidad:",
+        "conditionLabel": "Condición:",
+        "warehouseLabel": "Almacén:",
+        "updatedLabel": "Última Actualización:"
+      },
+      "conditions": {
+        "excellent": "Excelente",
+        "good": "Bueno",
+        "average": "Promedio",
+        "poor": "Pobre"
+      },
+      "empty": {
+        "title": "No se Encontró Respaldo de Materia Prima",
+        "subtitle": "Las materias primas se asignarán una vez que su GDC comience a operar"
+      },
+      "error": {
+        "title": "Error",
+        "loadFailed": "Error al cargar el respaldo de materia prima",
+        "goBack": "Volver"
+      }
+    },
+    "invoice": {
+      "header": {
+        "title": "Factura de Liquidación",
+        "archiveLabel": "IDENTIFICADOR DE REGISTRO",
+        "recordLabel": "REGISTRO DIGITAL",
+        "brand": "GLOTRADE GDIP"
+      },
+      "info": {
+        "hqLabel": "UBICACIÓN DE LA SEDE",
+        "nodeLabel": "NODO DIGITAL",
+        "commLabel": "COMUNICACIÓN"
+      },
+      "partner": {
+        "billedLabel": "FACTURADO A LA ENTIDAD",
+        "dateLabel": "FECHA DE LIQUIDACIÓN",
+        "verificationLabel": "VERIFICACIÓN DE PAGO",
+        "verifiedStatus": "Socio Verificado",
+        "settlementStatus": "Liquidación Completa"
+      },
+      "table": {
+        "headers": {
+          "description": "Descripción del Ciclo de Vida",
+          "qty": "Cant.",
+          "value": "Valor Económico"
+        },
+        "item": {
+          "name": "Bloque de Comercio Estratégico GDIP",
+          "status": "Activo Totalmente Colateralizado",
+          "blockId": "ID del Bloque",
+          "nodeId": "ID del Nodo",
+          "configLabel": "CONFIGURACIÓN DE ACTIVOS",
+          "backing": "RESPALDO COLATERAL",
+          "unit": "UNIDAD DE BLOQUE",
+          "settledStatus": "Liquidado 100%",
+          "defaultType": "Materias Primas Mixtas"
+        }
+      },
+      "mobile": {
+        "blockLabel": "ID del Bloque",
+        "qtyLabel": "Cant",
+        "valueLabel": "Valor"
+      },
+      "summary": {
+        "subtotal": "VALOR NETO SECUNDARIO",
+        "tax": "EXENTO DE IMPUESTOS / VRT",
+        "total": "LIQUIDACIÓN TOTAL"
+      },
+      "footer": {
+        "title": "ARCHIVO DE LIQUIDACIÓN",
+        "text1": "Esta secuencia de transacciones se finalizó a través del",
+        "ledgerSystem": "Sistema de Libro Mayor Interno de Glotrade",
+        "text2": "El respaldo de activos está totalmente garantizado por existencias de materias primas físicamente verificadas.",
+        "verifiedLabel": "Respaldo de Activos Verificado",
+        "idLabel": "ID de ARCHIVO ELECTRÓNICO",
+        "officialLabel": "DOCUMENTO OFICIAL DEL LIBRO MAYOR",
+        "endOfRecord": "PLATAFORMA INTERNACIONAL GLOTRADE • FIN DE DATOS REGISTRADOS"
+      },
+      "loading": "Liquidando Factura...",
+      "backToPortfolio": "Volver al Portafolio",
+      "downloadButton": "Descargar Factura",
+      "error": {
+        "title": "Error",
+        "notFound": "Factura no encontrada",
+        "goBack": "Volver"
+      }
+    },
+    "status": {
+      "active": "activo",
+      "pending": "pendiente",
+      "matured": "vencido",
+      "completed": "completado",
+      "scheduled": "programado",
+      "processing": "procesando",
+      "suspended": "suspendido",
+      "excellent": "excelente",
+      "good": "bueno",
+      "average": "promedio",
+      "poor": "pobre",
+      "verified": "verificado"
     }
   }
 }

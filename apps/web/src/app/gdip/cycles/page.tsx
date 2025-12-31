@@ -14,6 +14,7 @@ import {
     Search,
     TrendingUp
 } from "lucide-react";
+import { translate } from "@/utils/translate";
 
 interface TradeCycle {
     _id: string;
@@ -172,13 +173,13 @@ export default function TradeCyclesPage() {
                         className="flex items-center gap-2 text-gray-500 hover:text-gray-900 mb-6 font-bold text-xs uppercase tracking-widest transition-colors group"
                     >
                         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                        Back to Dashboard
+                        {translate("gdip.cycles.backToDashboard")}
                     </button>
                     <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight leading-none uppercase mb-2">
-                        Lifecycle Tracking
+                        {translate("gdip.cycles.title")}
                     </h1>
                     <p className="text-gray-500 font-medium sm:text-lg">
-                        Real-time commodity trading cycles and performance metrics
+                        {translate("gdip.cycles.subtitle")}
                     </p>
                 </div>
 
@@ -190,7 +191,7 @@ export default function TradeCyclesPage() {
                                 <div className="p-2 bg-blue-50 rounded-xl text-blue-600">
                                     <Activity size={16} />
                                 </div>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Global Cycles</p>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.cycles.stats.globalCycles")}</p>
                             </div>
                             <p className="text-3xl font-black text-gray-900 leading-none">{cycles.length}</p>
                         </div>
@@ -199,7 +200,7 @@ export default function TradeCyclesPage() {
                                 <div className="p-2 bg-emerald-50 rounded-xl text-emerald-600">
                                     <CheckCircle2 size={16} />
                                 </div>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Matured</p>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.cycles.stats.matured")}</p>
                             </div>
                             <p className="text-3xl font-black text-emerald-600 leading-none">
                                 {cycles.filter((c) => c.status === "completed").length}
@@ -210,7 +211,7 @@ export default function TradeCyclesPage() {
                                 <div className="p-2 bg-indigo-50 rounded-xl text-indigo-600">
                                     <TrendingUp size={16} />
                                 </div>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Active Velocity</p>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.cycles.stats.activeVelocity")}</p>
                             </div>
                             <p className="text-3xl font-black text-indigo-600 leading-none">
                                 {cycles.filter((c) => c.status === "active").length}
@@ -221,7 +222,7 @@ export default function TradeCyclesPage() {
                                 <div className="p-2 bg-purple-50 rounded-xl text-purple-600">
                                     <Trophy size={16} />
                                 </div>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Avg Growth</p>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.cycles.stats.avgGrowth")}</p>
                             </div>
                             <p className="text-3xl font-black text-purple-600 leading-none">
                                 {(
@@ -240,21 +241,21 @@ export default function TradeCyclesPage() {
                 <div className="bg-white rounded-3xl border border-gray-100 p-6 mb-8 shadow-sm">
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div className="flex items-center gap-4 w-full sm:w-auto">
-                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Filter Lifecycle:</label>
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">{translate("gdip.cycles.filters.label")}</label>
                             <select
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
                                 className="flex-1 sm:flex-none px-4 py-2.5 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-bold text-xs text-gray-900 appearance-none cursor-pointer"
                             >
-                                <option value="all">EVERY LIFECYCLE</option>
-                                <option value="scheduled">SCHEDULED</option>
-                                <option value="active">ACTIVE NODES</option>
-                                <option value="processing">DATA PROCESSING</option>
-                                <option value="completed">MATURED PHASES</option>
+                                <option value="all">{translate("gdip.cycles.filters.options.all")}</option>
+                                <option value="scheduled">{translate("gdip.cycles.filters.options.scheduled")}</option>
+                                <option value="active">{translate("gdip.cycles.filters.options.active")}</option>
+                                <option value="processing">{translate("gdip.cycles.filters.options.processing")}</option>
+                                <option value="completed">{translate("gdip.cycles.filters.options.completed")}</option>
                             </select>
                         </div>
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                            Showing <span className="text-gray-900">{filteredCycles.length}</span> Phased Sequences
+                            {translate("gdip.cycles.filters.showing", { count: filteredCycles.length })}
                         </p>
                     </div>
                 </div>
@@ -265,8 +266,8 @@ export default function TradeCyclesPage() {
                         <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
                             <ClipboardCheck className="w-10 h-10 text-gray-200" />
                         </div>
-                        <h3 className="text-2xl font-black text-gray-900 tracking-tight mb-2 uppercase">No Cycles Located</h3>
-                        <p className="text-gray-500 font-medium max-w-xs mx-auto">No operational cycles currently match your specified filters.</p>
+                        <h3 className="text-2xl font-black text-gray-900 tracking-tight mb-2 uppercase">{translate("gdip.cycles.empty.title")}</h3>
+                        <p className="text-gray-500 font-medium max-w-xs mx-auto">{translate("gdip.cycles.empty.subtitle")}</p>
                     </div>
                 ) : (
                     <div className="space-y-6">
@@ -283,39 +284,39 @@ export default function TradeCyclesPage() {
                                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 relative z-10">
                                     <div className="flex-1">
                                         <div className="flex flex-wrap items-center gap-3 mb-4">
-                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] leading-none mb-1 w-full">SEQUENCE IDENTIFIER</p>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] leading-none mb-1 w-full">{translate("gdip.cycles.card.sequenceIdentifier")}</p>
                                             <h3 className="text-3xl font-black text-gray-900 tracking-tighter leading-none">{cycle.cycleId}</h3>
                                             <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${cycle.status === "active"
-                                                    ? "bg-emerald-600 text-white shadow-lg shadow-emerald-100"
-                                                    : cycle.status === "completed"
-                                                        ? "bg-blue-600 text-white shadow-lg shadow-blue-100"
-                                                        : cycle.status === "scheduled"
-                                                            ? "bg-amber-500 text-white shadow-lg shadow-amber-100"
-                                                            : "bg-purple-600 text-white shadow-lg shadow-purple-100"
+                                                ? "bg-emerald-600 text-white shadow-lg shadow-emerald-100"
+                                                : cycle.status === "completed"
+                                                    ? "bg-blue-600 text-white shadow-lg shadow-blue-100"
+                                                    : cycle.status === "scheduled"
+                                                        ? "bg-amber-500 text-white shadow-lg shadow-amber-100"
+                                                        : "bg-purple-600 text-white shadow-lg shadow-purple-100"
                                                 }`}>
-                                                {cycle.status}
+                                                {translate("gdip.status." + cycle.status)}
                                             </span>
                                             {cycle.performanceRating && (
                                                 <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest bg-gray-900 text-white`}>
-                                                    {cycle.performanceRating} Performance
+                                                    {translate("gdip.cycles.card.performance", { rating: translate("gdip.status." + cycle.performanceRating) })}
                                                 </span>
                                             )}
                                         </div>
                                         <div className="flex items-center gap-4 mb-8">
                                             <div className="px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-xl flex items-center gap-2">
                                                 <span className="text-sm grayscale group-hover:grayscale-0 transition-all">🌾</span>
-                                                <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{cycle.commodityType} Node</span>
+                                                <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{translate("gdip.cycles.card.node", { type: cycle.commodityType })}</span>
                                             </div>
                                             <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                                                 <Activity size={10} className="text-blue-500" />
-                                                GDC-{cycle.gdcNumber} • {cycle.tpiaCount} Clusters
+                                                {translate("gdip.cycles.card.clusters", { number: cycle.gdcNumber, count: cycle.tpiaCount })}
                                             </div>
                                         </div>
                                     </div>
 
                                     {cycle.status === "active" && (
                                         <div className="text-left md:text-right p-4 bg-emerald-50 rounded-2xl border border-emerald-100 min-w-[140px]">
-                                            <p className="text-[10px] font-black text-emerald-600/70 uppercase tracking-widest mb-1">DAYS REMAINING</p>
+                                            <p className="text-[10px] font-black text-emerald-600/70 uppercase tracking-widest mb-1">{translate("gdip.cycles.card.daysRemaining")}</p>
                                             <p className="text-3xl font-black text-emerald-600 leading-none">{getDaysRemaining(cycle.endDate)}</p>
                                         </div>
                                     )}
@@ -326,19 +327,19 @@ export default function TradeCyclesPage() {
                                     <div className="flex justify-between items-center mb-2.5">
                                         <div className="flex items-center gap-2">
                                             <Clock size={10} className="text-gray-400" />
-                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Growth Velocity</span>
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{translate("gdip.cycles.card.growthVelocity")}</span>
                                         </div>
                                         <span className="text-xs font-black text-blue-600 tracking-tighter uppercase">
-                                            {cycle.status === "completed" ? "Sequence Complete" : `${((37 - getDaysRemaining(cycle.endDate)) / 37 * 100).toFixed(1)}% Active`}
+                                            {cycle.status === "completed" ? translate("gdip.cycles.card.sequenceComplete") : translate("gdip.cycles.card.active", { percent: ((37 - getDaysRemaining(cycle.endDate)) / 37 * 100).toFixed(1) })}
                                         </span>
                                     </div>
                                     <div className="h-2 bg-gray-50 rounded-full overflow-hidden p-0.5 border border-gray-100 shadow-inner">
                                         <div
                                             className={`h-full rounded-full transition-all duration-1000 bg-gradient-to-r ${cycle.status === "completed"
-                                                    ? "from-blue-500 to-indigo-600"
-                                                    : cycle.status === "active"
-                                                        ? "from-blue-500 via-indigo-500 to-emerald-500"
-                                                        : "from-amber-400 to-amber-600"
+                                                ? "from-blue-500 to-indigo-600"
+                                                : cycle.status === "active"
+                                                    ? "from-blue-500 via-indigo-500 to-emerald-500"
+                                                    : "from-amber-400 to-amber-600"
                                                 }`}
                                             style={{
                                                 width:
@@ -352,15 +353,15 @@ export default function TradeCyclesPage() {
                                     </div>
                                     <div className="flex justify-between mt-3 px-1">
                                         <div className="space-y-1">
-                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">Inauguration</p>
+                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">{translate("gdip.cycles.card.inauguration")}</p>
                                             <p className="text-[10px] font-black text-gray-900">{formatDate(cycle.startDate)}</p>
                                         </div>
                                         <div className="text-center space-y-1">
-                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">Cycle Window</p>
-                                            <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest">{cycle.duration} Days</p>
+                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">{translate("gdip.cycles.card.cycleWindow")}</p>
+                                            <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest">{translate("gdip.cycles.card.days", { count: cycle.duration })}</p>
                                         </div>
                                         <div className="text-right space-y-1">
-                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">Maturity Date</p>
+                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">{translate("gdip.cycles.card.maturityDate")}</p>
                                             <p className="text-[10px] font-black text-gray-900">{formatDate(cycle.endDate)}</p>
                                         </div>
                                     </div>
@@ -369,17 +370,17 @@ export default function TradeCyclesPage() {
                                 {/* Financial Architecture */}
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-6 border-t border-gray-50 relative z-10">
                                     <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1 leading-none">Cycle Capital</p>
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1 leading-none">{translate("gdip.cycles.card.cycleCapital")}</p>
                                         <p className="text-base font-black text-gray-900 leading-none">{formatCurrency(cycle.totalCapital)}</p>
                                     </div>
                                     <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1 leading-none">Floor Target</p>
-                                        <p className="text-base font-black text-gray-900 leading-none">{cycle.targetProfitRate}% <span className="text-[10px] text-gray-400">ROI</span></p>
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1 leading-none">{translate("gdip.cycles.card.floorTarget")}</p>
+                                        <p className="text-base font-black text-gray-900 leading-none">{cycle.targetProfitRate}% <span className="text-[10px] text-gray-400">{translate("gdip.cycles.card.roi")}</span></p>
                                     </div>
                                     {cycle.status === "active" && (
                                         <div className="md:col-span-2 p-4 bg-indigo-50 rounded-2xl border border-indigo-100 flex items-center justify-between">
                                             <div>
-                                                <p className="text-[9px] font-black text-indigo-600/70 uppercase tracking-widest mb-1 leading-none">Accrued Yield</p>
+                                                <p className="text-[9px] font-black text-indigo-600/70 uppercase tracking-widest mb-1 leading-none">{translate("gdip.cycles.card.accruedYield")}</p>
                                                 <p className="text-base font-black text-indigo-600 leading-none">+{formatCurrency(calculateEstimatedProfit(cycle))}</p>
                                             </div>
                                             <TrendingUp className="text-indigo-600 opacity-20" size={24} />
@@ -388,11 +389,11 @@ export default function TradeCyclesPage() {
                                     {cycle.status === "completed" && (
                                         <>
                                             <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
-                                                <p className="text-[9px] font-black text-emerald-600/70 uppercase tracking-widest mb-1 leading-none">Actual Yield</p>
+                                                <p className="text-[9px] font-black text-emerald-600/70 uppercase tracking-widest mb-1 leading-none">{translate("gdip.cycles.card.actualYield")}</p>
                                                 <p className="text-base font-black text-emerald-600 leading-none">{cycle.actualProfitRate?.toFixed(1) || 0}%</p>
                                             </div>
                                             <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
-                                                <p className="text-[9px] font-black text-emerald-600/70 uppercase tracking-widest mb-1 leading-none">Net Growth</p>
+                                                <p className="text-[9px] font-black text-emerald-600/70 uppercase tracking-widest mb-1 leading-none">{translate("gdip.cycles.card.netGrowth")}</p>
                                                 <p className="text-base font-black text-emerald-600 leading-none">{formatCurrency(cycle.totalProfitGenerated || 0)}</p>
                                             </div>
                                         </>
@@ -404,19 +405,19 @@ export default function TradeCyclesPage() {
                                     <div className="mt-4 pt-4 border-t border-gray-100 relative z-10 flex items-center justify-between">
                                         <div className="flex items-center gap-2">
                                             <div className={`w-2 h-2 rounded-full ${cycle.profitDistributed ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`} />
-                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Payout Architecture</span>
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{translate("gdip.cycles.card.payoutArchitecture")}</span>
                                         </div>
                                         {cycle.profitDistributed ? (
                                             <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-xl border border-emerald-100">
                                                 <CheckCircle2 size={12} />
                                                 <span className="text-[9px] font-black uppercase tracking-widest">
-                                                    Disbursed {cycle.distributionDate && formatDate(cycle.distributionDate)}
+                                                    {translate("gdip.cycles.card.disbursed", { date: cycle.distributionDate ? formatDate(cycle.distributionDate) : "" })}
                                                 </span>
                                             </div>
                                         ) : (
                                             <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 text-amber-600 rounded-xl border border-amber-100">
                                                 <Clock size={12} />
-                                                <span className="text-[9px] font-black uppercase tracking-widest">Distribution Pending</span>
+                                                <span className="text-[9px] font-black uppercase tracking-widest">{translate("gdip.cycles.card.distributionPending")}</span>
                                             </div>
                                         )}
                                     </div>

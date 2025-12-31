@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiGet } from "@/utils/api";
 import { ArrowLeft, Inbox, Search, Filter, Sparkles } from "lucide-react";
+import { translate } from "@/utils/translate";
 
 interface TPIA {
     _id: string;
@@ -124,13 +125,13 @@ export default function AllTPIAsPage() {
                         className="flex items-center gap-2 text-gray-500 hover:text-gray-900 mb-6 font-bold text-xs uppercase tracking-widest transition-colors group"
                     >
                         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                        Back to Dashboard
+                        {translate("gdip.tpias.backToDashboard")}
                     </button>
                     <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight leading-none uppercase mb-2">
-                        Active Holdings
+                        {translate("gdip.tpias.title")}
                     </h1>
                     <p className="text-gray-500 font-medium sm:text-lg">
-                        Manage and track your private portfolio of commodity clusters
+                        {translate("gdip.tpias.subtitle")}
                     </p>
                 </div>
 
@@ -139,12 +140,12 @@ export default function AllTPIAsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                         {/* Search */}
                         <div className="md:col-span-2">
-                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Filter Search</label>
+                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">{translate("gdip.tpias.filters.searchLabel")}</label>
                             <div className="relative group">
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 group-focus-within:text-blue-500 transition-colors" />
                                 <input
                                     type="text"
-                                    placeholder="Search IDs, Commodities, Certificates..."
+                                    placeholder={translate("gdip.tpias.filters.searchPlaceholder")}
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-bold text-sm text-gray-900 placeholder:text-gray-300"
@@ -154,31 +155,31 @@ export default function AllTPIAsPage() {
 
                         {/* Status Filter */}
                         <div>
-                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Status Filter</label>
+                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">{translate("gdip.tpias.filters.statusLabel")}</label>
                             <select
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
                                 className="w-full px-4 py-3 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-bold text-sm text-gray-900 appearance-none cursor-pointer"
                             >
-                                <option value="all">EVERY STATUS</option>
-                                <option value="pending">PENDING ACTIVATION</option>
-                                <option value="active">ACTIVE PORTFOLIO</option>
-                                <option value="matured">MATURED ASSETS</option>
-                                <option value="suspended">SUSPENDED</option>
+                                <option value="all">{translate("gdip.tpias.filters.statusOptions.all")}</option>
+                                <option value="pending">{translate("gdip.tpias.filters.statusOptions.pending")}</option>
+                                <option value="active">{translate("gdip.tpias.filters.statusOptions.active")}</option>
+                                <option value="matured">{translate("gdip.tpias.filters.statusOptions.matured")}</option>
+                                <option value="suspended">{translate("gdip.tpias.filters.statusOptions.suspended")}</option>
                             </select>
                         </div>
 
                         {/* Mode Filter */}
                         <div>
-                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Profit Strategy</label>
+                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">{translate("gdip.tpias.filters.modeLabel")}</label>
                             <select
                                 value={modeFilter}
                                 onChange={(e) => setModeFilter(e.target.value)}
                                 className="w-full px-4 py-3 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-bold text-sm text-gray-900 appearance-none cursor-pointer"
                             >
-                                <option value="all">ALL MODES</option>
-                                <option value="TPM">TPM (COMPOUNDING)</option>
-                                <option value="EPS">EPS (WITHDRAWAL)</option>
+                                <option value="all">{translate("gdip.tpias.filters.modeOptions.all")}</option>
+                                <option value="TPM">{translate("gdip.tpias.filters.modeOptions.TPM")}</option>
+                                <option value="EPS">{translate("gdip.tpias.filters.modeOptions.EPS")}</option>
                             </select>
                         </div>
                     </div>
@@ -186,7 +187,7 @@ export default function AllTPIAsPage() {
                     {/* Results Count */}
                     <div className="mt-6 pt-6 border-t border-gray-50 flex items-center justify-between">
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                            Found <span className="text-gray-900">{filteredTPIAs.length}</span> Results
+                            {translate("gdip.tpias.filters.results", { count: filteredTPIAs.length })}
                         </p>
                         <button
                             onClick={() => {
@@ -196,7 +197,7 @@ export default function AllTPIAsPage() {
                             }}
                             className="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:text-blue-700 transition-colors"
                         >
-                            Reset Applied Filters
+                            {translate("gdip.tpias.filters.reset")}
                         </button>
                     </div>
                 </div>
@@ -207,13 +208,13 @@ export default function AllTPIAsPage() {
                         <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
                             <Inbox className="w-10 h-10 text-gray-200" />
                         </div>
-                        <h3 className="text-2xl font-black text-gray-900 tracking-tight mb-2 uppercase">No Assets Found</h3>
-                        <p className="text-gray-500 font-medium mb-8 max-w-xs mx-auto">We couldn't find any investment blocks matching your current filters.</p>
+                        <h3 className="text-2xl font-black text-gray-900 tracking-tight mb-2 uppercase">{translate("gdip.tpias.empty.title")}</h3>
+                        <p className="text-gray-500 font-medium mb-8 max-w-xs mx-auto">{translate("gdip.tpias.empty.subtitle")}</p>
                         <button
                             onClick={() => router.push("/gdip/purchase")}
                             className="bg-gray-900 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black transition-all active:scale-95 shadow-xl shadow-gray-200"
                         >
-                            Acquire New TPIA
+                            {translate("gdip.tpias.empty.button")}
                         </button>
                     </div>
                 ) : (
@@ -232,7 +233,7 @@ export default function AllTPIAsPage() {
                                 {/* Header */}
                                 <div className="flex items-start justify-between mb-6 relative z-10">
                                     <div>
-                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 leading-none">ASSET IDENTIFIER</p>
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 leading-none">{translate("gdip.tpias.card.assetIdentifier")}</p>
                                         <h3 className="font-black text-2xl tracking-tighter text-gray-900 leading-none">{tpia.tpiaId}</h3>
                                     </div>
                                     <span
@@ -245,7 +246,7 @@ export default function AllTPIAsPage() {
                                                     : "bg-gray-400 text-white shadow-lg shadow-gray-100"
                                             }`}
                                     >
-                                        {tpia.status}
+                                        {translate("gdip.status." + tpia.status)}
                                     </span>
                                 </div>
 
@@ -253,18 +254,18 @@ export default function AllTPIAsPage() {
                                 <div className="mb-8 relative z-10">
                                     <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-xl">
                                         <span className="text-base grayscale group-hover:grayscale-0 transition-all">🌾</span>
-                                        <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{tpia.commodityType} Node</span>
+                                        <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{translate("gdip.tpias.card.node", { type: tpia.commodityType })}</span>
                                     </div>
                                 </div>
 
                                 {/* Metrics Grid */}
                                 <div className="grid grid-cols-2 gap-4 mb-8 relative z-10">
                                     <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1 leading-none">Purchase</p>
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1 leading-none">{translate("gdip.tpias.card.purchase")}</p>
                                         <p className="text-base font-black text-gray-900 leading-none">{formatCurrency(tpia.purchasePrice)}</p>
                                     </div>
                                     <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
-                                        <p className="text-[9px] font-bold text-emerald-600/70 uppercase tracking-widest mb-1 leading-none">Net Value</p>
+                                        <p className="text-[9px] font-bold text-emerald-600/70 uppercase tracking-widest mb-1 leading-none">{translate("gdip.tpias.card.netValue")}</p>
                                         <p className="text-base font-black text-emerald-600 leading-none">{formatCurrency(tpia.currentValue)}</p>
                                     </div>
                                 </div>
@@ -272,12 +273,12 @@ export default function AllTPIAsPage() {
                                 {/* Additional Details Row */}
                                 <div className="flex items-center justify-between mb-8 px-1 relative z-10">
                                     <div className="space-y-1">
-                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">Cluster Location</p>
-                                        <p className="text-xs font-black text-gray-900 uppercase">Node GDC-{tpia.gdcNumber}</p>
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">{translate("gdip.tpias.card.clusterLocation")}</p>
+                                        <p className="text-xs font-black text-gray-900 uppercase">{translate("gdip.tpias.card.nodeNumber", { number: tpia.gdcNumber })}</p>
                                     </div>
                                     <div className="text-right space-y-1">
-                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">Market Slot</p>
-                                        <p className="text-xs font-black text-blue-600 uppercase">POS {tpia.positionInGDC}/10</p>
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">{translate("gdip.tpias.card.marketSlot")}</p>
+                                        <p className="text-xs font-black text-blue-600 uppercase">{translate("gdip.tpias.card.pos", { pos: tpia.positionInGDC })}</p>
                                     </div>
                                 </div>
 
@@ -287,7 +288,7 @@ export default function AllTPIAsPage() {
                                         <div className={`px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest ${tpia.profitMode === "TPM" ? "bg-purple-600 text-white shadow-lg shadow-purple-100" : "bg-indigo-600 text-white shadow-lg shadow-indigo-100"}`}>
                                             {tpia.profitMode}
                                         </div>
-                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{tpia.cyclesCompleted} LIFECYCLES</span>
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.tpias.card.lifecycles", { count: tpia.cyclesCompleted })}</span>
                                     </div>
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{formatDate(tpia.purchasedAt)}</p>
                                 </div>
@@ -295,7 +296,7 @@ export default function AllTPIAsPage() {
                                 {tpia.status === "active" && tpia.currentCycleId && (
                                     <div className="mt-8 pt-6 border-t border-gray-50 relative z-10">
                                         <div className="flex justify-between items-center mb-2.5">
-                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Growth Velocity</span>
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{translate("gdip.tpias.card.growthVelocity")}</span>
                                             <span className="text-xs font-black text-blue-600 tracking-tighter">
                                                 {(() => {
                                                     if (!tpia.currentCycleId?.startDate || !tpia.currentCycleId?.endDate) {

@@ -22,6 +22,7 @@ import {
     CheckCircle2
 } from "lucide-react";
 import { apiGet } from "@/utils/api";
+import { translate } from "@/utils/translate";
 
 interface Transaction {
     _id: string;
@@ -125,7 +126,7 @@ export default function AccountStatementPage() {
             <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
                 <div className="text-center">
                     <Loader2 className="w-12 h-12 text-emerald-500 animate-spin mx-auto mb-4" />
-                    <p className="text-slate-600 font-medium">Preparing Account Statement...</p>
+                    <p className="text-slate-600 font-medium">{translate("gdip.statement.preparing")}</p>
                 </div>
             </div>
         );
@@ -142,13 +143,13 @@ export default function AccountStatementPage() {
                             className="flex items-center gap-2 text-gray-500 hover:text-gray-900 mb-6 font-bold text-xs uppercase tracking-widest transition-colors group"
                         >
                             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                            Return to Dashboard
+                            {translate("gdip.statement.backToDashboard")}
                         </button>
                         <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight leading-none uppercase mb-2">
-                            Global Ledger
+                            {translate("gdip.statement.title")}
                         </h1>
                         <p className="text-gray-500 font-medium">
-                            Comprehensive account statement and transaction history
+                            {translate("gdip.statement.subtitle")}
                         </p>
                     </div>
 
@@ -159,10 +160,10 @@ export default function AccountStatementPage() {
                                 onChange={(e) => setDateRange(e.target.value)}
                                 className="w-full sm:w-auto appearance-none bg-gray-50 border border-transparent rounded-xl px-4 py-3 pr-10 text-xs font-bold uppercase tracking-widest text-gray-900 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer"
                             >
-                                <option value="all">COMPREHENSIVE HISTORY</option>
-                                <option value="30days">LAST 30 OPERATIONAL DAYS</option>
-                                <option value="90days">QUARTERLY ARCHIVE</option>
-                                <option value="thisyear">ANNUAL RECORD</option>
+                                <option value="all">{translate("gdip.statement.filters.all")}</option>
+                                <option value="30days">{translate("gdip.statement.filters.last30")}</option>
+                                <option value="90days">{translate("gdip.statement.filters.quarterly")}</option>
+                                <option value="thisyear">{translate("gdip.statement.filters.annual")}</option>
                             </select>
                             <Filter className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={12} />
                         </div>
@@ -172,7 +173,7 @@ export default function AccountStatementPage() {
                             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-gray-800 shadow-xl shadow-gray-200 transition-all active:scale-95"
                         >
                             <Download size={14} />
-                            Download Ledger
+                            {translate("gdip.statement.download")}
                         </button>
                     </div>
                 </div>
@@ -187,18 +188,18 @@ export default function AccountStatementPage() {
                                 <Globe size={32} />
                             </div>
                             <div>
-                                <h2 className="text-3xl font-black text-gray-900 leading-none tracking-tight">GLOTRADE</h2>
-                                <p className="text-[10px] font-black text-blue-600 tracking-[0.3em] uppercase mt-2">INTERNATIONAL PLATFORM</p>
-                                <p className="text-xs text-gray-400 mt-2 font-bold uppercase tracking-widest">Trade Finance & Digital Assets</p>
+                                <h2 className="text-3xl font-black text-gray-900 leading-none tracking-tight">{translate("gdip.statement.header.company")}</h2>
+                                <p className="text-[10px] font-black text-blue-600 tracking-[0.3em] uppercase mt-2">{translate("gdip.statement.header.platform")}</p>
+                                <p className="text-xs text-gray-400 mt-2 font-bold uppercase tracking-widest">{translate("gdip.statement.header.tagline")}</p>
                             </div>
                         </div>
 
                         <div className="text-left sm:text-right">
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-2 leading-none">STATEMENT PERIOD</p>
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-2 leading-none">{translate("gdip.statement.header.periodLabel")}</p>
                             <p className="text-xl font-black text-gray-900 leading-none uppercase tracking-tight">
-                                {dateRange === "all" ? "Comprehensive History" : `Filtered: ${dateRange}`}
+                                {dateRange === "all" ? translate("gdip.statement.header.periodAll") : translate("gdip.statement.header.periodFiltered", { range: dateRange })}
                             </p>
-                            <p className="text-[10px] font-bold text-gray-400 mt-3 whitespace-nowrap uppercase tracking-widest">Generated On {formatDate(new Date().toISOString())}</p>
+                            <p className="text-[10px] font-bold text-gray-400 mt-3 whitespace-nowrap uppercase tracking-widest">{translate("gdip.statement.header.generatedOn", { date: formatDate(new Date().toISOString()) })}</p>
                         </div>
                     </div>
                 </div>
@@ -207,17 +208,17 @@ export default function AccountStatementPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-gray-100 border-b border-gray-100">
                     <div className="p-8 group hover:bg-gray-50/50 transition-all relative overflow-hidden">
                         <Sparkles className="absolute -top-4 -right-4 w-24 h-24 text-gray-900 opacity-[0.02] group-hover:scale-110 group-hover:rotate-12 transition-transform" />
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 leading-none">TOTAL INVESTMENT</p>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 leading-none">{translate("gdip.statement.summary.totalInvestment")}</p>
                         <div className="flex items-end gap-2">
                             <span className="text-3xl font-black text-gray-900 leading-none tracking-tight">{formatCurrency(data?.summary?.totalInvested || 0)}</span>
                             <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[9px] font-black uppercase tracking-widest rounded-lg flex items-center gap-1 mb-0.5">
-                                <Activity size={10} /> ACTIVE
+                                <Activity size={10} /> {translate("gdip.statement.summary.active")}
                             </span>
                         </div>
                     </div>
                     <div className="p-8 group hover:bg-emerald-50/10 transition-all relative overflow-hidden">
                         <TrendingUp className="absolute -top-4 -right-4 w-24 h-24 text-emerald-900 opacity-[0.02] group-hover:scale-110 group-hover:rotate-12 transition-transform" />
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 leading-none">TOTAL ROI EARNED</p>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 leading-none">{translate("gdip.statement.summary.totalROI")}</p>
                         <div className="flex items-end gap-2">
                             <span className="text-3xl font-black text-emerald-600 leading-none tracking-tight">{formatCurrency(data?.summary?.totalEarned || 0)}</span>
                             <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-widest rounded-lg flex items-center gap-1 mb-0.5">
@@ -227,7 +228,7 @@ export default function AccountStatementPage() {
                     </div>
                     <div className="p-8 group hover:bg-indigo-50/10 transition-all bg-gray-50/30 relative overflow-hidden">
                         <Wallet className="absolute -top-4 -right-4 w-24 h-24 text-indigo-900 opacity-[0.02] group-hover:scale-110 group-hover:rotate-12 transition-transform" />
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 leading-none">WALLET BALANCE</p>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 leading-none">{translate("gdip.statement.summary.walletBalance")}</p>
                         <div className="flex items-end gap-2">
                             <span className="text-3xl font-black text-gray-900 leading-none tracking-tight">{formatCurrency(data?.summary?.currentBalance || 0)}</span>
                             <Trophy className="text-indigo-400 mb-0.5" size={16} />
@@ -242,11 +243,11 @@ export default function AccountStatementPage() {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="border-b border-gray-100">
-                                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">Lifecycle / Time</th>
-                                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">Transaction Entity</th>
-                                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] text-right">Reference</th>
-                                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] text-right">Yield Value</th>
-                                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] text-right">New Reserve</th>
+                                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">{translate("gdip.statement.table.headers.time")}</th>
+                                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">{translate("gdip.statement.table.headers.entity")}</th>
+                                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] text-right">{translate("gdip.statement.table.headers.reference")}</th>
+                                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] text-right">{translate("gdip.statement.table.headers.value")}</th>
+                                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] text-right">{translate("gdip.statement.table.headers.reserve")}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
@@ -298,7 +299,7 @@ export default function AccountStatementPage() {
                                     </div>
                                 </div>
                                 <div className="mb-6">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">TRANSACTION ENTITY</p>
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">{translate("gdip.statement.card.entityLabel")}</p>
                                     <p className="text-sm font-black text-gray-900 uppercase tracking-tight leading-normal">{tx.description}</p>
                                     <p className="text-[9px] font-black text-blue-600 uppercase tracking-widest mt-1 bg-blue-50/50 px-2 py-0.5 rounded-md inline-block">
                                         {tx.category.replace('_', ' ')}
@@ -306,20 +307,20 @@ export default function AccountStatementPage() {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100/50">
                                     <div>
-                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">VALUE CHANGE</p>
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">{translate("gdip.statement.card.valueChange")}</p>
                                         <p className={`text-base font-black tracking-tight ${tx.amount > 0 ? "text-emerald-600" : "text-gray-900"}`}>
                                             {tx.amount > 0 ? "+" : ""}{formatCurrency(tx.amount)}
                                         </p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">NEW RESERVE</p>
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">{translate("gdip.statement.card.reserveLabel")}</p>
                                         <p className="text-base font-black text-gray-900 tracking-tight">
                                             {formatCurrency(tx.balanceAfter)}
                                         </p>
                                     </div>
                                 </div>
                                 <div className="mt-4 pt-4 border-t border-gray-100/50 flex items-center justify-between">
-                                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em]">REF: <span className="text-gray-600 select-all">{tx.reference}</span></p>
+                                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em]">{translate("gdip.statement.card.refLabel")} <span className="text-gray-600 select-all">{tx.reference}</span></p>
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{formatTime(tx.createdAt)}</p>
                                 </div>
                             </div>
@@ -331,8 +332,8 @@ export default function AccountStatementPage() {
                             <div className="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
                                 <HistoryIcon className="w-10 h-10 text-gray-200" />
                             </div>
-                            <h3 className="text-2xl font-black text-gray-900 tracking-tight mb-2 uppercase">No Data Located</h3>
-                            <p className="text-gray-500 font-medium max-w-xs mx-auto text-sm">No historical sequences found within this specified timeline.</p>
+                            <h3 className="text-2xl font-black text-gray-900 tracking-tight mb-2 uppercase">{translate("gdip.statement.empty.title")}</h3>
+                            <p className="text-gray-500 font-medium max-w-xs mx-auto text-sm">{translate("gdip.statement.empty.subtitle")}</p>
                         </div>
                     )}
                 </div>
@@ -341,24 +342,24 @@ export default function AccountStatementPage() {
                 <div className="p-12 bg-gray-900 text-white rounded-b-3xl print:bg-white print:text-gray-900 print:rounded-none">
                     <div className="flex flex-col sm:flex-row justify-between items-end gap-12">
                         <div className="w-full sm:max-w-xl">
-                            <p className="text-blue-400 text-[10px] font-black uppercase tracking-[0.4em] mb-6 leading-none">OFFICIAL ARCHIVE NOTICE</p>
+                            <p className="text-blue-400 text-[10px] font-black uppercase tracking-[0.4em] mb-6 leading-none">{translate("gdip.statement.footer.noticeTitle")}</p>
                             <p className="text-base text-gray-400 leading-relaxed print:text-gray-600 font-black uppercase tracking-tight">
-                                This account ledger is an official record of activities on the Glotrade International Platform.
+                                {translate("gdip.statement.footer.noticeText")}
                             </p>
                             <p className="text-xs text-gray-500 mt-4 leading-relaxed font-bold uppercase tracking-widest">
-                                All entries are cross-verified with physical commodity movement and digital asset custody protocols. Report discrepancies to <span className="text-blue-400 underline">COMPLIANCE@GLOTRADE.COM</span> within 48 operational hours.
+                                {translate("gdip.statement.footer.disclaimer", { email: "COMPLIANCE@GLOTRADE.COM" })}
                             </p>
                         </div>
 
                         <div className="text-left sm:text-right w-full sm:w-auto">
                             <div className="mb-6">
-                                <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] mb-2 leading-none">TOTAL PORTFOLIO ARCHIVE</p>
+                                <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] mb-2 leading-none">{translate("gdip.statement.footer.totalArchive")}</p>
                                 <p className="text-5xl font-black text-white print:text-gray-900 leading-none tracking-tight">
                                     {formatCurrency((data?.summary.currentBalance || 0) + (data?.summary.totalInvested || 0))}
                                 </p>
                             </div>
                             <div className="flex items-center sm:justify-end gap-2 text-blue-400 font-black text-[10px] uppercase tracking-[0.3em]">
-                                <CheckCircle2 size={12} className="animate-pulse" /> SECURE LEDGER VERIFIED
+                                <CheckCircle2 size={12} className="animate-pulse" /> {translate("gdip.statement.footer.verified")}
                             </div>
                         </div>
                     </div>
@@ -367,7 +368,7 @@ export default function AccountStatementPage() {
 
             <div className="mt-12 mb-12 text-center print:mt-16">
                 <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.5em] leading-none">
-                    GLOTRADE INTERNATIONAL PLATFORM • END OF RECORDED DATA
+                    {translate("gdip.statement.footer.endOfRecord")}
                 </p>
             </div>
         </div>

@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { apiGet } from "@/utils/api";
 import QRCode from "qrcode";
 import { ArrowLeft, Printer, ShieldCheck, Award, Calendar, MapPin, Package, Download, Globe, ScanLine } from "lucide-react";
+import { translate } from "@/utils/translate";
 
 interface CertificateData {
     tpia: {
@@ -76,7 +77,7 @@ export default function InsuranceCertificatePage() {
             }
         } catch (err: any) {
             console.error("Error fetching certificate data:", err);
-            setError(err.message || "Failed to load certificate data");
+            setError(err.message || translate("gdip.certificate.error.loadFailed"));
         } finally {
             setLoading(false);
         }
@@ -115,13 +116,13 @@ export default function InsuranceCertificatePage() {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center">
-                    <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
-                    <p className="text-gray-600 mb-4">{error || "Certificate not found"}</p>
+                    <h2 className="text-2xl font-bold text-red-600 mb-4">{translate("gdip.certificate.error.title")}</h2>
+                    <p className="text-gray-600 mb-4">{error || translate("gdip.certificate.error.notFound")}</p>
                     <button
                         onClick={() => router.back()}
                         className="bg-blue-600 text-white px-6 py-2 rounded-lg"
                     >
-                        Go Back
+                        {translate("gdip.certificate.error.goBack")}
                     </button>
                 </div>
             </div>
@@ -139,14 +140,14 @@ export default function InsuranceCertificatePage() {
                     className="flex items-center gap-2 text-gray-500 hover:text-gray-900 font-bold text-xs uppercase tracking-widest transition-colors group"
                 >
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    Return to Portfolio
+                    {translate("gdip.certificate.backToPortfolio")}
                 </button>
                 <button
                     onClick={handlePrint}
                     className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gray-900 text-white px-8 py-3 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-gray-800 transition-all shadow-xl shadow-gray-200 active:scale-95"
                 >
                     <Printer className="w-4 h-4" />
-                    Print Certificate
+                    {translate("gdip.certificate.printButton")}
                 </button>
             </div>
 
@@ -190,13 +191,13 @@ export default function InsuranceCertificatePage() {
                         </div>
 
                         <div className="space-y-2">
-                            <p className="text-[10px] font-black text-blue-600 tracking-[0.4em] uppercase">OFFICIAL ASSET ARCHIVE</p>
+                            <p className="text-[10px] font-black text-blue-600 tracking-[0.4em] uppercase">{translate("gdip.certificate.header.archiveLabel")}</p>
                             <h1 className="text-4xl sm:text-6xl font-black text-gray-900 tracking-tighter uppercase leading-none">
-                                Insurance Certificate
+                                {translate("gdip.certificate.header.title")}
                             </h1>
                             <div className="flex items-center justify-center gap-4 py-4">
                                 <div className="h-px w-12 bg-gray-200"></div>
-                                <p className="text-xs font-black text-gray-400 tracking-[0.2em] uppercase">TPIA - Alliance Protocol</p>
+                                <p className="text-xs font-black text-gray-400 tracking-[0.2em] uppercase">{translate("gdip.certificate.header.protocol")}</p>
                                 <div className="h-px w-12 bg-gray-200"></div>
                             </div>
                         </div>
@@ -205,11 +206,11 @@ export default function InsuranceCertificatePage() {
                     {/* Certificate Identification Sequence */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 py-8 border-y border-gray-100">
                         <div>
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-2 leading-none">CERTIFICATE SEQUENCE</p>
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-2 leading-none">{translate("gdip.certificate.info.seqLabel")}</p>
                             <p className="text-2xl font-black text-gray-900 tracking-tighter leading-none select-all">{insurance.certificateNumber}</p>
                         </div>
                         <div className="sm:text-right">
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-2 leading-none">INCEPTION DATE</p>
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-2 leading-none">{translate("gdip.certificate.info.dateLabel")}</p>
                             <p className="text-2xl font-black text-gray-900 tracking-tighter leading-none">{formatDate(tpia.purchasedAt)}</p>
                         </div>
                     </div>
@@ -217,7 +218,7 @@ export default function InsuranceCertificatePage() {
                     {/* Partner Credential Area */}
                     <div className="space-y-10">
                         <div className="text-center">
-                            <p className="text-[10px] font-black text-blue-600 tracking-[0.4em] mb-4 uppercase leading-none">ASSET ENTITY IDENTIFIED</p>
+                            <p className="text-[10px] font-black text-blue-600 tracking-[0.4em] mb-4 uppercase leading-none">{translate("gdip.certificate.partner.entityLabel")}</p>
                             <h2 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter uppercase leading-none mb-4">
                                 {tpia.partnerName}
                             </h2>
@@ -230,8 +231,8 @@ export default function InsuranceCertificatePage() {
                             </div>
 
                             <p className="text-gray-500 text-center font-bold uppercase tracking-tight text-sm max-w-2xl mx-auto leading-relaxed relative z-10">
-                                This document confirms registered insurance coverage for the investment block <span className="text-blue-600 font-black">[{tpia.tpiaId}]</span>.
-                                Fully backed by physical commodity reserves under the GDIP multi-layer risk management framework.
+                                {translate("gdip.certificate.content.confirmation", { id: tpia.tpiaId })}
+                                {translate("gdip.certificate.content.backing")}
                             </p>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 relative z-10">
@@ -239,15 +240,15 @@ export default function InsuranceCertificatePage() {
                                     <div className="flex items-start gap-3">
                                         <Award className="w-5 h-5 text-blue-600 mt-1" />
                                         <div>
-                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 leading-none">COVERAGE MAGNITUDE</p>
+                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 leading-none">{translate("gdip.certificate.content.coverageLabel")}</p>
                                             <p className="text-xl font-black text-gray-900 tracking-tight leading-none">{formatCurrency(insurance.coverageAmount)}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-start gap-3 pt-2">
                                         <Package className="w-5 h-5 text-blue-600 mt-1" />
                                         <div>
-                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 leading-none">ASSET BACKING</p>
-                                            <p className="text-sm font-black text-gray-900 uppercase tracking-tight">{tpia.commodityQuantity} {tpia.commodityUnit} {tpia.commodityType}</p>
+                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 leading-none">{translate("gdip.certificate.content.backingLabel")}</p>
+                                            <p className="text-sm font-black text-gray-900 uppercase tracking-tight">{translate("gdip.certificate.content.backingValue", { qty: tpia.commodityQuantity, unit: tpia.commodityUnit, type: tpia.commodityType })}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -255,7 +256,7 @@ export default function InsuranceCertificatePage() {
                                     <div className="flex items-start gap-3">
                                         <Calendar className="w-5 h-5 text-blue-600 mt-1" />
                                         <div>
-                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 leading-none">EFFECTIVE WINDOW</p>
+                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 leading-none">{translate("gdip.certificate.content.windowLabel")}</p>
                                             <p className="text-sm font-black text-gray-900 uppercase tracking-tight">
                                                 {formatDate(insurance.effectiveDate)} <span className="text-gray-300 mx-1">—</span> {formatDate(insurance.expiryDate)}
                                             </p>
@@ -264,8 +265,8 @@ export default function InsuranceCertificatePage() {
                                     <div className="flex items-start gap-3 pt-2">
                                         <MapPin className="w-5 h-5 text-blue-600 mt-1" />
                                         <div>
-                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 leading-none">LOGISTICS HUB</p>
-                                            <p className="text-sm font-black text-gray-900 uppercase tracking-tight">{insurance.warehouseLocation || "GLOTRADE STRATEGIC RESERVE"}</p>
+                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 leading-none">{translate("gdip.certificate.content.logisticsLabel")}</p>
+                                            <p className="text-sm font-black text-gray-900 uppercase tracking-tight">{insurance.warehouseLocation || translate("gdip.certificate.content.defaultHub")}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -277,14 +278,14 @@ export default function InsuranceCertificatePage() {
                     <div className="grid grid-cols-2 gap-12 pt-16">
                         <div className="text-center">
                             <div className="border-t-2 border-gray-900 pt-4 mx-auto w-full max-w-[200px]">
-                                <p className="text-xs font-black text-gray-900 uppercase tracking-widest leading-none mb-2">GloTrade Admin</p>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Authorized Signatory</p>
+                                <p className="text-xs font-black text-gray-900 uppercase tracking-widest leading-none mb-2">{translate("gdip.certificate.footer.adminSignatory")}</p>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">{translate("gdip.certificate.footer.authorizedSignatory")}</p>
                             </div>
                         </div>
                         <div className="text-center">
                             <div className="border-t-2 border-gray-900 pt-4 mx-auto w-full max-w-[200px]">
-                                <p className="text-xs font-black text-gray-900 uppercase tracking-widest leading-none mb-2 truncate">{insurance.provider.toUpperCase()}</p>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Lead Underwriter</p>
+                                <p className="text-xs font-black text-gray-900 uppercase tracking-widest leading-none mb-2 truncate">{(translate("gdip.details.insurance.providers." + insurance.provider) || insurance.provider).toUpperCase()}</p>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">{translate("gdip.certificate.footer.leadUnderwriter")}</p>
                             </div>
                         </div>
                     </div>
@@ -292,10 +293,10 @@ export default function InsuranceCertificatePage() {
                     {/* Footer Archive Notice */}
                     <div className="flex flex-col md:flex-row items-center justify-between gap-10 pt-10 border-t border-gray-100">
                         <div className="flex-1 space-y-3 text-center md:text-left">
-                            <p className="text-blue-600 text-[9px] font-black uppercase tracking-[0.3em] leading-none">OFFICIAL ARCHIVE NOTICE</p>
+                            <p className="text-blue-600 text-[9px] font-black uppercase tracking-[0.3em] leading-none">{translate("gdip.certificate.footer.noticeTitle")}</p>
                             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-relaxed max-w-md">
-                                This document is a digital representation of the underlying insurance contract.
-                                Full capital protection of {formatCurrency(1000000)} per TPIA block is cross-verified under sovereign custodial standards.
+                                {translate("gdip.certificate.footer.noticeText")}
+                                {translate("gdip.certificate.footer.protectionText", { amount: formatCurrency(1000000) })}
                             </p>
                             <div className="flex justify-center md:justify-start pt-2 opacity-10">
                                 <div className="w-20 h-20 border-4 border-gray-900 rounded-full flex items-center justify-center font-black text-gray-900 text-2xl transform -rotate-12">
@@ -309,7 +310,7 @@ export default function InsuranceCertificatePage() {
                                 <img src={qrCodeUrl} alt="Verification QR Code" className="w-24 h-24 grayscale group-hover:grayscale-0 transition-all" />
                                 <div className="flex items-center gap-2 text-[9px] font-black text-gray-900 uppercase tracking-[0.2em]">
                                     <ScanLine className="w-3 h-3 text-blue-600" />
-                                    Secure Verification
+                                    {translate("gdip.certificate.footer.verificationLabel")}
                                 </div>
                             </div>
                         )}
@@ -320,10 +321,10 @@ export default function InsuranceCertificatePage() {
             {/* Print Intelligence Notice - Hidden during print */}
             <div className="max-w-4xl mx-auto mt-4 mb-16 text-center print:hidden">
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] leading-none mb-4">
-                    GLOTRADE INTERNATIONAL PLATFORM • END OF DOCUMENT
+                    {translate("gdip.certificate.footer.endOfDocument")}
                 </p>
                 <div className="flex items-center justify-center gap-2 text-blue-600 font-black text-[9px] uppercase tracking-widest">
-                    <ShieldCheck size={12} /> SECURE LEDGER ENCRYPTED
+                    <ShieldCheck size={12} /> {translate("gdip.certificate.footer.encrypted")}
                 </div>
             </div>
         </div>

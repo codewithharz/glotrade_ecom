@@ -15,6 +15,7 @@ import {
     Download,
     FileText
 } from "lucide-react";
+import { translate } from "@/utils/translate";
 
 interface TPIADetails {
     tpia: {
@@ -97,7 +98,7 @@ export default function TPIADetailsPage() {
             }
         } catch (err: any) {
             console.error("Error fetching TPIA details:", err);
-            setError(err.message || "Failed to load TPIA details");
+            setError(err.message || translate("gdip.details.error.loadFailed"));
         } finally {
             setLoading(false);
         }
@@ -120,7 +121,7 @@ export default function TPIADetailsPage() {
             }
         } catch (err: any) {
             console.error("Error switching profit mode:", err);
-            alert(err.message || "Failed to switch profit mode");
+            alert(err.message || translate("gdip.details.error.switchMode"));
         } finally {
             setSwitchingMode(false);
         }
@@ -177,13 +178,13 @@ export default function TPIADetailsPage() {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
-                    <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
-                    <p className="text-gray-600 mb-4">{error || "TPIA not found"}</p>
+                    <h2 className="text-2xl font-bold text-red-600 mb-4">{translate("gdip.details.error.title")}</h2>
+                    <p className="text-gray-600 mb-4">{error || translate("gdip.details.error.notFound")}</p>
                     <button
                         onClick={() => router.back()}
                         className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
                     >
-                        Go Back
+                        {translate("gdip.details.error.goBack")}
                     </button>
                 </div>
             </div>
@@ -202,7 +203,7 @@ export default function TPIADetailsPage() {
                         className="flex items-center gap-2 text-gray-500 hover:text-gray-900 mb-6 font-bold text-xs uppercase tracking-widest transition-colors group"
                     >
                         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                        Back to Portfolio
+                        {translate("gdip.details.backToPortfolio")}
                     </button>
                     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
                         <div className="space-y-1">
@@ -218,16 +219,16 @@ export default function TPIADetailsPage() {
                                             : "bg-gray-100 text-gray-500 border border-gray-200"
                                         }`}
                                 >
-                                    {tpia.status}
+                                    {translate("gdip.status." + tpia.status)}
                                 </span>
                             </div>
                             <p className="text-gray-500 font-medium sm:text-lg">
-                                Trusted Insured Partners Alliance Block
+                                {translate("gdip.details.tpiaTitle")}
                             </p>
                         </div>
                         <div className="flex gap-2">
                             <div className="bg-gray-50 px-4 py-3 rounded-2xl border border-gray-100 hidden sm:block">
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Ownership</p>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{translate("gdip.details.ownershipLabel")}</p>
                                 <p className="text-sm font-black text-gray-900">{tpia.partnerName}</p>
                             </div>
                         </div>
@@ -247,32 +248,32 @@ export default function TPIADetailsPage() {
                                     <TrendingUp className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl font-black text-gray-900 tracking-tight leading-none mb-1">Financial Performance</h2>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Asset value & earnings</p>
+                                    <h2 className="text-2xl font-black text-gray-900 tracking-tight leading-none mb-1">{translate("gdip.details.financial.title")}</h2>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.details.financial.subtitle")}</p>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4 sm:gap-6">
                                 <div className="bg-gray-50 p-4 sm:p-5 rounded-3xl border border-gray-100">
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 leading-none">Original Cost</p>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 leading-none">{translate("gdip.details.financial.cost")}</p>
                                     <p className="text-lg sm:text-2xl font-black text-gray-900 leading-none">
                                         {formatCurrency(tpia.purchasePrice)}
                                     </p>
                                 </div>
                                 <div className="bg-emerald-50/50 p-4 sm:p-5 rounded-3xl border border-emerald-100">
-                                    <p className="text-[10px] font-bold text-emerald-600/70 uppercase tracking-widest mb-1.5 leading-none">Current Value</p>
+                                    <p className="text-[10px] font-bold text-emerald-600/70 uppercase tracking-widest mb-1.5 leading-none">{translate("gdip.details.financial.value")}</p>
                                     <p className="text-lg sm:text-2xl font-black text-emerald-600 leading-none">
                                         {formatCurrency(tpia.currentValue)}
                                     </p>
                                 </div>
                                 <div className="bg-indigo-50/50 p-4 sm:p-5 rounded-3xl border border-indigo-100">
-                                    <p className="text-[10px] font-bold text-indigo-600/70 uppercase tracking-widest mb-1.5 leading-none">Net Accrued</p>
+                                    <p className="text-[10px] font-bold text-indigo-600/70 uppercase tracking-widest mb-1.5 leading-none">{translate("gdip.details.financial.accrued")}</p>
                                     <p className="text-lg sm:text-2xl font-black text-indigo-600 leading-none">
                                         +{formatCurrency(tpia.totalProfitEarned + calculateEstimatedProfit())}
                                     </p>
                                 </div>
                                 <div className="bg-purple-50/50 p-4 sm:p-5 rounded-3xl border border-purple-100">
-                                    <p className="text-[10px] font-bold text-purple-600/70 uppercase tracking-widest mb-1.5 leading-none">Total ROI</p>
+                                    <p className="text-[10px] font-bold text-purple-600/70 uppercase tracking-widest mb-1.5 leading-none">{translate("gdip.details.financial.roi")}</p>
                                     <p className="text-lg sm:text-2xl font-black text-purple-600 leading-none whitespace-nowrap">
                                         {calculateROI()}<span className="text-sm font-bold opacity-50">%</span>
                                     </p>
@@ -281,7 +282,7 @@ export default function TPIADetailsPage() {
                                     <div className="col-span-2 bg-slate-900 p-5 rounded-3xl text-white">
                                         <div className="flex justify-between items-center">
                                             <div>
-                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 leading-none">Compounded Exit Value</p>
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 leading-none">{translate("gdip.details.financial.compoundedExit")}</p>
                                                 <p className="text-2xl font-black leading-none">{formatCurrency(tpia.compoundedValue)}</p>
                                             </div>
                                             <div className="p-2 bg-white/10 rounded-xl">
@@ -304,8 +305,8 @@ export default function TPIADetailsPage() {
                                             <Activity className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <h2 className="text-2xl font-black text-gray-900 tracking-tight leading-none mb-1">Active Cycle</h2>
-                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Growth in progress</p>
+                                            <h2 className="text-2xl font-black text-gray-900 tracking-tight leading-none mb-1">{translate("gdip.details.cycle.title")}</h2>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.details.cycle.subtitle")}</p>
                                         </div>
                                     </div>
                                     <span className="px-3 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-black uppercase tracking-widest rounded-lg">
@@ -316,11 +317,11 @@ export default function TPIADetailsPage() {
                                 <div className="space-y-6">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Open Date</p>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.details.cycle.openDate")}</p>
                                             <p className="text-xs sm:text-sm font-black text-gray-900">{formatDate(currentCycle.startDate)}</p>
                                         </div>
                                         <div className="space-y-1 text-right">
-                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Projected Close</p>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.details.cycle.projectedClose")}</p>
                                             <p className="text-xs sm:text-sm font-black text-gray-900">{formatDate(currentCycle.endDate)}</p>
                                         </div>
                                     </div>
@@ -328,11 +329,11 @@ export default function TPIADetailsPage() {
                                     <div className="pt-4">
                                         <div className="flex justify-between items-end mb-3">
                                             <div>
-                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Cycle ROI Target</p>
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{translate("gdip.details.cycle.targetLabel")}</p>
                                                 <p className="text-2xl font-black text-gray-900">{currentCycle.targetProfitRate}<span className="text-sm font-bold opacity-30">%</span></p>
                                             </div>
                                             <p className="text-sm font-black text-blue-600 uppercase tracking-widest">
-                                                {calculateCycleProgress().toFixed(1)}% Complete
+                                                {translate("gdip.details.cycle.progress", { progress: calculateCycleProgress().toFixed(1) })}
                                             </p>
                                         </div>
                                         <div className="h-4 bg-gray-100 rounded-full overflow-hidden p-1 border border-gray-50">
@@ -345,11 +346,11 @@ export default function TPIADetailsPage() {
 
                                     <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 flex items-center justify-between">
                                         <div>
-                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Elapsed Duration</p>
-                                            <p className="text-sm font-black text-gray-900 leading-none">~{Math.floor((calculateCycleProgress() / 100) * 37)} of 37 Market Days</p>
+                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">{translate("gdip.details.cycle.durationLabel")}</p>
+                                            <p className="text-sm font-black text-gray-900 leading-none">{translate("gdip.details.cycle.durationValue", { days: Math.floor((calculateCycleProgress() / 100) * 37) })}</p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-[9px] font-bold text-blue-600 uppercase tracking-widest mb-1">Accrued Profit</p>
+                                            <p className="text-[9px] font-bold text-blue-600 uppercase tracking-widest mb-1">{translate("gdip.details.cycle.accruedProfit")}</p>
                                             <p className="text-lg font-black text-blue-700 leading-none">+{formatCurrency(calculateEstimatedProfit())}</p>
                                         </div>
                                     </div>
@@ -368,7 +369,7 @@ export default function TPIADetailsPage() {
                                 <div className="p-2 bg-purple-50 rounded-xl text-purple-600">
                                     <CircleDollarSign className="w-5 h-5" />
                                 </div>
-                                <h3 className="font-black text-lg text-gray-900 tracking-tight">Earnings Method</h3>
+                                <h3 className="font-black text-lg text-gray-900 tracking-tight">{translate("gdip.details.profitMode.title")}</h3>
                             </div>
                             <div className="mb-6">
                                 <div
@@ -385,13 +386,13 @@ export default function TPIADetailsPage() {
                                                 : "bg-blue-100 text-blue-700"
                                                 }`}
                                         >
-                                            {tpia.profitMode === "TPM" ? "Compound" : "Withdrawal"}
+                                            {tpia.profitMode === "TPM" ? translate("gdip.details.profitMode.compoundBadge") : translate("gdip.details.profitMode.withdrawalBadge")}
                                         </span>
                                     </div>
                                     <p className="text-xs font-medium text-gray-500 leading-relaxed mb-1 relative z-10">
                                         {tpia.profitMode === "TPM"
-                                            ? "Profits reinvest automatically to expand asset equity."
-                                            : "Profits credit to your liquid wallet after each cycle."}
+                                            ? translate("gdip.details.profitMode.compoundDesc")
+                                            : translate("gdip.details.profitMode.withdrawalDesc")}
                                     </p>
                                     <div className={`absolute bottom-[-20%] right-[-10%] opacity-[0.03] rotate-12 transition-transform group-hover:scale-110 pointer-events-none`}>
                                         <CircleDollarSign className="w-24 h-24" />
@@ -407,7 +408,7 @@ export default function TPIADetailsPage() {
                                     <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                                 ) : (
                                     <>
-                                        Switch to {tpia.profitMode === "TPM" ? "EPS" : "TPM"}
+                                        {translate("gdip.details.profitMode.switchButton", { mode: tpia.profitMode === "TPM" ? "EPS" : "TPM" })}
                                         <Activity size={14} className="opacity-50 group-hover:animate-pulse" />
                                     </>
                                 )}
@@ -423,22 +424,22 @@ export default function TPIADetailsPage() {
                                 <div className="p-2 bg-emerald-50 rounded-xl text-emerald-600">
                                     <ShieldCheck className="w-5 h-5" />
                                 </div>
-                                <h3 className="font-black text-lg text-gray-900 tracking-tight">Active Coverage</h3>
+                                <h3 className="font-black text-lg text-gray-900 tracking-tight">{translate("gdip.details.insurance.title")}</h3>
                             </div>
                             <div className="space-y-4">
                                 <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 leading-none">Protection Certificate</p>
+                                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 leading-none">{translate("gdip.details.insurance.certLabel")}</p>
                                     <p className="font-mono text-[10px] text-gray-900 font-bold bg-white px-2.5 py-1.5 rounded-lg border border-gray-100 shadow-sm">{insurance.certificateNumber}</p>
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div className="space-y-1">
-                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Insurer</p>
-                                        <p className="text-xs font-black text-gray-900">{insurance.provider}</p>
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.details.insurance.provider")}</p>
+                                        <p className="text-xs font-black text-gray-900">{translate("gdip.details.insurance.providers." + insurance?.provider) || insurance?.provider}</p>
                                     </div>
                                     <div className="space-y-1 text-right">
-                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Verified</p>
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.details.insurance.statusLabel")}</p>
                                         <span className="inline-flex px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[9px] font-black uppercase tracking-widest rounded-md">
-                                            {insurance.status}
+                                            {translate("gdip.status." + insurance.status)}
                                         </span>
                                     </div>
                                 </div>
@@ -448,14 +449,14 @@ export default function TPIADetailsPage() {
                                         className="w-full flex items-center justify-center gap-2 bg-gray-50 text-gray-600 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-gray-100 transition-all active:scale-95"
                                     >
                                         <FileText className="w-3.5 h-3.5" />
-                                        Purchase Invoice
+                                        {translate("gdip.details.insurance.invoiceButton")}
                                     </button>
                                     <button
                                         onClick={() => router.push(`/gdip/tpia/${tpiaId}/certificate`)}
                                         className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-emerald-700 shadow-xl shadow-emerald-100 transition-all active:scale-95"
                                     >
                                         <Download className="w-3.5 h-3.5" />
-                                        Asset Certificate
+                                        {translate("gdip.details.insurance.certButton")}
                                     </button>
                                 </div>
                             </div>
@@ -467,21 +468,21 @@ export default function TPIADetailsPage() {
                                 <div className="p-2 bg-blue-50 rounded-xl text-blue-600">
                                     <Box className="w-5 h-5" />
                                 </div>
-                                <h3 className="font-black text-lg text-gray-900 tracking-tight">Cluster Node</h3>
+                                <h3 className="font-black text-lg text-gray-900 tracking-tight">{translate("gdip.details.node.title")}</h3>
                             </div>
                             <div className="space-y-3">
                                 <div className="flex justify-between items-center py-2 border-b border-gray-50">
-                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">GDC Reference</span>
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.details.node.ref")}</span>
                                     <span className="text-xs font-black text-gray-900">{gdc.gdcId}</span>
                                 </div>
                                 <div className="flex justify-between items-center py-2 border-b border-gray-50">
-                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Node Position</span>
-                                    <span className="text-xs font-black text-gray-900">Block {tpia.positionInGDC} of {gdc.capacity}</span>
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.details.node.posLabel")}</span>
+                                    <span className="text-xs font-black text-gray-900">{translate("gdip.details.node.posValue", { pos: tpia.positionInGDC, total: gdc.capacity })}</span>
                                 </div>
                                 <div className="flex justify-between items-center py-2">
-                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Commodity Backing</span>
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.details.node.commodity")}</span>
                                     <span className="text-xs font-black text-gray-900 flex items-center gap-1.5 truncate ml-4">
-                                        <span className="opacity-50">🌾</span> {tpia.commodityType}
+                                        <span className="opacity-50">🌾</span> {tpia.commodityType || translate("gdip.details.node.defaultCommodity")}
                                     </span>
                                 </div>
                             </div>

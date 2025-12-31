@@ -894,7 +894,7 @@ function WalletPageContent() {
                   : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
                   }`}
               >
-                {translate("wallet.tabs.credit")}
+                {translate("wallet.tabs.creditRequests")}
                 {activeTab === 'credit-requests' && (
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-400 rounded-t-full" />
                 )}
@@ -923,7 +923,7 @@ function WalletPageContent() {
                     }`}
                 >
                   <Filter className="w-4 h-4" />
-                  {translate("wallet.transactions.filters")}
+                  {translate("wallet.transactions.filters.title")}
                   <ChevronDown className={`w-4 h-4 transition-transform ${showTransactionFilters ? "rotate-180" : ""}`} />
                 </button>
               </div>
@@ -933,38 +933,38 @@ function WalletPageContent() {
                 <div className="p-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div>
                     <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                      {translate("wallet.filters.type")}
+                      {translate("wallet.transactions.filters.type")}
                     </label>
                     <select
                       value={transactionFilters.transactionType}
                       onChange={(e) => handleFilterChange("transactionType", e.target.value)}
                       className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                     >
-                      <option value="all">{translate("wallet.filters.allTypes")}</option>
-                      <option value="deposit">{translate("wallet.filters.deposit")}</option>
-                      <option value="withdrawal">{translate("wallet.filters.withdrawal")}</option>
-                      <option value="payment">{translate("wallet.filters.payment")}</option>
-                      <option value="refund">{translate("wallet.filters.refund")}</option>
+                      <option value="all">{translate("wallet.transactions.filters.allTypes")}</option>
+                      <option value="deposit">{translate("wallet.transactions.filters.deposit")}</option>
+                      <option value="withdrawal">{translate("wallet.transactions.filters.withdrawal")}</option>
+                      <option value="payment">{translate("wallet.transactions.filters.payment")}</option>
+                      <option value="refund">{translate("wallet.transactions.filters.refund")}</option>
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                      {translate("wallet.filters.status")}
+                      {translate("wallet.transactions.filters.status")}
                     </label>
                     <select
                       value={transactionFilters.status}
                       onChange={(e) => handleFilterChange("status", e.target.value)}
                       className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                     >
-                      <option value="all">{translate("wallet.filters.allStatuses")}</option>
-                      <option value="completed">{translate("wallet.status.completed")}</option>
-                      <option value="pending">{translate("wallet.status.pending")}</option>
-                      <option value="failed">{translate("wallet.status.failed")}</option>
+                      <option value="all">{translate("wallet.transactions.filters.allStatuses")}</option>
+                      <option value="completed">{translate("wallet.transactions.filters.completed")}</option>
+                      <option value="pending">{translate("wallet.transactions.filters.pending")}</option>
+                      <option value="failed">{translate("wallet.transactions.filters.failed")}</option>
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                      {translate("wallet.filters.dateRange")}
+                      {translate("wallet.transactions.filters.dateRange")}
                     </label>
                     <div className="flex gap-2">
                       <input
@@ -986,7 +986,7 @@ function WalletPageContent() {
                       onClick={clearFilters}
                       className="w-full px-3 py-2 text-sm text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                     >
-                      {translate("wallet.filters.clear")}
+                      {translate("wallet.transactions.filters.clear")}
                     </button>
                   </div>
                 </div>
@@ -1041,7 +1041,7 @@ function WalletPageContent() {
                 ) : (
                   <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                     <HistoryIcon className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                    <p>{translate("wallet.transactions.noTransactions")}</p>
+                    <p>{translate("wallet.transactions.empty")}</p>
                   </div>
                 )}
               </div>
@@ -1057,7 +1057,7 @@ function WalletPageContent() {
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <span className="text-sm text-gray-600 dark:text-gray-300">
-                    {translate("common.pagination.pageOf", { current: transactionPagination.page, total: transactionPagination.pages })}
+                    {translate("wallet.transactions.pagination.pageOffset", { page: transactionPagination.page, pages: transactionPagination.pages })}
                   </span>
                   <button
                     onClick={() => handlePageChange(transactionPagination.page + 1)}
@@ -1150,12 +1150,12 @@ function WalletPageContent() {
           <Modal
             open={showExportModal}
             onClose={() => setShowExportModal(false)}
-            title={translate("wallet.export.title")}
+            title={translate("wallet.modals.export.title")}
           >
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {translate("wallet.export.format")}
+                  {translate("wallet.modals.export.format")}
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
@@ -1180,7 +1180,7 @@ function WalletPageContent() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {translate("wallet.export.dateRange")}
+                  {translate("wallet.modals.export.dateRange")}
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   <input
@@ -1203,7 +1203,7 @@ function WalletPageContent() {
                   className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
                 >
                   <Download className="w-4 h-4" />
-                  {translate("wallet.export.download")}
+                  {translate("wallet.modals.export.download")}
                 </button>
                 <button
                   onClick={() => setShowExportModal(false)}
@@ -1236,7 +1236,7 @@ function WalletPageContent() {
           <Modal
             open={showTransactionDetails}
             onClose={() => setShowTransactionDetails(false)}
-            title={translate("wallet.transactionDetails.title")}
+            title={translate("wallet.transactions.details.title")}
           >
             {selectedTransaction && (
               <div className="space-y-6">
@@ -1261,25 +1261,25 @@ function WalletPageContent() {
 
                 <div className="space-y-3 border-t border-gray-200 dark:border-gray-700 pt-4">
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-500 dark:text-gray-400">{translate("wallet.transactionDetails.reference")}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{translate("wallet.transactions.details.reference")}</span>
                     <span className="text-sm font-medium text-gray-900 dark:text-white font-mono">
                       {selectedTransaction.reference}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-500 dark:text-gray-400">{translate("wallet.transactionDetails.date")}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{translate("wallet.transactions.details.date")}</span>
                     <span className="text-sm font-medium text-gray-900 dark:text-white">
                       {new Date(selectedTransaction.createdAt).toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-500 dark:text-gray-400">{translate("wallet.transactionDetails.type")}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{translate("wallet.transactions.details.type")}</span>
                     <span className="text-sm font-medium text-gray-900 dark:text-white capitalize">
-                      {translate(`wallet.filters.${selectedTransaction.type}`)}
+                      {translate(`wallet.transactions.filters.${selectedTransaction.type}`)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-500 dark:text-gray-400">{translate("wallet.transactionDetails.description")}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{translate("wallet.transactions.details.description")}</span>
                     <span className="text-sm font-medium text-gray-900 dark:text-white text-right max-w-[60%]">
                       {selectedTransaction.description}
                     </span>

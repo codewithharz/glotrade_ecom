@@ -1,5 +1,6 @@
 "use client";
 import { RequireDistributor } from "@/components/auth/Guards";
+import { translate } from "@/utils/translate";
 
 export default function GDIPLayout({
     children,
@@ -8,8 +9,8 @@ export default function GDIPLayout({
 }) {
     return (
         <RequireDistributor
-            title="Distributor Access Restricted"
-            message="This area is exclusively for authenticated distributors. Please contact support if you believe this is an error."
+            title={translate("gdip.layout.restricted.title")}
+            message={translate("gdip.layout.restricted.message")}
             cancelRedirect="/"
         >
             {children}

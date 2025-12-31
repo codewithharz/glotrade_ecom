@@ -185,7 +185,10 @@
       "order": "طلب",
       "item": "عنصر",
       "items": "عناصر",
-      "view": "عرض"
+      "view": "عرض",
+      "prev": "السابق",
+      "next": "التالي",
+      "page": "صفحة {number}"
     },
     "details": {
       "title": "طلب {id}",
@@ -254,6 +257,14 @@
         "updated": "تم تحديث الطلب",
         "updateFailed": "فشل التحديث",
         "reviewSubmitted": "تم إرسال التقييم بنجاح!"
+      },
+      "toast": {
+        "failedLoad": "فشل تحميل الطلب",
+        "updated": "تم تحديث الطلب",
+        "updateFailed": "فشل التحديث",
+        "generatingInvoice": "جاري إنشاء الفاتورة...",
+        "invoiceDownloaded": "تم تحميل الفاتورة",
+        "invoiceFailed": "فشل تحميل الفاتورة"
       }
     }
   },
@@ -274,6 +285,9 @@
     "all": "الكل",
     "latestProducts": "أحدث المنتجات",
     "noProductsMatch": "لا توجد منتجات تطابق هذه الفئة.",
+    "pagination": {
+      "pageOf": "صفحة {current} من {total}"
+    },
     "loading": "جارٍ التحميل...",
     "error": "حدث خطأ",
     "save": "حفظ",
@@ -1072,7 +1086,19 @@
     "tabs": {
       "transactions": "المعاملات",
       "withdrawals": "سجل السحوبات",
+      "credit": "طلبات الائتمان",
       "creditRequests": "طلبات الائتمان"
+    },
+    "creditRequests": {
+      "title": "طلبات الائتمان",
+      "subtitle": "عرض وإدارة طلبات خط الائتمان الخاصة بك",
+      "noRequests": "لم يتم العثور على طلبات ائتمان.",
+      "clickToRequest": "انقر على 'طلب ائتمان' لتقديم طلب.",
+      "submitted": "تم التقديم في {date} في {time}",
+      "reviewed": "تمت المراجعة في {date}",
+      "approvedAmount": "المبلغ المعتمد",
+      "note": "ملاحظة المسؤول",
+      "rejectionReason": "سبب الرفض"
     },
     "transactions": {
       "title": "المعاملات الأخيرة",
@@ -1186,7 +1212,13 @@
         "resolving": "جاري التحقق من الحساب...",
         "cancel": "إلغاء",
         "submit": "سحب الأموال",
-        "history": "سجل السحوبات"
+        "history": "سجل السحوبات",
+        "invalidAmount": "يرجى إدخال مبلغ صالح",
+        "insufficientBalance": "الرصيد غير كافٍ لهذا السحب",
+        "missingDetails": "يرجى تقديم كافة التفاصيل البنكية",
+        "loadingBanksError": "فشل تحميل البنوك",
+        "resolveError": "تعذر التحقق من تفاصيل الحساب",
+        "processing": "جاري المعالجة..."
       },
       "creditRequest": {
         "title": "طلب حد ائتماني",
@@ -1279,11 +1311,600 @@
       "updatedBalance": "رصيد المحفظة المحدث",
       "availableBalance": "الرصيد المتاح",
       "continue": "المتابعة إلى المحفظة",
-      "autoRedirect": "إعادة توجيه تلقائي خلال {seconds} ثوانٍ...",
-      "failed": "فشل الشحن",
-      "failedDesc": "لم نتمكن من التحقق من دفعك. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
-      "retry": "إعادة المحاولة",
-      "back": "العودة إلى المحفظة"
+      "autoRedirect": "إعادة توجيه تلقائي خلال {seconds} ثوانٍ..."
+    }
+  },
+  "agent": {
+    "dashboard": {
+      "title": "لوحة تحكم وكيل المبيعات",
+      "subtitle": "تتبع الإحالات والعمولات والأداء الخاص بك",
+      "loading": "جاري تحميل لوحة التحكم...",
+      "stats": {
+        "totalReferrals": "إجمالي الإحالات",
+        "activeCount": "{count} نشط",
+        "totalEarned": "إجمالي الأرباح",
+        "commissionsCount": "{count} عمولات",
+        "pendingCommission": "العمولة المعلقة",
+        "awaitingApproval": "في انتظار الموافقة",
+        "conversionRate": "معدل التحويل",
+        "pendingToActive": "قيد الانتظار ← نشط"
+      },
+      "tools": {
+        "title": "أدوات الإحالة",
+        "codeLabel": "كود الإحالة الخاص بك",
+        "linkLabel": "رابط الإحالة",
+        "copy": "نسخ",
+        "copied": "تم النسخ!",
+        "share": "مشاركة",
+        "viewReferrals": "عرض الإحالات",
+        "commissions": "العمولات",
+        "wallet": "المحفظة"
+      },
+      "breakdown": {
+        "title": "تفاصيل العمولات",
+        "registration": "مكافآت التسجيل",
+        "purchase": "عمولات الشراء",
+        "bonus": "مكافآت"
+      },
+      "performance": {
+        "title": "أداء الإحالة",
+        "totalOrders": "إجمالي الطلبات",
+        "totalOrderValue": "إجمالي قيمة الطلبات",
+        "avgOrderValue": "متوسط قيمة الطلب"
+      }
+    },
+    "commissions": {
+      "title": "سجل العمولات",
+      "subtitle": "عرض جميع أرباح العمولات وحالتها",
+      "backToDashboard": "العودة إلى لوحة التحكم",
+      "loading": "جاري تحميل العمولات...",
+      "noCommissions": "لم يتم العثور على عمولات",
+      "autoApproved": "(تمت الموافقة تلقائياً)",
+      "filters": {
+        "allStatus": "جميع الحالات",
+        "allTypes": "جميع الأنواع"
+      },
+      "table": {
+        "date": "التاريخ",
+        "type": "النوع",
+        "description": "الوصف",
+        "amount": "المبلغ",
+        "status": "الحالة"
+      }
+    },
+    "referrals": {
+      "title": "إحالاتي",
+      "subtitle": "تتبع وإدارة جميع المستخدمين المحالين من قبلك",
+      "backToDashboard": "العودة إلى لوحة التحكم",
+      "loading": "جاري تحميل الإحالات...",
+      "noReferrals": "لم يتم العثور على إحالات",
+      "searchPlaceholder": "البحث عن طريق اسم المستخدم أو البريد الإلكتروني...",
+      "filters": {
+        "allStatus": "جميع الحالات"
+      },
+      "table": {
+        "user": "المستخدم",
+        "status": "الحالة",
+        "registered": "تاريخ التسجيل",
+        "orders": "الطلبات",
+        "orderValue": "قيمة الطلب",
+        "commission": "العمولة"
+      }
+    },
+    "status": {
+      "paid": "تم الدفع",
+      "approved": "تمت الموافقة",
+      "pending": "قيد الانتظار",
+      "rejected": "مرفوض",
+      "active": "نشط",
+      "inactive": "غير نشط"
+    },
+    "types": {
+      "registration": "تسجيل",
+      "purchase": "شراء",
+      "bonus": "مكافأة",
+      "tier_upgrade": "ترقية المستوى"
+    },
+    "toasts": {
+      "copied": "تم نسخ كود الإحالة!",
+      "linkCopied": "تم نسخ رابط الإحالة!",
+      "loadDashboardError": "فشل تحميل لوحة التحكم",
+      "loadCommissionsError": "فشل تحميل العمولات",
+      "loadReferralsError": "فشل تحميل الإحالات"
+    }
+  },
+  "gdip": {
+    "layout": {
+      "restricted": {
+        "title": "وصول الموزع مقيد",
+        "message": "هذه المنطقة حصرياً للموزعين المعتمدين. يرجى الاتصال بالدعم إذا كنت تعتقد أن هذا خطأ."
+      }
+    },
+    "dashboard": {
+      "title": "لوحة تحكم GDIP",
+      "subtitle": "توزيع جلوتريد / منصة شركاء التأمين الموثوقين",
+      "generateStatement": "إنشاء بيان حساب",
+      "stats": {
+        "totalTPIAs": "إجمالي TPIAs",
+        "clusters": "في {count} مجموعات",
+        "deployed": "تم نشره",
+        "startingCapital": "رأس المال المبدئي",
+        "profit": "الربح",
+        "roi": "+{roi}% ROI",
+        "netValue": "صافي القيمة",
+        "netGain": "صافي الربح: ",
+        "available": "المتاح",
+        "balanceAlert": "تنبيه الرصيد"
+      },
+      "quickActions": {
+        "title": "إجراءات سريعة",
+        "purchase": "شراء TPIA",
+        "portfolio": "محفظتي",
+        "cycles": "دورات السوق"
+      },
+      "activeHoldings": {
+        "title": "الحيازات النشطة",
+        "subtitle": "تتبع الأداء الأخير",
+        "manage": "إدارة المحفظة",
+        "emptyTitle": "المحفظة فارغة",
+        "emptySubtitle": "ابدأ رحلتك الاستثمارية بشراء أول TPIA لك",
+        "getStarted": "ابدأ الآن"
+      },
+      "tpiaCard": {
+        "cluster": "مجموعة-{number}",
+        "capital": "رأس المال",
+        "estReturn": "العائد المتوقع",
+        "netValue": "صافي القيمة",
+        "profitMode": "وضع الربح",
+        "cycleProgress": "تقدم الدورة",
+        "waitingCycle": "بانتظار دورة التداول القادمة",
+        "viewDetails": "تفاصيل الكتلة"
+      },
+      "error": {
+        "title": "خطأ",
+        "loadFailed": "فشل تحميل المحفظة"
+      }
+    },
+    "cycles": {
+      "title": "تتبع دورة الحياة",
+      "subtitle": "دورات تداول السلع في الوقت الفعلي ومقاييس الأداء",
+      "backToDashboard": "العودة إلى لوحة التحكم",
+      "stats": {
+        "globalCycles": "الدورات العالمية",
+        "matured": "مكتملة",
+        "activeVelocity": "السرعة النشطة",
+        "avgGrowth": "متوسط النمو"
+      },
+      "filters": {
+        "label": "تصفية دورة الحياة:",
+        "showing": "عرض {count} تسلسلات حسب المراحل",
+        "options": {
+          "all": "دورة الحياة الكاملة",
+          "scheduled": "مجدول",
+          "active": "العقد النشطة",
+          "processing": "معالجة البيانات",
+          "completed": "المراحل المكتملة"
+        }
+      },
+      "empty": {
+        "title": "لم يتم العثور على دورات",
+        "subtitle": "لا توجد دورات تشغيلية تطابق فلاتر البحث الحالية."
+      },
+      "card": {
+        "sequenceIdentifier": "معرف التسلسل",
+        "performance": "أداء {rating}",
+        "node": "عقدة {type}",
+        "clusters": "GDC-{number} • {count} مجموعات",
+        "daysRemaining": "الأيام المتبقية",
+        "growthVelocity": "سرعة النمو",
+        "sequenceComplete": "تسلسل مكتمل",
+        "active": "{percent}% نشط",
+        "inauguration": "الافتتاح",
+        "cycleWindow": "نافذة الدورة",
+        "days": "{count} أيام",
+        "maturityDate": "تاريخ الاستحقاق",
+        "financialArchitecture": "الهيكل المالي",
+        "cycleCapital": "رأس مال الدورة",
+        "floorTarget": "الهدف الأدنى",
+        "roi": "العائد على الاستثمار",
+        "accruedYield": "العائد المتراكم",
+        "actualYield": "العائد الفعلي",
+        "netGrowth": "صافي النمو",
+        "payoutArchitecture": "هيكل الصرف",
+        "disbursed": "تم الصرف في {date}",
+        "distributionPending": "توزيع معلق"
+      }
+    },
+    "tpias": {
+      "title": "الحيازات النشطة",
+      "subtitle": "إدارة وتتبع محفظتك الخاصة من مجموعات السلع",
+      "backToDashboard": "العودة إلى لوحة التحكم",
+      "filters": {
+        "searchLabel": "تصفية البحث",
+        "searchPlaceholder": "البحث عن المعرفات، السلع، الشهادات...",
+        "statusLabel": "تصفية الحالة",
+        "modeLabel": "استراتيجية الربح",
+        "results": "تم العثور على {count} نتائج",
+        "reset": "إعادة تعيين الفلاتر",
+        "statusOptions": {
+          "all": "جميع الحالات",
+          "pending": "في انتظار التنشيط",
+          "active": "المحفظة النشطة",
+          "matured": "الأصول المكتملة",
+          "suspended": "معلق"
+        },
+        "modeOptions": {
+          "all": "جميع الأوضاع",
+          "TPM": "TPM (تراكمي)",
+          "EPS": "EPS (سحب)"
+        }
+      },
+      "empty": {
+        "title": "لم يتم العثور على أصول",
+        "subtitle": "لم نتمكن من العثور على أي كتل استثمارية تطابق فلاتر البحث الحالية.",
+        "button": "الحصول على TPIA جديد"
+      },
+      "card": {
+        "assetIdentifier": "معرف الأصول",
+        "node": "عقدة {type}",
+        "purchase": "شراء",
+        "netValue": "صافي القيمة",
+        "clusterLocation": "موقع المجموعة",
+        "nodeNumber": "عقدة GDC-{number}",
+        "marketSlot": "فتحة السوق",
+        "pos": "موقع {pos}/10",
+        "lifecycles": "{count} دورات حياة",
+        "growthVelocity": "سرعة النمو"
+      }
+    },
+    "purchase": {
+      "title": "الحصول على TPIA",
+      "subtitle": "تأمين كتلة الاستثمار الرقمي المدعومة بالسلع",
+      "backToDashboard": "العودة إلى لوحة التحكم",
+      "config": {
+        "title": "تكوين الأصول",
+        "subtitle": "تخصيص استثمارك",
+        "commodityLabel": "اختر السلعة",
+        "modeLabel": "وضع الربح الاستراتيجي",
+        "quantityLabel": "حجم التخصيص",
+        "blockCount": "عدد الكتل",
+        "quantityOptions": {
+          "single": "فردي",
+          "completeCluster": "مجموعة كاملة ({count})",
+          "fullNode": "عقدة كاملة ({count})"
+        },
+        "modes": {
+          "TPM": {
+            "title": "تراكمي",
+            "badge": "مضاعف رأس المال",
+            "descriptionLabel": "ملخص الاستراتيجية",
+            "description": "يتم إعادة استثمار الأرباح تلقائياً لزيادة حقوق ملكية الأصول."
+          },
+          "EPS": {
+            "title": "سحب",
+            "badge": "تركيز السيولة",
+            "descriptionLabel": "ملخص الاستراتيجية",
+            "description": "يتم إيداع الأرباح في محفظتك لمرونة السحب الفوري."
+          }
+        }
+      },
+      "gdc": {
+        "statusLabel": "حالة تشكيل GDC",
+        "nodeLabel": "عنقود العقدة GDC-{number}",
+        "velocity": "السرعة النشطة",
+        "slotsLocked": "{current} من {total} فتحات مقفلة",
+        "slotsRemaining": "{count} فتحات متبقية"
+      },
+      "button": "تنفيذ الاستحواذ",
+      "summary": {
+        "title": "ملخص الطلب",
+        "selectedUnits": "الوحدات المختارة",
+        "unitsCount": "{count} كتل TPIA",
+        "baseValue": "القيمة الأساسية",
+        "total": "الإجمالي الكلي",
+        "walletCredits": "رصيد المحفظة",
+        "protectionsTitle": "حمايات الأصول",
+        "protections": {
+          "insurance": "شهادة التغطية التأمينية",
+          "commodity": "دعم السلع المادي",
+          "node": "تخصيص عقدة المجموعة",
+          "compounding": "تراكم آلي واسع النطاق",
+          "preservation": "حفظ رأس المال بنسبة 100%"
+        }
+      },
+      "modal": {
+        "title": "رصيد غير كافٍ",
+        "subtitle": "تحتاج إلى شحن محفظتك لإكمال عملية الشراء هذه.",
+        "required": "مطلوب",
+        "current": "الحالي",
+        "gap": "الفارق",
+        "cancel": "إلغاء",
+        "topup": "شحن الرصيد"
+      },
+      "error": {
+        "general": "فشل شراء TPIA",
+        "selectCommodity": "يرجى اختيار نوع السلعة"
+      },
+      "success": {
+        "title": "تم الشراء بنجاح!",
+        "subtitle": "تم إنشاء كتل TPIA الخاصة بك وتخصيصها لمجموعات GDC.",
+        "redirecting": "جاري إعادة التوجيه إلى لوحة التحكم..."
+      }
+    },
+    "statement": {
+      "title": "دفتر الأستاذ العالمي",
+      "subtitle": "بيان حساب كامل وسجل المعاملات",
+      "backToDashboard": "العودة إلى لوحة التحكم",
+      "preparing": "جاري تحضير بيان الحساب...",
+      "download": "تحميل دفتر الأستاذ",
+      "header": {
+        "platform": "المنصة الدولية",
+        "tagline": "تمويل التجارة والأصول الرقمية",
+        "company": "جلوتريد للأصول الرقمية",
+        "periodLabel": "فترة البيان",
+        "periodAll": "السجل الكامل",
+        "periodFiltered": "الجدول الزمني المحدد",
+        "generatedOn": "تم الإنشاء في {date}"
+      },
+      "filters": {
+        "last30": "آخر 30 يوم تشغيل",
+        "quarterly": "الأرشيف الربع سنوي",
+        "annual": "السجل السنوي",
+        "all": "السجل الكامل"
+      },
+      "summary": {
+        "totalInvestment": "إجمالي الاستثمار",
+        "active": "نشط",
+        "totalROI": "إجمالي العائد المحقق",
+        "walletBalance": "رصيد المحفظة"
+      },
+      "table": {
+        "headers": {
+          "time": "دورة الحياة / الوقت",
+          "entity": "جهة المعاملة",
+          "reference": "المرجع",
+          "reserve": "احتياطي جديد",
+          "value": "قيمة العائد"
+        }
+      },
+      "card": {
+        "refLabel": "رقم المرجع: ",
+        "entityLabel": "الجهة: ",
+        "reserveLabel": "الاحتياطي: ",
+        "valueChange": "تغيير القيمة"
+      },
+      "empty": {
+        "title": "لم يتم العثور على بيانات",
+        "subtitle": "لم يتم العثور على تسلسلات تاريخية ضمن الجدول الزمني المحدد."
+      },
+      "footer": {
+        "noticeTitle": "إشعار الأرشيف الرسمي",
+        "noticeText": "دفتر أستاذ الحساب هذا هو سجل رسمي للأنشطة على منصة جلوتريد الدولية.",
+        "disclaimer": "يتم التحقق من جميع القيود من خلال مطابقتها مع حركة السلع المادية وبروتوكولات عهدة الأصول الرقمية. يرجى الإبلاغ عن أي اختلافات إلى {email} خلال 48 ساعة.",
+        "verified": "تم التحقق من دفتر الأستاذ الآمن",
+        "totalArchive": "إجمالي أرشيف المحفظة",
+        "endOfRecord": "منصة جلوتريد الدولية • نهاية السجلات"
+      }
+    },
+    "details": {
+      "tpiaTitle": "كتلة بروتوكول التحالف",
+      "subtitle": "تحالف شركاء التأمين الموثوقين",
+      "backToPortfolio": "العودة إلى المحفظة",
+      "ownershipLabel": "الملكية",
+      "error": {
+        "title": "خطأ",
+        "loadFailed": "فشل تحميل تفاصيل TPIA",
+        "switchMode": "فشل تغيير وضع الربح",
+        "notFound": "TPIA غير موجود",
+        "goBack": "رجوع"
+      },
+      "financial": {
+        "title": "الأداء المالي",
+        "subtitle": "قيمة الأصول والأرباح",
+        "cost": "التكلفة الأصلية",
+        "value": "القيمة الحالية",
+        "accrued": "صافي المستحقات",
+        "roi": "إجمالي العائد (ROI)",
+        "compoundedExit": "قيمة الخروج المركبة"
+      },
+      "cycle": {
+        "title": "الدورة النشطة",
+        "subtitle": "النمو قيد التقدم",
+        "openDate": "تاريخ الفتح",
+        "projectedClose": "الإغلاق المتوقع",
+        "targetLabel": "عائد الدورة المستهدف",
+        "progress": "{progress}% مستحق",
+        "durationLabel": "الأيام في الدورة",
+        "durationValue": "{days} أيام سوق",
+        "accruedProfit": "الأرباح المستحقة"
+      },
+      "profitMode": {
+        "title": "طريقة الأرباح",
+        "compoundBadge": "تراكمي",
+        "withdrawalBadge": "سحب",
+        "compoundDesc": "يتم إعادة استثمار الأرباح تلقائياً لزيادة حقوق ملكية الأصول.",
+        "withdrawalDesc": "يتم إيداع الأرباح في محفظتك السائلة بعد كل دورة.",
+        "switchButton": "التبديل إلى {mode}"
+      },
+      "insurance": {
+        "title": "تغطية نشطة",
+        "certificate": "شهادة الحماية",
+        "certLabel": "شهادة الحماية",
+        "insurer": "المؤمن",
+        "provider": "المؤمن",
+        "providers": {
+          "Default Insurance Provider": "GloTrade المؤمن الاستراتيجي"
+        },
+        "verified": "تم التحقق",
+        "statusLabel": "تم التحقق",
+        "purchaseInvoice": "فاتورة الشراء",
+        "invoiceButton": "فاتورة الشراء",
+        "assetCertificate": "شهادة الأصول",
+        "certButton": "شهادة الأصول"
+      },
+      "node": {
+        "title": "عقدة المجموعة",
+        "reference": "مرجع GDC",
+        "ref": "مرجع GDC",
+        "position": "موقع العقدة",
+        "posLabel": "موقع العقدة",
+        "posValue": "كتلة {pos} من {total}",
+        "commodity": "دعم السلع",
+        "defaultCommodity": "سلع مختلطة"
+      }
+    },
+    "certificate": {
+      "header": {
+        "title": "شهادة تأمين",
+        "protocol": "TPIA - بروتوكول التحالف",
+        "archiveLabel": "الأرشيف الرسمي للأصول"
+      },
+      "info": {
+        "seqLabel": "تسلسل الشهادة",
+        "dateLabel": "تاريخ البدء"
+      },
+      "partner": {
+        "entityLabel": "كيان الأصول المحدد"
+      },
+      "content": {
+        "confirmation": "تؤكد هذه الوثيقة تغطية التأمين المسجلة لكتلة الاستثمار {id}. مدعومة بالكامل باحتياطيات السلع المادية بموجب إطار إدارة المخاطر متعدد الطبقات GDIP.",
+        "backing": "هذه التغطية مكتتبة من قبل المؤمن الرئيسي المدرج أدناه.",
+        "coverageLabel": "حجم التغطية",
+        "backingLabel": "دعم الأصول",
+        "backingValue": "{qty} {unit} {type}",
+        "windowLabel": "النافذة الفعالة",
+        "logisticsLabel": "المركز اللوجستي",
+        "defaultHub": "الاحتياطي الاستراتيجي لجلوتريد"
+      },
+      "footer": {
+        "authorizedSignatory": "المفوض بالتوقيع",
+        "adminSignatory": "مسؤول GloTrade",
+        "leadUnderwriter": "المكتتب الرئيسي",
+        "noticeTitle": "إشعار الأرشيف الرسمي",
+        "noticeText": "هذه الوثيقة هي تمثيل رقمي لعقد التأمين الأساسي. ",
+        "protectionText": "تم التحقق من الحماية الكاملة لرأس المال البالغة {amount} لكل كتلة TPIA بموجب معايير الحفظ السيادية.",
+        "verificationLabel": "التحقق الآمن",
+        "endOfDocument": "منصة جلوتريد الدولية • نهاية الوثيقة",
+        "encrypted": "دفتر أستاذ آمن مشفر"
+      },
+      "backToPortfolio": "العودة إلى المحفظة",
+      "printButton": "طباعة الشهادة"
+    },
+    "commodity": {
+      "title": "دعم السلع",
+      "subtitle": "الأصول المادية التي تدعم استثمار TPIA الخاص بك",
+      "back": "رجوع",
+      "summary": {
+        "types": "أنواع السلع",
+        "total": "إجمالي السلع",
+        "quantity": "إجمالي الكمية",
+        "value": "إجمالي القيمة"
+      },
+      "card": {
+        "idLabel": "معرف السلعة: ",
+        "quantityLabel": "الكمية: ",
+        "marketPriceLabel": "سعر السوق: ",
+        "unitPriceLabel": "سعر الوحدة: ",
+        "qualityLabel": "الجودة: ",
+        "conditionLabel": "الحالة: ",
+        "warehouseLabel": "المستودع: ",
+        "updatedLabel": "آخر تحديث: "
+      },
+      "conditions": {
+        "excellent": "ممتاز",
+        "good": "جيد",
+        "average": "متوسط",
+        "poor": "ضعيف"
+      },
+      "empty": {
+        "title": "لم يتم العثور على دعم سلعي",
+        "subtitle": "سيتم تخصيص السلع بمجرد بدء تشغيل GDC الخاص بك"
+      },
+      "error": {
+        "title": "خطأ",
+        "loadFailed": "فشل تحميل دعم السلع",
+        "goBack": "رجوع"
+      }
+    },
+    "invoice": {
+      "header": {
+        "title": "فاتورة تسوية",
+        "archiveLabel": "معرف السجل",
+        "recordLabel": "سجل رقمي",
+        "brand": "جلوتريد GDIP"
+      },
+      "info": {
+        "hqLabel": "موقع المقر",
+        "nodeLabel": "العقدة الرقمية",
+        "commLabel": "التواصل"
+      },
+      "partner": {
+        "billedLabel": "فاتورة إلى الكيان",
+        "dateLabel": "تاريخ التسوية",
+        "verificationLabel": "التحقق من الدفع",
+        "verifiedStatus": "شريك معتمد",
+        "settlementStatus": "اكتملت التسوية"
+      },
+      "table": {
+        "headers": {
+          "description": "وصف دورة الحياة",
+          "qty": "الكمية",
+          "value": "القيمة الاقتصادية"
+        },
+        "item": {
+          "name": "كتلة التجارة الاستراتيجية GDIP",
+          "status": "أصل مضمون بالكامل",
+          "blockId": "معرف الكتلة",
+          "nodeId": "معرف العقدة",
+          "configLabel": "تكوين الأصول",
+          "backing": "دعم الضمان",
+          "unit": "وحدة الكتلة",
+          "settledStatus": "تمت التسوية بنسبة 100%",
+          "defaultType": "سلع مختلطة"
+        }
+      },
+      "mobile": {
+        "blockLabel": "معرف الكتلة",
+        "qtyLabel": "الكمية",
+        "valueLabel": "القيمة"
+      },
+      "summary": {
+        "subtotal": "صافي القيمة الفرعية",
+        "tax": "معفى من الضرائب / VRT",
+        "total": "إجمالي التسوية"
+      },
+      "footer": {
+        "title": "أرشيف التسوية",
+        "text1": "تم الانتهاء من تسلسل المعاملة هذا عبر",
+        "ledgerSystem": "نظام دفتر الأستاذ الداخلي لشركة GloTrade",
+        "text2": "دعم الأصول مضمون بالكامل بمخزونات السلع التي تم التحقق منها ماديًا.",
+        "verifiedLabel": "تم التحقق من دعم الأصول",
+        "idLabel": "معرف الأرشيف الإلكتروني",
+        "officialLabel": "وثيقة دفتر الأستاذ الرسمية",
+        "endOfRecord": "منصة جلوتريد الدولية • نهاية السجلات"
+      },
+      "loading": "جاري تسوية الفاتورة...",
+      "backToPortfolio": "العودة إلى المحفظة",
+      "downloadButton": "تحميل الفاتورة",
+      "error": {
+        "title": "خطأ",
+        "notFound": "الفاتورة غير موجودة",
+        "goBack": "رجوع"
+      }
+    },
+    "status": {
+      "active": "نشط",
+      "pending": "معلق",
+      "matured": "مكتمل",
+      "completed": "مكتمل",
+      "scheduled": "مجدول",
+      "processing": "جاري المعالجة",
+      "suspended": "معلق",
+      "excellent": "ممتاز",
+      "good": "جيد",
+      "average": "متوسط",
+      "poor": "ضعيف",
+      "verified": "تم التحقق"
     }
   }
 }

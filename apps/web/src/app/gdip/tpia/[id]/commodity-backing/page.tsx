@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
+import { translate } from "@/utils/translate";
 
 interface CommodityBacking {
     _id: string;
@@ -59,7 +60,7 @@ export default function CommodityBackingPage() {
             }
         } catch (err: any) {
             console.error("Error fetching commodity backing:", err);
-            setError(err.response?.data?.error || "Failed to load commodity backing");
+            setError(err.response?.data?.error || translate("gdip.commodity.error.loadFailed"));
         } finally {
             setLoading(false);
         }
@@ -92,13 +93,13 @@ export default function CommodityBackingPage() {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
-                    <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
+                    <h2 className="text-2xl font-bold text-red-600 mb-4">{translate("gdip.commodity.error.title")}</h2>
                     <p className="text-gray-600 mb-4">{error}</p>
                     <button
                         onClick={() => router.back()}
                         className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
                     >
-                        Go Back
+                        {translate("gdip.commodity.error.goBack")}
                     </button>
                 </div>
             </div>
@@ -117,29 +118,29 @@ export default function CommodityBackingPage() {
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
-                        Back
+                        {translate("gdip.commodity.back")}
                     </button>
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">Commodity Backing</h1>
-                    <p className="text-gray-600">Physical assets backing your TPIA investment</p>
+                    <h1 className="text-4xl font-bold text-gray-900 mb-2">{translate("gdip.commodity.title")}</h1>
+                    <p className="text-gray-600">{translate("gdip.commodity.subtitle")}</p>
                 </div>
 
                 {/* Summary Cards */}
                 {summary && (
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                         <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <p className="text-sm text-gray-600 mb-1">Total Commodities</p>
+                            <p className="text-sm text-gray-600 mb-1">{translate("gdip.commodity.summary.total")}</p>
                             <p className="text-3xl font-bold text-gray-900">{summary.totalCommodities}</p>
                         </div>
                         <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <p className="text-sm text-gray-600 mb-1">Total Value</p>
+                            <p className="text-sm text-gray-600 mb-1">{translate("gdip.commodity.summary.value")}</p>
                             <p className="text-3xl font-bold text-green-600">{formatCurrency(summary.totalValue)}</p>
                         </div>
                         <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <p className="text-sm text-gray-600 mb-1">Total Quantity</p>
+                            <p className="text-sm text-gray-600 mb-1">{translate("gdip.commodity.summary.quantity")}</p>
                             <p className="text-3xl font-bold text-blue-600">{summary.totalQuantity}</p>
                         </div>
                         <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <p className="text-sm text-gray-600 mb-1">Commodity Types</p>
+                            <p className="text-sm text-gray-600 mb-1">{translate("gdip.commodity.summary.types")}</p>
                             <p className="text-3xl font-bold text-purple-600">{summary.types.length}</p>
                         </div>
                     </div>
@@ -158,38 +159,38 @@ export default function CommodityBackingPage() {
                             {/* Details */}
                             <div className="space-y-3 text-sm">
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600">Commodity ID:</span>
+                                    <span className="text-gray-600">{translate("gdip.commodity.card.idLabel")}:</span>
                                     <span className="font-medium font-mono text-xs">{commodity.commodityId}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600">Quantity:</span>
+                                    <span className="text-gray-600">{translate("gdip.commodity.card.quantityLabel")}:</span>
                                     <span className="font-medium">
                                         {commodity.quantity} {commodity.unit}
                                     </span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600">Market Price:</span>
+                                    <span className="text-gray-600">{translate("gdip.commodity.card.marketPriceLabel")}:</span>
                                     <span className="font-medium text-green-600">{formatCurrency(commodity.currentMarketPrice)}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600">Price per Unit:</span>
+                                    <span className="text-gray-600">{translate("gdip.commodity.card.unitPriceLabel")}:</span>
                                     <span className="font-medium">{formatCurrency(commodity.pricePerUnit)}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600">Quality:</span>
+                                    <span className="text-gray-600">{translate("gdip.commodity.card.qualityLabel")}:</span>
                                     <span className="font-medium capitalize">{commodity.quality}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600">Condition:</span>
+                                    <span className="text-gray-600">{translate("gdip.commodity.card.conditionLabel")}:</span>
                                     <span
                                         className={`px-2 py-1 rounded-full text-xs font-medium ${commodity.condition === "excellent"
-                                                ? "bg-green-100 text-green-700"
-                                                : commodity.condition === "good"
-                                                    ? "bg-blue-100 text-blue-700"
-                                                    : "bg-yellow-100 text-yellow-700"
+                                            ? "bg-green-100 text-green-700"
+                                            : commodity.condition === "good"
+                                                ? "bg-blue-100 text-blue-700"
+                                                : "bg-yellow-100 text-yellow-700"
                                             }`}
                                     >
-                                        {commodity.condition}
+                                        {translate("gdip.commodity.conditions." + commodity.condition)}
                                     </span>
                                 </div>
                             </div>
@@ -197,10 +198,10 @@ export default function CommodityBackingPage() {
                             {/* Footer */}
                             <div className="mt-4 pt-4 border-t border-gray-100">
                                 <div className="text-xs text-gray-500 mb-2">
-                                    <strong>Warehouse:</strong> {commodity.warehouseLocation}
+                                    <strong>{translate("gdip.commodity.card.warehouseLabel")}:</strong> {commodity.warehouseLocation}
                                 </div>
                                 <div className="text-xs text-gray-500">
-                                    <strong>Last Updated:</strong> {formatDate(commodity.lastPriceUpdate)}
+                                    <strong>{translate("gdip.commodity.card.updatedLabel")}:</strong> {formatDate(commodity.lastPriceUpdate)}
                                 </div>
                             </div>
                         </div>
@@ -217,8 +218,8 @@ export default function CommodityBackingPage() {
                                 d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
                             />
                         </svg>
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">No Commodity Backing Found</h3>
-                        <p className="text-gray-600">Commodities will be allocated once your GDC starts trading</p>
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">{translate("gdip.commodity.empty.title")}</h3>
+                        <p className="text-gray-600">{translate("gdip.commodity.empty.subtitle")}</p>
                     </div>
                 )}
             </div>

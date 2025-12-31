@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { apiGet } from "@/utils/api";
 import { toast } from "@/components/common/Toast";
+import { translate } from "@/utils/translate";
 import { Users, Search, Filter, ChevronLeft, ChevronRight, Loader2, TrendingUp, ShoppingCart } from "lucide-react";
 
 interface Referral {
@@ -54,7 +55,7 @@ export default function ReferralsPage() {
             setReferrals(response.data.referrals);
             setTotalPages(response.data.pagination.pages);
         } catch (error: any) {
-            toast(error.message || "Failed to load referrals", "error");
+            toast(error.message || translate("agent.toasts.loadReferralsError"), "error");
         } finally {
             setIsLoading(false);
         }
@@ -101,13 +102,13 @@ export default function ReferralsPage() {
                         className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white mb-4"
                     >
                         <ChevronLeft className="h-5 w-5" />
-                        Back to Dashboard
+                        {translate("agent.referrals.backToDashboard")}
                     </button>
                     <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
-                        My Referrals
+                        {translate("agent.referrals.title")}
                     </h1>
                     <p className="text-neutral-600 dark:text-neutral-400">
-                        Track and manage all your referred users
+                        {translate("agent.referrals.subtitle")}
                     </p>
                 </div>
 
@@ -119,7 +120,7 @@ export default function ReferralsPage() {
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-neutral-400" />
                             <input
                                 type="text"
-                                placeholder="Search by username or email..."
+                                placeholder={translate("agent.referrals.searchPlaceholder")}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
@@ -137,10 +138,10 @@ export default function ReferralsPage() {
                                 }}
                                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none appearance-none"
                             >
-                                <option value="all">All Status</option>
-                                <option value="active">Active</option>
-                                <option value="pending">Pending</option>
-                                <option value="inactive">Inactive</option>
+                                <option value="all">{translate("agent.referrals.filters.allStatus")}</option>
+                                <option value="active">{translate("agent.status.active")}</option>
+                                <option value="pending">{translate("agent.status.pending")}</option>
+                                <option value="inactive">{translate("agent.status.inactive")}</option>
                             </select>
                         </div>
                     </div>
@@ -155,7 +156,7 @@ export default function ReferralsPage() {
                     ) : filteredReferrals.length === 0 ? (
                         <div className="text-center py-12">
                             <Users className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
-                            <p className="text-neutral-600 dark:text-neutral-400">No referrals found</p>
+                            <p className="text-neutral-600 dark:text-neutral-400">{translate("agent.referrals.noReferrals")}</p>
                         </div>
                     ) : (
                         <>
@@ -164,22 +165,22 @@ export default function ReferralsPage() {
                                     <thead className="bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700">
                                         <tr>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                                                User
+                                                {translate("agent.referrals.table.user")}
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                                                Status
+                                                {translate("agent.referrals.table.status")}
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                                                Registered
+                                                {translate("agent.referrals.table.registered")}
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                                                Orders
+                                                {translate("agent.referrals.table.orders")}
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                                                Order Value
+                                                {translate("agent.referrals.table.orderValue")}
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                                                Commission
+                                                {translate("agent.referrals.table.commission")}
                                             </th>
                                         </tr>
                                     </thead>
@@ -202,7 +203,7 @@ export default function ReferralsPage() {
                                                             referral.status
                                                         )}`}
                                                     >
-                                                        {referral.status}
+                                                        {translate(`agent.status.${referral.status}`)}
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500 dark:text-neutral-400">
@@ -230,7 +231,7 @@ export default function ReferralsPage() {
                             {totalPages > 1 && (
                                 <div className="px-6 py-4 border-t border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
                                     <div className="text-sm text-neutral-600 dark:text-neutral-400">
-                                        Page {page} of {totalPages}
+                                        {translate("wallet.transactions.pagination.pageOffset", { page, pages: totalPages })}
                                     </div>
                                     <div className="flex gap-2">
                                         <button

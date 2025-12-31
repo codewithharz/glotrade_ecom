@@ -45,8 +45,8 @@ export default function OrderDetailPage() {
   useEffect(() => {
     setLocale(getStoredLocale());
     const handleLangChange = () => setLocale(getStoredLocale());
-    window.addEventListener("language-change", handleLangChange);
-    return () => window.removeEventListener("language-change", handleLangChange);
+    window.addEventListener("i18n:locale", handleLangChange);
+    return () => window.removeEventListener("i18n:locale", handleLangChange);
   }, []);
 
   const fetchOrder = async () => {
@@ -238,7 +238,7 @@ export default function OrderDetailPage() {
                 <div className="flex items-center gap-2 sm:gap-3">
                   <span className="inline-flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/90 to-blue-600 text-white shadow-lg"><Package size={16} className="sm:w-[18px] sm:h-[18px]" /></span>
                   <div className="min-w-0 flex-1">
-                    <div className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">{translate(locale, "orders.details.header", { id: order._id.slice(-6) })}</div>
+                    <div className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">{translate(locale, "orders.details.title", { id: order._id.slice(-6) })}</div>
 
                     <div className="mt-1 flex flex-wrap items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-gray-600 dark:text-gray-300">
                       <StatusChip s={order.status} />

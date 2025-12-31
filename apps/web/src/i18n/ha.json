@@ -47,6 +47,9 @@
     "all": "Duka",
     "latestProducts": "Sabbin Kayayyaki",
     "noProductsMatch": "Babu kayayyakin da suka dace da wannan rukuni.",
+    "pagination": {
+      "pageOf": "Shafi {current} cikin {total}"
+    },
     "loading": "Ana loda...",
     "error": "An sami kuskure",
     "save": "Ajiye",
@@ -287,9 +290,9 @@
     },
     "trust": {
       "donate": "Ba da gudummawa tare da Marketplace",
-      "donateTree": "Muna gayyatar ku don yin gudummawar {amount} {currency} don tallafawa bishiya?",
+      "donateTree": "Muna gayyatar ku don yin gudunwar {amount} {currency} don tallafawa bishiya?",
       "plantTree": "Shirin Dashen Bishiyoyi na Marketplace",
-      "plantTreeDesc": "Marketplace da masu amfani da ita sun ba da gudummawar kuɗi ga Trees for the Future don dasa bishiyoyi a fadin yankin kudu da hamadar Sahara.",
+      "plantTreeDesc": "Marketplace da masu amfani da ita sun ba da gudunwar kuɗi ga Trees for the Future don dasa bishiyoyi a fadin yankin kudu da hamadar Sahara.",
       "treesForFuture": "BISHIYOYI DOMIN<br />ABA",
       "deliveryGuarantee": "Garanti na Isarwa",
       "delayCredit": "{amount} {currency} Kiredit don jinkiri",
@@ -303,7 +306,7 @@
       "dataSafeguarded": "Dukkan bayanai suna kiyaye",
       "noSell": "Marketplace ba ya sayar da bayanan katin ku",
       "securePrivacy": "Sirri Amintacce",
-      "securePrivacyDesc": "Kare sirrin ku yana da mahimmanci a gare mu. Da fatan za a tabbatar cewa bayanan ku za a kiyaye su kuma ba za a yi musu barazana ba. Ba mu sayar da bayanan sirrin ku don kuɗi kuma za mu yi amfani da bayanan ku ne kawai bisa ga manufar sirrin mu don samarwa da inganta ayyukanmu a gare ku.",
+      "securePrivacyDesc": "Kare sirrin ku yana da muhimmanci a gare mu. Da fatan za a tabbatar cewa bayanan ku za a kiyaye su kuma ba za a yi musu barazana ba. Ba mu sayar da bayanan sirrin ku don kuɗi kuma za mu yi amfani da bayanan ku ne kawai bisa ga manufar sirrin mu don samarwa da inganta ayyukanmu a gare ku.",
       "purchaseProtection": "Kariya ga Siyayya na Marketplace",
       "purchaseProtectionDesc": "Yi siyayya da ƙarfin gwiwa akan Marketplace sanin cewa idan wani abu ya tafi ba daidai ba, koyaushe muna tare da ku."
     }
@@ -372,7 +375,10 @@
       "order": "Umarni",
       "item": "abu",
       "items": "abubuwa",
-      "view": "Duba"
+      "view": "Duba",
+      "prev": "Wanda ya gabata",
+      "next": "Na gaba",
+      "page": "Shafi na {number}"
     },
     "details": {
       "title": "Umarni {id}",
@@ -439,8 +445,16 @@
       },
       "messages": {
         "updated": "An sabunta oda",
-        "updateFailed": "Sabuntawa ya gaza",
+        "updateFailed": "An kasa sabuntawa",
         "reviewSubmitted": "An tura bita cikin nasara!"
+      },
+      "toast": {
+        "failedLoad": "An kasa loda oda",
+        "updated": "An sabunta oda",
+        "updateFailed": "An kasa sabuntawa",
+        "generatingInvoice": "Ana samar da rasit...",
+        "invoiceDownloaded": "An sauke rasit",
+        "invoiceFailed": "An kasa sauke rasit"
       }
     }
   },
@@ -762,7 +776,7 @@
     },
     "forgot": {
       "title": "Manta kalmar sirri",
-      "subtitle": "Shigar da imel ɗin ku don karɓار hanyar sake saiti",
+      "subtitle": "Shigar da imel ɗin ku don karɓar hanyar sake saiti",
       "emailLabel": "Adireshin Imel",
       "emailPlaceholder": "Shigar da imel ɗin ku",
       "sending": "Ana aikawa...",
@@ -1026,9 +1040,21 @@
       "settings": "Saituna"
     },
     "tabs": {
-      "transactions": "Ma'amaloli",
-      "withdrawals": "Tarihin Cire Kuɗi",
-      "creditRequests": "Bukatar Kiredit"
+      "transactions": "Kasuwanci",
+      "withdrawals": "Tarihin biya",
+      "credit": "Bukatar bashi",
+      "creditRequests": "Bukatar bashi"
+    },
+    "creditRequests": {
+      "title": "Bukatar Bashi",
+      "subtitle": "Duba kuma sarrafa aikace-aikacen layin bashi",
+      "noRequests": "Babu buƙatun bashi da aka samu.",
+      "clickToRequest": "Danna 'Nemi Bashi' don aikawa.",
+      "submitted": "An mika a {date} da karfe {time}",
+      "reviewed": "An duba a {date}",
+      "approvedAmount": "Adadin da aka amince da shi",
+      "note": "Bayanin Admin",
+      "rejectionReason": "Dalilin kin amincewa"
     },
     "transactions": {
       "title": "Ma'amaloli Na Kwanan Nan",
@@ -1142,7 +1168,13 @@
         "resolving": "Ana tabbatar da asusu...",
         "cancel": "Soke",
         "submit": "Cire Kuɗi",
-        "history": "Tarihin Cire Kuɗi"
+        "history": "Tarihin biya",
+        "invalidAmount": "Da fatan za a shigar da ingantaccen adadin",
+        "insufficientBalance": "Kudi bai isa ba don wannan cire kudi",
+        "missingDetails": "Da fatan za a bayar da duk bayanan banki",
+        "loadingBanksError": "An kasa loda bankuna",
+        "resolveError": "Ba a iya tabbatar da bayanan asusun ba",
+        "processing": "Ana sarrafawa..."
       },
       "creditRequest": {
         "title": "Nemi Kiredit",
@@ -1240,6 +1272,599 @@
       "failedDesc": "Ba mu iya tabbatar da biyan kuɗin ku ba. Da fatan za a sake gwadawa ko tuntuɓi tallafi.",
       "retry": "Sake Gwadawa",
       "back": "Koma Aljihun Kuɗi"
+    }
+  },
+  "agent": {
+    "dashboard": {
+      "title": "Dashboard din Wakilin Talla",
+      "subtitle": "Bibiyi tura baki, kwamishina, da ayyuka",
+      "loading": "Ana loda dashboard...",
+      "stats": {
+        "totalReferrals": "Jimillar Tura Baki",
+        "activeCount": "{count} masu aiki",
+        "totalEarned": "Jimillar Abin da aka Samu",
+        "commissionsCount": "{count} kwamishina",
+        "pendingCommission": "Kwamishina da ke Jiran Lokaci",
+        "awaitingApproval": "Jiran amincewa",
+        "conversionRate": "Adadin Sauya Baki",
+        "pendingToActive": "Jiran Lokaci → Masu Aiki"
+      },
+      "tools": {
+        "title": "Kayan Aikin Tura Baki",
+        "codeLabel": "Lambar Tura Baki",
+        "linkLabel": "Hanyar Tura Baki",
+        "copy": "Kwafa",
+        "copied": "An kwafa!",
+        "share": "Rarraba",
+        "viewReferrals": "Duba Tura Baki",
+        "commissions": "Kwamishina",
+        "wallet": "Wallet"
+      },
+      "breakdown": {
+        "title": "Rarraba Kwamishina",
+        "registration": "Garabasar Rajista",
+        "purchase": "Kwamishina kan Siyayya",
+        "bonus": "Kyaututtuka"
+      },
+      "performance": {
+        "title": "Aikin Tura Baki",
+        "totalOrders": "Jimillar Oda",
+        "totalOrderValue": "Jimillar Darajar Oda",
+        "avgOrderValue": "Matsakaicin Darajar Oda"
+      }
+    },
+    "commissions": {
+      "title": "Tarihin Kwamishina",
+      "subtitle": "Duba duk abin da aka samu na kwamishina da matsayinsu",
+      "backToDashboard": "Koma Dashboard",
+      "loading": "Ana loda kwamishina...",
+      "noCommissions": "Babu kwamishina da aka samu",
+      "autoApproved": "(An amince da shi ta atomatik)",
+      "filters": {
+        "allStatus": "Duk Matsayi",
+        "allTypes": "Duk Nau'uka"
+      },
+      "table": {
+        "date": "Kwanan Wata",
+        "type": "Nau'i",
+        "description": "Bayanai",
+        "amount": "Kudi",
+        "status": "Matsayi"
+      }
+    },
+    "referrals": {
+      "title": "Tura Baki na",
+      "subtitle": "Bibiyi da sarrafa duk masu amfani da ka tura",
+      "backToDashboard": "Koma Dashboard",
+      "loading": "Ana loda tura baki...",
+      "noReferrals": "Babu tura baki da aka samu",
+      "searchPlaceholder": "Nemo ta sunan mai amfani ko imel...",
+      "filters": {
+        "allStatus": "Duk Matsayi"
+      },
+      "table": {
+        "user": "Mai Amfani",
+        "status": "Matsayi",
+        "registered": "Rajista",
+        "orders": "Oda",
+        "orderValue": "Darajar Oda",
+        "commission": "Kwamishina"
+      }
+    },
+    "status": {
+      "paid": "An Biya",
+      "approved": "An Amince",
+      "pending": "Jiran Lokaci",
+      "rejected": "An Ki Amincewa",
+      "active": "Masu Aiki",
+      "inactive": "Ba sa Aiki"
+    },
+    "types": {
+      "registration": "Rajista",
+      "purchase": "Siyayya",
+      "bonus": "Kyauta",
+      "tier_upgrade": "Haɓaka Matsayi"
+    },
+    "toasts": {
+      "copied": "An kwafi lambar tura baki!",
+      "linkCopied": "An kwafi hanyar tura baki!",
+      "loadDashboardError": "An kasa loda dashboard",
+      "loadCommissionsError": "An kasa loda kwamishina",
+      "loadReferralsError": "An kasa loda tura baki"
+    }
+  },
+  "gdip": {
+    "layout": {
+      "restricted": {
+        "title": "An takaita damar dila",
+        "message": "Wannan sashin na diloli ne kawai. Da fatan za a tuntuɓi sashen taimako idan kuna tunanin wannan kuskure ne."
+      }
+    },
+    "dashboard": {
+      "title": "Dashboard na GDIP",
+      "subtitle": "Rarraba Glotrade / Dandalin Abokan Inshora Amintattu",
+      "generateStatement": "Samar da Bayanin Akanta",
+      "stats": {
+        "totalTPIAs": "Jimlar TPIAs",
+        "clusters": "A cikin Clusters {count}",
+        "deployed": "An Tura",
+        "startingCapital": "Babban Jari",
+        "profit": "Riba",
+        "roi": "+{roi}% ROI",
+        "netValue": "Matsayin Daraja",
+        "netGain": "Ribar Da Aka Samu: ",
+        "available": "Wanda Ake Da Shi",
+        "balanceAlert": "Faɗakarwar Ma'auni"
+      },
+      "quickActions": {
+        "title": "Ayyuka Da Sauri",
+        "purchase": "Sayi TPIA",
+        "portfolio": "Jari Na",
+        "cycles": "Zagayen Kasuwa"
+      },
+      "activeHoldings": {
+        "title": "Kadarori Masu Aiki",
+        "subtitle": "Bin diddikin yadda abubuwa ke tafiya",
+        "manage": "Sarrafa Jari",
+        "emptyTitle": "Babu Jari",
+        "emptySubtitle": "Fara tafiyar jarin ku ta hanyar siyan TPIA na farko",
+        "getStarted": "Fara Yanzu"
+      },
+      "tpiaCard": {
+        "cluster": "Cluster-{number}",
+        "capital": "Babban Jari",
+        "estReturn": "Ribar Da Ake Sa Rai",
+        "netValue": "Matsayin Daraja",
+        "profitMode": "Yanayin Riba",
+        "cycleProgress": "Ci Gaban Zagaye",
+        "waitingCycle": "Ana jiran zagayen ciniki na gaba",
+        "viewDetails": "Cikakken Bayani"
+      },
+      "error": {
+        "title": "Kuskure",
+        "loadFailed": "An kasa loda jarin"
+      }
+    },
+    "cycles": {
+      "title": "Bibiyar Zagayen Rayuwa",
+      "subtitle": "Zagayen kasuwancin kayayyaki na gaskiya da mizanin aiki",
+      "backToDashboard": "Koma Dashboard",
+      "stats": {
+        "globalCycles": "Zagayen Duniya",
+        "matured": "Sun Nuna",
+        "activeVelocity": "Saurin Aiki",
+        "avgGrowth": "Matsakaicin Girma"
+      },
+      "filters": {
+        "label": "Tace Zagayen Rayuwa:",
+        "showing": "Ana nuna matakai {count}",
+        "options": {
+          "all": "DUKKAN ZAGAYEN RAYUWA",
+          "scheduled": "AN TSARA",
+          "active": "NODES MASU AIKI",
+          "processing": "ANA SARRAFA BAYANAI",
+          "completed": "MATAKAN DA AKA KAMMALA"
+        }
+      },
+      "empty": {
+        "title": "Ba a Sami Zagaye Ba",
+        "subtitle": "Babu wasu zagaye da suka dace da abin da kuke nema yanzu."
+      },
+      "card": {
+        "sequenceIdentifier": "ALAMAR JERIN",
+        "performance": "Aiki {rating}",
+        "node": "Node {type}",
+        "clusters": "GDC-{number} • Clusters {count}",
+        "daysRemaining": "KWANAKI DA SUKA RAGE",
+        "growthVelocity": "Saurin Girma",
+        "sequenceComplete": "Jerin Ya Kammala",
+        "active": "{percent}% Yana Aiki",
+        "inauguration": "Bude Shi",
+        "cycleWindow": "Tagar Zagaye",
+        "days": "Kwanaki {count}",
+        "maturityDate": "Ranar Nuna",
+        "financialArchitecture": "Tsarin Kudi",
+        "cycleCapital": "Babban Jarin Zagaye",
+        "floorTarget": "Manufar Farko",
+        "roi": "ROI",
+        "accruedYield": "Ribar Da Aka Tara",
+        "actualYield": "Ribar Gaskiya",
+        "netGrowth": "Girma Na Gaskiya",
+        "payoutArchitecture": "Tsarin Biyan Kudi",
+        "disbursed": "An biya ranar {date}",
+        "distributionPending": "Ana jiran rabawa"
+      }
+    },
+    "tpias": {
+      "title": "Kadarori Masu Aiki",
+      "subtitle": "Sarrafa da bin diddikin jarin ku na sirri",
+      "backToDashboard": "Koma Dashboard",
+      "filters": {
+        "searchLabel": "Tace Bincike",
+        "searchPlaceholder": "Nemi ID, Kayan Kasuwanci, Shaidu...",
+        "statusLabel": "Tace Matsayi",
+        "modeLabel": "Tsarin Riba",
+        "results": "An sami sakamako {count}",
+        "reset": "Sake Tace Komai",
+        "statusOptions": {
+          "all": "DUKKAN MATAKAI",
+          "pending": "ANA JIRAN KUNNAWA",
+          "active": "JARIN DA KE AIKI",
+          "matured": "JARIN DA YA NUNA",
+          "suspended": "AN DAKATAR"
+        },
+        "modeOptions": {
+          "all": "DUKKAN YANAYI",
+          "TPM": "TPM (TARA RIBA)",
+          "EPS": "EPS (CIRAR RIBA)"
+        }
+      },
+      "empty": {
+        "title": "Ba a sami kadarori ba",
+        "subtitle": "Ba mu sami jarin da ya dace da abin da kuke nema ba yanzu.",
+        "button": "Sami Sabon TPIA"
+      },
+      "card": {
+        "assetIdentifier": "ALAMAR KADARORI",
+        "node": "Node {type}",
+        "purchase": "Saya",
+        "netValue": "Matsayin Daraja",
+        "clusterLocation": "Wurin Cluster",
+        "nodeNumber": "GDC Node-{number}",
+        "marketSlot": "Wurin Kasuwa",
+        "pos": "POS {pos}/10",
+        "lifecycles": "ZAGAYEN RAYUWA {count}",
+        "growthVelocity": "Saurin Girma"
+      }
+    },
+    "purchase": {
+      "title": "Sami TPIA",
+      "subtitle": "Kiyaye jarin ku na dijital da kayayyakin kasuwanci suka mara wa baya",
+      "backToDashboard": "Koma Dashboard",
+      "config": {
+        "title": "Tsarin Kadarori",
+        "subtitle": "Keɓance jarin ku",
+        "commodityLabel": "Zaɓi Kayan Kasuwanci",
+        "modeLabel": "Tsarin Samun Riba",
+        "quantityLabel": "Yawan Rabon Da Aka Yi",
+        "blockCount": "Yawan Tubali",
+        "quantityOptions": {
+          "single": "Guda Daya",
+          "completeCluster": "Cluster Cikakke ({count})",
+          "fullNode": "Node Cikakke ({count})"
+        },
+        "modes": {
+          "TPM": {
+            "title": "Tara Riba",
+            "badge": "Yawaitar Jari",
+            "descriptionLabel": "Takaitaccen Tsarin",
+            "description": "Ana sake saka ribar don ƙara darajar kadarorin ku."
+          },
+          "EPS": {
+            "title": "Cirar Riba",
+            "badge": "Samun Kudi",
+            "descriptionLabel": "Takaitaccen Tsarin",
+            "description": "Ana tura ribar zuwa walat ɗin ku don ku iya cire kudin ku yadda kuke so."
+          }
+        }
+      },
+      "gdc": {
+        "statusLabel": "MATSAYIN GININ GDC",
+        "nodeLabel": "Rukunin Node GDC-{number}",
+        "velocity": "Saurin Aiki",
+        "slotsLocked": "{current} DAGA CIKIN {total} GURARE AN KULLA",
+        "slotsRemaining": "GURARE {count} SUKA RAGE"
+      },
+      "button": "Fara Saye",
+      "summary": {
+        "title": "Takaitaccen Umarni",
+        "selectedUnits": "Tubalan Da Aka Zaɓa",
+        "unitsCount": "Tubali {count} na TPIA",
+        "baseValue": "Daidaitacciyar Daraja",
+        "total": "Jimlar Kudi",
+        "walletCredits": "Kudin Walat",
+        "protectionsTitle": "KARIYAR KADARORI",
+        "protections": {
+          "insurance": "Shaidar Inshora",
+          "commodity": "Goyon Bayan Kayan Kasuwanci",
+          "node": "Rabon Cluster Node",
+          "compounding": "Tara Riba Ta atomatik",
+          "preservation": "100% Kare Babban Jari"
+        }
+      },
+      "modal": {
+        "title": "Kudi Ba Su Isa Ba",
+        "subtitle": "Kuna buƙatar sa kudi a walat ɗin ku don kammala wannan siyan.",
+        "required": "Abin Da Ake Buƙata",
+        "current": "Wanda Kake Da Shi",
+        "gap": "Bambanci",
+        "cancel": "Soke Shi",
+        "topup": "Sa Kudi"
+      },
+      "error": {
+        "general": "An kasa siyan TPIA",
+        "selectCommodity": "Da fatan za a zaɓi nau'in kayan kasuwanci"
+      },
+      "success": {
+        "title": "Saye Ya Yi Nasara!",
+        "subtitle": "An kirkiri tubalan TPIA kuma an raba su zuwa GDC clusters.",
+        "redirecting": "Ana mayar da ku zuwa dashboard..."
+      }
+    },
+    "statement": {
+      "title": "Littafin Lissafi Na Duniya",
+      "subtitle": "Bayanin akanta cikakke da tarihin harkallar kudi",
+      "backToDashboard": "Koma Dashboard",
+      "preparing": "Ana shirya bayanin akanta...",
+      "download": "Sauke Littafin Lissafi",
+      "header": {
+        "platform": "DANDALIN DUNIYA",
+        "tagline": "Kudaden Kasuwanci da Kadarorin Dijital",
+        "company": "Kadarorin Dijital Na GloTrade",
+        "periodLabel": "LOKACIN BAYANIN",
+        "periodAll": "DUKKAN TARIHI",
+        "periodFiltered": "LOKACIN DA AKA ZAƁA",
+        "generatedOn": "An samar ranar {date}"
+      },
+      "filters": {
+        "last30": "KWANAKI 30 NA AIKI NA KARSHE",
+        "quarterly": "TSARIN WATANNI UKU",
+        "annual": "TSARIN SHEKARA",
+        "all": "DUKKAN TARIHI"
+      },
+      "summary": {
+        "totalInvestment": "JIMLAR JARI",
+        "active": "YANA AIKI",
+        "totalROI": "JIMLAR RIBAR DA AKA SAMU",
+        "walletBalance": "MA'AUNIN WALAT"
+      },
+      "table": {
+        "headers": {
+          "time": "Zagayen Rayuwa / Lokaci",
+          "entity": "Wanda Aka Yi Harkalla Da Shi",
+          "reference": "Lambar Shaida",
+          "reserve": "Sabuwar Ajiya",
+          "value": "Darajar Riba"
+        }
+      },
+      "card": {
+        "refLabel": "REF: ",
+        "entityLabel": "Abokin Harkalla:",
+        "reserveLabel": "Ajiya:",
+        "valueChange": "CANJIN DARAJA"
+      },
+      "empty": {
+        "title": "Ba a Sami Bayani Ba",
+        "subtitle": "Ba mu sami tarihin kudi a cikin wannan lokacin ba."
+      },
+      "footer": {
+        "noticeTitle": "SANARWAR AJIYA TA HUKUMA",
+        "noticeText": "Wannan littafin lissafin bayani ne na hukuma na ayyukan da aka yi a Dandalin Duniya na Glotrade.",
+        "disclaimer": "Dukkan bayanan an tantance su ta hanyar duba tafiyar kayayyaki da kuma tsarin tsaron kadarorin dijital. Sanar da mu duk wani kuskure zuwa {email} a cikin sa'o'i 48.",
+        "verified": "LITTAFIN LISSAFI INGATTACCE",
+        "totalArchive": "JIMLAR TARIHIN JARI",
+        "endOfRecord": "DANDALIN DUNIYA NA GLOTRADE • KARSHEN BAYANAI"
+      }
+    },
+    "details": {
+      "tpiaTitle": "Tubalin Yarjejeniyar Kawance",
+      "subtitle": "Abokan Inshora Amintattu",
+      "backToPortfolio": "Koma Zuwa Jarin Ka",
+      "ownershipLabel": "Mallaka",
+      "error": {
+        "title": "Kuskure",
+        "loadFailed": "An kasa loda bayanan TPIA",
+        "switchMode": "An kasa canza tsarin riba",
+        "notFound": "Ba a sami TPIA ba",
+        "goBack": "Koma Baya"
+      },
+      "financial": {
+        "title": "Sakamakon Kudi",
+        "subtitle": "Darajar kadarori & riba",
+        "cost": "Asalin Kudin Saye",
+        "value": "Darajar Yanzu",
+        "accrued": "Ribaccen da aka Tara",
+        "roi": "Jimillar ROI",
+        "compoundedExit": "Darajar Fita da aka Haɗa"
+      },
+      "cycle": {
+        "title": "Zagaye na Yanzu",
+        "subtitle": "Ana samun ci gaba",
+        "openDate": "Ranar Buɗewa",
+        "projectedClose": "Ranar Rufewa",
+        "targetLabel": "Manufar Ribar Zagaye",
+        "progress": "{progress}% aka Tara",
+        "durationLabel": "Kwanaki a cikin Zagaye",
+        "durationValue": "Kwanakin Kasuwa {days}",
+        "accruedProfit": "Ribar da aka Tara"
+      },
+      "profitMode": {
+        "title": "Hanyar Samun Riba",
+        "compoundBadge": "Tara Riba",
+        "withdrawalBadge": "Cirar Riba",
+        "compoundDesc": "Ana sake saka ribar ta atomatik don ƙara darajar jarin ku.",
+        "withdrawalDesc": "Ana tura ribar zuwa walat ɗin ku bayan kowane zagaye.",
+        "switchButton": "Canza Zuwa {mode}"
+      },
+      "insurance": {
+        "title": "Kariyar Da Ke Aiki",
+        "certificate": "Shaidar Kariya",
+        "certLabel": "Shaidar Kariya",
+        "insurer": "Kamfanin Inshora",
+        "provider": "Kamfanin Inshora",
+        "providers": {
+          "Default Insurance Provider": "GloTrade Strategic Insurer"
+        },
+        "verified": "An Tabbatar",
+        "statusLabel": "An Tabbatar",
+        "purchaseInvoice": "Rasit Na Saye",
+        "invoiceButton": "Rasit Na Saye",
+        "assetCertificate": "Shaidar Kadarori",
+        "certButton": "Shaidar Kadarori"
+      },
+      "node": {
+        "title": "Cluster Node",
+        "reference": "Lambar GDC",
+        "ref": "Lambar GDC",
+        "position": "Wurin Node",
+        "posLabel": "Wurin Node",
+        "posValue": "Tubali {pos} cikin {total}",
+        "commodity": "Goyon Bayan Kayan Kasuwanci",
+        "defaultCommodity": "Kayan Kasuwanci Dabam-dabam"
+      }
+    },
+    "certificate": {
+      "header": {
+        "title": "Shaidar Inshora",
+        "protocol": "TPIA - Yarjejeniyar Kawance",
+        "archiveLabel": "AJIYA TA HUKUMA"
+      },
+      "info": {
+        "seqLabel": "LAMBAR SHAIDA",
+        "dateLabel": "RANAR FARAWA"
+      },
+      "partner": {
+        "entityLabel": "MALLAKIN KADARORI"
+      },
+      "content": {
+        "confirmation": "Wannan takarda ta tabbatar da rajistar inshora don rukunin jari {id}. Yana samun cikakken goyon baya daga albarkatun kayayyaki a ƙarƙashin tsarin gudanar da kasada na GDIP multi-layer.",
+        "backing": "Wannan inshora ne babban kamfanin inshorar da aka jera a ƙasa ya rubuta shi.",
+        "coverageLabel": "GIRMAN INSHORA",
+        "backingLabel": "GOYON BAYAN KADARORI",
+        "backingValue": "{qty} {unit} {type}",
+        "windowLabel": "LOKACIN DA YAKE AIKI",
+        "logisticsLabel": "WURIN AJIYA",
+        "defaultHub": "AJIYA TA MUSAMMAN TA GLOTRADE"
+      },
+      "footer": {
+        "authorizedSignatory": "Wanda aka amince ya sanya hannu",
+        "adminSignatory": "Admin na GloTrade",
+        "leadUnderwriter": "Babban Mai Rubutun Inshora",
+        "noticeTitle": "SANARWAR AJIYA TA HUKUMA",
+        "noticeText": "Wannan takarda wakilci ne na dijital na babban kwangilar inshora. ",
+        "protectionText": "An tabbatar da cikakken kariya ta jari na {amount} kowane rukunin TPIA a ƙarƙashin ma'aunin tsaron na kasa.",
+        "verificationLabel": "Tantancewa Gaskiya",
+        "endOfDocument": "DANDALIN DUNIYA NA GLOTRADE • KARSHEN TAKARDA",
+        "encrypted": "TSARIN LISSAFI MAI TSARO"
+      },
+      "backToPortfolio": "Koma Zuwa Jarin Ka",
+      "printButton": "Buga Shaidar"
+    },
+    "commodity": {
+      "title": "Goyon Bayan Kayan Kasuwanci",
+      "subtitle": "Kayayyakin gaske da suka mara wa jarin ku na TPIA baya",
+      "back": "Koma Baya",
+      "summary": {
+        "types": "Nau'ikan Kayayyaki",
+        "total": "Jimlar Kayayyaki",
+        "quantity": "Jimlar Yawa",
+        "value": "Jimlar Daraja"
+      },
+      "card": {
+        "idLabel": "Lambar Kayan Kasuwanci: ",
+        "quantityLabel": "Yawa: ",
+        "marketPriceLabel": "Farashin Kasuwa: ",
+        "unitPriceLabel": "Farashin Guda Daya: ",
+        "qualityLabel": "Inganci: ",
+        "conditionLabel": "Yanayin Sa: ",
+        "warehouseLabel": "Wurin Ajiya: ",
+        "updatedLabel": "Lokaci Na Karshe: "
+      },
+      "conditions": {
+        "excellent": "Yana Da Kyau Sosai",
+        "good": "Yana Da Kyau",
+        "average": "Matsakaici",
+        "poor": "Ba Shi Da Kyau"
+      },
+      "empty": {
+        "title": "Ba a sami goyon bayan kayan kasuwanci ba",
+        "subtitle": "Za a raba muku kayayyaki da zarar GDC ɗinku ya fara aiki"
+      },
+      "error": {
+        "title": "Kuskure",
+        "loadFailed": "An kasa loda goyon bayan kayan kasuwanci",
+        "goBack": "Koma Baya"
+      }
+    },
+    "invoice": {
+      "header": {
+        "title": "Rasit Na Biyan Kudi",
+        "archiveLabel": "LAMBAR SHAIDA",
+        "recordLabel": "BAYANIN DIJITAL",
+        "brand": "GLOTRADE GDIP"
+      },
+      "info": {
+        "hqLabel": "WURIN SHEKWARI",
+        "nodeLabel": "DIJITAL NODE",
+        "commLabel": "SADARWA"
+      },
+      "partner": {
+        "billedLabel": "AN BIYA GA WANNAN",
+        "dateLabel": "RANAR BIYA",
+        "verificationLabel": "TANTANCE BIYAN KUDI",
+        "verifiedStatus": "Abokin Kasuwanci Da Aka Tantance",
+        "settlementStatus": "An Kammala Biya"
+      },
+      "table": {
+        "headers": {
+          "description": "Bayanin Zagayen Rayuwa",
+          "qty": "Yawa",
+          "value": "Darajar Kudi"
+        },
+        "item": {
+          "name": "Rukunin Kasuwancin Estrateji na GDIP",
+          "status": "Kadarorin da ke da Cikakken Lamuni",
+          "blockId": "Lambar Rukuni",
+          "nodeId": "Lambar Node",
+          "configLabel": "TSARIN KADARORI",
+          "backing": "GOYON BAYAN LAMUNI",
+          "unit": "RAKA'AR RUKUNI",
+          "settledStatus": "An Kammala 100%",
+          "defaultType": "Haɗaɗɗun Kayayyaki"
+        }
+      },
+      "mobile": {
+        "blockLabel": "Lambar Rukuni",
+        "qtyLabel": "Yawa",
+        "valueLabel": "Daraja"
+      },
+      "summary": {
+        "subtotal": "TSARIN DARARA",
+        "tax": "BABU HARAJI / VRT",
+        "total": "JIMILLAR KAMMALAWA"
+      },
+      "footer": {
+        "title": "AJIYAR KAMMALAWA",
+        "text1": "An kammala wannan jerin hada-hadar ta hanyar",
+        "ledgerSystem": "Tsarin Ledger na Cikin Gida na GloTrade",
+        "text2": "Goyon bayan kadarori yana da cikakken lamuni ta hanyar kayayyakin da aka tantance ta zahiri.",
+        "verifiedLabel": "An Tabbatar da Goyon Baya",
+        "idLabel": "ID NA AJIYA",
+        "officialLabel": "TAKARDA TA HUKUMA",
+        "endOfRecord": "DANDALIN DUNIYA NA GLOTRADE • KARSHEN BAYANAI"
+      },
+      "loading": "Ana loda rasit...",
+      "backToPortfolio": "Koma Zuwa Jarin Ka",
+      "downloadButton": "Sauke Rasit",
+      "error": {
+        "title": "Kuskure",
+        "notFound": "Ba a sami rasit ba",
+        "goBack": "Koma Baya"
+      }
+    },
+    "status": {
+      "active": "yana aiki",
+      "pending": "ana jira",
+      "matured": "ya nuna",
+      "completed": "an kammala",
+      "scheduled": "an tsara",
+      "processing": "ana sarrafawa",
+      "suspended": "an dakata",
+      "excellent": "kyau sosai",
+      "good": "akwai kyau",
+      "average": "matsakaici",
+      "poor": "maras kyau",
+      "verified": "an tantance"
     }
   }
 }

@@ -185,7 +185,10 @@
       "order": "Commande",
       "item": "article",
       "items": "articles",
-      "view": "Voir"
+      "view": "Voir",
+      "prev": "Précédent",
+      "next": "Suivant",
+      "page": "Page {number}"
     },
     "details": {
       "title": "Commande {id}",
@@ -254,6 +257,14 @@
         "updated": "Commande mise à jour",
         "updateFailed": "Mise à jour échouée",
         "reviewSubmitted": "Avis soumis avec succès !"
+      },
+      "toast": {
+        "failedLoad": "Échec du chargement de la commande",
+        "updated": "Commande mise à jour",
+        "updateFailed": "Mise à jour échouée",
+        "generatingInvoice": "Génération de la facture...",
+        "invoiceDownloaded": "Facture téléchargée",
+        "invoiceFailed": "Échec du téléchargement de la facture"
       }
     }
   },
@@ -274,6 +285,9 @@
     "all": "Tout",
     "latestProducts": "Derniers produits",
     "noProductsMatch": "Aucun produit ne correspond à cette catégorie.",
+    "pagination": {
+      "pageOf": "Page {current} sur {total}"
+    },
     "loading": "Chargement...",
     "error": "Une erreur s'est produite",
     "save": "Enregistrer",
@@ -1125,6 +1139,9 @@
     "actions": {
       "topUp": "Recharger",
       "withdraw": "Retirer",
+      "withdrawThresholdApproved": "Vous avez besoin d'au moins {amount} de commissions approuvées pour retirer",
+      "withdrawThresholdTotal": "Vous avez besoin d'au moins {amount} de gains totaux pour retirer",
+      "withdrawThresholdAvailable": "Vous avez besoin d'au moins {amount} de solde disponible pour retirer",
       "requestCredit": "Demander un Crédit",
       "export": "Exporter",
       "refresh": "Actualiser",
@@ -1132,10 +1149,31 @@
       "history": "Historique",
       "settings": "Paramètres"
     },
+    "status": {
+      "pending": "En attente",
+      "approved": "Approuvé",
+      "rejected": "Rejeté",
+      "cancelled": "Annulé",
+      "completed": "Terminé",
+      "failed": "Échoué",
+      "processing": "En cours"
+    },
     "tabs": {
       "transactions": "Transactions",
       "withdrawals": "Historique des Retraits",
-      "creditRequests": "Demandes de Crédit"
+      "credit": "Demandes de crédit",
+      "creditRequests": "Demandes de crédit"
+    },
+    "creditRequests": {
+      "title": "Demandes de crédit",
+      "subtitle": "Afficher et gérer vos demandes de ligne de crédit",
+      "noRequests": "Aucune demande de crédit trouvée.",
+      "clickToRequest": "Cliquez sur 'Demander un crédit' pour postuler.",
+      "submitted": "Soumis le {date} à {time}",
+      "reviewed": "Révisé le {date}",
+      "approvedAmount": "Montant approuvé",
+      "note": "Note de l'administrateur",
+      "rejectionReason": "Motif du rejet"
     },
     "transactions": {
       "title": "Transactions Récentes",
@@ -1249,7 +1287,13 @@
         "resolving": "Vérification du compte...",
         "cancel": "Annuler",
         "submit": "Retirer les Fonds",
-        "history": "Historique des Retraits"
+        "history": "Historique des Retraits",
+        "invalidAmount": "Veuillez entrer un montant valide",
+        "insufficientBalance": "Solde insuffisant pour ce retrait",
+        "missingDetails": "Veuillez fournir toutes les coordonnées bancaires",
+        "loadingBanksError": "Échec du chargement des banques",
+        "resolveError": "Impossible de vérifier les détails du compte",
+        "processing": "Traitement..."
       },
       "creditRequest": {
         "title": "Demander une Limite de Crédit",
@@ -1347,6 +1391,599 @@
       "failedDesc": "Nous n'avons pas pu vérifier votre paiement. Veuillez réessayer ou contacter le support.",
       "retry": "Réessayer",
       "back": "Retour au Portefeuille"
+    }
+  },
+  "agent": {
+    "dashboard": {
+      "title": "Tableau de Bord de l'Agent Commercial",
+      "subtitle": "Suivez vos parrainages, commissions et performances",
+      "loading": "Chargement du tableau de bord...",
+      "stats": {
+        "totalReferrals": "Total des Parrainages",
+        "activeCount": "{count} actifs",
+        "totalEarned": "Total Gagné",
+        "commissionsCount": "{count} commissions",
+        "pendingCommission": "Commission en Attente",
+        "awaitingApproval": "En attente d'approbation",
+        "conversionRate": "Taux de Conversion",
+        "pendingToActive": "En attente → Actif"
+      },
+      "tools": {
+        "title": "Outils de Parrainage",
+        "codeLabel": "Votre Code de Parrainage",
+        "linkLabel": "Lien de Parrainage",
+        "copy": "Copier",
+        "copied": "Copié !",
+        "share": "Partager",
+        "viewReferrals": "Voir les Parrainages",
+        "commissions": "Commissions",
+        "wallet": "Portefeuille"
+      },
+      "breakdown": {
+        "title": "Répartition des Commissions",
+        "registration": "Bonus d'Inscription",
+        "purchase": "Commissions d'Achat",
+        "bonus": "Bonus"
+      },
+      "performance": {
+        "title": "Performance de Parrainage",
+        "totalOrders": "Total des Commandes",
+        "totalOrderValue": "Valeur Totale des Commandes",
+        "avgOrderValue": "Valeur Moyenne des Commandes"
+      }
+    },
+    "commissions": {
+      "title": "Historique des Commissions",
+      "subtitle": "Consultez tous vos gains de commission et leur statut",
+      "backToDashboard": "Retour au Tableau de Bord",
+      "loading": "Chargement des commissions...",
+      "noCommissions": "Aucune commission trouvée",
+      "autoApproved": "(Auto-approuvée)",
+      "filters": {
+        "allStatus": "Tous les Statuts",
+        "allTypes": "Tous les Types"
+      },
+      "table": {
+        "date": "Date",
+        "type": "Type",
+        "description": "Description",
+        "amount": "Montant",
+        "status": "Statut"
+      }
+    },
+    "referrals": {
+      "title": "Mes Parrainages",
+      "subtitle": "Suivez et gérez tous vos utilisateurs parrainés",
+      "backToDashboard": "Retour au Tableau de Bord",
+      "loading": "Chargement des parrainages...",
+      "noReferrals": "Aucun parrainage trouvé",
+      "searchPlaceholder": "Rechercher par nom d'utilisateur ou e-mail...",
+      "filters": {
+        "allStatus": "Tous les Statuts"
+      },
+      "table": {
+        "user": "Utilisateur",
+        "status": "Statut",
+        "registered": "Inscrit",
+        "orders": "Commandes",
+        "orderValue": "Valeur des Commandes",
+        "commission": "Commission"
+      }
+    },
+    "status": {
+      "paid": "Payé",
+      "approved": "Approuvée",
+      "pending": "En attente",
+      "rejected": "Rejetée",
+      "active": "Actif",
+      "inactive": "Inactif"
+    },
+    "types": {
+      "registration": "Inscription",
+      "purchase": "Achat",
+      "bonus": "Bonus",
+      "tier_upgrade": "Montée de Niveau"
+    },
+    "toasts": {
+      "copied": "Code de parrainage copié !",
+      "linkCopied": "Lien de parrainage copié !",
+      "loadDashboardError": "Échec du chargement du tableau de bord",
+      "loadCommissionsError": "Échec du chargement des commissions",
+      "loadReferralsError": "Échec du chargement des parrainages"
+    }
+  },
+  "gdip": {
+    "layout": {
+      "restricted": {
+        "title": "Accès Distributeur Restreint",
+        "message": "Cette zone est exclusivement réservée aux distributeurs authentifiés. Veuillez contacter l'assistance si vous pensez qu'il s'agit d'une erreur."
+      }
+    },
+    "dashboard": {
+      "title": "Tableau de Bord GDIP",
+      "subtitle": "Distribution Glotrade / Plateforme de Partenaires Assurés de Confiance",
+      "generateStatement": "Générer un Relevé",
+      "stats": {
+        "totalTPIAs": "Total des TPIAs",
+        "clusters": "Sur {count} Clusters",
+        "deployed": "Déployé",
+        "startingCapital": "Capital de Départ",
+        "profit": "Profit",
+        "roi": "+{roi}% ROI",
+        "netValue": "Valeur Nette",
+        "netGain": "Gain Net : ",
+        "available": "Disponible",
+        "balanceAlert": "Alerte de Solde"
+      },
+      "quickActions": {
+        "title": "Actions Rapides",
+        "purchase": "Acheter un TPIA",
+        "portfolio": "Mon Portefeuille",
+        "cycles": "Cycles de Marché"
+      },
+      "activeHoldings": {
+        "title": "Avoirs Actifs",
+        "subtitle": "Suivi des performances récentes",
+        "manage": "Gérer le Portefeuille",
+        "emptyTitle": "Portefeuille Vide",
+        "emptySubtitle": "Commencez votre voyage d'investissement en achetant votre premier TPIA",
+        "getStarted": "Commencer Maintenant"
+      },
+      "tpiaCard": {
+        "cluster": "Cluster-{number}",
+        "capital": "Capital",
+        "estReturn": "Rendement Est.",
+        "netValue": "Valeur Nette",
+        "profitMode": "Mode de Profit",
+        "cycleProgress": "Progression du Cycle",
+        "waitingCycle": "En attente du prochain cycle de trading",
+        "viewDetails": "Détails du Bloc"
+      },
+      "error": {
+        "title": "Erreur",
+        "loadFailed": "Échec du chargement du portefeuille"
+      }
+    },
+    "cycles": {
+      "title": "Suivi du Cycle de Vie",
+      "subtitle": "Cycles de trading de matières premières en temps réel et mesures de performance",
+      "backToDashboard": "Retour au Tableau de Bord",
+      "stats": {
+        "globalCycles": "Cycles Globaux",
+        "matured": "Arrivés à Échéance",
+        "activeVelocity": "Vélocité Active",
+        "avgGrowth": "Croissance Moyenne"
+      },
+      "filters": {
+        "label": "Filtrer le Cycle de Vie :",
+        "showing": "Affichage de {count} Séquences Phrasées",
+        "options": {
+          "all": "TOUT LE CYCLE DE VIE",
+          "scheduled": "PROGRAMMÉ",
+          "active": "NŒUDS ACTIFS",
+          "processing": "TRAITEMENT DES DONNÉES",
+          "completed": "PHASES MATURES"
+        }
+      },
+      "empty": {
+        "title": "Aucun Cycle Trouvé",
+        "subtitle": "Aucun cycle opérationnel ne correspond actuellement à vos filtres spécifiés."
+      },
+      "card": {
+        "sequenceIdentifier": "IDENTIFIANT DE SÉQUENCE",
+        "performance": "Performance {rating}",
+        "node": "Nœud {type}",
+        "clusters": "GDC-{number} • {count} Clusters",
+        "daysRemaining": "JOURS RESTANTS",
+        "growthVelocity": "Vélocité de Croissance",
+        "sequenceComplete": "Séquence Terminée",
+        "active": "{percent}% Actif",
+        "inauguration": "Inauguration",
+        "cycleWindow": "Fenêtre de Cycle",
+        "days": "{count} Jours",
+        "maturityDate": "Date d'Échéance",
+        "financialArchitecture": "Architecture Financière",
+        "cycleCapital": "Capital du Cycle",
+        "floorTarget": "Cible Plancher",
+        "roi": "ROI",
+        "accruedYield": "Rendement Accumulé",
+        "actualYield": "Rendement Actuel",
+        "netGrowth": "Croissance Nette",
+        "payoutArchitecture": "Architecture de Paiement",
+        "disbursed": "Décaissé le {date}",
+        "distributionPending": "Distribution en Attente"
+      }
+    },
+    "tpias": {
+      "title": "Avoirs Actifs",
+      "subtitle": "Gérez et suivez votre portefeuille privé de clusters de matières premières",
+      "backToDashboard": "Retour au Tableau de Bord",
+      "filters": {
+        "searchLabel": "Filtrer la Recherche",
+        "searchPlaceholder": "Rechercher IDs, Matières Premières, Certificats...",
+        "statusLabel": "Filtre de Statut",
+        "modeLabel": "Stratégie de Profit",
+        "results": "{count} Résultats Trouvés",
+        "reset": "Réinitialiser les Filtres",
+        "statusOptions": {
+          "all": "TOUS LES STATUTS",
+          "pending": "EN ATTENTE D'ACTIVATION",
+          "active": "PORTEFEUILLE ACTIF",
+          "matured": "ACTIFS MATURES",
+          "suspended": "SUSPENDU"
+        },
+        "modeOptions": {
+          "all": "TOUS LES MODES",
+          "TPM": "TPM (CAPITALISATION)",
+          "EPS": "EPS (RETRAIT)"
+        }
+      },
+      "empty": {
+        "title": "Aucun Actif Trouvé",
+        "subtitle": "Nous n'avons trouvé aucun bloc d'investissement correspondant à vos filtres actuels.",
+        "button": "Acquérir un Nouveau TPIA"
+      },
+      "card": {
+        "assetIdentifier": "IDENTIFIANT D'ACTIF",
+        "node": "Nœud {type}",
+        "purchase": "Achat",
+        "netValue": "Valeur Nette",
+        "clusterLocation": "Emplacement du Cluster",
+        "nodeNumber": "Nœud GDC-{number}",
+        "marketSlot": "Emplacement du Marché",
+        "pos": "POS {pos}/10",
+        "lifecycles": "{count} CYCLES DE VIE",
+        "growthVelocity": "Vélocité de Croissance"
+      }
+    },
+    "purchase": {
+      "title": "Acquérir un TPIA",
+      "subtitle": "Sécurisez votre bloc d'investissement numérique adossé à des matières premières",
+      "backToDashboard": "Retour au Tableau de Bord",
+      "config": {
+        "title": "Configuration de l'Actif",
+        "subtitle": "Personnalisez votre investissement",
+        "commodityLabel": "Sélectionner la Matière Première",
+        "modeLabel": "Mode de Gains Stratégiques",
+        "quantityLabel": "Volume d'Allocation",
+        "blockCount": "Nombre de Blocs",
+        "quantityOptions": {
+          "single": "Unique",
+          "completeCluster": "Cluster Complet ({count})",
+          "fullNode": "Nœud Complet ({count})"
+        },
+        "modes": {
+          "TPM": {
+            "title": "Capitalisation",
+            "badge": "Multiplicateur de Capital",
+            "descriptionLabel": "Aperçu de la Stratégie",
+            "description": "Les profits sont réinvestis automatiquement pour augmenter l'équité de l'actif."
+          },
+          "EPS": {
+            "title": "Retrait",
+            "badge": "Focus Liquidité",
+            "descriptionLabel": "Aperçu de la Stratégie",
+            "description": "Les profits sont crédités sur votre portefeuille pour une flexibilité de retrait immédiate."
+          }
+        }
+      },
+      "button": "Exécuter l'Acquisition",
+      "summary": {
+        "title": "Résumé de la Commande",
+        "selectedUnits": "Unités Sélectionnées",
+        "unitsCount": "{count} Bloc(s) TPIA",
+        "baseValue": "Valeur de Base",
+        "total": "Total Global",
+        "walletCredits": "Crédits du Portefeuille",
+        "protectionsTitle": "PROTECTIONS DES ACTIFS",
+        "protections": {
+          "insurance": "Certificat de Couverture d'Assurance",
+          "commodity": "Adossement Physique à la Matière Première",
+          "node": "Assignation de Nœud Cluster",
+          "compounding": "Capitalisation à Échelle Automatisée",
+          "preservation": "Préservation du Capital à 100%"
+        }
+      },
+      "modal": {
+        "title": "Fonds Insuffisants",
+        "subtitle": "Vous devez recharger votre portefeuille pour finaliser cet achat.",
+        "required": "Requis",
+        "current": "Actuel",
+        "gap": "Écart",
+        "cancel": "Annuler",
+        "topup": "Recharger"
+      },
+      "error": {
+        "general": "Échec de l'acquisition du TPIA",
+        "selectCommodity": "Veuillez sélectionner un type de matière première"
+      },
+      "gdc": {
+        "statusLabel": "STATUT DE FORMATION GDC",
+        "nodeLabel": "Nœud Cluster GDC-{number}",
+        "velocity": "Vélocité Active",
+        "slotsLocked": "{current} SUR {total} EMPLACEMENTS BLOQUÉS",
+        "slotsRemaining": "{count} EMPLACEMENTS RESTANTS"
+      },
+      "success": {
+        "title": "Achat Réussi !",
+        "subtitle": "Votre/vos bloc(s) TPIA ont été créés et assignés aux clusters GDC.",
+        "redirecting": "Redirection vers le tableau de bord..."
+      }
+    },
+    "statement": {
+      "title": "Grand Livre Global",
+      "subtitle": "Relevé de compte complet et historique des transactions",
+      "backToDashboard": "Retour au Tableau de Bord",
+      "preparing": "Préparation du Relevé de Compte...",
+      "download": "Télécharger le Grand Livre",
+      "header": {
+        "platform": "PLATEFORME INTERNATIONALE",
+        "tagline": "Financement Commercial & Actifs Numériques",
+        "company": "GloTrade Digital Assets",
+        "periodLabel": "PÉRIODE DU RELEVÉ",
+        "periodAll": "HISTORIQUE COMPLET",
+        "periodFiltered": "LIGNE DE TEMPS SPÉCIFIÉE",
+        "generatedOn": "Généré le {date}"
+      },
+      "filters": {
+        "last30": "30 DERNIERS JOURS OPÉRATIONNELS",
+        "quarterly": "ARCHIVE TRIMESTRIELLE",
+        "annual": "ENREGISTREMENT ANNUEL",
+        "all": "HISTORIQUE COMPLET"
+      },
+      "summary": {
+        "totalInvestment": "INVESTISSEMENT TOTAL",
+        "active": "ACTIF",
+        "totalROI": "TOTAL DES ROI GAGNÉS",
+        "walletBalance": "SOLDE DU PORTEFEUILLE"
+      },
+      "table": {
+        "headers": {
+          "time": "Cycle de Vie / Temps",
+          "entity": "Entité de Transaction",
+          "reference": "Référence",
+          "reserve": "Nouvelle Réserve",
+          "value": "Valeur de Rendement"
+        }
+      },
+      "card": {
+        "refLabel": "RÉF : ",
+        "entityLabel": "Entité :",
+        "reserveLabel": "Réserve :",
+        "valueChange": "CHANGEMENT DE VALEUR"
+      },
+      "empty": {
+        "title": "Aucune Donnée Trouvée",
+        "subtitle": "Aucune séquence historique trouvée dans cette période spécifiée."
+      },
+      "footer": {
+        "noticeTitle": "AVIS D'ARCHIVE OFFICIEL",
+        "noticeText": "Ce grand livre de compte est un enregistrement officiel des activités sur la Plateforme Internationale Glotrade.",
+        "disclaimer": "Toutes les entrées sont vérifiées par recoupement avec les mouvements physiques de matières premières et les protocoles de garde d'actifs numériques. Signalez les divergences à {email} dans les 48 heures opérationnelles.",
+        "verified": "GRAND LIVRE SÉCURISÉ VÉRIFIÉ",
+        "totalArchive": "ARCHIVE TOTALE DU PORTEFEUILLE",
+        "endOfRecord": "PLATEFORME INTERNATIONALE GLOTRADE • FIN DES DONNÉES ENREGISTRÉES"
+      }
+    },
+    "details": {
+      "tpiaTitle": "Bloc de Protocole d'Alliance",
+      "subtitle": "Alliance de Partenaires Assurés de Confiance",
+      "backToPortfolio": "Retour au Portefeuille",
+      "ownershipLabel": "Propriété",
+      "error": {
+        "title": "Erreur",
+        "loadFailed": "Échec du chargement des détails du TPIA",
+        "switchMode": "Échec du changement de mode de profit",
+        "notFound": "TPIA introuvable",
+        "goBack": "Retour"
+      },
+      "financial": {
+        "title": "Performance Financière",
+        "subtitle": "Valeur de l'actif & gains",
+        "cost": "Coût Original",
+        "value": "Valeur Actuelle",
+        "accrued": "Net Accumulé",
+        "roi": "ROI Total",
+        "compoundedExit": "Valeur de Sortie Capitalisée"
+      },
+      "cycle": {
+        "title": "Cycle Actif",
+        "subtitle": "Croissance en cours",
+        "openDate": "Date d'Ouverture",
+        "projectedClose": "Clôture Projetée",
+        "targetLabel": "Cible de ROI du Cycle",
+        "progress": "{progress}% Accumulé",
+        "durationLabel": "Jours dans le Cycle",
+        "durationValue": "{days} Jours de Marché",
+        "accruedProfit": "Profit Accumulé"
+      },
+      "profitMode": {
+        "title": "Méthode de Gains",
+        "compoundBadge": "Capitalisation",
+        "withdrawalBadge": "Retrait",
+        "compoundDesc": "Les profits sont réinvestis automatiquement pour étendre l'équité de l'actif.",
+        "withdrawalDesc": "Les profits sont crédités sur votre portefeuille liquide après chaque cycle.",
+        "switchButton": "Passer à {mode}"
+      },
+      "insurance": {
+        "title": "Couverture Active",
+        "certificate": "Certificat de Protection",
+        "certLabel": "Certificat de Protection",
+        "insurer": "Assureur",
+        "provider": "Assureur",
+        "providers": {
+          "Default Insurance Provider": "Assureur Stratégique GloTrade"
+        },
+        "verified": "Vérifié",
+        "statusLabel": "Vérifié",
+        "purchaseInvoice": "Facture d'Achat",
+        "invoiceButton": "Facture d'Achat",
+        "assetCertificate": "Certificat d'Actif",
+        "certButton": "Certificat d'Actif"
+      },
+      "node": {
+        "title": "Nœud de Cluster",
+        "reference": "Référence GDC",
+        "ref": "Référence GDC",
+        "position": "Position du Nœud",
+        "posLabel": "Position du Nœud",
+        "posValue": "Bloc {pos} sur {total}",
+        "commodity": "Adossement à la Matière Première",
+        "defaultCommodity": "Matières Premières Mixtes"
+      }
+    },
+    "certificate": {
+      "header": {
+        "title": "Certificat d'Assurance",
+        "protocol": "TPIA - Protocole d'Alliance",
+        "archiveLabel": "ARCHIVE OFFICIELLE D'ACTIFS"
+      },
+      "info": {
+        "seqLabel": "SÉQUENCE DU CERTIFICAT",
+        "dateLabel": "DATE D'INCEPTION"
+      },
+      "partner": {
+        "entityLabel": "ENTITÉ D'ACTIF IDENTIFIÉE"
+      },
+      "content": {
+        "confirmation": "Ce document confirme la couverture d'assurance enregistrée pour le bloc d'investissement {id}. Entièrement adossé à des réserves physiques de matières premières sous le cadre de gestion des risques multi-couches GDIP.",
+        "backing": "Cette couverture est souscrite par l'assureur principal listé ci-dessous.",
+        "coverageLabel": "MAGNITUDE DE LA COUVERTURE",
+        "backingLabel": "ADOSSEMENT DE L'ACTIF",
+        "backingValue": "{qty} {unit} {type}",
+        "windowLabel": "FENÊTRE EFFECTIVE",
+        "logisticsLabel": "HUB LOGISTIQUE",
+        "defaultHub": "RÉSERVE STRATÉGIQUE GLOTRADE"
+      },
+      "footer": {
+        "authorizedSignatory": "Signataire Autorisé",
+        "adminSignatory": "Admin GloTrade",
+        "leadUnderwriter": "Assureur Principal",
+        "noticeTitle": "AVIS D'ARCHIVE OFFICIEL",
+        "noticeText": "Ce document est une représentation numérique du contrat d'assurance sous-jacent. ",
+        "protectionText": "La protection intégrale du capital de {amount} par bloc TPIA est vérifiée par recoupement selon les normes souveraines de garde.",
+        "verificationLabel": "Vérification Sécurisée",
+        "endOfDocument": "PLATEFORME INTERNATIONALE GLOTRADE • FIN DU DOCUMENT",
+        "encrypted": "GRAND LIVRE SÉCURISÉ CHIFFRÉ"
+      },
+      "backToPortfolio": "Retour au Portefeuille",
+      "printButton": "Imprimer le Certificat"
+    },
+    "commodity": {
+      "title": "Adossement à la Matière Première",
+      "subtitle": "Actifs physiques adossés à votre investissement TPIA",
+      "back": "Retour",
+      "summary": {
+        "types": "Types de Matières Premières",
+        "total": "Total des Matières Premières",
+        "quantity": "Quantité Totale",
+        "value": "Valeur Totale"
+      },
+      "card": {
+        "idLabel": "ID de Matière Première :",
+        "quantityLabel": "Quantité :",
+        "marketPriceLabel": "Prix du Marché :",
+        "unitPriceLabel": "Prix par Unité :",
+        "qualityLabel": "Qualité :",
+        "conditionLabel": "Condition :",
+        "warehouseLabel": "Entrepôt :",
+        "updatedLabel": "Dernière Mise à Jour :"
+      },
+      "conditions": {
+        "excellent": "Excellent",
+        "good": "Bon",
+        "average": "Moyen",
+        "poor": "Médiocre"
+      },
+      "empty": {
+        "title": "Aucun Adossement Trouvé",
+        "subtitle": "Les matières premières seront allouées une fois que votre GDC aura commencé à trader"
+      },
+      "error": {
+        "title": "Erreur",
+        "loadFailed": "Échec du chargement de l'adossement à la matière première",
+        "goBack": "Retour"
+      }
+    },
+    "invoice": {
+      "header": {
+        "title": "Facture de Règlement",
+        "archiveLabel": "IDENTIFIANT D'ENREGISTREMENT",
+        "recordLabel": "ENREGISTREMENT NUMÉRIQUE",
+        "brand": "GLOTRADE GDIP"
+      },
+      "info": {
+        "hqLabel": "EMPLACEMENT DU SIÈGE",
+        "nodeLabel": "NŒUD NUMÉRIQUE",
+        "commLabel": "COMMUNICATION"
+      },
+      "partner": {
+        "billedLabel": "FACTURÉ À L'ENTITÉ",
+        "dateLabel": "DATE DE RÈGLEMENT",
+        "verificationLabel": "VÉRIFICATION DE PAIEMENT",
+        "verifiedStatus": "Partenaire Vérifié",
+        "settlementStatus": "Règlement Terminé"
+      },
+      "table": {
+        "headers": {
+          "description": "Description du Cycle de Vie",
+          "qty": "Qté",
+          "value": "Valeur Économique"
+        },
+        "item": {
+          "name": "Bloc de Commerce Stratégique GDIP",
+          "status": "Actif Entièrement Collatéralisé",
+          "blockId": "ID du Bloc",
+          "nodeId": "ID du Nœud",
+          "configLabel": "CONFIGURATION DE L'ACTIF",
+          "backing": "ADOSSEMENT COLLATÉRAL",
+          "unit": "UNITÉ DE BLOC",
+          "settledStatus": "Réglé à 100%",
+          "defaultType": "Matières Premières Mixtes"
+        }
+      },
+      "mobile": {
+        "blockLabel": "ID du Bloc",
+        "qtyLabel": "Qté",
+        "valueLabel": "Valeur"
+      },
+      "summary": {
+        "subtotal": "VALEUR NETTE SECONDAIRE",
+        "tax": "EXEMPTÉ DE TAXE / VRT",
+        "total": "RÈGLEMENT TOTAL"
+      },
+      "footer": {
+        "title": "ARCHIVE DE RÈGLEMENT",
+        "text1": "Cette séquence de transaction a été finalisée via le",
+        "ledgerSystem": "Système de Grand Livre Interne Glotrade",
+        "text2": "L'adossement de l'actif est entièrement collatéralisé par des stocks de matières premières physiquement vérifiés.",
+        "verifiedLabel": "Adossement d'Actif Vérifié",
+        "idLabel": "ID D'ARCHIVE ÉLECTRONIQUE",
+        "officialLabel": "DOCUMENT DE GRAND LIVRE OFFICIEL",
+        "endOfRecord": "PLATEFORME INTERNATIONALE GLOTRADE • FIN DES DONNÉES ENREGISTRÉES"
+      },
+      "loading": "Règlement de la Facture en cours...",
+      "backToPortfolio": "Retour au Portefeuille",
+      "downloadButton": "Télécharger la Facture",
+      "error": {
+        "title": "Erreur",
+        "notFound": "Facture introuvable",
+        "goBack": "Retour"
+      }
+    },
+    "status": {
+      "active": "actif",
+      "pending": "en attente",
+      "matured": "mature",
+      "completed": "terminé",
+      "scheduled": "programmé",
+      "processing": "en traitement",
+      "suspended": "suspendu",
+      "excellent": "excellent",
+      "good": "bon",
+      "average": "moyen",
+      "poor": "médiocre",
+      "verified": "vérifié"
     }
   }
 }

@@ -22,6 +22,7 @@ import {
     Activity
 } from "lucide-react";
 import { apiGet } from "@/utils/api";
+import { translate } from "@/utils/translate";
 
 interface TPIADetails {
     tpia: any;
@@ -77,7 +78,7 @@ export default function PurchaseInvoicePage() {
             <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
                 <div className="text-center">
                     <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-slate-600 font-medium">Generating Invoice...</p>
+                    <p className="text-slate-600 font-medium">{translate("gdip.invoice.loading")}</p>
                 </div>
             </div>
         );
@@ -87,14 +88,14 @@ export default function PurchaseInvoicePage() {
         return (
             <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 text-center">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800 mb-2">Invoice Not Found</h1>
-                    <p className="text-slate-500 mb-6">We couldn't locate the purchase record for this TPIA.</p>
+                    <h1 className="text-2xl font-bold text-slate-800 mb-2">{translate("gdip.invoice.error.title")}</h1>
+                    <p className="text-slate-500 mb-6">{translate("gdip.invoice.error.notFound")}</p>
                     <button
                         onClick={() => router.back()}
                         className="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
                     >
                         <ArrowLeft size={18} />
-                        Go Back
+                        {translate("gdip.invoice.error.goBack")}
                     </button>
                 </div>
             </div>
@@ -118,14 +119,14 @@ export default function PurchaseInvoicePage() {
                     className="flex items-center gap-2 text-gray-500 hover:text-gray-900 font-bold text-xs uppercase tracking-widest transition-colors group"
                 >
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    Return to Portfolio
+                    {translate("gdip.invoice.backToPortfolio")}
                 </button>
                 <button
                     onClick={handlePrint}
                     className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gray-900 text-white px-8 py-3 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-gray-800 transition-all shadow-xl shadow-gray-200 active:scale-95"
                 >
                     <Download className="w-4 h-4" />
-                    Download Invoice
+                    {translate("gdip.invoice.downloadButton")}
                 </button>
             </div>
 
@@ -142,15 +143,15 @@ export default function PurchaseInvoicePage() {
                                 <Globe size={32} />
                             </div>
                             <div>
-                                <h1 className="text-3xl font-black text-gray-900 tracking-tighter leading-none mb-2 uppercase">GLOTRADE</h1>
-                                <p className="text-[10px] font-black text-blue-600 tracking-[0.4em] uppercase">INTERNATIONAL ARCHIVE</p>
+                                <h1 className="text-3xl font-black text-gray-900 tracking-tighter leading-none mb-2 uppercase">{translate("gdip.invoice.header.brand")}</h1>
+                                <p className="text-[10px] font-black text-blue-600 tracking-[0.4em] uppercase">{translate("gdip.invoice.header.archiveLabel")}</p>
                             </div>
                         </div>
 
                         <div className="sm:text-right w-full sm:w-auto">
-                            <h2 className="text-5xl font-black text-gray-900 mb-6 tracking-tighter uppercase leading-none">Invoice</h2>
+                            <h2 className="text-5xl font-black text-gray-900 mb-6 tracking-tighter uppercase leading-none">{translate("gdip.invoice.header.title")}</h2>
                             <div className="flex flex-col sm:items-end gap-2">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-1">RECORD IDENTIFIER</p>
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-1">{translate("gdip.invoice.header.recordLabel")}</p>
                                 <p className="text-lg font-black text-gray-900 leading-none tracking-tight select-all">{invoiceNumber}</p>
                             </div>
                         </div>
@@ -158,17 +159,17 @@ export default function PurchaseInvoicePage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16 text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed">
                         <div className="space-y-2">
-                            <p className="flex items-center gap-2 text-gray-900 font-black"><MapPin size={12} className="text-blue-600" /> HQ LOCATION</p>
+                            <p className="flex items-center gap-2 text-gray-900 font-black"><MapPin size={12} className="text-blue-600" /> {translate("gdip.invoice.info.hqLabel")}</p>
                             <p>123 Business Avenue, Victoria Island</p>
                             <p>Lagos, Federal Republic of Nigeria</p>
                         </div>
                         <div className="space-y-2">
-                            <p className="flex items-center gap-2 text-gray-900 font-black"><Globe size={12} className="text-blue-600" /> DIGITAL NODE</p>
+                            <p className="flex items-center gap-2 text-gray-900 font-black"><Globe size={12} className="text-blue-600" /> {translate("gdip.invoice.info.nodeLabel")}</p>
                             <p>www.glotrade.com</p>
                             <p>node-id: gdip-ln-01</p>
                         </div>
                         <div className="md:text-right space-y-2">
-                            <p className="flex items-center md:justify-end gap-2 text-gray-900 font-black"><Mail size={12} className="text-blue-600" /> COMMUNICATION</p>
+                            <p className="flex items-center md:justify-end gap-2 text-gray-900 font-black"><Mail size={12} className="text-blue-600" /> {translate("gdip.invoice.info.commLabel")}</p>
                             <p>support@glotrade.com</p>
                             <p>+234 1 000 0000</p>
                         </div>
@@ -179,13 +180,13 @@ export default function PurchaseInvoicePage() {
                     {/* Transactional Logic Context */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-12 mb-16">
                         <div>
-                            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-4">BILLED TO ENTITY</h3>
+                            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-4">{translate("gdip.invoice.partner.billedLabel")}</h3>
                             <div className="p-8 bg-gray-50/50 rounded-3xl border border-gray-100 group hover:bg-white transition-all duration-300">
                                 <p className="text-2xl font-black text-gray-900 mb-1 uppercase tracking-tight">{tpia.partnerName}</p>
                                 <p className="text-xs font-bold text-gray-400 mb-6">{tpia.partnerEmail}</p>
                                 <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm">
                                     <ShieldCheck size={12} className="text-blue-600" />
-                                    Verified Strategic Partner
+                                    {translate("gdip.invoice.partner.verifiedStatus")}
                                 </div>
                             </div>
                         </div>
@@ -193,13 +194,13 @@ export default function PurchaseInvoicePage() {
                         <div className="flex flex-col justify-center sm:items-end sm:text-right">
                             <div className="space-y-6">
                                 <div>
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-1 leading-none">SETTLEMENT DATE</p>
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-1 leading-none">{translate("gdip.invoice.partner.dateLabel")}</p>
                                     <p className="text-xl font-black text-gray-900 leading-none tracking-tight">{formatDate(tpia.purchasedAt || tpia.createdAt)}</p>
                                 </div>
                                 <div className="flex flex-col sm:items-end">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-2 leading-none">PAYMENT VERIFICATION</p>
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-2 leading-none">{translate("gdip.invoice.partner.verificationLabel")}</p>
                                     <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest rounded-xl shadow-sm">
-                                        <CheckCircle2 size={12} /> Settlement Complete
+                                        <CheckCircle2 size={12} /> {translate("gdip.invoice.partner.settlementStatus")}
                                     </span>
                                 </div>
                             </div>
@@ -213,9 +214,9 @@ export default function PurchaseInvoicePage() {
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="bg-gray-900 text-white">
-                                        <th className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em]">Lifecycle Description</th>
-                                        <th className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] text-center">Qty</th>
-                                        <th className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] text-right">Economic Value</th>
+                                        <th className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em]">{translate("gdip.invoice.table.headers.description")}</th>
+                                        <th className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] text-center">{translate("gdip.invoice.table.headers.qty")}</th>
+                                        <th className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] text-right">{translate("gdip.invoice.table.headers.value")}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50">
@@ -227,25 +228,25 @@ export default function PurchaseInvoicePage() {
                                                 </div>
                                                 <div className="space-y-3">
                                                     <div>
-                                                        <p className="text-xl font-black text-gray-900 leading-none uppercase tracking-tight">GDIP Strategic Trade Block</p>
+                                                        <p className="text-xl font-black text-gray-900 leading-none uppercase tracking-tight">{translate("gdip.invoice.table.item.name")}</p>
                                                         <p className="mt-1 text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] flex items-center gap-1.5">
-                                                            <ShieldCheck size={10} /> Fully Collateralized Asset
+                                                            <ShieldCheck size={10} /> {translate("gdip.invoice.table.item.status")}
                                                         </p>
                                                     </div>
 
                                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-2 pt-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-t border-gray-50">
                                                         <div className="flex justify-between sm:justify-start sm:gap-4">
-                                                            <span>Block ID</span>
+                                                            <span>{translate("gdip.invoice.table.item.blockId")}</span>
                                                             <span className="text-gray-900 font-black">#{tpia.tpiaNumber}</span>
                                                         </div>
                                                         <div className="flex justify-between sm:justify-start sm:gap-4">
-                                                            <span>Node ID</span>
+                                                            <span>{translate("gdip.invoice.table.item.nodeId")}</span>
                                                             <span className="text-gray-900 font-black">#{tpia.gdcNumber}</span>
                                                         </div>
                                                         <div className="sm:col-span-2 space-y-1 pt-1">
-                                                            <p className="text-gray-300">ASSET CONFIGURATION</p>
+                                                            <p className="text-gray-300">{translate("gdip.invoice.table.item.configLabel")}</p>
                                                             <p className="text-gray-900 font-extrabold leading-relaxed">
-                                                                {tpia.commodityType || "MIXED COMMODITIES"} • {tpia.commodityQuantity} {tpia.commodityUnit} BACKING
+                                                                {tpia.commodityType || translate("gdip.invoice.table.item.defaultType")} • {tpia.commodityQuantity} {tpia.commodityUnit} {translate("gdip.invoice.table.item.backing")}
                                                             </p>
                                                         </div>
                                                     </div>
@@ -255,12 +256,12 @@ export default function PurchaseInvoicePage() {
                                         <td className="px-8 py-10 text-center align-top">
                                             <div className="inline-flex flex-col items-center">
                                                 <span className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gray-50 border border-gray-100 text-gray-900 font-black text-sm">01</span>
-                                                <span className="mt-2 text-[8px] font-black text-gray-300 uppercase tracking-widest leading-none">BLOCK UNIT</span>
+                                                <span className="mt-2 text-[8px] font-black text-gray-300 uppercase tracking-widest leading-none">{translate("gdip.invoice.table.item.unit")}</span>
                                             </div>
                                         </td>
                                         <td className="px-8 py-10 text-right align-top">
                                             <p className="text-2xl font-black text-gray-900 tracking-tighter leading-none">{formatCurrency(tpia.purchasePrice)}</p>
-                                            <p className="mt-2 text-[8px] font-black text-emerald-500 uppercase tracking-[0.2em] leading-none">Settled 100%</p>
+                                            <p className="mt-2 text-[8px] font-black text-emerald-500 uppercase tracking-[0.2em] leading-none">{translate("gdip.invoice.table.item.settledStatus")}</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -275,38 +276,38 @@ export default function PurchaseInvoicePage() {
                                         <Layers className="text-blue-600" size={24} />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-black text-gray-900 uppercase tracking-tight">Lifecycle Block</p>
-                                        <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest leading-none mt-1">Settled 100%</p>
+                                        <p className="text-sm font-black text-gray-900 uppercase tracking-tight">{translate("gdip.invoice.mobile.blockLabel")}</p>
+                                        <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest leading-none mt-1">{translate("gdip.invoice.table.item.settledStatus")}</p>
                                     </div>
                                 </div>
 
                                 <div className="space-y-5">
                                     <div className="flex justify-between items-center py-3 border-y border-gray-200/50">
                                         <div className="space-y-1">
-                                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest leading-none">ECONOMIC VALUE</p>
+                                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest leading-none">{translate("gdip.invoice.mobile.valueLabel")}</p>
                                             <p className="text-xl font-black text-gray-900 tracking-tighter leading-none">{formatCurrency(tpia.purchasePrice)}</p>
                                         </div>
                                         <div className="text-right space-y-1">
-                                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest leading-none">QUANTITY</p>
+                                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest leading-none">{translate("gdip.invoice.mobile.qtyLabel")}</p>
                                             <p className="text-lg font-black text-gray-900 leading-none">01 <span className="text-[10px] text-gray-300">UT</span></p>
                                         </div>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-6">
                                         <div>
-                                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">BLOCK ID</p>
+                                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">{translate("gdip.invoice.table.item.blockId")}</p>
                                             <p className="text-xs font-black text-gray-900">#{tpia.tpiaNumber}</p>
                                         </div>
                                         <div>
-                                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">NODE ID</p>
+                                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">{translate("gdip.invoice.table.item.nodeId")}</p>
                                             <p className="text-xs font-black text-gray-900">#{tpia.gdcNumber}</p>
                                         </div>
                                     </div>
 
                                     <div className="p-5 bg-white rounded-2xl border border-gray-100 shadow-sm">
-                                        <p className="text-[8px] font-black text-blue-600 uppercase tracking-[0.2em] mb-2 leading-none">ASSET BACKING</p>
+                                        <p className="text-[8px] font-black text-blue-600 uppercase tracking-[0.2em] mb-2 leading-none">{translate("gdip.invoice.table.item.configLabel")}</p>
                                         <p className="text-[11px] font-bold text-gray-900 leading-relaxed uppercase tracking-tight">
-                                            {tpia.commodityType || "MIXED COMMODITIES"} • {tpia.commodityQuantity} {tpia.commodityUnit} BACKING
+                                            {tpia.commodityType || translate("gdip.invoice.table.item.defaultType")} • {tpia.commodityQuantity} {tpia.commodityUnit} {translate("gdip.invoice.table.item.backing")}
                                         </p>
                                     </div>
                                 </div>
@@ -318,18 +319,18 @@ export default function PurchaseInvoicePage() {
                     <div className="flex justify-end mb-20">
                         <div className="w-full sm:w-80 space-y-4">
                             <div className="flex justify-between items-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                                <span>NET SUB-VALUE</span>
+                                <span>{translate("gdip.invoice.summary.subtotal")}</span>
                                 <span className="text-gray-900 text-sm font-black">{formatCurrency(tpia.purchasePrice)}</span>
                             </div>
                             <div className="flex justify-between items-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                                <span>TAX / VRT EXEMPT</span>
+                                <span>{translate("gdip.invoice.summary.tax")}</span>
                                 <span className="text-gray-900 text-sm font-black">{formatCurrency(0)}</span>
                             </div>
                             <div className="h-2 bg-gray-900/5 rounded-full overflow-hidden">
                                 <div className="h-full bg-blue-600 w-1/3"></div>
                             </div>
                             <div className="flex justify-between items-center py-4 border-t border-gray-100">
-                                <span className="text-[10px] font-black text-gray-900 uppercase tracking-[0.4em]">TOTAL SETTLEMENT</span>
+                                <span className="text-[10px] font-black text-gray-900 uppercase tracking-[0.4em]">{translate("gdip.invoice.summary.total")}</span>
                                 <span className="text-3xl font-black text-gray-900 tracking-tighter">{formatCurrency(tpia.purchasePrice)}</span>
                             </div>
                         </div>
@@ -344,29 +345,29 @@ export default function PurchaseInvoicePage() {
                         <div className="space-y-6 relative z-10">
                             <h4 className="flex items-center gap-3 text-[10px] font-black text-blue-400 uppercase tracking-[0.4em]">
                                 <Wallet size={16} />
-                                SETTLEMENT ARCHIVE
+                                {translate("gdip.invoice.footer.title")}
                             </h4>
                             <p className="text-sm font-bold text-gray-400 uppercase tracking-tight leading-relaxed">
-                                This transaction sequence was finalized via the <span className="text-white">Glotrade Internal Ledger System</span>.
-                                Asset backing is fully collateralized by physically verified commodity stocks.
+                                {translate("gdip.invoice.footer.text1")} <span className="text-white">{translate("gdip.invoice.footer.ledgerSystem")}</span>.
+                                {translate("gdip.invoice.footer.text2")}
                             </p>
                             <div className="flex items-center gap-2 text-blue-400 font-black text-[10px] uppercase tracking-[0.2em]">
-                                <Activity size={12} className="animate-pulse" /> Asset Backing Verified
+                                <Activity size={12} className="animate-pulse" /> {translate("gdip.invoice.footer.verifiedLabel")}
                             </div>
                         </div>
 
                         <div className="sm:text-right space-y-1 relative z-10 flex flex-col justify-end">
-                            <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.4em] mb-2 leading-none">ELECTRONIC ARCHIVE ID</p>
+                            <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.4em] mb-2 leading-none">{translate("gdip.invoice.footer.idLabel")}</p>
                             <p className="text-xs font-mono text-gray-400 select-all tracking-tight uppercase">{tpia._id}</p>
                             <div className="flex items-center sm:justify-end gap-2 mt-8 text-white font-black text-[10px] uppercase tracking-[0.3em]">
-                                <CheckCircle2 size={14} className="text-emerald-500" /> OFFICIAL LEDGER DOCUMENT
+                                <CheckCircle2 size={14} className="text-emerald-500" /> {translate("gdip.invoice.footer.officialLabel")}
                             </div>
                         </div>
                     </div>
 
                     <div className="mt-16 text-center">
                         <p className="text-[9px] text-gray-300 font-black uppercase tracking-[0.5em] leading-none">
-                            GLOTRADE INTERNATIONAL PLATFORM • END OF RECORDED DATA
+                            {translate("gdip.invoice.footer.endOfRecord")}
                         </p>
                     </div>
                 </div>

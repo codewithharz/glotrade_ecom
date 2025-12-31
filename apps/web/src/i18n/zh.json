@@ -185,7 +185,10 @@
       "order": "订单",
       "item": "件商品",
       "items": "件商品",
-      "view": "查看"
+      "view": "查看",
+      "prev": "上一页",
+      "next": "下一页",
+      "page": "第 {number} 页"
     },
     "details": {
       "title": "订单 {id}",
@@ -254,6 +257,14 @@
         "updated": "订单已更新",
         "updateFailed": "更新失败",
         "reviewSubmitted": "评价已提交！"
+      },
+      "toast": {
+        "failedLoad": "加载订单失败",
+        "updated": "订单已更新",
+        "updateFailed": "更新失败",
+        "generatingInvoice": "正在生成发票...",
+        "invoiceDownloaded": "发票已下载",
+        "invoiceFailed": "下载发票失败"
       }
     }
   },
@@ -274,6 +285,9 @@
     "all": "全部",
     "latestProducts": "最新产品",
     "noProductsMatch": "没有产品匹配此分类。",
+    "pagination": {
+      "pageOf": "第 {current} 页，共 {total} 页"
+    },
     "loading": "加载中...",
     "error": "发生错误",
     "save": "保存",
@@ -457,7 +471,6 @@
     "myOrders": "我的订单",
     "trackOrder": "追踪订单",
     "wishlist": "愿望清单",
-    "cart": "购物车",
     "vouchers": "代金券",
     "paymentsAddress": "支付与地址",
     "addresses": "地址",
@@ -1074,7 +1087,19 @@
     "tabs": {
       "transactions": "交易记录",
       "withdrawals": "提现历史记录",
-      "creditRequests": "信用申请"
+      "creditRequests": "信用申请",
+      "credit": "信用申请"
+    },
+    "creditRequests": {
+      "title": "信用申请",
+      "subtitle": "查看和管理您的信用额度申请",
+      "noRequests": "未找到信用申请。",
+      "clickToRequest": "点击“申请信用”以申请信用额度。",
+      "submitted": "提交于 {date} {time}",
+      "reviewed": "审核于 {date}",
+      "approvedAmount": "批准金额",
+      "note": "管理员备注",
+      "rejectionReason": "拒绝原因"
     },
     "transactions": {
       "title": "最近交易记录",
@@ -1188,7 +1213,13 @@
         "resolving": "正在验证账户...",
         "cancel": "取消",
         "submit": "确认提现",
-        "history": "提现历史记录"
+        "history": "提现历史记录",
+        "invalidAmount": "请输入有效金额",
+        "insufficientBalance": "余额不足",
+        "missingDetails": "请提供完整的银行详细信息",
+        "loadingBanksError": "加载银行失败",
+        "resolveError": "无法验证账户详情",
+        "processing": "处理中..."
       },
       "creditRequest": {
         "title": "申请信用额度",
@@ -1281,11 +1312,600 @@
       "updatedBalance": "更新后的钱包余额",
       "availableBalance": "可用余额",
       "continue": "返回钱包",
-      "autoRedirect": "{seconds} 秒后自动跳转...",
-      "failed": "充值失败",
-      "failedDesc": "我们无法验证您的支付。请重试或在问题持续存在时联系客服。",
-      "retry": "重试",
-      "back": "返回钱包"
+      "autoRedirect": "{seconds} 秒后自动跳转..."
+    }
+  },
+  "agent": {
+    "dashboard": {
+      "title": "销售代理控制面板",
+      "subtitle": "跟踪您的推荐、佣金和绩效",
+      "loading": "正在加载控制面板...",
+      "stats": {
+        "totalReferrals": "总推荐数",
+        "activeCount": "{count} 名活跃",
+        "totalEarned": "总收入",
+        "commissionsCount": "{count} 笔佣金",
+        "pendingCommission": "待处理佣金",
+        "awaitingApproval": "等待审批",
+        "conversionRate": "转化率",
+        "pendingToActive": "待处理 → 活跃"
+      },
+      "tools": {
+        "title": "推荐工具",
+        "codeLabel": "您的推荐代码",
+        "linkLabel": "推荐链接",
+        "copy": "复制",
+        "copied": "已复制！",
+        "share": "分享",
+        "viewReferrals": "查看推荐",
+        "commissions": "佣金",
+        "wallet": "钱包"
+      },
+      "breakdown": {
+        "title": "佣金详情",
+        "registration": "注册奖金",
+        "purchase": "销售佣金",
+        "bonus": "奖金"
+      },
+      "performance": {
+        "title": "推荐绩效",
+        "totalOrders": "总订单数",
+        "totalOrderValue": "总订单价值",
+        "avgOrderValue": "平均订单价值"
+      }
+    },
+    "commissions": {
+      "title": "佣金历史",
+      "subtitle": "查看您所有的佣金收入及其状态",
+      "backToDashboard": "返回控制面板",
+      "loading": "正在加载佣金...",
+      "noCommissions": "未找到佣金记录",
+      "autoApproved": "(自动批准)",
+      "filters": {
+        "allStatus": "所有状态",
+        "allTypes": "所有类型"
+      },
+      "table": {
+        "date": "日期",
+        "type": "类型",
+        "description": "说明",
+        "amount": "金额",
+        "status": "状态"
+      }
+    },
+    "referrals": {
+      "title": "我的推荐",
+      "subtitle": "跟踪和管理您所有的推荐用户",
+      "backToDashboard": "返回控制面板",
+      "loading": "正在加载推荐...",
+      "noReferrals": "未找到推荐记录",
+      "searchPlaceholder": "通过用户名或电子邮件搜索...",
+      "filters": {
+        "allStatus": "所有状态"
+      },
+      "table": {
+        "user": "用户",
+        "status": "状态",
+        "registered": "注册日期",
+        "orders": "订单数",
+        "orderValue": "订单价值",
+        "commission": "佣金"
+      }
+    },
+    "status": {
+      "paid": "已支付",
+      "approved": "已批准",
+      "pending": "处理中",
+      "rejected": "已拒绝",
+      "active": "活跃",
+      "inactive": "不活跃"
+    },
+    "types": {
+      "registration": "注册",
+      "purchase": "购买",
+      "bonus": "奖金",
+      "tier_upgrade": "等级升级"
+    },
+    "toasts": {
+      "copied": "推荐代码已复制！",
+      "linkCopied": "推荐链接已复制！",
+      "loadDashboardError": "加载控制面板失败",
+      "loadCommissionsError": "加载佣金失败",
+      "loadReferralsError": "加载推荐失败"
+    }
+  },
+  "gdip": {
+    "layout": {
+      "restricted": {
+        "title": "分销商访问受限",
+        "message": "此区域仅供经过身份验证的分销商使用。如果您认为这是一个错误，请联系支持人员。"
+      }
+    },
+    "dashboard": {
+      "title": "GDIP 仪表板",
+      "subtitle": "Glotrade 分销/受信保险合作伙伴平台",
+      "generateStatement": "生成对账单",
+      "stats": {
+        "totalTPIAs": "TPIA 总数",
+        "clusters": "分布在 {count} 个集群中",
+        "deployed": "已部署",
+        "startingCapital": "启动资金",
+        "profit": "利润",
+        "roi": "+{roi}% ROI",
+        "netValue": "净值",
+        "netGain": "净收益：",
+        "available": "可用余额",
+        "balanceAlert": "余额警报"
+      },
+      "quickActions": {
+        "title": "快速操作",
+        "purchase": "购买 TPIA",
+        "portfolio": "我的投资组合",
+        "cycles": "市场周期"
+      },
+      "activeHoldings": {
+        "title": "当前持仓",
+        "subtitle": "近期业绩跟踪",
+        "manage": "管理投资组合",
+        "emptyTitle": "投资组合为空",
+        "emptySubtitle": "购买您的第一个 TPIA 以开启您的投资之旅",
+        "getStarted": "立即开始"
+      },
+      "tpiaCard": {
+        "cluster": "集群-{number}",
+        "capital": "本金",
+        "estReturn": "预计回报",
+        "netValue": "净值",
+        "profitMode": "获利模式",
+        "cycleProgress": "周期进度",
+        "waitingCycle": "等待下一个交易周期",
+        "viewDetails": "区块详情"
+      },
+      "error": {
+        "title": "错误",
+        "loadFailed": "加载投资组合失败"
+      }
+    },
+    "cycles": {
+      "title": "生命周期跟踪",
+      "subtitle": "实时大宗商品交易周期和业绩指标",
+      "backToDashboard": "返回仪表板",
+      "stats": {
+        "globalCycles": "全球周期",
+        "matured": "已到期",
+        "activeVelocity": "活动速度",
+        "avgGrowth": "平均增长"
+      },
+      "filters": {
+        "label": "过滤生命周期：",
+        "showing": "显示 {count} 个阶段序列",
+        "options": {
+          "all": "所有生命周期",
+          "scheduled": "已排期",
+          "active": "活动节点",
+          "processing": "数据处理中",
+          "completed": "已到期阶段"
+        }
+      },
+      "empty": {
+        "title": "未找到周期",
+        "subtitle": "当前没有符合您指定过滤条件的运营周期。"
+      },
+      "card": {
+        "sequenceIdentifier": "序列标识符",
+        "performance": "{rating} 业绩",
+        "node": "{type} 节点",
+        "clusters": "GDC-{number} • {count} 个集群",
+        "daysRemaining": "剩余天数",
+        "growthVelocity": "增长速度",
+        "sequenceComplete": "序列完成",
+        "active": "{percent}% 活动",
+        "inauguration": "开启时间",
+        "cycleWindow": "周期窗口",
+        "days": "{count} 天",
+        "maturityDate": "到期日期",
+        "financialArchitecture": "财务架构",
+        "cycleCapital": "周期本金",
+        "floorTarget": "底线目标",
+        "roi": "ROI",
+        "accruedYield": "应计收益",
+        "actualYield": "实际收益",
+        "netGrowth": "净增长",
+        "payoutArchitecture": "赔付/派息架构",
+        "disbursed": "已于 {date} 派发",
+        "distributionPending": "等待派发"
+      }
+    },
+    "tpias": {
+      "title": "活动资产",
+      "subtitle": "管理和跟踪您的大宗商品集群私人投资组合",
+      "backToDashboard": "返回仪表板",
+      "filters": {
+        "searchLabel": "过滤搜索",
+        "searchPlaceholder": "搜索 ID、大宗商品、证书...",
+        "statusLabel": "状态过滤",
+        "modeLabel": "获利策略",
+        "results": "找到 {count} 个结果",
+        "reset": "重置已应用过滤器",
+        "statusOptions": {
+          "all": "所有状态",
+          "pending": "等待激活",
+          "active": "活动投资组合",
+          "matured": "已到期资产",
+          "suspended": "已挂起"
+        },
+        "modeOptions": {
+          "all": "所有模式",
+          "TPM": "TPM (复利)",
+          "EPS": "EPS (提现)"
+        }
+      },
+      "empty": {
+        "title": "未找到资产",
+        "subtitle": "我们找不到任何符合您当前过滤条件的投资区块。",
+        "button": "获取新 TPIA"
+      },
+      "card": {
+        "assetIdentifier": "资产标识符",
+        "node": "{type} 节点",
+        "purchase": "购买",
+        "netValue": "净值",
+        "clusterLocation": "集群位置",
+        "nodeNumber": "节点 GDC-{number}",
+        "marketSlot": "市场位置",
+        "pos": "位置 {pos}/10",
+        "lifecycles": "{count} 个生命周期",
+        "growthVelocity": "增长速度"
+      }
+    },
+    "purchase": {
+      "title": "获取 TPIA",
+      "subtitle": "保护您的大宗商品支撑数字投资区块",
+      "backToDashboard": "返回仪表板",
+      "config": {
+        "title": "资产配置",
+        "subtitle": "定制您的投资",
+        "commodityLabel": "选择集群大宗商品",
+        "modeLabel": "战略收益模式",
+        "quantityLabel": "分配容量",
+        "blockCount": "区块数量",
+        "quantityOptions": {
+          "single": "单个",
+          "completeCluster": "完整集群 ({count})",
+          "fullNode": "完整节点 ({count})"
+        },
+        "modes": {
+          "TPM": {
+            "title": "复利",
+            "badge": "本金倍增",
+            "descriptionLabel": "策略概览",
+            "description": "利润自动再投资以增加活动资产权益。"
+          },
+          "EPS": {
+            "title": "提现",
+            "badge": "流动性重点",
+            "descriptionLabel": "策略概览",
+            "description": "每个周期结束后利润计入您的钱包，方便随时提现。"
+          }
+        }
+      },
+      "gdc": {
+        "statusLabel": "GDC 组建状态",
+        "nodeLabel": "节点集群 GDC-{number}",
+        "velocity": "活跃增速",
+        "slotsLocked": "{current} / {total} 插槽锁定",
+        "slotsRemaining": "剩余 {count} 个插槽"
+      },
+      "button": "执行收购",
+      "summary": {
+        "title": "订单摘要",
+        "selectedUnits": "已选单位",
+        "unitsCount": "{count} 个 TPIA 区块",
+        "baseValue": "基本价值",
+        "total": "总计",
+        "walletCredits": "钱包余额",
+        "protectionsTitle": "资产保护",
+        "protections": {
+          "insurance": "保险覆盖证书",
+          "commodity": "实物大宗商品支撑",
+          "node": "集群节点分配",
+          "compounding": "自动规模复利",
+          "preservation": "100% 本金保护"
+        }
+      },
+      "modal": {
+        "title": "余额不足",
+        "subtitle": "您需要充值钱包才能完成此购买。",
+        "required": "所需金额",
+        "current": "当前余额",
+        "gap": "缺口金额",
+        "cancel": "取消",
+        "topup": "充值"
+      },
+      "error": {
+        "general": "购买 TPIA 失败",
+        "selectCommodity": "请选择大宗商品类型"
+      },
+      "success": {
+        "title": "购买成功！",
+        "subtitle": "您的 TPIA 区块已创建并分配到 GDC 集群。",
+        "redirecting": "正在重定向到仪表板..."
+      }
+    },
+    "statement": {
+      "title": "全球账本",
+      "subtitle": "详细的账户对账单和交易历史",
+      "backToDashboard": "返回仪表板",
+      "preparing": "正在准备账户对账单...",
+      "download": "下载账本",
+      "header": {
+        "platform": "全球平台",
+        "tagline": "贸易融资与数字资产",
+        "company": "GloTrade 数字资产",
+        "periodLabel": "对账单周期",
+        "periodAll": "完整历史记录",
+        "periodFiltered": "指定时间线",
+        "generatedOn": "生成于 {date}"
+      },
+      "filters": {
+        "last30": "过去 30 个运营日",
+        "quarterly": "季度存档",
+        "annual": "年度记录",
+        "all": "完整历史记录"
+      },
+      "summary": {
+        "totalInvestment": "总投资",
+        "active": "活动中",
+        "totalROI": "累计获得收益 (ROI)",
+        "walletBalance": "钱包余额"
+      },
+      "table": {
+        "headers": {
+          "time": "生命周期/时间",
+          "entity": "交易主体",
+          "reference": "参考号",
+          "reserve": "新储备金",
+          "value": "收益价值"
+        }
+      },
+      "card": {
+        "refLabel": "参考号：",
+        "entityLabel": "主体：",
+        "reserveLabel": "储备金：",
+        "valueChange": "价值变更"
+      },
+      "empty": {
+        "title": "未找到数据",
+        "subtitle": "在指定的时间线内未找到历史记录。"
+      },
+      "footer": {
+        "noticeTitle": "官方存档通知",
+        "noticeText": "此账户账本是 Glotrade 全球平台活动的官方记录。",
+        "disclaimer": "所有分录均经过实物大宗商品变动和数字资产托管协议的交叉验证。如发现差异，请在 48 小时内报告至 {email}。",
+        "verified": "安全账本已验证",
+        "totalArchive": "总投资组合存档",
+        "endOfRecord": "GLOTRADE 全球平台 • 记录数据结束"
+      }
+    },
+    "details": {
+      "tpiaTitle": "联盟协议区块",
+      "subtitle": "受信保险合作伙伴联盟",
+      "backToPortfolio": "返回投资组合",
+      "ownershipLabel": "所有权",
+      "error": {
+        "title": "错误",
+        "loadFailed": "加载 TPIA 详情失败",
+        "switchMode": "切换获利模式失败",
+        "notFound": "找不到 TPIA",
+        "goBack": "返回"
+      },
+      "financial": {
+        "title": "财务表现",
+        "subtitle": "资产价值与收益",
+        "cost": "原始成本",
+        "value": "当前价值",
+        "accrued": "净应计收益",
+        "roi": "总收益率 (ROI)",
+        "compoundedExit": "复利退出价值"
+      },
+      "cycle": {
+        "title": "活跃周期",
+        "subtitle": "增长进行中",
+        "openDate": "开启日期",
+        "projectedClose": "预计结束",
+        "targetLabel": "周期收益目标",
+        "progress": "已应计 {progress}%",
+        "durationLabel": "周期已进行天数",
+        "durationValue": "{days} 个市场日",
+        "accruedProfit": "应计利润"
+      },
+      "profitMode": {
+        "title": "收益方法",
+        "compoundBadge": "复利",
+        "withdrawalBadge": "提现",
+        "compoundDesc": "利润会自动再投资以扩大资产权益。",
+        "withdrawalDesc": "每个周期结束后，利润会计入您的流动钱包。",
+        "switchButton": "切换为 {mode}"
+      },
+      "insurance": {
+        "title": "活动保险范围",
+        "certificate": "保护证书",
+        "certLabel": "保护证书",
+        "insurer": "保险商",
+        "provider": "保险商",
+        "providers": {
+          "Default Insurance Provider": "GloTrade 战略保险"
+        },
+        "verified": "已验证",
+        "statusLabel": "已验证",
+        "purchaseInvoice": "购买发票",
+        "invoiceButton": "购买发票",
+        "assetCertificate": "资产证书",
+        "certButton": "资产证书"
+      },
+      "node": {
+        "title": "集群节点",
+        "reference": "GDC 参考号",
+        "ref": "GDC 参考号",
+        "position": "节点位置",
+        "posLabel": "节点位置",
+        "posValue": "{total} 个区块中的第 {pos} 个",
+        "commodity": "大宗商品支撑",
+        "defaultCommodity": "混合大宗商品"
+      }
+    },
+    "certificate": {
+      "header": {
+        "title": "保险证书",
+        "protocol": "TPIA - 联盟协议",
+        "archiveLabel": "官方资产存档"
+      },
+      "info": {
+        "seqLabel": "证书序号",
+        "dateLabel": "生效日期"
+      },
+      "partner": {
+        "entityLabel": "已识别资产实体"
+      },
+      "content": {
+        "confirmation": "本文件确认投资区块 {id} 的注册保险覆盖。由 GDIP 多层风险管理框架下的实物商品储备提供全额支持。",
+        "backing": "此保险由下列主保险商承保。",
+        "coverageLabel": "保险覆盖额度",
+        "backingLabel": "资产支持",
+        "backingValue": "{qty} {unit} {type}",
+        "windowLabel": "有效时间段",
+        "logisticsLabel": "物流枢纽",
+        "defaultHub": "GLOTRADE 战略储备"
+      },
+      "footer": {
+        "authorizedSignatory": "授权签字人",
+        "adminSignatory": "GloTrade 管理员",
+        "leadUnderwriter": "主承保人",
+        "noticeTitle": "官方存档通知",
+        "noticeText": "本文件为底层保险合同的数字表示形式。 ",
+        "protectionText": "每个 TPIA 区块的 {amount} 全额资本保护已根据主权托管标准进行交叉验证。",
+        "verificationLabel": "安全验证",
+        "endOfDocument": "GLOTRADE 全球平台 • 文件结束",
+        "encrypted": "安全账本已加密"
+      },
+      "backToPortfolio": "返回投资组合",
+      "printButton": "打印证书"
+    },
+    "commodity": {
+      "title": "大宗商品支撑",
+      "subtitle": "支撑您 TPIA 投资的实物资产",
+      "back": "返回",
+      "summary": {
+        "types": "商品类型",
+        "total": "商品总数",
+        "quantity": "总数量",
+        "value": "总价值"
+      },
+      "card": {
+        "idLabel": "商品 ID：",
+        "quantityLabel": "数量：",
+        "marketPriceLabel": "市场价格：",
+        "unitPriceLabel": "单价：",
+        "qualityLabel": "品质：",
+        "conditionLabel": "状况：",
+        "warehouseLabel": "仓库：",
+        "updatedLabel": "最后更新："
+      },
+      "conditions": {
+        "excellent": "优",
+        "good": "良",
+        "average": "一般",
+        "poor": "较差"
+      },
+      "empty": {
+        "title": "未找到大宗商品支撑",
+        "subtitle": "一旦您的 GDC 开始交易，大宗商品将被分配"
+      },
+      "error": {
+        "title": "错误",
+        "loadFailed": "加载大宗商品支撑失败",
+        "goBack": "返回"
+      }
+    },
+    "invoice": {
+      "header": {
+        "title": "结算发票",
+        "archiveLabel": "记录标识符",
+        "recordLabel": "数字记录",
+        "brand": "GLOTRADE GDIP"
+      },
+      "info": {
+        "hqLabel": "总部位置",
+        "nodeLabel": "数字节点",
+        "commLabel": "通讯"
+      },
+      "partner": {
+        "billedLabel": "账单抬头",
+        "dateLabel": "结算日期",
+        "verificationLabel": "付款验证",
+        "verifiedStatus": "合作伙伴已验证",
+        "settlementStatus": "结算完成"
+      },
+      "table": {
+        "headers": {
+          "description": "生命周期描述",
+          "qty": "数量",
+          "value": "经济价值"
+        },
+        "item": {
+          "name": "GDIP 战略贸易区块",
+          "status": "全额抵押资产",
+          "blockId": "区块 ID",
+          "nodeId": "节点 ID",
+          "configLabel": "资产配置",
+          "backing": "抵押支持",
+          "unit": "区块单位",
+          "settledStatus": "100% 已结算",
+          "defaultType": "混合商品"
+        }
+      },
+      "mobile": {
+        "blockLabel": "区块 ID",
+        "qtyLabel": "数量",
+        "valueLabel": "价值"
+      },
+      "summary": {
+        "subtotal": "净次级价值",
+        "tax": "免税 / VRT",
+        "total": "总结算额"
+      },
+      "footer": {
+        "title": "结算存档",
+        "text1": "此交易序列已通过",
+        "ledgerSystem": "GloTrade 内部账本系统",
+        "text2": "资产支持由经物理验证的实物商品库存提供全额抵押。",
+        "verifiedLabel": "资产支持已验证",
+        "idLabel": "电子存档 ID",
+        "officialLabel": "官方账本文件",
+        "endOfRecord": "GLOTRADE 全球平台 • 记录数据结束"
+      },
+      "loading": "正在结算发票...",
+      "backToPortfolio": "返回投资组合",
+      "downloadButton": "下载发票",
+      "error": {
+        "title": "错误",
+        "notFound": "找不到发票",
+        "goBack": "返回"
+      }
+    },
+    "status": {
+      "active": "活动",
+      "pending": "等待",
+      "matured": "已到期",
+      "completed": "完成",
+      "scheduled": "已排期",
+      "processing": "处理中",
+      "suspended": "挂起",
+      "excellent": "优",
+      "good": "良",
+      "average": "一般",
+      "poor": "较差",
+      "verified": "已验证"
     }
   }
 }

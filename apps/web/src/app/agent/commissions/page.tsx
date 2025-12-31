@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { apiGet } from "@/utils/api";
 import { toast } from "@/components/common/Toast";
+import { translate } from "@/utils/translate";
 import {
     DollarSign, Search, Filter, ChevronLeft, ChevronRight, Loader2,
     CheckCircle2, Clock, XCircle, TrendingUp
@@ -60,7 +61,7 @@ export default function CommissionsPage() {
             setCommissions(response.data.commissions);
             setTotalPages(response.data.pagination.pages);
         } catch (error: any) {
-            toast(error.message || "Failed to load commissions", "error");
+            toast(error.message || translate("agent.toasts.loadCommissionsError"), "error");
         } finally {
             setIsLoading(false);
         }
@@ -110,10 +111,10 @@ export default function CommissionsPage() {
 
     const getTypeBadge = (type: string) => {
         const labels = {
-            registration: "Registration",
-            purchase: "Purchase",
-            bonus: "Bonus",
-            tier_upgrade: "Tier Upgrade",
+            registration: translate("agent.types.registration"),
+            purchase: translate("agent.types.purchase"),
+            bonus: translate("agent.types.bonus"),
+            tier_upgrade: translate("agent.types.tier_upgrade"),
         };
         return labels[type as keyof typeof labels] || type;
     };
@@ -128,13 +129,13 @@ export default function CommissionsPage() {
                         className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white mb-4"
                     >
                         <ChevronLeft className="h-5 w-5" />
-                        Back to Dashboard
+                        {translate("agent.commissions.backToDashboard")}
                     </button>
                     <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
-                        Commission History
+                        {translate("agent.commissions.title")}
                     </h1>
                     <p className="text-neutral-600 dark:text-neutral-400">
-                        View all your commission earnings and their status
+                        {translate("agent.commissions.subtitle")}
                     </p>
                 </div>
 
@@ -152,11 +153,11 @@ export default function CommissionsPage() {
                                 }}
                                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none appearance-none"
                             >
-                                <option value="all">All Status</option>
-                                <option value="paid">Paid</option>
-                                <option value="approved">Approved</option>
-                                <option value="pending">Pending</option>
-                                <option value="rejected">Rejected</option>
+                                <option value="all">{translate("agent.commissions.filters.allStatus")}</option>
+                                <option value="paid">{translate("agent.status.paid")}</option>
+                                <option value="approved">{translate("agent.status.approved")}</option>
+                                <option value="pending">{translate("agent.status.pending")}</option>
+                                <option value="rejected">{translate("agent.status.rejected")}</option>
                             </select>
                         </div>
 
@@ -171,11 +172,11 @@ export default function CommissionsPage() {
                                 }}
                                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none appearance-none"
                             >
-                                <option value="all">All Types</option>
-                                <option value="registration">Registration</option>
-                                <option value="purchase">Purchase</option>
-                                <option value="bonus">Bonus</option>
-                                <option value="tier_upgrade">Tier Upgrade</option>
+                                <option value="all">{translate("agent.commissions.filters.allTypes")}</option>
+                                <option value="registration">{translate("agent.types.registration")}</option>
+                                <option value="purchase">{translate("agent.types.purchase")}</option>
+                                <option value="bonus">{translate("agent.types.bonus")}</option>
+                                <option value="tier_upgrade">{translate("agent.types.tier_upgrade")}</option>
                             </select>
                         </div>
                     </div>
@@ -190,7 +191,7 @@ export default function CommissionsPage() {
                     ) : commissions.length === 0 ? (
                         <div className="text-center py-12">
                             <DollarSign className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
-                            <p className="text-neutral-600 dark:text-neutral-400">No commissions found</p>
+                            <p className="text-neutral-600 dark:text-neutral-400">{translate("agent.commissions.noCommissions")}</p>
                         </div>
                     ) : (
                         <>
@@ -199,19 +200,19 @@ export default function CommissionsPage() {
                                     <thead className="bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700">
                                         <tr>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                                                Date
+                                                {translate("agent.commissions.table.date")}
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                                                Type
+                                                {translate("agent.commissions.table.type")}
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                                                Description
+                                                {translate("agent.commissions.table.description")}
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                                                Amount
+                                                {translate("agent.commissions.table.amount")}
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                                                Status
+                                                {translate("agent.commissions.table.status")}
                                             </th>
                                         </tr>
                                     </thead>
@@ -230,7 +231,7 @@ export default function CommissionsPage() {
                                                     {commission.description}
                                                     {commission.metadata?.autoApproved && (
                                                         <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">
-                                                            (Auto-approved)
+                                                            {translate("agent.commissions.autoApproved")}
                                                         </span>
                                                     )}
                                                 </td>
@@ -245,7 +246,7 @@ export default function CommissionsPage() {
                                                             )}`}
                                                         >
                                                             {getStatusIcon(commission.status)}
-                                                            {commission.status}
+                                                            {translate(`agent.status.${commission.status}`)}
                                                         </span>
                                                     </div>
                                                     {commission.status === "rejected" && commission.rejectionReason && (
@@ -264,7 +265,7 @@ export default function CommissionsPage() {
                             {totalPages > 1 && (
                                 <div className="px-6 py-4 border-t border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
                                     <div className="text-sm text-neutral-600 dark:text-neutral-400">
-                                        Page {page} of {totalPages}
+                                        {translate("wallet.transactions.pagination.pageOffset", { page, pages: totalPages })}
                                     </div>
                                     <div className="flex gap-2">
                                         <button

@@ -16,6 +16,7 @@ import {
     ArrowRight,
     FileText
 } from "lucide-react";
+import { translate } from "@/utils/translate";
 
 interface PortfolioSummary {
     totalTPIAs: number;
@@ -85,7 +86,7 @@ export default function GDIPDashboardPage() {
             }
         } catch (err: any) {
             console.error("Error fetching portfolio:", err);
-            setError(err.message || "Failed to load portfolio");
+            setError(err.message || translate("gdip.dashboard.error.loadFailed"));
         } finally {
             setLoading(false);
         }
@@ -128,7 +129,7 @@ export default function GDIPDashboardPage() {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
-                    <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
+                    <h2 className="text-2xl font-bold text-red-600 mb-4">{translate("gdip.dashboard.error.title")}</h2>
                     <p className="text-gray-600">{error}</p>
                 </div>
             </div>
@@ -143,10 +144,10 @@ export default function GDIPDashboardPage() {
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
                         <div className="space-y-1">
                             <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight leading-none">
-                                GDIP Dashboard
+                                {translate("gdip.dashboard.title")}
                             </h1>
                             <p className="text-gray-500 font-medium">
-                                Glotrade Distribution / Trusted Insured Partners Platform
+                                {translate("gdip.dashboard.subtitle")}
                             </p>
                         </div>
                         <button
@@ -154,7 +155,7 @@ export default function GDIPDashboardPage() {
                             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gray-900 text-white rounded-2xl font-bold hover:bg-black shadow-xl shadow-gray-200 transition-all active:scale-95 group"
                         >
                             <FileText size={18} className="group-hover:rotate-6 transition-transform" />
-                            <span>Generate Statement</span>
+                            <span>{translate("gdip.dashboard.generateStatement")}</span>
                         </button>
                     </div>
                 </div>
@@ -168,10 +169,10 @@ export default function GDIPDashboardPage() {
                                 <div className="p-1 px-1.5 bg-blue-50 rounded-md text-blue-600">
                                     <Layers className="w-3.5 h-3.5" />
                                 </div>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Total TPIAs</p>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">{translate("gdip.dashboard.stats.totalTPIAs")}</p>
                             </div>
                             <p className="text-xl sm:text-3xl font-black text-gray-900">{summary.totalTPIAs}</p>
-                            <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase">Across {summary.gdcs} Clusters</p>
+                            <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase">{translate("gdip.dashboard.stats.clusters", { count: summary.gdcs })}</p>
                         </div>
 
                         {/* Total Invested */}
@@ -180,12 +181,12 @@ export default function GDIPDashboardPage() {
                                 <div className="p-1 px-1.5 bg-emerald-50 rounded-md text-emerald-600">
                                     <Wallet className="w-3.5 h-3.5" />
                                 </div>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Deployed</p>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">{translate("gdip.dashboard.stats.deployed")}</p>
                             </div>
                             <p className="text-lg sm:text-2xl font-black text-gray-900 leading-none">
                                 {formatCurrency(summary.totalInvested, 0)}
                             </p>
-                            <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase">Starting Capital</p>
+                            <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase">{translate("gdip.dashboard.stats.startingCapital")}</p>
                         </div>
 
                         {/* Total Profit */}
@@ -194,12 +195,12 @@ export default function GDIPDashboardPage() {
                                 <div className="p-1 px-1.5 bg-indigo-50 rounded-md text-indigo-600">
                                     <TrendingUp className="w-3.5 h-3.5" />
                                 </div>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Profit</p>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">{translate("gdip.dashboard.stats.profit")}</p>
                             </div>
                             <p className="text-lg sm:text-2xl font-black text-emerald-600 leading-none">
                                 {formatCurrency(summary.totalProfitEarned, 0)}
                             </p>
-                            <p className="text-[10px] font-black text-emerald-600 mt-1 uppercase bg-emerald-50 w-fit px-1.5 py-0.5 rounded">+{calculateROI()}% ROI</p>
+                            <p className="text-[10px] font-black text-emerald-600 mt-1 uppercase bg-emerald-50 w-fit px-1.5 py-0.5 rounded">{translate("gdip.dashboard.stats.roi", { roi: calculateROI() })}</p>
                         </div>
 
                         {/* Current Value */}
@@ -208,13 +209,13 @@ export default function GDIPDashboardPage() {
                                 <div className="p-1 px-1.5 bg-amber-50 rounded-md text-amber-600">
                                     <ShieldCheck className="w-3.5 h-3.5" />
                                 </div>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Net Value</p>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">{translate("gdip.dashboard.stats.netValue")}</p>
                             </div>
                             <p className="text-lg sm:text-2xl font-black text-gray-900 leading-none">
                                 {formatCurrency(summary.currentValue, 0)}
                             </p>
                             <div className="text-[9px] font-bold text-gray-400 mt-1 uppercase flex flex-wrap gap-1 leading-tight">
-                                Net Gain: <span className="text-emerald-600">+{formatCurrency(summary.currentValue - summary.totalInvested, 0)}</span>
+                                {translate("gdip.dashboard.stats.netGain")} <span className="text-emerald-600">+{formatCurrency(summary.currentValue - summary.totalInvested, 0)}</span>
                             </div>
                         </div>
 
@@ -225,7 +226,7 @@ export default function GDIPDashboardPage() {
                                     <div className="p-1 px-1.5 bg-blue-50 rounded-md text-blue-600">
                                         <Activity className="w-3.5 h-3.5" />
                                     </div>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Available</p>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">{translate("gdip.dashboard.stats.available")}</p>
                                 </div>
                                 <p className="text-lg sm:text-2xl font-black text-blue-600 leading-none">
                                     {formatCurrency(walletBalance, 0)}
@@ -234,7 +235,7 @@ export default function GDIPDashboardPage() {
                             {walletBalance < 1000000 && (
                                 <p className="text-[9px] font-black text-amber-600 mt-2 flex items-center gap-1 uppercase tracking-tighter bg-amber-50 w-fit px-1.5 py-0.5 rounded leading-none whitespace-nowrap">
                                     <AlertTriangle className="w-3 h-3" />
-                                    Balance Alert
+                                    {translate("gdip.dashboard.stats.balanceAlert")}
                                 </p>
                             )}
                         </div>
@@ -248,7 +249,7 @@ export default function GDIPDashboardPage() {
                     </div>
                     <h2 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-pulse"></span>
-                        Quick Actions
+                        {translate("gdip.dashboard.quickActions.title")}
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <button
@@ -256,7 +257,7 @@ export default function GDIPDashboardPage() {
                             className="flex items-center justify-center gap-3 bg-blue-600 text-white px-6 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-md shadow-blue-100 active:scale-95 group"
                         >
                             <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
-                            Purchase TPIA
+                            {translate("gdip.dashboard.quickActions.purchase")}
                         </button>
 
                         <button
@@ -264,7 +265,7 @@ export default function GDIPDashboardPage() {
                             className="flex items-center justify-center gap-3 bg-gray-900 text-white px-6 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-black transition-all shadow-md shadow-gray-100 active:scale-95 group"
                         >
                             <LayoutGrid className="w-5 h-5 opacity-70 group-hover:scale-110 transition-transform" />
-                            My Portfolio
+                            {translate("gdip.dashboard.quickActions.portfolio")}
                         </button>
 
                         <button
@@ -272,7 +273,7 @@ export default function GDIPDashboardPage() {
                             className="flex items-center justify-center gap-3 bg-indigo-600 text-white px-6 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100 active:scale-95 group"
                         >
                             <Activity className="w-5 h-5 opacity-70 group-hover:translate-y-[-2px] transition-all" />
-                            Market Cycles
+                            {translate("gdip.dashboard.quickActions.cycles")}
                         </button>
                     </div>
                 </div>
@@ -281,27 +282,27 @@ export default function GDIPDashboardPage() {
                 <div className="bg-white rounded-3xl border border-gray-100 p-5 sm:p-6 shadow-sm overflow-hidden">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                         <div>
-                            <h2 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight mb-1 leading-none">Active Holdings</h2>
-                            <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest">Recent performance tracking</p>
+                            <h2 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight mb-1 leading-none">{translate("gdip.dashboard.activeHoldings.title")}</h2>
+                            <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.dashboard.activeHoldings.subtitle")}</p>
                         </div>
                         <button
                             onClick={() => router.push("/gdip/tpias")}
                             className="w-full sm:w-auto bg-gray-50 text-gray-900 px-4 py-2.5 rounded-xl font-bold text-[10px] sm:text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-gray-100 transition-all group active:scale-95 border border-gray-100 sm:border-none"
                         >
-                            Manage Portfolio <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                            {translate("gdip.dashboard.activeHoldings.manage")} <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                         </button>
                     </div>
 
                     {tpias.length === 0 ? (
                         <div className="text-center py-20 bg-gray-50/50 rounded-3xl border-2 border-dashed border-gray-100">
                             <Inbox className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-                            <h3 className="text-xl font-black text-gray-900 mb-2">Portfolio Empty</h3>
-                            <p className="text-gray-500 font-medium mb-6">Start your investment journey by purchasing your first TPIA</p>
+                            <h3 className="text-xl font-black text-gray-900 mb-2">{translate("gdip.dashboard.activeHoldings.emptyTitle")}</h3>
+                            <p className="text-gray-500 font-medium mb-6">{translate("gdip.dashboard.activeHoldings.emptySubtitle")}</p>
                             <button
                                 onClick={() => router.push("/gdip/purchase")}
                                 className="bg-blue-600 text-white px-8 py-3 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 active:scale-95"
                             >
-                                Get Started Now
+                                {translate("gdip.dashboard.activeHoldings.getStarted")}
                             </button>
                         </div>
                     ) : (
@@ -317,7 +318,7 @@ export default function GDIPDashboardPage() {
                                             <h3 className="font-black text-xl text-gray-900 tracking-tight">{tpia.tpiaId}</h3>
                                             <div className="flex items-center gap-2">
                                                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
-                                                    <span className="opacity-50 text-sm">#</span> Cluster-{tpia.gdcNumber}
+                                                    <span className="opacity-50 text-sm">#</span> {translate("gdip.dashboard.tpiaCard.cluster", { number: tpia.gdcNumber })}
                                                 </span>
                                             </div>
                                         </div>
@@ -325,18 +326,18 @@ export default function GDIPDashboardPage() {
                                             tpia.status === "pending" ? "bg-amber-100 text-amber-700" :
                                                 "bg-gray-100 text-gray-500 border border-gray-200"
                                             }`}>
-                                            {tpia.status}
+                                            {translate("gdip.status." + tpia.status)}
                                         </span>
                                     </div>
 
                                     {/* Metrics Grid */}
                                     <div className="grid grid-cols-2 gap-2">
                                         <div className="bg-gray-50 p-2.5 rounded-2xl border border-gray-100 space-y-1">
-                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Capital</p>
+                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.dashboard.tpiaCard.capital")}</p>
                                             <p className="text-[11px] sm:text-sm font-black text-gray-900 leading-none">{formatCurrency(tpia.purchasePrice, 0)}</p>
                                         </div>
                                         <div className="bg-gray-50 p-2.5 rounded-2xl border border-gray-100 space-y-1">
-                                            <p className="text-[9px] font-bold text-emerald-600/70 uppercase tracking-widest">Est. Return</p>
+                                            <p className="text-[9px] font-bold text-emerald-600/70 uppercase tracking-widest">{translate("gdip.dashboard.tpiaCard.estReturn")}</p>
                                             <p className="text-[11px] sm:text-sm font-black text-emerald-600 leading-none">+{formatCurrency(tpia.estimatedProfit || 0, 0)}</p>
                                         </div>
                                     </div>
@@ -344,11 +345,11 @@ export default function GDIPDashboardPage() {
                                     {/* Additional Stats */}
                                     <div className="space-y-1.5 px-1">
                                         <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-tight">
-                                            <span className="text-gray-400">Net Value</span>
+                                            <span className="text-gray-400">{translate("gdip.dashboard.tpiaCard.netValue")}</span>
                                             <span className="text-gray-900 font-black ml-2">{formatCurrency(tpia.currentValue, 0)}</span>
                                         </div>
                                         <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-tight">
-                                            <span className="text-gray-400">Profit Mode</span>
+                                            <span className="text-gray-400">{translate("gdip.dashboard.tpiaCard.profitMode")}</span>
                                             <span className={`px-2 py-0.5 rounded ${tpia.profitMode === "TPM" ? "bg-indigo-50 text-indigo-600" : "bg-blue-50 text-blue-600"}`}>
                                                 {tpia.profitMode}
                                             </span>
@@ -359,7 +360,7 @@ export default function GDIPDashboardPage() {
                                     {tpia.status === "active" && tpia.currentCycleId ? (
                                         <div className="pt-2">
                                             <div className="flex justify-between items-end mb-2">
-                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Cycle Progress</p>
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{translate("gdip.dashboard.tpiaCard.cycleProgress")}</p>
                                                 <p className="text-[10px] font-black text-blue-600 uppercase">
                                                     {(() => {
                                                         if (!tpia.currentCycleId?.startDate || !tpia.currentCycleId?.endDate) return "0";
@@ -390,13 +391,13 @@ export default function GDIPDashboardPage() {
                                     ) : (
                                         <div className="pt-2">
                                             <div className="p-3 bg-yellow-50 rounded-2xl border border-yellow-100 text-center">
-                                                <p className="text-[10px] font-bold text-amber-700 uppercase tracking-widest">Waiting for next trade cycle</p>
+                                                <p className="text-[10px] font-bold text-amber-700 uppercase tracking-widest">{translate("gdip.dashboard.tpiaCard.waitingCycle")}</p>
                                             </div>
                                         </div>
                                     )}
 
                                     <div className="pt-2 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all text-xs font-black text-blue-600 uppercase tracking-[0.2em]">
-                                        Block Details <ArrowRight size={14} className="ml-1" />
+                                        {translate("gdip.dashboard.tpiaCard.viewDetails")} <ArrowRight size={14} className="ml-1" />
                                     </div>
                                 </div>
                             ))}

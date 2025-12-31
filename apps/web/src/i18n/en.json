@@ -185,7 +185,10 @@
       "order": "Order",
       "item": "item",
       "items": "items",
-      "view": "View"
+      "view": "View",
+      "prev": "Prev",
+      "next": "Next",
+      "page": "Page {number}"
     },
     "details": {
       "title": "Order {id}",
@@ -254,6 +257,14 @@
         "updated": "Order updated",
         "updateFailed": "Update failed",
         "reviewSubmitted": "Review submitted successfully!"
+      },
+      "toast": {
+        "failedLoad": "Failed to load order",
+        "updated": "Order updated",
+        "updateFailed": "Update failed",
+        "generatingInvoice": "Generating invoice...",
+        "invoiceDownloaded": "Invoice downloaded",
+        "invoiceFailed": "Failed to download invoice"
       }
     }
   },
@@ -274,6 +285,9 @@
     "all": "All",
     "latestProducts": "Latest products",
     "noProductsMatch": "No products match this category.",
+    "pagination": {
+      "pageOf": "Page {current} of {total}"
+    },
     "loading": "Loading...",
     "error": "An error occurred",
     "save": "Save",
@@ -1138,6 +1152,9 @@
     "actions": {
       "topUp": "Top Up",
       "withdraw": "Withdraw",
+      "withdrawThresholdApproved": "You need at least {amount} in approved commissions to withdraw",
+      "withdrawThresholdTotal": "You need at least {amount} in total earnings to withdraw",
+      "withdrawThresholdAvailable": "You need at least {amount} in available balance to withdraw",
       "requestCredit": "Request Credit",
       "export": "Export",
       "refresh": "Refresh",
@@ -1145,10 +1162,31 @@
       "history": "History",
       "settings": "Settings"
     },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled",
+      "completed": "Completed",
+      "failed": "Failed",
+      "processing": "Processing"
+    },
     "tabs": {
       "transactions": "Transactions",
       "withdrawals": "Withdrawal History",
+      "credit": "Credit Requests",
       "creditRequests": "Credit Requests"
+    },
+    "creditRequests": {
+      "title": "Credit Requests",
+      "subtitle": "View and manage your credit line applications",
+      "noRequests": "No credit requests found.",
+      "clickToRequest": "Click 'Request Credit' to apply for a credit line.",
+      "submitted": "Submitted on {date} at {time}",
+      "reviewed": "Reviewed on {date}",
+      "approvedAmount": "Approved Amount",
+      "note": "Admin Note",
+      "rejectionReason": "Rejection Reason"
     },
     "withdrawals": {
       "title": "Withdrawal Requests",
@@ -1282,7 +1320,13 @@
         "resolving": "Resolving account...",
         "cancel": "Cancel",
         "submit": "Withdraw Funds",
-        "history": "Withdrawal History"
+        "history": "Withdrawal History",
+        "invalidAmount": "Please enter a valid amount",
+        "insufficientBalance": "Insufficient balance for this withdrawal",
+        "missingDetails": "Please provide all bank details",
+        "loadingBanksError": "Failed to load banks",
+        "resolveError": "Could not verify account details",
+        "processing": "Processing..."
       },
       "creditRequest": {
         "title": "Request Credit Limit",
@@ -1446,6 +1490,599 @@
       "howToCompatible": "Compatible: Works with the AfriTrade app and web platform",
       "shareText": "Send money to {name} via AfriTrade",
       "shareTitle": "AfriTrade Wallet - {name}"
+    }
+  },
+  "agent": {
+    "dashboard": {
+      "title": "Sales Agent Dashboard",
+      "subtitle": "Track your referrals, commissions, and performance",
+      "loading": "Loading dashboard...",
+      "stats": {
+        "totalReferrals": "Total Referrals",
+        "activeCount": "{count} active",
+        "totalEarned": "Total Earned",
+        "commissionsCount": "{count} commissions",
+        "pendingCommission": "Pending Commission",
+        "awaitingApproval": "Awaiting approval",
+        "conversionRate": "Conversion Rate",
+        "pendingToActive": "Pending → Active"
+      },
+      "tools": {
+        "title": "Referral Tools",
+        "codeLabel": "Your Referral Code",
+        "linkLabel": "Referral Link",
+        "copy": "Copy",
+        "copied": "Copied!",
+        "share": "Share",
+        "viewReferrals": "View Referrals",
+        "commissions": "Commissions",
+        "wallet": "Wallet"
+      },
+      "breakdown": {
+        "title": "Commission Breakdown",
+        "registration": "Registration Bonuses",
+        "purchase": "Purchase Commissions",
+        "bonus": "Bonuses"
+      },
+      "performance": {
+        "title": "Referral Performance",
+        "totalOrders": "Total Orders",
+        "totalOrderValue": "Total Order Value",
+        "avgOrderValue": "Avg Order Value"
+      }
+    },
+    "commissions": {
+      "title": "Commission History",
+      "subtitle": "View all your commission earnings and their status",
+      "backToDashboard": "Back to Dashboard",
+      "loading": "Loading commissions...",
+      "noCommissions": "No commissions found",
+      "autoApproved": "(Auto-approved)",
+      "filters": {
+        "allStatus": "All Status",
+        "allTypes": "All Types"
+      },
+      "table": {
+        "date": "Date",
+        "type": "Type",
+        "description": "Description",
+        "amount": "Amount",
+        "status": "Status"
+      }
+    },
+    "referrals": {
+      "title": "My Referrals",
+      "subtitle": "Track and manage all your referred users",
+      "backToDashboard": "Back to Dashboard",
+      "loading": "Loading referrals...",
+      "noReferrals": "No referrals found",
+      "searchPlaceholder": "Search by username or email...",
+      "filters": {
+        "allStatus": "All Status"
+      },
+      "table": {
+        "user": "User",
+        "status": "Status",
+        "registered": "Registered",
+        "orders": "Orders",
+        "orderValue": "Order Value",
+        "commission": "Commission"
+      }
+    },
+    "status": {
+      "paid": "Paid",
+      "approved": "Approved",
+      "pending": "Pending",
+      "rejected": "Rejected",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "types": {
+      "registration": "Registration",
+      "purchase": "Purchase",
+      "bonus": "Bonus",
+      "tier_upgrade": "Tier Upgrade"
+    },
+    "toasts": {
+      "copied": "Referral code copied!",
+      "linkCopied": "Referral link copied!",
+      "loadDashboardError": "Failed to load dashboard",
+      "loadCommissionsError": "Failed to load commissions",
+      "loadReferralsError": "Failed to load referrals"
+    }
+  },
+  "gdip": {
+    "layout": {
+      "restricted": {
+        "title": "Distributor Access Restricted",
+        "message": "This area is exclusively for authenticated distributors. Please contact support if you believe this is an error."
+      }
+    },
+    "dashboard": {
+      "title": "GDIP Dashboard",
+      "subtitle": "Glotrade Distribution / Trusted Insured Partners Platform",
+      "generateStatement": "Generate Statement",
+      "stats": {
+        "totalTPIAs": "Total TPIAs",
+        "clusters": "Across {count} Clusters",
+        "deployed": "Deployed",
+        "startingCapital": "Starting Capital",
+        "profit": "Profit",
+        "roi": "+{roi}% ROI",
+        "netValue": "Net Value",
+        "netGain": "Net Gain: ",
+        "available": "Available",
+        "balanceAlert": "Balance Alert"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "purchase": "Purchase TPIA",
+        "portfolio": "My Portfolio",
+        "cycles": "Market Cycles"
+      },
+      "activeHoldings": {
+        "title": "Active Holdings",
+        "subtitle": "Recent performance tracking",
+        "manage": "Manage Portfolio",
+        "emptyTitle": "Portfolio Empty",
+        "emptySubtitle": "Start your investment journey by purchasing your first TPIA",
+        "getStarted": "Get Started Now"
+      },
+      "tpiaCard": {
+        "cluster": "Cluster-{number}",
+        "capital": "Capital",
+        "estReturn": "Est. Return",
+        "netValue": "Net Value",
+        "profitMode": "Profit Mode",
+        "cycleProgress": "Cycle Progress",
+        "waitingCycle": "Waiting for next trade cycle",
+        "viewDetails": "Block Details"
+      },
+      "error": {
+        "title": "Error",
+        "loadFailed": "Failed to load portfolio"
+      }
+    },
+    "cycles": {
+      "title": "Lifecycle Tracking",
+      "subtitle": "Real-time commodity trading cycles and performance metrics",
+      "backToDashboard": "Back to Dashboard",
+      "stats": {
+        "globalCycles": "Global Cycles",
+        "matured": "Matured",
+        "activeVelocity": "Active Velocity",
+        "avgGrowth": "Avg Growth"
+      },
+      "filters": {
+        "label": "Filter Lifecycle:",
+        "showing": "Showing {count} Phased Sequences",
+        "options": {
+          "all": "EVERY LIFECYCLE",
+          "scheduled": "SCHEDULED",
+          "active": "ACTIVE NODES",
+          "processing": "DATA PROCESSING",
+          "completed": "MATURED PHASES"
+        }
+      },
+      "empty": {
+        "title": "No Cycles Located",
+        "subtitle": "No operational cycles currently match your specified filters."
+      },
+      "card": {
+        "sequenceIdentifier": "SEQUENCE IDENTIFIER",
+        "performance": "{rating} Performance",
+        "node": "{type} Node",
+        "clusters": "GDC-{number} • {count} Clusters",
+        "daysRemaining": "DAYS REMAINING",
+        "growthVelocity": "Growth Velocity",
+        "sequenceComplete": "Sequence Complete",
+        "active": "{percent}% Active",
+        "inauguration": "Inauguration",
+        "cycleWindow": "Cycle Window",
+        "days": "{count} Days",
+        "maturityDate": "Maturity Date",
+        "financialArchitecture": "Financial Architecture",
+        "cycleCapital": "Cycle Capital",
+        "floorTarget": "Floor Target",
+        "roi": "ROI",
+        "accruedYield": "Accrued Yield",
+        "actualYield": "Actual Yield",
+        "netGrowth": "Net Growth",
+        "payoutArchitecture": "Payout Architecture",
+        "disbursed": "Disbursed {date}",
+        "distributionPending": "Distribution Pending"
+      }
+    },
+    "tpias": {
+      "title": "Active Holdings",
+      "subtitle": "Manage and track your private portfolio of commodity clusters",
+      "backToDashboard": "Back to Dashboard",
+      "filters": {
+        "searchLabel": "Filter Search",
+        "searchPlaceholder": "Search IDs, Commodities, Certificates...",
+        "statusLabel": "Status Filter",
+        "modeLabel": "Profit Strategy",
+        "results": "Found {count} Results",
+        "reset": "Reset Applied Filters",
+        "statusOptions": {
+          "all": "EVERY STATUS",
+          "pending": "PENDING ACTIVATION",
+          "active": "ACTIVE PORTFOLIO",
+          "matured": "MATURED ASSETS",
+          "suspended": "SUSPENDED"
+        },
+        "modeOptions": {
+          "all": "ALL MODES",
+          "TPM": "TPM (COMPOUNDING)",
+          "EPS": "EPS (WITHDRAWAL)"
+        }
+      },
+      "empty": {
+        "title": "No Assets Found",
+        "subtitle": "We couldn't find any investment blocks matching your current filters.",
+        "button": "Acquire New TPIA"
+      },
+      "card": {
+        "assetIdentifier": "ASSET IDENTIFIER",
+        "node": "{type} Node",
+        "purchase": "Purchase",
+        "netValue": "Net Value",
+        "clusterLocation": "Cluster Location",
+        "nodeNumber": "Node GDC-{number}",
+        "marketSlot": "Market Slot",
+        "pos": "POS {pos}/10",
+        "lifecycles": "{count} LIFECYCLES",
+        "growthVelocity": "Growth Velocity"
+      }
+    },
+    "purchase": {
+      "title": "Acquire TPIA",
+      "subtitle": "Secure your commodity-backed Digital Investment Block",
+      "backToDashboard": "Back to Dashboard",
+      "config": {
+        "title": "Asset Configuration",
+        "subtitle": "Customize your investment",
+        "commodityLabel": "Select Cluster Commodity",
+        "modeLabel": "Strategic Earnings Mode",
+        "quantityLabel": "Allocation Volume",
+        "blockCount": "Block Count",
+        "quantityOptions": {
+          "single": "Single",
+          "completeCluster": "Complete Cluster ({count})",
+          "fullNode": "Full Node ({count})"
+        },
+        "modes": {
+          "TPM": {
+            "title": "Compounding",
+            "badge": "Capital Multiplier",
+            "descriptionLabel": "Strategy Overview",
+            "description": "Profits reinvest automatically to increase active asset equity."
+          },
+          "EPS": {
+            "title": "Withdrawal",
+            "badge": "Liquidity Focus",
+            "descriptionLabel": "Strategy Overview",
+            "description": "Profits credit to your wallet for immediate withdrawal flexibility."
+          }
+        }
+      },
+      "button": "Execute Acquisition",
+      "summary": {
+        "title": "Order Summary",
+        "selectedUnits": "Selected Units",
+        "unitsCount": "{count} TPIA Block(s)",
+        "baseValue": "Base Value",
+        "total": "Grand Total",
+        "walletCredits": "Wallet Credits",
+        "protectionsTitle": "ASSET PROTECTIONS",
+        "protections": {
+          "insurance": "Insurance Coverage Certificate",
+          "commodity": "Physical Commodity Backing",
+          "node": "Cluster Node Assignment",
+          "compounding": "Automated Scale Compounding",
+          "preservation": "100% Capital Preservation"
+        }
+      },
+      "modal": {
+        "title": "Insufficient Funds",
+        "subtitle": "You need to top up your wallet to complete this purchase.",
+        "required": "Required",
+        "current": "Current",
+        "gap": "Gap Amount",
+        "cancel": "Cancel",
+        "topup": "Top Up"
+      },
+      "error": {
+        "general": "Failed to purchase TPIA",
+        "selectCommodity": "Please select a commodity type"
+      },
+      "gdc": {
+        "statusLabel": "GDC FORMATION STATUS",
+        "nodeLabel": "Node Cluster GDC-{number}",
+        "velocity": "Active Velocity",
+        "slotsLocked": "{current} OF {total} SLOTS LOCKED",
+        "slotsRemaining": "{count} SLOTS REMAINING"
+      },
+      "success": {
+        "title": "Purchase Successful!",
+        "subtitle": "Your TPIA block(s) have been created and assigned to GDC clusters.",
+        "redirecting": "Redirecting to dashboard..."
+      }
+    },
+    "statement": {
+      "title": "Global Ledger",
+      "subtitle": "Comprehensive account statement and transaction history",
+      "backToDashboard": "Return to Dashboard",
+      "preparing": "Preparing Account Statement...",
+      "download": "Download Ledger",
+      "header": {
+        "platform": "INTERNATIONAL PLATFORM",
+        "tagline": "Trade Finance & Digital Assets",
+        "company": "GloTrade Digital Assets",
+        "periodLabel": "STATEMENT PERIOD",
+        "periodAll": "COMPREHENSIVE HISTORY",
+        "periodFiltered": "SPECIFIED TIMELINE",
+        "generatedOn": "Generated On {date}"
+      },
+      "filters": {
+        "last30": "LAST 30 OPERATIONAL DAYS",
+        "quarterly": "QUARTERLY ARCHIVE",
+        "annual": "ANNUAL RECORD",
+        "all": "COMPREHENSIVE HISTORY"
+      },
+      "summary": {
+        "totalInvestment": "TOTAL INVESTMENT",
+        "active": "ACTIVE",
+        "totalROI": "TOTAL ROI EARNED",
+        "walletBalance": "WALLET BALANCE"
+      },
+      "table": {
+        "headers": {
+          "time": "Lifecycle / Time",
+          "entity": "Transaction Entity",
+          "reference": "Reference",
+          "reserve": "New Reserve",
+          "value": "Yield Value"
+        }
+      },
+      "card": {
+        "refLabel": "REF: ",
+        "entityLabel": "Entity:",
+        "reserveLabel": "Reserve:",
+        "valueChange": "VALUE CHANGE"
+      },
+      "empty": {
+        "title": "No Data Located",
+        "subtitle": "No historical sequences found within this specified timeline."
+      },
+      "footer": {
+        "noticeTitle": "OFFICIAL ARCHIVE NOTICE",
+        "noticeText": "This account ledger is an official record of activities on the Glotrade International Platform.",
+        "disclaimer": "All entries are cross-verified with physical commodity movement and digital asset custody protocols. Report discrepancies to {email} within 48 operational hours.",
+        "verified": "SECURE LEDGER VERIFIED",
+        "totalArchive": "TOTAL PORTFOLIO ARCHIVE",
+        "endOfRecord": "GLOTRADE INTERNATIONAL PLATFORM • END OF RECORDED DATA"
+      }
+    },
+    "details": {
+      "tpiaTitle": "Alliance Protocol Block",
+      "subtitle": "Trusted Insured Partners Alliance",
+      "backToPortfolio": "Back to Portfolio",
+      "ownershipLabel": "Ownership",
+      "error": {
+        "title": "Error",
+        "loadFailed": "Failed to load TPIA details",
+        "switchMode": "Failed to switch profit mode",
+        "notFound": "TPIA not found",
+        "goBack": "Go Back"
+      },
+      "financial": {
+        "title": "Financial Performance",
+        "subtitle": "Asset value & earnings",
+        "cost": "Original Cost",
+        "value": "Current Value",
+        "accrued": "Net Accrued",
+        "roi": "Total ROI",
+        "compoundedExit": "Compounded Exit Value"
+      },
+      "cycle": {
+        "title": "Active Cycle",
+        "subtitle": "Growth in progress",
+        "openDate": "Open Date",
+        "projectedClose": "Projected Close",
+        "targetLabel": "Cycle ROI Target",
+        "progress": "{progress}% Accrued",
+        "durationLabel": "Days into Cycle",
+        "durationValue": "{days} Market Days",
+        "accruedProfit": "Accrued Profit"
+      },
+      "profitMode": {
+        "title": "Earnings Method",
+        "compoundBadge": "Compound",
+        "withdrawalBadge": "Withdrawal",
+        "compoundDesc": "Profits reinvest automatically to expand asset equity.",
+        "withdrawalDesc": "Profits credit to your liquid wallet after each cycle.",
+        "switchButton": "Switch to {mode}"
+      },
+      "insurance": {
+        "title": "Active Coverage",
+        "certificate": "Protection Certificate",
+        "certLabel": "Protection Certificate",
+        "insurer": "Insurer",
+        "provider": "Insurer",
+        "providers": {
+          "Default Insurance Provider": "GloTrade Strategic Insurer"
+        },
+        "verified": "Verified",
+        "statusLabel": "Verified",
+        "purchaseInvoice": "Purchase Invoice",
+        "invoiceButton": "Purchase Invoice",
+        "assetCertificate": "Asset Certificate",
+        "certButton": "Asset Certificate"
+      },
+      "node": {
+        "title": "Cluster Node",
+        "reference": "GDC Reference",
+        "ref": "GDC Reference",
+        "position": "Node Position",
+        "posLabel": "Node Position",
+        "posValue": "Block {pos} of {total}",
+        "commodity": "Commodity Backing",
+        "defaultCommodity": "Mixed Commodities"
+      }
+    },
+    "certificate": {
+      "header": {
+        "title": "Insurance Certificate",
+        "protocol": "TPIA - Alliance Protocol",
+        "archiveLabel": "OFFICIAL ASSET ARCHIVE"
+      },
+      "info": {
+        "seqLabel": "CERTIFICATE SEQUENCE",
+        "dateLabel": "INCEPTION DATE"
+      },
+      "partner": {
+        "entityLabel": "ASSET ENTITY IDENTIFIED"
+      },
+      "content": {
+        "confirmation": "This document confirms registered insurance coverage for the investment block {id}. Fully backed by physical commodity reserves under the GDIP multi-layer risk management framework.",
+        "backing": "This coverage is underwritten by the primary insurer listed below.",
+        "coverageLabel": "COVERAGE MAGNITUDE",
+        "backingLabel": "ASSET BACKING",
+        "backingValue": "{qty} {unit} {type}",
+        "windowLabel": "EFFECTIVE WINDOW",
+        "logisticsLabel": "LOGISTICS HUB",
+        "defaultHub": "GLOTRADE STRATEGIC RESERVE"
+      },
+      "footer": {
+        "authorizedSignatory": "Authorized Signatory",
+        "adminSignatory": "GloTrade Admin",
+        "leadUnderwriter": "Lead Underwriter",
+        "noticeTitle": "OFFICIAL ARCHIVE NOTICE",
+        "noticeText": "This document is a digital representation of the underlying insurance contract. ",
+        "protectionText": "Full capital protection of {amount} per TPIA block is cross-verified under sovereign custodial standards.",
+        "verificationLabel": "Secure Verification",
+        "endOfDocument": "GLOTRADE INTERNATIONAL PLATFORM • END OF DOCUMENT",
+        "encrypted": "SECURE LEDGER ENCRYPTED"
+      },
+      "backToPortfolio": "Return to Portfolio",
+      "printButton": "Print Certificate"
+    },
+    "commodity": {
+      "title": "Commodity Backing",
+      "subtitle": "Physical assets backing your TPIA investment",
+      "back": "Back",
+      "summary": {
+        "types": "Commodity Types",
+        "total": "Total Commodities",
+        "quantity": "Total Quantity",
+        "value": "Total Value"
+      },
+      "card": {
+        "idLabel": "Commodity ID:",
+        "quantityLabel": "Quantity:",
+        "marketPriceLabel": "Market Price:",
+        "unitPriceLabel": "Price per Unit:",
+        "qualityLabel": "Quality:",
+        "conditionLabel": "Condition:",
+        "warehouseLabel": "Warehouse:",
+        "updatedLabel": "Last Updated:"
+      },
+      "conditions": {
+        "excellent": "Excellent",
+        "good": "Good",
+        "average": "Average",
+        "poor": "Poor"
+      },
+      "empty": {
+        "title": "No Commodity Backing Found",
+        "subtitle": "Commodities will be allocated once your GDC starts trading"
+      },
+      "error": {
+        "title": "Error",
+        "loadFailed": "Failed to load commodity backing",
+        "goBack": "Go Back"
+      }
+    },
+    "invoice": {
+      "header": {
+        "title": "Settlement Invoice",
+        "archiveLabel": "RECORD IDENTIFIER",
+        "recordLabel": "DIGITAL RECORD",
+        "brand": "GLOTRADE GDIP"
+      },
+      "info": {
+        "hqLabel": "HQ LOCATION",
+        "nodeLabel": "DIGITAL NODE",
+        "commLabel": "COMMUNICATION"
+      },
+      "partner": {
+        "billedLabel": "BILLED TO ENTITY",
+        "dateLabel": "SETTLEMENT DATE",
+        "verificationLabel": "PAYMENT VERIFICATION",
+        "verifiedStatus": "Partner Verified",
+        "settlementStatus": "Settlement Complete"
+      },
+      "table": {
+        "headers": {
+          "description": "Lifecycle Description",
+          "qty": "Qty",
+          "value": "Economic Value"
+        },
+        "item": {
+          "name": "GDIP Strategic Trade Block",
+          "status": "Fully Collateralized Asset",
+          "blockId": "Block ID",
+          "nodeId": "Node ID",
+          "configLabel": "ASSET CONFIGURATION",
+          "backing": "COLLATERAL BACKING",
+          "unit": "BLOCK UNIT",
+          "settledStatus": "Settled 100%",
+          "defaultType": "Mixed Commodities"
+        }
+      },
+      "mobile": {
+        "blockLabel": "Block ID",
+        "qtyLabel": "Qty",
+        "valueLabel": "Value"
+      },
+      "summary": {
+        "subtotal": "NET SUB-VALUE",
+        "tax": "TAX / VRT EXEMPT",
+        "total": "TOTAL SETTLEMENT"
+      },
+      "footer": {
+        "title": "SETTLEMENT ARCHIVE",
+        "text1": "This transaction sequence was finalized via the",
+        "ledgerSystem": "Glotrade Internal Ledger System",
+        "text2": "Asset backing is fully collateralized by physically verified commodity stocks.",
+        "verifiedLabel": "Asset Backing Verified",
+        "idLabel": "ELECTRONIC ARCHIVE ID",
+        "officialLabel": "OFFICIAL LEDGER DOCUMENT",
+        "endOfRecord": "GLOTRADE INTERNATIONAL PLATFORM • END OF RECORDED DATA"
+      },
+      "loading": "Settling Invoice...",
+      "backToPortfolio": "Back to Portfolio",
+      "downloadButton": "Download Invoice",
+      "error": {
+        "title": "Error",
+        "notFound": "Invoice not found",
+        "goBack": "Go Back"
+      }
+    },
+    "status": {
+      "active": "active",
+      "pending": "pending",
+      "matured": "matured",
+      "completed": "completed",
+      "scheduled": "scheduled",
+      "processing": "processing",
+      "suspended": "suspended",
+      "excellent": "excellent",
+      "good": "good",
+      "average": "average",
+      "poor": "poor",
+      "verified": "verified"
     }
   }
 }

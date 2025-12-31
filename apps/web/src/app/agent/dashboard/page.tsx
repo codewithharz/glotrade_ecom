@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { apiGet } from "@/utils/api";
 import { toast } from "@/components/common/Toast";
+import { translate } from "@/utils/translate";
 import {
     Users, TrendingUp, DollarSign, Award, Copy, Share2,
     ExternalLink, CheckCircle2, Clock, XCircle, Loader2
@@ -78,7 +79,7 @@ export default function AgentDashboardPage() {
 
         } catch (error: any) {
             console.error("Failed to fetch dashboard data:", error);
-            toast(error.message || "Failed to load dashboard", "error");
+            toast(error.message || translate("agent.toasts.loadDashboardError"), "error");
         } finally {
             setIsLoading(false);
         }
@@ -87,14 +88,14 @@ export default function AgentDashboardPage() {
     const copyReferralCode = () => {
         navigator.clipboard.writeText(referralCode);
         setCopied(true);
-        toast("Referral code copied!", "success");
+        toast(translate("agent.toasts.copied"), "success");
         setTimeout(() => setCopied(false), 2000);
     };
 
     const shareReferralLink = () => {
         const link = `${window.location.origin}/auth/register-business?ref=${referralCode}`;
         navigator.clipboard.writeText(link);
-        toast("Referral link copied!", "success");
+        toast(translate("agent.toasts.linkCopied"), "success");
     };
 
     const formatCurrency = (amount: number) => {
@@ -120,7 +121,7 @@ export default function AgentDashboardPage() {
             <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 flex items-center justify-center">
                 <div className="text-center">
                     <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
-                    <p className="text-neutral-600 dark:text-neutral-400">Loading dashboard...</p>
+                    <p className="text-neutral-600 dark:text-neutral-400">{translate("agent.dashboard.loading")}</p>
                 </div>
             </div>
         );
@@ -132,10 +133,10 @@ export default function AgentDashboardPage() {
                 {/* Header */}
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
-                        Sales Agent Dashboard
+                        {translate("agent.dashboard.title")}
                     </h1>
                     <p className="text-neutral-600 dark:text-neutral-400">
-                        Track your referrals, commissions, and performance
+                        {translate("agent.dashboard.subtitle")}
                     </p>
                 </div>
 
@@ -155,10 +156,10 @@ export default function AgentDashboardPage() {
                             {agentStats?.totalReferrals || 0}
                         </h3>
                         <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                            Total Referrals
+                            {translate("agent.dashboard.stats.totalReferrals")}
                         </p>
                         <p className="text-xs text-green-600 dark:text-green-400 mt-2">
-                            {agentStats?.activeReferrals || 0} active
+                            {translate("agent.dashboard.stats.activeCount", { count: agentStats?.activeReferrals || 0 })}
                         </p>
                     </div>
 
@@ -173,10 +174,10 @@ export default function AgentDashboardPage() {
                             {formatCurrency(commissionSummary?.totalEarned || 0)}
                         </h3>
                         <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                            Total Earned
+                            {translate("agent.dashboard.stats.totalEarned")}
                         </p>
                         <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-2">
-                            {commissionSummary?.totalCommissions || 0} commissions
+                            {translate("agent.dashboard.stats.commissionsCount", { count: commissionSummary?.totalCommissions || 0 })}
                         </p>
                     </div>
 
@@ -191,10 +192,10 @@ export default function AgentDashboardPage() {
                             {formatCurrency(commissionSummary?.pending || 0)}
                         </h3>
                         <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                            Pending Commission
+                            {translate("agent.dashboard.stats.pendingCommission")}
                         </p>
                         <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-2">
-                            Awaiting approval
+                            {translate("agent.dashboard.stats.awaitingApproval")}
                         </p>
                     </div>
 
@@ -209,10 +210,10 @@ export default function AgentDashboardPage() {
                             {referralStats?.conversionRate.toFixed(1) || 0}%
                         </h3>
                         <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                            Conversion Rate
+                            {translate("agent.dashboard.stats.conversionRate")}
                         </p>
                         <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-2">
-                            Pending → Active
+                            {translate("agent.dashboard.stats.pendingToActive")}
                         </p>
                     </div>
                 </div>
@@ -220,14 +221,14 @@ export default function AgentDashboardPage() {
                 {/* Referral Tools Card */}
                 <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-sm p-6 border border-neutral-200 dark:border-neutral-800 mb-8">
                     <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-4">
-                        Referral Tools
+                        {translate("agent.dashboard.tools.title")}
                     </h2>
 
                     <div className="space-y-4">
                         {/* Referral Code */}
                         <div>
                             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                                Your Referral Code
+                                {translate("agent.dashboard.tools.codeLabel")}
                             </label>
                             <div className="flex gap-2">
                                 <div className="flex-1 relative">
@@ -245,12 +246,12 @@ export default function AgentDashboardPage() {
                                     {copied ? (
                                         <>
                                             <CheckCircle2 className="h-5 w-5" />
-                                            Copied!
+                                            {translate("agent.dashboard.tools.copied")}
                                         </>
                                     ) : (
                                         <>
                                             <Copy className="h-5 w-5" />
-                                            Copy
+                                            {translate("agent.dashboard.tools.copy")}
                                         </>
                                     )}
                                 </button>
@@ -260,7 +261,7 @@ export default function AgentDashboardPage() {
                         {/* Referral Link */}
                         <div>
                             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                                Referral Link
+                                {translate("agent.dashboard.tools.linkLabel")}
                             </label>
                             <div className="flex gap-2">
                                 <div className="flex-1 relative">
@@ -276,7 +277,7 @@ export default function AgentDashboardPage() {
                                     className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
                                 >
                                     <Share2 className="h-5 w-5" />
-                                    Share
+                                    {translate("agent.dashboard.tools.share")}
                                 </button>
                             </div>
                         </div>
@@ -288,21 +289,21 @@ export default function AgentDashboardPage() {
                                 className="px-4 py-3 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                             >
                                 <Users className="h-5 w-5" />
-                                View Referrals
+                                {translate("agent.dashboard.tools.viewReferrals")}
                             </button>
                             <button
                                 onClick={() => router.push("/agent/commissions")}
                                 className="px-4 py-3 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                             >
                                 <DollarSign className="h-5 w-5" />
-                                Commissions
+                                {translate("agent.dashboard.tools.commissions")}
                             </button>
                             <button
                                 onClick={() => router.push("/profile/wallet")}
                                 className="px-4 py-3 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                             >
                                 <Award className="h-5 w-5" />
-                                Wallet
+                                {translate("agent.dashboard.tools.wallet")}
                             </button>
                         </div>
                     </div>
@@ -313,12 +314,12 @@ export default function AgentDashboardPage() {
                     {/* Commission Breakdown */}
                     <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-sm p-6 border border-neutral-200 dark:border-neutral-800">
                         <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-4">
-                            Commission Breakdown
+                            {translate("agent.dashboard.breakdown.title")}
                         </h2>
                         <div className="space-y-3">
                             <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-lg">
                                 <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                                    Registration Bonuses
+                                    {translate("agent.dashboard.breakdown.registration")}
                                 </span>
                                 <span className="text-sm font-bold text-neutral-900 dark:text-white">
                                     {formatCurrency(commissionSummary?.byType.registration || 0)}
@@ -326,7 +327,7 @@ export default function AgentDashboardPage() {
                             </div>
                             <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-lg">
                                 <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                                    Purchase Commissions
+                                    {translate("agent.dashboard.breakdown.purchase")}
                                 </span>
                                 <span className="text-sm font-bold text-neutral-900 dark:text-white">
                                     {formatCurrency(commissionSummary?.byType.purchase || 0)}
@@ -334,7 +335,7 @@ export default function AgentDashboardPage() {
                             </div>
                             <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-lg">
                                 <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                                    Bonuses
+                                    {translate("agent.dashboard.breakdown.bonus")}
                                 </span>
                                 <span className="text-sm font-bold text-neutral-900 dark:text-white">
                                     {formatCurrency(commissionSummary?.byType.bonus || 0)}
@@ -346,12 +347,12 @@ export default function AgentDashboardPage() {
                     {/* Referral Performance */}
                     <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-sm p-6 border border-neutral-200 dark:border-neutral-800">
                         <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-4">
-                            Referral Performance
+                            {translate("agent.dashboard.performance.title")}
                         </h2>
                         <div className="space-y-3">
                             <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-lg">
                                 <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                                    Total Orders
+                                    {translate("agent.dashboard.performance.totalOrders")}
                                 </span>
                                 <span className="text-sm font-bold text-neutral-900 dark:text-white">
                                     {referralStats?.totalOrders || 0}
@@ -359,7 +360,7 @@ export default function AgentDashboardPage() {
                             </div>
                             <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-lg">
                                 <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                                    Total Order Value
+                                    {translate("agent.dashboard.performance.totalOrderValue")}
                                 </span>
                                 <span className="text-sm font-bold text-neutral-900 dark:text-white">
                                     {formatCurrency(referralStats?.totalOrderValue || 0)}
@@ -367,7 +368,7 @@ export default function AgentDashboardPage() {
                             </div>
                             <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-lg">
                                 <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                                    Avg Order Value
+                                    {translate("agent.dashboard.performance.avgOrderValue")}
                                 </span>
                                 <span className="text-sm font-bold text-neutral-900 dark:text-white">
                                     {formatCurrency(referralStats?.avgOrderValue || 0)}

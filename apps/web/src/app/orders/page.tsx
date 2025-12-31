@@ -62,8 +62,8 @@ export default function OrdersPage() {
   useEffect(() => {
     setLocale(getStoredLocale());
     const handleLangChange = () => setLocale(getStoredLocale());
-    window.addEventListener("language-change", handleLangChange);
-    return () => window.removeEventListener("language-change", handleLangChange);
+    window.addEventListener("i18n:locale", handleLangChange);
+    return () => window.removeEventListener("i18n:locale", handleLangChange);
   }, []);
 
   const toggleExpanded = (orderId: string) => {
@@ -359,9 +359,9 @@ export default function OrdersPage() {
           {/* Pagination */}
           {total > pageSize ? (
             <div className="mt-6 flex items-center justify-end gap-2 text-sm">
-              <button disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className={`rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 font-medium ${page <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}>Prev</button>
-              <span className="text-gray-600 dark:text-gray-400">Page {page}</span>
-              <button disabled={(page * pageSize) >= total} onClick={() => setPage((p) => p + 1)} className={`rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 font-medium ${((page * pageSize) >= total) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}>Next</button>
+              <button disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className={`rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 font-medium ${page <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}>{translate(locale, "orders.list.prev")}</button>
+              <span className="text-gray-600 dark:text-gray-400">{translate(locale, "orders.list.page", { number: page })}</span>
+              <button disabled={(page * pageSize) >= total} onClick={() => setPage((p) => p + 1)} className={`rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 font-medium ${((page * pageSize) >= total) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}>{translate(locale, "orders.list.next")}</button>
             </div>
           ) : null}
         </section>
@@ -371,7 +371,7 @@ export default function OrdersPage() {
           <>
             <div className="fixed inset-0 z-[9998] bg-black/20" onClick={() => setShowFromPicker(false)} />
             <div className="fixed left-4 right-4 top-1/2 -translate-y-1/2 sm:left-auto sm:right-auto sm:top-[220px] sm:translate-y-0 z-[9999] w-auto sm:w-[18rem] rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-              <Calendar value={range.from} onChange={(v) => { setRange((r) => ({ ...r, from: v })); setShowFromPicker(false); }} />
+              <Calendar locale={locale} value={range.from} onChange={(v) => { setRange((r) => ({ ...r, from: v })); setShowFromPicker(false); }} />
             </div>
           </>
         ) : null}
@@ -380,7 +380,7 @@ export default function OrdersPage() {
           <>
             <div className="fixed inset-0 z-[9998] bg-black/20" onClick={() => setShowToPicker(false)} />
             <div className="fixed left-4 right-4 top-1/2 -translate-y-1/2 sm:left-auto sm:right-auto sm:top-[220px] sm:translate-y-0 z-[9999] w-auto sm:w-[18rem] rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-              <Calendar value={range.to} onChange={(v) => { setRange((r) => ({ ...r, to: v })); setShowToPicker(false); }} />
+              <Calendar locale={locale} value={range.to} onChange={(v) => { setRange((r) => ({ ...r, to: v })); setShowToPicker(false); }} />
             </div>
           </>
         ) : null}
@@ -405,7 +405,7 @@ function OrdersChart({ data, locale }: { data: { bucket: string; count: number }
   const chartData = {
     labels: data.length > 0 ? data.map(item => {
       const date = new Date(item.bucket);
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      return date.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
     }) : [],
     datasets: [
       {
@@ -617,7 +617,7 @@ function StatusDoughnutChart({ data, locale }: { data: Record<string, number>, l
 }
 
 // Minimal calendar popover (no dependency)
-function Calendar({ value, onChange }: { value?: string; onChange: (v: string) => void }) {
+function Calendar({ value, onChange, locale }: { value?: string; onChange: (v: string) => void; locale: Locale }) {
   const today = new Date(value || Date.now());
   const [y, setY] = useState(today.getFullYear());
   const [m, setM] = useState(today.getMonth());
@@ -632,7 +632,7 @@ function Calendar({ value, onChange }: { value?: string; onChange: (v: string) =
   const pad = (n: number) => String(n).padStart(2, '0');
   const sel = value ? new Date(value) : null;
   const isSel = (d: number) => sel && sel.getFullYear() === y && sel.getMonth() === m && sel.getDate() === d;
-  const label = new Date(y, m, 1).toLocaleString(undefined, { month: 'long', year: 'numeric' });
+  const label = new Date(y, m, 1).toLocaleString(locale, { month: 'long', year: 'numeric' });
   return (
     <div className="w-full select-none">
       <div className="mb-2 flex items-center justify-between">
@@ -641,7 +641,10 @@ function Calendar({ value, onChange }: { value?: string; onChange: (v: string) =
         <button onClick={() => setM((mm) => (mm === 11 ? (setY(y + 1), 0) : mm + 1))} className="rounded-full p-1 hover:bg-gray-100 dark:hover:bg-gray-700"><ChevronRightIcon className="w-4 h-4" /></button>
       </div>
       <div className="grid grid-cols-7 gap-1 text-center text-xs text-gray-500">
-        {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map(d => <div key={d}>{d}</div>)}
+        {[...Array(7)].map((_, i) => {
+          const d = new Date(2024, 0, 7 + i); // Jan 7, 2024 was a Sunday
+          return <div key={i}>{d.toLocaleDateString(locale, { weekday: 'short' }).slice(0, 2)}</div>;
+        })}
       </div>
       <div className="mt-1 grid grid-cols-7 gap-1 text-center text-sm">
         {grid.flat().map((d, i) => (
