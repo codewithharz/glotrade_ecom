@@ -76,7 +76,7 @@ export default function AdBanner({ banners }: AdBannerProps) {
                 {/* First banner - Visible on mobile as a full-width block with aspect ratio, on desktop as a grid span */}
                 <BannerItem
                     banner={displayBanners[0]}
-                    className="block w-full md:col-span-2 md:row-span-2 aspect-[21/9] md:aspect-auto md:h-[510px] bg-neutral-100"
+                    className="block w-full md:col-span-2 md:row-span-2 md:aspect-auto md:h-[510px] bg-neutral-100"
                 />
 
                 {/* Secondary banners - Hidden on mobile, flex row on desktop grid */}
