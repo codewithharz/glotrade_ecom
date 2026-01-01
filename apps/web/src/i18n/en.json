@@ -559,6 +559,7 @@
     }
   },
   "usermenu": {
+    "home": "Home",
     "welcome": "Welcome",
     "signInDesc": "Sign in to view orders, manage addresses, and more.",
     "login": "Login",
@@ -2338,6 +2339,7 @@
     "subtitle": "Get answers fast or contact our team.",
     "heroLabel": "We’re here to help",
     "searchPlaceholder": "Search help articles and FAQs",
+    "breadcrumb": "Support",
     "breadcrumbHome": "Home",
     "breadcrumbSupport": "Support",
     "topQuestions": "Top questions",
@@ -2380,5 +2382,29 @@
       "q4": "How can I secure my account?",
       "a4": "Use a strong password, enable notifications, and never share one‑time codes. Contact support immediately if you notice anything suspicious."
     }
+  },
+  "footer": {
+    "desc": "Your trusted African e-commerce marketplace. Connecting businesses and customers across the continent with secure, reliable, and convenient shopping experiences.",
+    "shop": "Shop & Explore",
+    "marketplace": "Marketplace",
+    "bestSellers": "Best-Sellers",
+    "newArrivals": "New Arrivals",
+    "gdip": "Insured Partners (GDIP)",
+    "support": "Customer Support",
+    "helpCenter": "Help Center",
+    "trackOrder": "Track Your Order",
+    "shipping": "Shipping & Returns",
+    "contact": "Contact Us",
+    "legal": "Legal & Security",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "fraud": "Fraud Awareness",
+    "security": "Security Guarantee",
+    "securePayments": "Secure Payments",
+    "returns": "30-Day Returns",
+    "delivery": "Fast Africa-wide Delivery",
+    "rights": "All rights reserved.",
+    "developer": "Developer",
+    "tagline": "Empowering African Trade through Digital Innovation."
   }
 }

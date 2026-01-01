@@ -199,7 +199,7 @@ export default function SupportPage() {
           </div>
 
           {/* Right: Contact */}
-          <aside className="h-max bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-6">
+          <aside id="contact" className="h-max bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-6">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
                 <Mail className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />

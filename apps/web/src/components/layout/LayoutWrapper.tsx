@@ -2,6 +2,7 @@
 import { usePathname } from "next/navigation";
 import UpperHeader from "@/components/layout/UpperHeader";
 import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 
 export default function LayoutWrapper({
     children,
@@ -24,6 +25,7 @@ export default function LayoutWrapper({
             <UpperHeader />
             <Header />
             <div className="mx-auto md:w-[95%] w-full px-4 md:px-6">{children}</div>
+            <Footer />
         </>
     );
 }

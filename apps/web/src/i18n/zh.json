@@ -704,6 +704,7 @@
     }
   },
   "usermenu": {
+    "home": "首页",
     "welcome": "欢迎",
     "signInDesc": "登录以查看订单、管理地址等。",
     "login": "登录",
@@ -2201,8 +2202,37 @@
       "a2": "您可以在送达后的15天内从订单页面发起退货。请确保商品处于原始状态。",
       "q3": "接受哪些付款方式？",
       "a3": "我们接受银行卡、银行转账以及通过 Paystack 和 Flutterwave 支持的钱包。",
-      "q4": "如何保护我的账号安全？",
+      "q4": "如何保护我的帐户安全？",
       "a4": "使用强密码，启用通知，切勿分享一次性验证码。如果发现任何可疑情况，请立即联系客服。"
-    }
+    },
+    "breadcrumbs": {
+      "support": "支持",
+      "home": "首页"
+    },
+    "breadcrumb": "支持"
+  },
+  "footer": {
+    "desc": "您值得信赖的非洲电子商务市场。通过安全、可靠和便捷的购物体验连接整个大陆的企业和客户。",
+    "shop": "商店与探索",
+    "marketplace": "市场",
+    "bestSellers": "畅销商品",
+    "newArrivals": "新品上市",
+    "gdip": "保险合作伙伴 (GDIP)",
+    "support": "客户支持",
+    "helpCenter": "帮助中心",
+    "trackOrder": "追踪您的订单",
+    "shipping": "运输与退货",
+    "contact": "联系我们",
+    "legal": "法律与安全",
+    "privacy": "隐私政策",
+    "terms": "使用条款",
+    "fraud": "反欺诈意识",
+    "security": "安全保障",
+    "securePayments": "安全支付",
+    "returns": "30天退货政策",
+    "delivery": "全非洲快速配送",
+    "rights": "版权所有。",
+    "developer": "开发者",
+    "tagline": "通过数字创新赋能非洲贸易。"
   }
 }

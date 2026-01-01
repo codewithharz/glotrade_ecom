@@ -333,6 +333,7 @@
     "callUs": "Kira mu:"
   },
   "usermenu": {
+    "home": "Gida",
     "welcome": "Barka da zuwa",
     "signInDesc": "Shiga don duba umarni, sarrafa adireshi, da ƙari.",
     "login": "Shiga",
@@ -2160,8 +2161,37 @@
       "a2": "Kuna iya fara mayar da kaya cikin kwanaki 15 bayan an isar da su daga shafinku na ododi. Tabbatar cewa kayan suna cikin yanayinsu na asali.",
       "q3": "Waɗanne hanyoyin biyan kuɗi ake karɓa?",
       "a3": "Muna karɓar katunan banki, tura kuɗi ta banki, da walat ɗin da ake tallafawa ta Paystack da Flutterwave.",
-      "q4": "Yaya zan iya tsare asusu na?",
+      "q4": "Ta yaya zan iya kare asusuna?",
       "a4": "Yi amfani da kalmar sirri mai ƙarfi, kunna sanarwa, kuma kada ku raba lambobin sirri na lokaci ɗaya. Tuntuɓi taimako nan da nan idan kun ga wani abu da ba ku amince da shi ba."
-    }
+    },
+    "breadcrumbs": {
+      "support": "Taimako",
+      "home": "Gida"
+    },
+    "breadcrumb": "Taimako"
+  },
+  "footer": {
+    "desc": "Kasuwar kasuwancin e-commerce na Afirka da kuka amince da ita. Haɗa kasuwanci da abokan ciniki a duk faɗin nahiyar tare da amintattun, ingantattun, da ƙwarewar siyayya mai sauƙi.",
+    "shop": "Siyayya da Bincike",
+    "marketplace": "Kasuwa",
+    "bestSellers": "Mafi Sayarwa",
+    "newArrivals": "Sabbin Zuwa",
+    "gdip": "Abokan Hulɗa Masu Inshora (GDIP)",
+    "support": "Sabis na Abokin Ciniki",
+    "helpCenter": "Cibiyar Taimako",
+    "trackOrder": "Bibiyar odar ku",
+    "shipping": "Jigilar kaya da Mayarwa",
+    "contact": "Tuntube Mu",
+    "legal": "Dokoki da Tsaro",
+    "privacy": "Manufar Sirri",
+    "terms": "Sharuddan Amfani",
+    "fraud": "Sanin Zamba",
+    "security": "Garantin Tsaro",
+    "securePayments": "Amintattun Biyan Kuɗi",
+    "returns": "Mayar da kaya na kwanaki 30",
+    "delivery": "Isarwa mai sauri a duk faɗin Afirka",
+    "rights": "Duk haƙƙoƙi an kiyaye.",
+    "developer": "Mai haɓakawa",
+    "tagline": "Ƙarfafa kasuwancin Afirka ta hanyar kirkire-kirkire na dijital."
   }
 }

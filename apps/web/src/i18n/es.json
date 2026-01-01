@@ -704,6 +704,7 @@
     }
   },
   "usermenu": {
+    "home": "Inicio",
     "welcome": "Bienvenido",
     "signInDesc": "Inicia sesión para ver pedidos, administrar direcciones y más.",
     "login": "Iniciar sesión",
@@ -2229,8 +2230,37 @@
       "a2": "Puede iniciar una devolución dentro de los 15 días posteriores a la entrega desde su página de pedidos. Asegúrese de que el artículo esté en su condición original.",
       "q3": "¿Qué métodos de pago se aceptan?",
       "a3": "Aceptamos tarjetas, transferencias bancarias y billeteras compatibles a través de Paystack y Flutterwave.",
-      "q4": "¿Cómo puedo asegurar mi cuenta?",
+      "q4": "Cómo puedo asegurar mi cuenta?",
       "a4": "Use una contraseña segura, active las notificaciones y nunca comparta códigos de un solo uso. Contacte al soporte de inmediato si nota algo sospechoso."
-    }
+    },
+    "breadcrumbs": {
+      "support": "Soporte",
+      "home": "Inicio"
+    },
+    "breadcrumb": "Soporte"
+  },
+  "footer": {
+    "desc": "Su mercado de comercio electrónico africano de confianza. Conectando empresas y clientes en todo el continente con experiencias de compra seguras, confiables y convenientes.",
+    "shop": "Tienda y Explorar",
+    "marketplace": "Mercado",
+    "bestSellers": "Más vendidos",
+    "newArrivals": "Novedades",
+    "gdip": "Socios Asegurados (GDIP)",
+    "support": "Atención al Cliente",
+    "helpCenter": "Centro de Ayuda",
+    "trackOrder": "Rastrear su pedido",
+    "shipping": "Envíos y Devoluciones",
+    "contact": "Contáctenos",
+    "legal": "Legal y Seguridad",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos de Uso",
+    "fraud": "Conciencia sobre Fraude",
+    "security": "Garantía de Seguridad",
+    "securePayments": "Pagos Seguros",
+    "returns": "Devoluciones de 30 días",
+    "delivery": "Entrega rápida en toda África",
+    "rights": "Todos los derechos reservados.",
+    "developer": "Desarrollador",
+    "tagline": "Empoderando el comercio africano a través de la innovación digital."
   }
 }

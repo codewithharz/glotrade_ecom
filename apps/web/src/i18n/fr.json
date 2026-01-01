@@ -704,6 +704,7 @@
     }
   },
   "usermenu": {
+    "home": "Accueil",
     "welcome": "Bienvenue",
     "signInDesc": "Connectez-vous pour voir vos commandes, gérer vos adresses, et plus.",
     "login": "Connexion",
@@ -2280,6 +2281,35 @@
       "a3": "Nous acceptons les cartes, les virements bancaires et les portefeuilles pris en charge via Paystack et Flutterwave.",
       "q4": "Comment sécuriser mon compte ?",
       "a4": "Utilisez un mot de passe fort, activez les notifications et ne partagez jamais de codes à usage unique. Contactez l'assistance immédiatement si vous remarquez quelque chose de suspect."
-    }
+    },
+    "breadcrumbs": {
+      "support": "Assistance",
+      "home": "Accueil"
+    },
+    "breadcrumb": "Assistance"
+  },
+  "footer": {
+    "desc": "Votre place de marché e-commerce africaine de confiance. Connecter entreprises et clients à travers le continent avec des expériences d'achat sécurisées, fiables et pratiques.",
+    "shop": "Boutique & Découverte",
+    "marketplace": "Marketplace",
+    "bestSellers": "Meilleures ventes",
+    "newArrivals": "Nouveautés",
+    "gdip": "Partenaires Assurés (GDIP)",
+    "support": "Service Client",
+    "helpCenter": "Centre d'aide",
+    "trackOrder": "Suivre votre commande",
+    "shipping": "Livraison & Retours",
+    "contact": "Contactez-nous",
+    "legal": "Légal & Sécurité",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation",
+    "fraud": "Sensibilisation à la fraude",
+    "security": "Garantie de sécurité",
+    "securePayments": "Paiements sécurisés",
+    "returns": "Retours sous 30 jours",
+    "delivery": "Livraison rapide en Afrique",
+    "rights": "Tous droits réservés.",
+    "developer": "Développeur",
+    "tagline": "Autonomiser le commerce africain grâce à l'innovation numérique."
   }
 }

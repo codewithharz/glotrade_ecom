@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Search,
   ShoppingCart,
@@ -157,11 +158,15 @@ export default function Header() {
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center shrink-0">
               {/* Logo */}
-              <img
-                src={`../glotrade_logo.png`}
-                alt="logo"
-                className="h-14 w-14 md:h-16 md:w-16 object-contain shrink-0"
-              />
+              <div className="relative h-14 w-14 md:h-16 md:w-16 shrink-0">
+                <Image
+                  src="/glotrade_logo.png"
+                  alt="logo"
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 768px) 56px, 64px"
+                />
+              </div>
             </Link>
 
             {/* Logo Text / Admin Badge Unit */}
