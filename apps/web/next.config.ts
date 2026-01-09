@@ -39,9 +39,6 @@ const nextConfig: NextConfig = {
   // Performance optimizations
   productionBrowserSourceMaps: false, // Disable source maps in production for smaller bundles
 
-  // Optimize fonts
-  optimizeFonts: true,
-
   // Experimental optimizations
   experimental: {
     optimizePackageImports: ['lucide-react', 'chart.js', 'react-chartjs-2'],
