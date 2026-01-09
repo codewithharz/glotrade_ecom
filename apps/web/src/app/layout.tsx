@@ -120,6 +120,11 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} dir={isRTL ? "rtl" : "ltr"}>
+      <head>
+        {/* Preconnect to API domain for faster requests */}
+        <link rel="preconnect" href="https://glotrade-ecom.onrender.com" />
+        <link rel="dns-prefetch" href="https://glotrade-ecom.onrender.com" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} antialiased`}
       >
