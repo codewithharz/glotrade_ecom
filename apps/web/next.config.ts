@@ -36,9 +36,22 @@ const nextConfig: NextConfig = {
     } : false,
   },
 
+  // Performance optimizations
+  productionBrowserSourceMaps: false, // Disable source maps in production for smaller bundles
+
+  // Optimize fonts
+  optimizeFonts: true,
+
   // Experimental optimizations
   experimental: {
     optimizePackageImports: ['lucide-react', 'chart.js', 'react-chartjs-2'],
+  },
+
+  // Modularize imports for better tree-shaking
+  modularizeImports: {
+    'lucide-react': {
+      transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
+    },
   },
 
   async redirects() {
