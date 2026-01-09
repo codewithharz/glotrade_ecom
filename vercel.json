@@ -1,11 +1,16 @@
 {
     "version": 2,
-    "buildCommand": "cd apps/web && npm run build",
-    "outputDirectory": "apps/web/.next",
-    "installCommand": "npm install",
-    "framework": "nextjs",
-    "regions": [
-        "iad1"
+    "builds": [
+        {
+            "src": "apps/web/package.json",
+            "use": "@vercel/next"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "apps/web/$1"
+        }
     ],
     "functions": {
         "apps/web/**/*.{ts,tsx}": {
@@ -39,12 +44,6 @@
                     "value": "public, max-age=86400, s-maxage=31536000"
                 }
             ]
-        }
-    ],
-    "rewrites": [
-        {
-            "source": "/(.*)",
-            "destination": "/apps/web/$1"
         }
     ]
 }
