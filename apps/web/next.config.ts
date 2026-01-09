@@ -16,6 +16,31 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
+
+  // Production optimizations
+  compress: true, // Enable gzip compression
+
+  // Image optimization
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60,
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+  },
+
+  // Compiler options for production
+  compiler: {
+    // Remove console.log in production
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error'], // Keep console.error for critical debugging
+    } : false,
+  },
+
+  // Experimental optimizations
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'chart.js', 'react-chartjs-2'],
+  },
+
   async redirects() {
     return [
       {
@@ -48,3 +73,4 @@ const nextConfig: NextConfig = {
 };
 
 export default withNextIntl(nextConfig);
+

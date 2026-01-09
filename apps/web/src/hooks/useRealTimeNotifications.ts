@@ -68,9 +68,14 @@ export function useRealTimeNotifications(options?: UseRealTimeNotificationsOptio
       }
 
       // Add a small delay to ensure the page is fully loaded
+      // Use exponential backoff for reconnections
+      const delay = reconnectAttemptsRef.current > 0
+        ? Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current - 1), 30000) // Max 30s
+        : 1000;
+
       setTimeout(() => {
         establishConnection();
-      }, 1000);
+      }, delay);
     } catch (error) {
       console.error('Failed to establish real-time connection:', error);
       onError?.(error as Event);
@@ -96,46 +101,70 @@ export function useRealTimeNotifications(options?: UseRealTimeNotificationsOptio
       console.log('Connecting to real-time notifications:', url);
       eventSourceRef.current = new EventSource(url);
 
+      // Set up connection timeout (Vercel has 10s limit for serverless functions)
+      // If no heartbeat received within 15s, reconnect
+      let heartbeatTimeout: NodeJS.Timeout;
+      const resetHeartbeat = () => {
+        if (heartbeatTimeout) clearTimeout(heartbeatTimeout);
+        heartbeatTimeout = setTimeout(() => {
+          console.log('No heartbeat received, reconnecting...');
+          if (autoReconnect && eventSourceRef.current) {
+            eventSourceRef.current.close();
+            connect();
+          }
+        }, 15000);
+      };
+
       // Connection opened
       eventSourceRef.current.onopen = () => {
         // console.log('Real-time notification connection opened successfully');
         isConnectedRef.current = true;
         reconnectAttemptsRef.current = 0;
         onConnectionChange?.(true);
+        resetHeartbeat();
       };
 
       // Message received
       eventSourceRef.current.onmessage = (event) => {
         try {
           const data: RealTimeEvent = JSON.parse(event.data);
-          
+
           switch (data.type) {
             case 'notification':
               onNotification?.(data.data);
+              resetHeartbeat();
               break;
             case 'status_update':
               onStatusUpdate?.(data.data);
+              resetHeartbeat();
               break;
             case 'count_update':
               onCountUpdate?.(data.data);
+              resetHeartbeat();
               break;
             case 'wallet_balance_update':
               onWalletBalanceUpdate?.(data.data);
+              resetHeartbeat();
               break;
             case 'wallet_transaction_update':
               onWalletTransactionUpdate?.(data.data);
+              resetHeartbeat();
               break;
             case 'wallet_status_update':
               onWalletStatusUpdate?.(data.data);
+              resetHeartbeat();
               break;
             case 'connection':
               // Connection established - no need to log for production
+              resetHeartbeat();
               break;
             case 'heartbeat':
               // Heartbeat received, connection is alive
+              resetHeartbeat();
               break;
             case 'system_message':
               console.log('System message:', data.data);
+              resetHeartbeat();
               break;
             default:
               console.log('Unknown event type:', data.type);
@@ -150,20 +179,23 @@ export function useRealTimeNotifications(options?: UseRealTimeNotificationsOptio
         console.error('Real-time notification connection error:', error);
         isConnectedRef.current = false;
         onConnectionChange?.(false);
-        
+
+        // Clear heartbeat timeout
+        if (heartbeatTimeout) clearTimeout(heartbeatTimeout);
+
         // Don't show error to user if it's just a connection issue
         if (eventSourceRef.current?.readyState === EventSource.CONNECTING) {
           console.log('Connection in progress...');
           return;
         }
-        
+
         onError?.(error);
-        
-        // Attempt to reconnect
+
+        // Attempt to reconnect with exponential backoff
         if (autoReconnect && reconnectAttemptsRef.current < maxReconnectAttempts) {
           reconnectAttemptsRef.current++;
           console.log(`Reconnecting... Attempt ${reconnectAttemptsRef.current}/${maxReconnectAttempts}`);
-          
+
           reconnectTimeoutRef.current = setTimeout(() => {
             connect();
           }, reconnectInterval);
@@ -181,12 +213,12 @@ export function useRealTimeNotifications(options?: UseRealTimeNotificationsOptio
       eventSourceRef.current.close();
       eventSourceRef.current = null;
     }
-    
+
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
       reconnectTimeoutRef.current = null;
     }
-    
+
     isConnectedRef.current = false;
     onConnectionChange?.(false);
   }, [onConnectionChange]);
@@ -202,7 +234,7 @@ export function useRealTimeNotifications(options?: UseRealTimeNotificationsOptio
     if (options) {
       connect();
     }
-    
+
     // Cleanup on unmount
     return () => {
       disconnect();
