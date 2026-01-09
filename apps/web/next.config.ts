@@ -47,13 +47,6 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['lucide-react', 'chart.js', 'react-chartjs-2'],
   },
 
-  // Modularize imports for better tree-shaking
-  modularizeImports: {
-    'lucide-react': {
-      transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
-    },
-  },
-
   async redirects() {
     return [
       {
